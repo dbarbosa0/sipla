@@ -3,7 +3,7 @@ from PyQt5.QtWidgets import*
 from PyQt5.QtGui import*
 from PyQt5.QtCore import*
 from PyQt5.QtWebEngineWidgets import*
-
+##TESTE DE ALTERAÇÃO PRINCIPAL
 from class_database import C_DBase
 from class_maps_view import C_MapsViewer
 from class_exception import C_Error, ConnDataBaseError
