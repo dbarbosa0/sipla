@@ -9,6 +9,8 @@ from class_maps_view import C_MapsViewer
 from class_exception import C_Error, ConnDataBaseError
 from class_dialog_opendss import C_Dialog_OpenDSS
 
+# ZORRRRRRRRRRAAAAAAAAAAAAAAa
+
 import sys
 import platform
 import sip
