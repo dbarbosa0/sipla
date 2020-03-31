@@ -4,7 +4,7 @@ original = r'MAT.txt'
 file_path = r'SecMAT.txt' 
 shutil.copyfile(original, file_path)
 
-match_string = "BANANA"
+match_string = "Daniel"
 insert_string = "//"
 with open(file_path, 'r+') as fd:
     contents = fd.readlines()
