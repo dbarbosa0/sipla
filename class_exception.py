@@ -5,12 +5,12 @@ from  PyQt5.QtWidgets import QMessageBox
 # define Python user-defined exceptions
 class C_Error(Exception):
     def __init__(self, msgText):
-        super(C_Error, self).__init__()
         # Display the errors
         self.msgText = msgText
 
 class ConnDataBaseError(C_Error):
     def __init__(self, msgText):
+        super(ConnDataBaseError, self).__init__()
         # Display the errors
         msg = QMessageBox(QMessageBox.Warning, "Data Base Connection Error",
                           msgText,
@@ -20,6 +20,7 @@ class ConnDataBaseError(C_Error):
 
 class ExecDataBaseError(C_Error):
     def __init__(self, msgText):
+        super(ExecDataBaseError, self).__init__()
         # Display the errors
         msg = QMessageBox(QMessageBox.Warning, "Data Base Execution Error",
                           msgText,
@@ -29,6 +30,7 @@ class ExecDataBaseError(C_Error):
 
 class FileDataBaseError(C_Error):
     def __init__(self, msgText, errorText = None):
+        super(FileDataBaseError, self).__init__()
         if errorText is None:
             errorText = ""
         # Display the errors

@@ -8,7 +8,6 @@ import sqlite3
 class C_ConnDBase(): #Classe de banco de dados
 
     def __init__(self):
-        super(C_ConnDBase, self).__init__()
         #Variáveis das Classes
         #Nome do Diretório
         self.dirDataBase = ""

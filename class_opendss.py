@@ -5,7 +5,6 @@ class C_OpenDSS(): # classe OpenDSSDirect
 
     def __init__(self):
 
-        super(C_OpenDSS, self).__init__()
 
         self.acessDataBase = C_DBase_OpenDSS() #Acesso ao Banco de Dados
 

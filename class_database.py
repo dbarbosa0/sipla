@@ -11,9 +11,7 @@ from class_exception import ExecDataBaseError
 
 try:
     class C_DBase():
-
         def __init__(self):
-            super(C_DBase, self).__init__()
 
 
 ##########################

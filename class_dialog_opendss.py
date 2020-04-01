@@ -10,8 +10,6 @@ class C_Dialog_OpenDSS(): # classe OpenDSSDirect
 
     def __init__(self):
 
-        super(C_Dialog_OpenDSS, self).__init__()
-
         self.fileOpenDSS = C_OpenDSS() #Acesso ao Banco de Dados
 
         self.initUI()

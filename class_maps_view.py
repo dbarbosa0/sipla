@@ -11,8 +11,6 @@ from class_database import C_ConnDBase
 class C_MapsViewer():
 
     def __init__(self):
-
-        super(C_MapsViewer, self).__init__()
         
         self.dataBase = C_ConnDBase()
         
