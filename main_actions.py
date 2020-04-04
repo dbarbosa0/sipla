@@ -2,7 +2,9 @@ from PyQt5.QtWidgets import QStatusBar
 from PyQt5 import QtCore
 
 ###
+import class_database_conn
 import class_database_coord
+import class_database
 import class_exception
 import class_dialog_opendss
 import class_maps_view
@@ -10,19 +12,32 @@ import  main_panels_dock
 
 class C_MainActions():
     def __init__(self):
-        self.DataBase = class_database_coord.C_DBase  # Carregando o acesso ao BDGD
+
+        ################ Pegando instancias definidas no Main
+
         self.MainWindowStatusBar = QStatusBar
         self.MainNetPanel = main_panels_dock.C_NetPanel
         self.MainMapView = class_maps_view.C_MapsViewer
-        self.mainDialogOpenDSS = class_dialog_opendss.C_Dialog_OpenDSS()
+
+        #############################################
+        self.initUI()
+
+    def initUI(self): ### Instanciando os objetos
+        self.DataBaseConn = class_database_conn.C_DBaseConn()  # Carregando o acesso aos Arquivos do BDGD
+        self.DataBase = class_database.C_DBase()
+
+        ######### Passando os objetos
+        self.DataBase.DataBaseConn = self.DataBaseConn
+        self.MainMapView.DataBaseConn = self.DataBaseConn
+
+
+    #############################################
 
     def acessDataBase(self):
         try:
-            if self.DataBase.setBDGD():
-                self.MainWindowStatusBar.setStatusBar_Status_Text("On-Line")
-                self.getSE_AT_DB()
-            else:
-                raise class_exception.ConnDataBaseError("Erro de conexão com o Banco de Dados")
+            self.DataBaseConn.setDirDataBase()
+            self.MainWindowStatusBar.setStatusBar_Status_Text("On-Line")
+            self.getSE_AT_DB()
 
         except class_exception.ConnDataBaseError:
             pass
@@ -46,17 +61,15 @@ class C_MainActions():
     ##### Visualizando no Mapa
     def execMapView(self, viewMap, fieldsOptions = None):
 
-        fieldsSelected = self.MainNetPanel.getSelectedFieldsNames()
-        fieldsColors = self.MainNetPanel.getSelectedFieldsColors()
+        if viewMap.isChecked():
 
+            ##### Definindo variáveis
 
-        if  viewMap.isChecked():
+            self.MainMapView.ListFields = self.MainNetPanel.getSelectedFieldsNames()
+            self.MainMapView.ListFieldsColors = self.MainNetPanel.getSelectedFieldsColors()
+            self.MainMapView.nameSE_MT = self.MainNetPanel.get_SEMT_Selected()
 
-            self.MainMapView.setDataBase(self.DataBase)
-            self.MainMapView.setFieldColors(fieldsColors) # Cores dos Alimentadores
-            self.MainMapView.setFields(fieldsSelected) ## Alimentadores
-            self.MainMapView.setSE_MT(self.MainNetPanel.get_SEMT_Selected())
-
+            ##### Métodos
             self.MainMapView.createMap()
 
             self.MainMapView.viewMap()
@@ -69,15 +82,15 @@ class C_MainActions():
     ##### VAI SER SUBSTITUIDO PELA INTERFACE DE SANDY
     #################################################################################
     
-    def execOpenDSS(self):
-        self.mainDialogOpenDSS .setDirDataBase(self.DataBase.getBDGD())
-        self.mainDialogOpenDSS .setCircuitoAT_MT( self.MainNetPanel.get_CirATMT())
-        self.mainDialogOpenDSS .setSE_MT_Selecionada(self.MainNetPanel.get_SEMT_Selected())
-        self.mainDialogOpenDSS .setFields_SE_MT_Selecionada(self.MainNetPanel.getSelectedFieldsNames())
-        self.mainDialogOpenDSS .createFile()
-
-    def saveOpenDSS(self):
-        self.opendssDiag.exec_CRIAR_ARQUIVO_NO_FORMATO_OPENDSS()
+    # def execOpenDSS(self):
+    #     self.mainDialogOpenDSS .setDirDataBase(self.DataBase.getBDGD())
+    #     self.mainDialogOpenDSS .setCircuitoAT_MT( self.MainNetPanel.get_CirATMT())
+    #     self.mainDialogOpenDSS .setSE_MT_Selecionada(self.MainNetPanel.get_SEMT_Selected())
+    #     self.mainDialogOpenDSS .setFields_SE_MT_Selecionada(self.MainNetPanel.getSelectedFieldsNames())
+    #     self.mainDialogOpenDSS .createFile()
+    #
+    # def saveOpenDSS(self):
+    #     self.opendssDiag.exec_CRIAR_ARQUIVO_NO_FORMATO_OPENDSS()
     #################################################################################
 
 

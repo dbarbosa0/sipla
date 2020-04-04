@@ -1,5 +1,4 @@
 from typing import NamedTuple
-
 import class_database_conn
 import class_exception
 
@@ -124,33 +123,23 @@ class dadosSECMT(NamedTuple):
     sit_ativ: str
 
 
-class C_DBase_OpenDSS():
+class C_DBaseData():
 
     def __init__(self):
-        super(C_DBase_OpenDSS, self).__init__()
+        super(C_DBaseData, self).__init__()
 
 
 ##########################
 
-        self.dataBase = class_database_conn.C_ConnDBase() #Criando a instância do Banco de Dados
+        self._DataBaseConn = class_database_conn.C_ConnDBase() #Criando a instância do Banco de Dados
 
-################################# Métodos Novos
+    @property
+    def DataBaseConn(self):
+        return self._DataBaseConn
 
-    def setBDGD(self):
-        if not self.dataBase.setDirDataBase():
-            return False
-        else:
-            return True
-
-    def setDefBDGD(self, nomeDirBataBase):
-
-        if not self.dataBase.setDefDirDataBase(nomeDirBataBase):
-            return False
-        else:
-            return True
-
-    def getBDGD(self):
-        return self.dataBase.dirDataBase
+    @DataBaseConn.setter
+    def DataBaseConn(self, value):
+        self._DataBaseConn = value
 
 ######################################## OpenDSS
 
@@ -164,7 +153,7 @@ class C_DBase_OpenDSS():
 
             sqlStr = "SELECT nom, ten_nom, cod_id FROM ctat WHERE nom ='" + str(tmp_nomeCircuitoAlta[0]) +"'"
 
-            dadosSE = self.dataBase.getSQLDB("CTAT", sqlStr)
+            dadosSE = self.DataBaseConn.getSQLDB("CTAT", sqlStr)
 
             for linha in dadosSE.fetchall():
                 tmp_dados = dadosCTATMT(
@@ -191,7 +180,7 @@ class C_DBase_OpenDSS():
 
             lista_dados = []
 
-            dadosSE = self.dataBase.getSQLDB("CTMT", sqlStr)
+            dadosSE = self.DataBaseConn.getSQLDB("CTMT", sqlStr)
 
             for linha in dadosSE.fetchall():
                 tmp_dados = dadosCTATMT (
@@ -214,7 +203,7 @@ class C_DBase_OpenDSS():
 
             lista_dados = []
 
-            dadosSE = self.dataBase.getSQLDB("EQTRS", sqlStr)
+            dadosSE = self.DataBaseConn.getSQLDB("EQTRS", sqlStr)
 
             for linha in dadosSE.fetchall():
                 tmp_dados = dadosTransformador(
@@ -241,7 +230,7 @@ class C_DBase_OpenDSS():
 
                 lista_dados = []
 
-                dadosSE = self.dataBase.getSQLDB("SEGCON", sqlStr)
+                dadosSE = self.DataBaseConn.getSQLDB("SEGCON", sqlStr)
 
                 for linha in dadosSE.fetchall():
                     tmp_dados = dadosCondutores(
@@ -266,7 +255,7 @@ class C_DBase_OpenDSS():
             lista_dados = []
 
 
-            dadosSECDB = self.dataBase.getSQLDB("UNSEAT", sqlStr)
+            dadosSECDB = self.DataBaseConn.getSQLDB("UNSEAT", sqlStr)
 
             for linha in dadosSECDB.fetchall():
                 tmp_dados = dadosSECAT(
@@ -296,7 +285,7 @@ class C_DBase_OpenDSS():
             lista_dados = []
 
 
-            dadosSECDB = self.dataBase.getSQLDB("UNSEMT", sqlStr)
+            dadosSECDB = self.DataBaseConn.getSQLDB("UNSEMT", sqlStr)
 
             for linha in dadosSECDB.fetchall():
                 tmp_dados = dadosSECMT(
@@ -328,7 +317,7 @@ class C_DBase_OpenDSS():
             lista_dados = []
 
 
-            dadosSECDB = self.dataBase.getSQLDB("SSDMT", sqlStr)
+            dadosSECDB = self.DataBaseConn.getSQLDB("SSDMT", sqlStr)
 
             for linha in dadosSECDB.fetchall():
                 tmp_dados = dadosSegLinhas(
@@ -356,7 +345,7 @@ class C_DBase_OpenDSS():
 
             lista_dados = []
 
-            dadosSECDB = self.dataBase.getSQLDB("UNREMT", sqlStr)
+            dadosSECDB = self.DataBaseConn.getSQLDB("UNREMT", sqlStr)
 
             for linha in dadosSECDB.fetchall():
                 tmp_dados = dadosUNREMT(
@@ -394,7 +383,7 @@ class C_DBase_OpenDSS():
             sqlStr = "SELECT objectid, pac, ctmt, fas_con, ten_forn, sit_ativ, tip_cc, car_inst FROM " + dbase + " WHERE sub = '" + \
                      nomeSE_MT[0] + "'"
 
-            dadosUniConsDB = self.dataBase.getSQLDB(dbase, sqlStr)
+            dadosUniConsDB = self.DataBaseConn.getSQLDB(dbase, sqlStr)
 
             for linha in dadosUniConsDB.fetchall():
                 tmp_dados = dadosUnidCons(
@@ -429,8 +418,8 @@ class C_DBase_OpenDSS():
 
             lista_dados = []
 
-            dadosUNTRD = self.dataBase.getSQLDB("UNTRD", sqlStrUNTRD)
-            dadosEQTRD = self.dataBase.getSQLDB("EQTRD", sqlStrEQTRD)
+            dadosUNTRD = self.DataBaseConn.getSQLDB("UNTRD", sqlStrUNTRD)
+            dadosEQTRD = self.DataBaseConn.getSQLDB("EQTRD", sqlStrEQTRD)
 
             lista_dados_UNTRD = []
 
@@ -507,7 +496,7 @@ class C_DBase_OpenDSS():
 
             sqlStr = "SELECT cod_id, ctmt, pac_1, pac_2, fas_con, comp, tip_cnd FROM " +  dbase + " WHERE sub = '" + nomeSE_MT[0] + "'"
 
-            dadosLinhaDB = self.dataBase.getSQLDB(dbase, sqlStr)
+            dadosLinhaDB = self.DataBaseConn.getSQLDB(dbase, sqlStr)
 
             lista_dados = []
 
@@ -545,7 +534,7 @@ class C_DBase_OpenDSS():
 
             sqlStr = "SELECT cod_id, fas_con, pot_nom, pac_1, ctmt FROM " + dbase + " WHERE sub = '" + nomeSE_MT[0] + "'"
 
-            dadosCapDB = self.dataBase.getSQLDB(dbase, sqlStr)
+            dadosCapDB = self.DataBaseConn.getSQLDB(dbase, sqlStr)
 
             lista_dados = []
 

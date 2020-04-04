@@ -1,4 +1,4 @@
-from class_database_data import C_DBase_OpenDSS
+import class_database_data
 from class_exception import ExecOpenDSS
 
 class C_OpenDSS(): # classe OpenDSSDirect
@@ -6,7 +6,7 @@ class C_OpenDSS(): # classe OpenDSSDirect
     def __init__(self):
 
 
-        self.acessDataBase = C_DBase_OpenDSS() #Acesso ao Banco de Dados
+        self.acessDataBase = class_database_data.C_DBase_Data() #Acesso ao Banco de Dados
 
         self.initUI()
 

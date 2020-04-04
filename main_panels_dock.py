@@ -20,7 +20,6 @@ class C_NetPanel(QDockWidget):
         #self.hide()
 
 
-
         self.Deck_GroupBox = QGroupBox()
         self.Deck_GroupBox.setFixedWidth(330)
 

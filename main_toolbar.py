@@ -176,6 +176,7 @@ class C_MenuToolBar(QDockWidget):
 
     def exec_selectNet(self): #self.metodo_CARREGAMENTO_DE_REDE
         self.Actions.showDockNetPanel()
+
     def exec_selectBDGD(self):
         self.Actions.acessDataBase()
 

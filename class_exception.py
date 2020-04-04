@@ -4,14 +4,7 @@ from  PyQt5.QtWidgets import QMessageBox
 
 # define Python user-defined exceptions
 class C_Error(Exception):
-    def __init__(self, msgText):
-        # Display the errors
-        # Display the errors
-        msg = QMessageBox(QMessageBox.Warning, "Error",
-                          msgText,
-                          QMessageBox.Ok)
-        msg.setWindowIcon(QtGui.QIcon("Imagens/logo.png"))
-        msg.exec_()
+    pass
 
 class ConnDataBaseError(C_Error):
     def __init__(self, msgText):
