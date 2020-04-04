@@ -5,7 +5,6 @@ from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import QApplication, QMainWindow, QStyleFactory
 
 ###
-import class_database
 import class_maps_view
 ###################################
 # Classes de Construção da Interface Inicial
@@ -14,8 +13,6 @@ import main_toolbar
 import main_actions
 import main_panels
 import main_panels_dock
-
-
 
 
 __version__ = "0.0.2"
@@ -46,9 +43,7 @@ class mainWindow(QMainWindow):
         self.mainActions = main_actions.C_MainActions()  # Carregando os métodos da interface principal
 
         #Instaciando os Demais Objetos
-        self.mainDataBase = class_database.C_DBase()  # Carregando o acesso ao BDGD
         self.mainMapView = class_maps_view.C_MapsViewer() ##Carregando Mapa
-
 
         ### Vinculando o Motor do Mapa ao Painel Central
         self.mainMapView.setWebView(self.mainPainelCentral.MapPainel_WebView)
@@ -64,10 +59,10 @@ class mainWindow(QMainWindow):
 
 
         ### Passando os Dados para o Actions
-        self.mainActions.DataBase = self.mainDataBase
         self.mainActions.MainWindowStatusBar = self.mainStatusBar
         self.mainActions.MainNetPanel = self.mainDockNet
         self.mainActions.MainMapView = self.mainMapView
+
 
         ### Passando os Dados para o ToolBar
 

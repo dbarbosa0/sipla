@@ -5,70 +5,72 @@ from os import path
 import platform
 import sqlite3
 
-class C_ConnDBase(): #Classe de banco de dados
+class C_DBaseConn(): #Classe de banco de dados
 
     def __init__(self):
         #Variáveis das Classes
+
         #Nome do Diretório
-        self.dirDataBase = ""
-        self.nameDataBase = ""
+        self._DirDataBase = ""
+        self._defDirDataBase = False ## determina se o diretório já foi definido
+
+        self.nameDataBase = ''
         #Todos dos Banco de Dados que serão necessários
         self.DBPRODIST = ["CTAT", "EQTRM", "SSDMT", "UNREMT", "UNTRS", "CTMT", "EQTRS", "UCBT", "UNSEAT", "EQSE", "RAMLIG", "UCMT", "UNSEMT", "EQTRD", "SEGCON", "UNCRMT", "UNCRBT", "UNTRD"]
 
-    def setDirDataBase(self):
+    @property
+    def DirDataBase(self):
+        # Este código é executado quando alguém for
+        # ler o valor de self.nome
+        return self._DirDataBase
 
-        if not self.dirDataBase:
-            nameDirDataBase = str(QFileDialog.getExistingDirectory(None, "Selecione o Diretório com o Danco de Dados","Banco/", QFileDialog.ShowDirsOnly))
-            nameDirDataBase += "/"
-            if not self.setDefDirDataBase(nameDirDataBase):
-                return False
-            else:
-                return True
-        else:
-            return True
-
-
-    def setDefDirDataBase(self, nameDirDataBase):
-
-        if not self.dirDataBase:
-
-            if platform.system() == "Windows":
-                nameDirDataBase = nameDirDataBase.replace('/', '\\')
-
-            self.dirDataBase = nameDirDataBase
-
-            if not self.checkDataBaseDados():
-                self.dirDataBase = ""
-                return False
-            else:
-                return True
-        else:
-            return True
-
-    def checkDataBaseDados(self): #Verifica se todos os arquivos estão no Diretório selecionado
-
+    @DirDataBase.setter
+    def DirDataBase(self, nameDirDataBase):
         try:
             for ctd in self.DBPRODIST:
-                if not path.isfile(self.dirDataBase + ctd + ".sqlite"):
-                    raise class_exception.FileDataBaseError("BDGB não encontrado na pasta selecionada!","Arquivo " + ctd + ".sqlite ausente!")
-                    return False
-            return True
+                if not path.isfile(nameDirDataBase + ctd + ".sqlite"):
+                    raise class_exception.FileDataBaseError("Arquivo " + ctd + ".sqlite ausente!")
 
+            self._defDirDataBase = True
+            self._DirDataBase = nameDirDataBase
+
+        except:
+            pass
+
+    @property
+    def defDirDataBase(self):
+        return self._defDirDataBase
+
+
+    def setDirDataBase(self):
+        # este código é executado sempre que alguém fizer
+        # self.nome = value
+        try:
+            if not self.defDirDataBase:
+                nameDirDataBase = str(QFileDialog.getExistingDirectory(None, "Selecione o Diretório com o Danco de Dados", "Banco/",
+                                                                       QFileDialog.ShowDirsOnly))
+                nameDirDataBase += "/"
+
+                if platform.system() == "Windows":
+                    nameDirDataBase = nameDirDataBase.replace('/', '\\')
+
+                self.DirDataBase = nameDirDataBase
+
+            else:
+                raise class_exception.FileDataBaseError("Diretório do DataBase já foi definido!")
+
+            return True
         except:
             pass
 
 
     def getSQLDB(self,nomeBancoDados,strSQL):
 
-        #print('file:' + self.dirDataBase + nomeBancoDados + '.sqlite?mode=ro')
-
         try:
             #Conectando em apenas leitura!
-            connDB =  sqlite3.connect('file:' + self.dirDataBase + nomeBancoDados + '.sqlite?mode=ro', uri=True)
+            connDB =  sqlite3.connect('file:' + self.DirDataBase + nomeBancoDados + '.sqlite?mode=ro', uri=True)
 
             cbanco = connDB.execute(strSQL)
-
-            # connDB.close()
 
             return cbanco
 

@@ -4,7 +4,7 @@ from PyQt5.QtGui import*
 from PyQt5.QtCore import*
 from PyQt5.QtWebEngineWidgets import*
 ##TESTE DE ALTERAÇÃO PRINCIPAL
-from class_database import C_DBase
+from class_database_coord import C_DBase
 from class_maps_view import C_MapsViewer
 from class_exception import C_Error, ConnDataBaseError
 from class_dialog_opendss import C_Dialog_OpenDSS
