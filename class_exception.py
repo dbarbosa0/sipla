@@ -6,7 +6,12 @@ from  PyQt5.QtWidgets import QMessageBox
 class C_Error(Exception):
     def __init__(self, msgText):
         # Display the errors
-        self.msgText = msgText
+        # Display the errors
+        msg = QMessageBox(QMessageBox.Warning, "Error",
+                          msgText,
+                          QMessageBox.Ok)
+        msg.setWindowIcon(QtGui.QIcon("Imagens/logo.png"))
+        msg.exec_()
 
 class ConnDataBaseError(C_Error):
     def __init__(self, msgText):
@@ -47,7 +52,20 @@ class ExecOpenDSS(C_Error):
 
         super(ExecOpenDSS, self).__init__(errorText)
         # Display the errors
-        msg = QMessageBox(QMessageBox.Warning, "OpenDSS Exection Error",
+        msg = QMessageBox(QMessageBox.Warning, "OpenDSS Execution Error",
+                          msgText + "\n" + errorText,
+                          QMessageBox.Ok)
+        msg.setWindowIcon(QtGui.QIcon("Imagens/logo.png"))
+        msg.exec_()
+
+class ExecSelectionFields(C_Error):
+    def __init__(self, msgText, errorText = None):
+        if errorText is None:
+            errorText = ""
+
+        super(ExecSelectionFields, self).__init__(errorText)
+        # Display the errors
+        msg = QMessageBox(QMessageBox.Warning, "Selection Error",
                           msgText + "\n" + errorText,
                           QMessageBox.Ok)
         msg.setWindowIcon(QtGui.QIcon("Imagens/logo.png"))

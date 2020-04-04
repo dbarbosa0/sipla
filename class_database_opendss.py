@@ -1,7 +1,7 @@
 from typing import NamedTuple
 
-from class_database_conn import C_ConnDBase
-from class_exception import ExecOpenDSS
+import class_database_conn
+import class_exception
 
 
 ##Classes de Dados
@@ -132,7 +132,7 @@ class C_DBase_OpenDSS():
 
 ##########################
 
-        self.dataBase = C_ConnDBase() #Criando a instância do Banco de Dados
+        self.dataBase = class_database_conn.C_ConnDBase() #Criando a instância do Banco de Dados
 
 ################################# Métodos Novos
 
@@ -150,7 +150,7 @@ class C_DBase_OpenDSS():
             return True
 
     def getBDGD(self):
-        return self.dataBase.getDirDataBase()
+        return self.dataBase.dirDataBase
 
 ######################################## OpenDSS
 
@@ -178,7 +178,7 @@ class C_DBase_OpenDSS():
             return lista_dados
 
         except:
-            raise ExecOpenDSS("Erro no processamento do Banco de Dados para o Equivalente de Thevenin!")
+            raise class_exception.ExecOpenDSS("Erro no processamento do Banco de Dados para o Equivalente de Thevenin!")
 
     def getOpenDSS_CTMT(self, nomeSE_MT = None):  # Pega as coordenadas de um alimentador de uma SE MT
 
@@ -205,7 +205,7 @@ class C_DBase_OpenDSS():
             return lista_dados
 
         except:
-            raise ExecOpenDSS("Erro no processamento do Banco de Dados para o Equivalente de Thevenin de Média Tensão!")
+            raise class_exception.ExecOpenDSS("Erro no processamento do Banco de Dados para o Equivalente de Thevenin de Média Tensão!")
 
     def getOpenDSS_TrafosAT_MT(self, nomeSE_MT):  # Pega os transformadores de AT para MT
 
@@ -232,7 +232,7 @@ class C_DBase_OpenDSS():
             return lista_dados
 
         except:
-            raise ExecOpenDSS("Erro no processamento do Banco de Dados para os Transformadores de Média Tensão!")
+            raise class_exception.ExecOpenDSS("Erro no processamento do Banco de Dados para os Transformadores de Média Tensão!")
 
     def getOpenDSS_Condutores(self, tipoCondutor):  # Pega os condutores de MT
 
@@ -256,7 +256,7 @@ class C_DBase_OpenDSS():
                 return lista_dados
 
             except:
-                raise ExecOpenDSS("Erro no processamento do Banco de Dados para os Condutores: " + tipoCondutor)
+                raise class_exception.ExecOpenDSS("Erro no processamento do Banco de Dados para os Condutores: " + tipoCondutor)
 
     def getOpenDSS_SecAT(self, nomeSE_MT):  # Pega as seccionadoras de AT
 
@@ -285,7 +285,7 @@ class C_DBase_OpenDSS():
             return lista_dados
 
         except:
-            raise ExecOpenDSS("Erro no processamento do Banco de Dados para as Seccionadoras de AT: " + str(tipoSEC))
+            raise class_exception.ExecOpenDSS("Erro no processamento do Banco de Dados para as Seccionadoras de AT: " + str(tipoSEC))
 
     def getOpenDSS_SecMT(self, nomeSE_MT, tipoSEC):  # Pega as seccionadoras de MT
 
@@ -317,7 +317,7 @@ class C_DBase_OpenDSS():
             return lista_dados
 
         except:
-            raise ExecOpenDSS("Erro no processamento do Banco de Dados para as Seccionadoras MT: " + str(tipoSEC))
+            raise class_exception.ExecOpenDSS("Erro no processamento do Banco de Dados para as Seccionadoras MT: " + str(tipoSEC))
 
     def getOpenDSS_SegLinhasMT(self, nomeSE_MT):  # Pega os segmentos de linhas de MT
 
@@ -345,7 +345,7 @@ class C_DBase_OpenDSS():
             return lista_dados
 
         except:
-            raise ExecOpenDSS("Erro no processamento do Banco de Dados para os Segmentos de Linha! ")
+            raise class_exception.ExecOpenDSS("Erro no processamento do Banco de Dados para os Segmentos de Linha! ")
 
     def getOpenDSS_ReguladorMT(self, nomeSE_MT):  # Pega os reguladores de MT
 
@@ -372,7 +372,7 @@ class C_DBase_OpenDSS():
             return lista_dados
 
         except:
-            raise ExecOpenDSS("Erro no processamento do Banco de Dados para os Reguladores de MT! ")
+            raise class_exception.ExecOpenDSS("Erro no processamento do Banco de Dados para os Reguladores de MT! ")
 
 
     def getOpenDSS_UniConsumidora(self, nomeSE_MT, tipoUniCons):  # Pega os reguladores
@@ -387,7 +387,7 @@ class C_DBase_OpenDSS():
                 dbase = "UCBT"
 
             else:
-                raise ExecOpenDSS("Erro ao carregar as informações das Unidades Consumidoras!\nTipo não foi especificado! \n" + tipoUniCons)
+                raise class_exception.ExecOpenDSS("Erro ao carregar as informações das Unidades Consumidoras!\nTipo não foi especificado! \n" + tipoUniCons)
 
             lista_dados = []
 
@@ -412,7 +412,7 @@ class C_DBase_OpenDSS():
             return lista_dados
 
         except:
-            raise ExecOpenDSS("Erro no processamento do Banco de Dados para as Unidades Consumidoras! ")
+            raise class_exception.ExecOpenDSS("Erro no processamento do Banco de Dados para as Unidades Consumidoras! ")
 
 
     def getOpenDSS_TrafoDIST(self, nomeSE_MT):  # Pega os reguladores de MT
@@ -488,7 +488,7 @@ class C_DBase_OpenDSS():
             return lista_dados
 
         except:
-            raise ExecOpenDSS("Erro no processamento do Banco de Dados para os Transformadores de Distribuição! ")
+            raise class_exception.ExecOpenDSS("Erro no processamento do Banco de Dados para os Transformadores de Distribuição! ")
 
 
     def getOpenDSS_SegLinhasRamLigBT(self, nomeSE_MT, tipoLinha):  # Pega os reguladores
@@ -503,7 +503,7 @@ class C_DBase_OpenDSS():
                 dbase = "RAMLIG"
 
             else:
-                raise ExecOpenDSS("Erro ao carregar as informações das linhas de BT!\nTipo não foi especificado! \n" + tipoLinha)
+                raise class_exception.ExecOpenDSS("Erro ao carregar as informações das linhas de BT!\nTipo não foi especificado! \n" + tipoLinha)
 
             sqlStr = "SELECT cod_id, ctmt, pac_1, pac_2, fas_con, comp, tip_cnd FROM " +  dbase + " WHERE sub = '" + nomeSE_MT[0] + "'"
 
@@ -528,7 +528,7 @@ class C_DBase_OpenDSS():
             return lista_dados
 
         except:
-            raise ExecOpenDSS("Erro no processamento do Banco de Dados das Linhas de BT e Ramais de Ligação!\n" + tipoLinha)
+            raise class_exception.ExecOpenDSS("Erro no processamento do Banco de Dados das Linhas de BT e Ramais de Ligação!\n" + tipoLinha)
 
 
     def getOpenDSS_UniCompReativo(self, nomeSE_MT, tipoCAP):  # Pega os reguladores
@@ -541,7 +541,7 @@ class C_DBase_OpenDSS():
                 dbase = "UNCRBT"
 
             else:
-                raise ExecOpenDSS("Erro ao carregar as informações dos compensadores de reativo!\nTipo não foi especificado! \n" + tipoCAP)
+                raise class_exception.ExecOpenDSS("Erro ao carregar as informações dos compensadores de reativo!\nTipo não foi especificado! \n" + tipoCAP)
 
             sqlStr = "SELECT cod_id, fas_con, pot_nom, pac_1, ctmt FROM " + dbase + " WHERE sub = '" + nomeSE_MT[0] + "'"
 
@@ -563,4 +563,4 @@ class C_DBase_OpenDSS():
             return lista_dados
 
         except:
-            raise ExecOpenDSS("Erro no processamento do Banco de Dados dos Compensadores de Reativo!\n" + tipoCAP)
+            raise class_exception.ExecOpenDSS("Erro no processamento do Banco de Dados dos Compensadores de Reativo!\n" + tipoCAP)

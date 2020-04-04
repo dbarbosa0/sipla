@@ -1,5 +1,5 @@
 from PyQt5.QtWidgets import QFileDialog
-from class_exception import FileDataBaseError
+import class_exception
 
 from os import path
 import platform
@@ -27,9 +27,6 @@ class C_ConnDBase(): #Classe de banco de dados
         else:
             return True
 
-    def getDirDataBase(self):
-        return self.dirDataBase
-
 
     def setDefDirDataBase(self, nameDirDataBase):
 
@@ -48,20 +45,16 @@ class C_ConnDBase(): #Classe de banco de dados
         else:
             return True
 
-
-    def getDirDataBase(self):
-        return self.dirDataBase
-
     def checkDataBaseDados(self): #Verifica se todos os arquivos estão no Diretório selecionado
 
         try:
             for ctd in self.DBPRODIST:
                 if not path.isfile(self.dirDataBase + ctd + ".sqlite"):
-                    raise FileDataBaseError("BDGB não encontrado na pasta selecionada!","Arquivo " + ctd + ".sqlite ausente!")
+                    raise class_exception.FileDataBaseError("BDGB não encontrado na pasta selecionada!","Arquivo " + ctd + ".sqlite ausente!")
                     return False
             return True
 
-        except FileDataBaseError:
+        except:
             pass
 
 
@@ -79,8 +72,8 @@ class C_ConnDBase(): #Classe de banco de dados
 
             return cbanco
 
-        except AttributeError:
-            raise ConnDataBaseError("Erro de conexão no Banco de Dados:" + nomeBancoDados)
+        except:
+            raise class_exception.ConnDataBaseError("Erro de conexão no Banco de Dados:" + nomeBancoDados)
 
                 
                 

@@ -4,15 +4,13 @@ import sys
 import folium
 from PyQt5 import QtWidgets, QtWebEngineWidgets
 
-from class_database import C_ConnDBase
-
-
+import class_database_conn
 
 class C_MapsViewer():
 
     def __init__(self):
         
-        self.dataBase = C_ConnDBase()
+        self.dataBase = class_database_conn.C_ConnDBase()
         
         self.mapFields = ''
         
@@ -30,6 +28,7 @@ class C_MapsViewer():
     
     def setDataBase(self, nameDataBase):
         self.dataBase = nameDataBase
+
         
     def setNameFileViewer(self, nameFile):
         self.nameFileView = nameFile
@@ -45,7 +44,7 @@ class C_MapsViewer():
         #grupoCoordAlimentMT = self.dataBase.getCoord_AL_SE_MT_DB(self.listFields[0])
         
     def setWebView (self, nameQtWebEngineWidgets):
-        self.webEngView= nameQtWebEngineWidgets
+        self.webEngView = nameQtWebEngineWidgets
         
         
     def createMap(self):
