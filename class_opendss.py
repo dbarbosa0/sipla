@@ -1,4 +1,4 @@
-from class_database_opendss import C_DBase_OpenDSS
+from class_database_data import C_DBase_OpenDSS
 from class_exception import ExecOpenDSS
 
 class C_OpenDSS(): # classe OpenDSSDirect

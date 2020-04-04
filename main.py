@@ -5,7 +5,7 @@ from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import QApplication, QMainWindow, QStyleFactory
 
 ###
-import class_database
+import class_database_coord
 import class_maps_view
 ###################################
 # Classes de Construção da Interface Inicial
@@ -46,7 +46,7 @@ class mainWindow(QMainWindow):
         self.mainActions = main_actions.C_MainActions()  # Carregando os métodos da interface principal
 
         #Instaciando os Demais Objetos
-        self.mainDataBase = class_database.C_DBase()  # Carregando o acesso ao BDGD
+        self.mainDataBase = class_database_coord.C_DBase()  # Carregando o acesso ao BDGD
         self.mainMapView = class_maps_view.C_MapsViewer() ##Carregando Mapa
 
 

@@ -2,7 +2,7 @@ from PyQt5.QtWidgets import QStatusBar
 from PyQt5 import QtCore
 
 ###
-import class_database
+import class_database_coord
 import class_exception
 import class_dialog_opendss
 import class_maps_view
@@ -10,7 +10,7 @@ import  main_panels_dock
 
 class C_MainActions():
     def __init__(self):
-        self.DataBase = class_database.C_DBase  # Carregando o acesso ao BDGD
+        self.DataBase = class_database_coord.C_DBase  # Carregando o acesso ao BDGD
         self.MainWindowStatusBar = QStatusBar
         self.MainNetPanel = main_panels_dock.C_NetPanel
         self.MainMapView = class_maps_view.C_MapsViewer
