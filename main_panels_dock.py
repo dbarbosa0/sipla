@@ -206,7 +206,6 @@ class C_NetPanel(QDockWidget):
 
             if Item.checkState(0) == Qt.Checked:
                 listFieldsColors.append(Item.getColor())
-
         return  listFieldsColors
 
     ########################################################################################
@@ -347,7 +346,7 @@ class NetPanel_Fields_GroupBox_Select_TreeWidget_Item(QTreeWidgetItem):
         colorSelected = colorSelectDialog.getColor()
 
         if colorSelected.isValid():
-            self.color = colorSelected
+            self.color = colorSelected.name()
             self.TreeWidget_Item_Btn.setStyleSheet('QPushButton {background-color:' + colorSelected.name() + '}')
 
 
