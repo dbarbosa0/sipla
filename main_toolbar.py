@@ -46,35 +46,54 @@ class C_MenuToolBar(QDockWidget):
         ########################################################################################################
         
         # ******* Actions the OpenDSS Menu  *******
-        self.OpenDSSActRef = {'OpenDSS_Create_Act': 0, # Criar Arquivo .DSS
-                              'OpenDSS_Save_Act': 0} # Salvar Arquivo .DSS
+        self.OpenDSSActRef = {'OpenDSS_Config_Act': 0, # Configurar o OpenDSS
+                              'OpenDSS_Create_Act': 0, # Criar Arquivo .DSS
+                              'OpenDSS_Save_Act': 0,
+                              'OpenDSS_View_Act': 0,} # Salvar Arquivo .DSS
 
         # ******* Create the OpenDSSuration Menu *******
         self.OpenDSSMenu = self.MainMenu.addMenu('&OpenDSS')
 
+        # ******* Create OpenDSSMenu Items *******
+        self.OpenDSS_Config_Act = QAction(QIcon('img/icon_opendss_config.png'), '&Configurar', self)
+        self.OpenDSS_Config_Act.setShortcut("F3")
+        self.OpenDSS_Config_Act.setStatusTip('Configurar o OpenDSS')
+        #self.OpenDSS_Config_Act.triggered.connect(self.exec_createFileDSS)
+        self.OpenDSSActRef['OpenDSS_Config_Act'] = self.OpenDSS_Config_Act
+
         self.OpenDSS_Create_Act = QAction(QIcon('img/icon_opendss.png'), '&Gerar Arquivo .DSS', self)
-        self.OpenDSS_Create_Act.setShortcut("Ctrl+O")
+        #self.OpenDSS_Create_Act.setShortcut("Ctrl+O")
         self.OpenDSS_Create_Act.setStatusTip('Gerar Arquivo .DSS para o OpenDSS')
         self.OpenDSS_Create_Act.triggered.connect(self.exec_createFileDSS)
         self.OpenDSSActRef['OpenDSS_Create_Act'] = self.OpenDSS_Create_Act
 
-        # ******* Create OpenDSSMenu Items *******
         self.OpenDSS_Save_Act = QAction(QIcon('img/icon_save.png'), '&Salvar Arquivo .DSS', self)
-        self.OpenDSS_Save_Act.setShortcut("Ctrl+S")
+        self.OpenDSS_Save_Act.setShortcut("F3")
         self.OpenDSS_Save_Act.setStatusTip('Salvar Arquivo .DSS para o OpenDSS')
         self.OpenDSS_Save_Act.triggered.connect(self.exec_saveFileDSS)
         self.OpenDSSActRef['OpenDSS_Save_Act'] = self.OpenDSS_Save_Act
 
+        self.OpenDSS_View_Act = QAction(QIcon('img/icon_opendss_view.png'), '&Visualizar Arquivo .DSS', self)
+        self.OpenDSS_View_Act.setShortcut("F5")
+        self.OpenDSS_View_Act.setStatusTip('Visualizar o Arquivo .DSS para o OpenDSS')
+        self.OpenDSS_View_Act.triggered.connect(self.exec_viewFileDSS)
+        self.OpenDSSActRef['OpenDSS_View_Act'] = self.OpenDSS_View_Act
+
         # ******* Setup the OpenDSS Menu *******
-        self.OpenDSSMenu.addAction(self.OpenDSS_Create_Act)
+        self.OpenDSSMenu.addAction(self.OpenDSS_Config_Act)
         self.OpenDSSMenu.addSeparator()
-        self.OpenDSSMenu.addAction(self.OpenDSS_Save_Act)
+        self.OpenDSSMenuSubProcess = self.OpenDSSMenu.addMenu(QIcon('img/icon_opendss_subprocess.png'),
+                                                              'Sub-processos ')
+        self.OpenDSSMenuSubProcess.addAction(self.OpenDSS_Create_Act)
+        self.OpenDSSMenuSubProcess.addAction(self.OpenDSS_Save_Act)
+        self.OpenDSSMenu.addSeparator()
+        self.OpenDSSMenu.addAction(self.OpenDSS_View_Act)
 
         ########################################################################################################
 
         # ******* Actions the Windowuration Menu  *******
-        self.WindowActRef = {'Window_show_table_Act': 2,
-                             'Window_show_map_Act': 2}
+        self.WindowActRef = {'Window_show_table_Act': 0,
+                             'Window_show_map_Act': 0}
 
         # ******* Create the Windowuration Menu *******
         self.WindowMenu = self.MainMenu.addMenu('&Janela')
@@ -124,7 +143,6 @@ class C_MenuToolBar(QDockWidget):
 
         # ******* Create the Help Menu *******
         self.HelpMenu = self.MainMenu.addMenu('&Ajuda')
-
         self.Help_About_Act = QAction(QIcon('img/logo.png'), 'So&bre', self)
         self.Help_About_Act.setShortcut("Ctrl+H")
         self.Help_About_Act.setStatusTip('Sobre o SIPLA')
@@ -180,11 +198,24 @@ class C_MenuToolBar(QDockWidget):
     def exec_selectBDGD(self):
         self.Actions.acessDataBase()
 
+    ###################################################################
+    ### OpenDSS
+    ###################################################################
+
+    def exec_configDSS(self):
+        print("Configurar o OpenDSS")
+
     def exec_createFileDSS(self):
         self.Actions.execOpenDSS()
         
     def exec_saveFileDSS(self):
         self.Actions.saveOpenDSS()
+
+    def exec_viewFileDSS(self):
+        print("Visualizar o Arquivo do OpenDSS")
+
+
+    ####################################################################
 
     def exec_aboutSIPLA(self):
         print("Sobre o SIPLA")
