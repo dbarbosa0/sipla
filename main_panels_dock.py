@@ -156,17 +156,17 @@ class C_NetPanel(QDockWidget):
     #Métodos dos Botões
 
     def get_CirATMT (self): #INFORMA_CIRCUITO_DE_ALTA_PARA_MEDIA
-        self.mainActions.getCirAT_MT_DB(self.get_SEAT_Selected())
+        self.mainActions.getCirAT_MT_DB(self.getSelectedSEAT())
 
     def get_SEMT(self): #metodo_INFORMA_SUBESTACAO_DE_MEDIA)
-        self.set_SEMT(self.get_SEMT_CirATMT_Selected())
+        self.set_SEMT(self.getSelectedSEMT_CirATMT())
 
     def get_FieldsMT(self): #metodo_FORMA_LAYOUT_ALIMENTADORES_DA_SUBESTACAO_DE_MEDIA_TENSAO)
-        self.mainActions.getSE_MT_AL_DB(self.get_SEMT_Selected())
+        self.mainActions.getSE_MT_AL_DB(self.getSelectedSEMT())
 
     ### Métodos para Acesso da Classe
 
-    def get_SEAT_Selected (self): #IN
+    def getSelectedSEAT (self): #IN
 
         if self.NetPanel_Config_GroupBox_SEAT_ComboBox.currentText():
             return self.NetPanel_Config_GroupBox_SEAT_ComboBox.currentText()
@@ -175,10 +175,10 @@ class C_NetPanel(QDockWidget):
         if self.NetPanel_Config_GroupBox_CirATMT_ComboBox.currentText():
             return self.NetPanel_Config_GroupBox_CirATMT_ComboBox.currentText()
 
-    def get_SEMT_CirATMT_Selected (self): #   PASSA_O_NOME_DA_SUBESTACAO_DE_MEDIA_ASSOCIADA_AO_CIRCUITO_DE_ALTA_PARA_MEDIA_SELECIONADO
+    def getSelectedSEMT_CirATMT(self): #   PASSA_O_NOME_DA_SUBESTACAO_DE_MEDIA_ASSOCIADA_AO_CIRCUITO_DE_ALTA_PARA_MEDIA_SELECIONADO
         return [self.get_CirATMT_Selected()[-3:]]
 
-    def get_SEMT_Selected(self): #metodo_INFORMA_SUBESTACAO_DE_MEDIA)
+    def getSelectedSEMT(self): #metodo_INFORMA_SUBESTACAO_DE_MEDIA)
         if self.NetPanel_Config_GroupBox_SEMT_ComboBox.currentText():
             return self.NetPanel_Config_GroupBox_SEMT_ComboBox.currentText()
 
@@ -290,7 +290,7 @@ class C_NetPanel(QDockWidget):
 
     #############################################
     def NetPanel_Options_GroupBox_TreeWidget_LoadOptions(self):
-        NetPanel_Options_GroupBox_TreeWidget_Item(self.NetPanel_Options_GroupBox_TreeWidget , "Capacitores", "CAP")
+        NetPanel_Options_GroupBox_TreeWidget_Item(self.NetPanel_Options_GroupBox_TreeWidget , "Transformador(es) de Distribuição", "TrafoDIST")
 
     ### Executa o Mapa e passa os parâmetros
     def execView(self):
@@ -300,7 +300,6 @@ class C_NetPanel(QDockWidget):
 
             if Item.checkState(0) == Qt.Checked:
                 listOptions.append(Item.getOption())
-                print(Item.getOption())
 
 
         self.mainActions.execMapView(self.Deck_GroupBox_MapView_CheckBox, listOptions)

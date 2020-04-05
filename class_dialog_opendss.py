@@ -1,37 +1,68 @@
 import os
 import platform
 from PyQt5.QtWidgets import QFileDialog
-from class_opendss import C_OpenDSS
+import class_opendss
 
-
+import class_database_conn
 
 
 class C_Dialog_OpenDSS(): # classe OpenDSSDirect
 
     def __init__(self):
 
-        self.fileOpenDSS = C_OpenDSS() #Acesso ao Banco de Dados
+        self.fileOpenDSS = class_opendss.C_OpenDSS() #Acesso ao Banco de Dados
 
-        self.initUI()
+        self._DataBaseConn = class_database_conn.C_DBaseConn()  # Criando a instância do Banco de Dados
 
-    def initUI(self):
-        pass
+        self._nCircuitoAT_MT = ''
+        self._nSE_MT_Selecionada = ''
+        self._nFieldsMT = ''
 
-    def setDirDataBase(self, nomeAcessDataBase):
-        self.fileOpenDSS.setDirDataBase(nomeAcessDataBase)
 
-    def setCircuitoAT_MT(self, nomeCircuitoAT_MT):
-        self.fileOpenDSS.setCircuitoAT_MT(nomeCircuitoAT_MT)
+    @property
+    def DataBaseConn(self):
+        return self._DataBaseConn
 
-    def setSE_MT_Selecionada(self, nomeSE_MT_Selecionada):
-        self.fileOpenDSS.setSE_MT_Selecionada(nomeSE_MT_Selecionada)
+    @DataBaseConn.setter
+    def DataBaseConn(self, value):
+        self._DataBaseConn = value
 
-    def setFields_SE_MT_Selecionada(self, nomeFields_SE_MT_Selecionada):
-        self.fileOpenDSS.setFields_SE_MT_Selecionada(nomeFields_SE_MT_Selecionada)
+    @property
+    def nCircuitoAT_MT(self):
+        return self._nCircuitoAT_MT
+
+    @nCircuitoAT_MT.setter
+    def nCircuitoAT_MT(self, value):
+        self._nCircuitoAT_MT = value
+
+    @property
+    def nSE_MT_Selecionada(self):
+        return self._nSE_MT_Selecionada
+
+    @nSE_MT_Selecionada.setter
+    def nSE_MT_Selecionada(self, value):
+        self._nSE_MT_Selecionada = value
+
+    @property
+    def nFieldsMT(self):
+        return self._nFieldsMT
+
+    @nFieldsMT.setter
+    def nFieldsMT(self, value):
+        self._nFieldsMT = value
+
 
     def createFile(self):
+        ### Passando as variáveis
+        self.fileOpenDSS.DataBaseConn = self.DataBaseConn
 
-        self.fileOpenDSS.exec()
+        self.fileOpenDSS.nFieldsMT = self.nFieldsMT
+        self.fileOpenDSS.nCircuitoAT_MT = self.nCircuitoAT_MT
+        self.fileOpenDSS.nSE_MT_Selecionada = self.nSE_MT_Selecionada
+
+
+
+        self.fileOpenDSS.execTest()
 
         self.MEMO = [
             self.fileOpenDSS.memoFileTrafoATMT , #Transformadores de AT MT

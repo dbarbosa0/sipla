@@ -10,7 +10,7 @@ class C_DBase():
 
 ##########################
 
-        self.DataBaseConn = class_database_conn.C_DBaseConn #Criando a instância do Banco de Dados
+        self.DataBaseConn = class_database_conn.C_DBaseConn() #Criando a instância do Banco de Dados
 
 ################################# Métodos Novos
 

@@ -3,7 +3,7 @@ from PyQt5 import QtCore
 
 ###
 import class_database_conn
-import class_database_coord
+import class_dialog_opendss
 import class_database
 import class_exception
 import class_dialog_opendss
@@ -15,23 +15,26 @@ class C_MainActions():
 
         ################ Pegando instancias definidas no Main
 
-        self.MainWindowStatusBar = QStatusBar
-        self.MainNetPanel = main_panels_dock.C_NetPanel
-        self.MainMapView = class_maps_view.C_MapsViewer
+        self.MainWindowStatusBar = QStatusBar()
+        self.MainNetPanel = main_panels_dock.C_NetPanel(self)
+        self.MainMapView = class_maps_view.C_MapsViewer()
 
         #############################################
+
         self.initUI()
 
     def initUI(self): ### Instanciando os objetos
         self.DataBaseConn = class_database_conn.C_DBaseConn()  # Carregando o acesso aos Arquivos do BDGD
         self.DataBase = class_database.C_DBase()
+        self.DialogOpenDSS = class_dialog_opendss.C_Dialog_OpenDSS()
+
 
         ######### Passando os objetos
         self.DataBase.DataBaseConn = self.DataBaseConn
         self.MainMapView.DataBaseConn = self.DataBaseConn
 
 
-    #############################################
+        #############################################
 
     def acessDataBase(self):
         try:
@@ -61,16 +64,18 @@ class C_MainActions():
     ##### Visualizando no Mapa
     def execMapView(self, viewMap, fieldsOptions = None):
 
+        self.MainMapView.DataBaseConn = self.DataBaseConn
+
         if viewMap.isChecked():
 
             ##### Definindo variáveis
 
             self.MainMapView.ListFields = self.MainNetPanel.getSelectedFieldsNames()
             self.MainMapView.ListFieldsColors = self.MainNetPanel.getSelectedFieldsColors()
-            self.MainMapView.nameSE_MT = self.MainNetPanel.get_SEMT_Selected()
+            self.MainMapView.nameSEMT = self.MainNetPanel.getSelectedSEMT()
 
             ##### Métodos
-            self.MainMapView.createMap()
+            self.MainMapView.createMap(fieldsOptions)
 
             self.MainMapView.viewMap()
 
@@ -82,15 +87,19 @@ class C_MainActions():
     ##### VAI SER SUBSTITUIDO PELA INTERFACE DE SANDY
     #################################################################################
     
-    # def execOpenDSS(self):
-    #     self.mainDialogOpenDSS .setDirDataBase(self.DataBase.getBDGD())
-    #     self.mainDialogOpenDSS .setCircuitoAT_MT( self.MainNetPanel.get_CirATMT())
-    #     self.mainDialogOpenDSS .setSE_MT_Selecionada(self.MainNetPanel.get_SEMT_Selected())
-    #     self.mainDialogOpenDSS .setFields_SE_MT_Selecionada(self.MainNetPanel.getSelectedFieldsNames())
-    #     self.mainDialogOpenDSS .createFile()
-    #
-    # def saveOpenDSS(self):
-    #     self.opendssDiag.exec_CRIAR_ARQUIVO_NO_FORMATO_OPENDSS()
+    def execOpenDSS(self):
+
+        self.DialogOpenDSS.DataBaseConn = self.DataBaseConn
+
+        self.DialogOpenDSS.nCircuitoAT_MT = self.MainNetPanel.getSelectedSEMT_CirATMT()
+        self.DialogOpenDSS.nSE_MT_Selecionada = self.MainNetPanel.getSelectedSEMT()
+        self.DialogOpenDSS.nFieldsMT = self.MainNetPanel.getSelectedFieldsNames()
+
+
+        self.DialogOpenDSS.createFile()
+
+    def saveOpenDSS(self):
+        self.opendssDiag.exec_CRIAR_ARQUIVO_NO_FORMATO_OPENDSS()
     #################################################################################
 
 

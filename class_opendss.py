@@ -1,17 +1,57 @@
 import class_database_data
-from class_exception import ExecOpenDSS
+import class_exception
+
+import class_database_conn
 
 class C_OpenDSS(): # classe OpenDSSDirect
 
     def __init__(self):
 
-
-        self.acessDataBase = class_database_data.C_DBase_Data() #Acesso ao Banco de Dados
+        self.DataBase = class_database_data.C_DBaseData() #Acesso ao Banco de Dados
+        self._DataBaseConn = class_database_conn.C_DBaseConn()  # Carregando o acesso aos Arquivos do BDGD
+        
+        
+        self._nCircuitoAT_MT = ''
+        self._nSE_MT_Selecionada = ''
+        self._nFieldsMT = ''
 
         self.initUI()
 
+    @property
+    def DataBaseConn(self):
+        return self._DataBaseConn
+
+    @DataBaseConn.setter
+    def DataBaseConn(self, value):
+        self._DataBaseConn = value
+
+    @property
+    def nCircuitoAT_MT(self):
+        return self._nCircuitoAT_MT
+
+    @nCircuitoAT_MT.setter
+    def nCircuitoAT_MT(self, value):
+        self._nCircuitoAT_MT = value
+
+    @property
+    def nSE_MT_Selecionada(self):
+        return self._nSE_MT_Selecionada
+
+    @nSE_MT_Selecionada.setter
+    def nSE_MT_Selecionada(self, value):
+        self._nSE_MT_Selecionada = value
+
+    @property
+    def nFieldsMT(self):
+        return self._nFieldsMT
+
+    @nFieldsMT.setter
+    def nFieldsMT(self, value):
+        self._nFieldsMT = value
+        
 
     def initUI(self):
+
 
         #Criando variáveis do Redirect
         self.memoFileHeader = "" #Cabeçalho do arquivo
@@ -50,50 +90,38 @@ class C_OpenDSS(): # classe OpenDSSDirect
         self.memoFileUndCompReatMT = "" #Unidade de Compensação de Reativo de Baixa Tensão
         self.memoFileUndCompReatBT = "" #Unidade de Compensação de Reativo de Baixa Tensão
 
-    def setDirDataBase(self, nomeAcessDataBase):
-        self.acessDataBase.setDefBDGD(nomeAcessDataBase)
-
-    def setCircuitoAT_MT(self, nomeCircuitoAT_MT):
-        self.unifilarCircuitoAT_MT = nomeCircuitoAT_MT
-
-    def setSE_MT_Selecionada(self, nomeSE_MT_Selecionada):
-        self.uniSE_MT_SEL = nomeSE_MT_Selecionada
-
-    def setFields_SE_MT_Selecionada(self, nomeFields_SE_MT_Selecionada):
-        self.unifilarFields_SE_MT_Selecionada = nomeFields_SE_MT_Selecionada
 
     def exec_HeaderFile(self):
         self.memoFileHeader = "Clear " + "\n"
 
         self.memoFileHeader += "\n" + "! VAMOS QUE VAMOS " + "\n" + "\n"
 
-        self.memoFileHeader += self.getHEADER(self.uniSE_MT_SEL)
+        self.memoFileHeader += self.getHEADER(self.nSE_MT_Selecionada)
 
 
     def getHEADER(self, nomeSE_MT): # PRIMEIRA LINHA
         try:
 
-            dados_ctmt = self.acessDataBase.getOpenDSS_CTMT(None)
+            dados_ctmt = self.DataBase.getData_CTMT(None)
 
             lista_de_identificadores_dos_alimentadores = self.getID_Fields(dados_ctmt)
 
-            dados_db = self.acessDataBase.getOpenDSS_SegLinhasMT(nomeSE_MT)
+            dados_db = self.DataBase.getData_SegLinhasMT(nomeSE_MT)
 
             memoFileLinha = ""
 
             for ctd in range(0, len(dados_db)):
                 if (dados_db[ctd].ctmt in lista_de_identificadores_dos_alimentadores) and \
-                (dados_db[ctd].pac_1 == self.unifilarFields_SE_MT_Selecionada):
+                (dados_db[ctd].pac_1 == self.nFieldsMT ):
                     memoFileLinha += "New Line.{0}".format(dados_db[ctd].cod_id) + " Phases={0}".format(num_de_fases)
                     memoFileLinha += " Bus1={0}".format(pac_1) + " Bus2={0}".format(pac_2)
                     memoFileLinha += " Linecode={0}".format(dados_db[ctd].tip_cnd)
                     memoFileLinha += " Length={0}".format((str(int(dados_db[ctd].comp) / 1000)))
                     memoFileLinha += " units=km" + "\n"
-
             return memoFileLinha
 
-        except ExecOpenDSS:
-            raise ExecOpenDSS("Erro no HEAD")
+        except:
+            raise class_exception.ExecOpenDSS("Erro no HEAD")
 
     def exec_FooterFile(self):
         try:
@@ -107,10 +135,14 @@ class C_OpenDSS(): # classe OpenDSSDirect
             self.memoFileFooter += "set mode=daily stepsize=15m number=96" + '\n'
             self.memoFileFooter += "solve " + '\n'
         
-        except ExecOpenDSS:
-            raise ExecOpenDSS("Erro no FOOTER")
+        except:
+            raise class_exception.ExecOpenDSS("Erro no FOOTER")
 
-    def exec(self):
+    def execTest(self):
+
+        self.DataBase.DataBaseConn = self.DataBaseConn
+
+
         print("Iniciando o processamento ...")
 
 
@@ -162,7 +194,7 @@ class C_OpenDSS(): # classe OpenDSSDirect
         self.exec_SEC_CHAVE_TRIPOLAR_SUBESTACAO_DE_MEDIA_TENSAO()
         print("Controle Chave Tripolar da SE MT ...")
         self.exec_CONTROLE_SEC_CHAVE_TRIPOLAR_SUBESTACAO_DE_MEDIA_TENSAO()
-        print("Chave Uipolar da SE MT ...")
+        print("Chave Unipolar da SE MT ...")
         self.exec_SEC_CHAVE_UNIPOLAR_SUBESTACAO_DE_MEDIA_TENSAO()
         print("Controle da Chave Unipolar da SE MT ...")
         self.exec_CONTROLE_SEC_CHAVE_UNIPOLAR_SUBESTACAO_DE_MEDIA_TENSAO()
@@ -190,7 +222,7 @@ class C_OpenDSS(): # classe OpenDSSDirect
 
     def getEQUIVALENTE_DE_THEVENIN(self):
         try:
-            dados_eqth = self.acessDataBase.getOpenDSS_EqThevenin(self.unifilarCircuitoAT_MT)
+            dados_eqth = self.DataBase.getData_EqThevenin(self.nCircuitoAT_MT)
 
             memoFileEqTh = ""
 
@@ -210,8 +242,8 @@ class C_OpenDSS(): # classe OpenDSSDirect
 
             return memoFileEqTh
 
-        except ExecOpenDSS:
-            raise ExecOpenDSS("Erro ao carregar as informações do Equivalente de Thevenin")
+        except:
+            raise class_exception.ExecOpenDSS("Erro ao carregar as informações do Equivalente de Thevenin")
 
     def exec_EQUIVALENTE_DE_THEVENIN(self):
 
@@ -221,12 +253,13 @@ class C_OpenDSS(): # classe OpenDSSDirect
 
     def getEQUIVALENTE_DE_THEVENIN_MEDIA(self):
         try:
-            dados_eqth = self.acessDataBase.getOpenDSS_CTMT(self.uniSE_MT_SEL)
+
+            dados_eqth = self.DataBase.getData_CTMT(self.nSE_MT_Selecionada)
 
             memoFileEqThMT = ""
 
             for ctd in range(0,len(dados_eqth)):
-                if dados_eqth[ctd].nome in self.unifilarFields_SE_MT_Selecionada:
+                if dados_eqth[ctd].nome in self.nFieldsMT :
                     if dados_eqth[ctd].ten_nom  == "82":
                         basekv = "69"
                     if dados_eqth[ctd].ten_nom == "94":
@@ -250,8 +283,8 @@ class C_OpenDSS(): # classe OpenDSSDirect
 
                 return memoFileEqThMT
 
-        except ExecOpenDSS:
-            raise ExecOpenDSS("Erro ao carregar as informações do Equivalente de Thevenin")
+        except:
+            raise class_exception.ExecOpenDSS("Erro ao carregar as informações do Equivalente de Thevenin")
 
     def exec_EQUIVALENTE_DE_THEVENIN_MEDIA(self):
 
@@ -262,7 +295,7 @@ class C_OpenDSS(): # classe OpenDSSDirect
 
     def getTRANSFORMADORES_DE_ALTA_PARA_MEDIA(self):
         try:
-            dados_trafo = self.acessDataBase.getOpenDSS_TrafosAT_MT(self.uniSE_MT_SEL)
+            dados_trafo = self.DataBase.getData_TrafosAT_MT(self.nSE_MT_Selecionada)
 
             memoFileTrafoATMT = ""
 
@@ -333,8 +366,8 @@ class C_OpenDSS(): # classe OpenDSSDirect
 
            ##Colocar os de três ennrolamentos
 
-        except ExecOpenDSS:
-            raise ExecOpenDSS("Erro ao carregar as informações dos Transformadores de Alta para Média Tensão")
+        except:
+            raise class_exception.ExecOpenDSS("Erro ao carregar as informações dos Transformadores de Alta para Média Tensão")
 
     def exec_TRANSFORMADORES_DE_ALTA_PARA_MEDIA(self):
 
@@ -345,7 +378,7 @@ class C_OpenDSS(): # classe OpenDSSDirect
 
     def getCONDUTORES(self, tipoCondutor):
         try:
-            dados_cond = self.acessDataBase.getOpenDSS_Condutores(tipoCondutor)
+            dados_cond = self.DataBase.getData_Condutores(tipoCondutor)
 
             memoFileCond = ""
 
@@ -357,8 +390,8 @@ class C_OpenDSS(): # classe OpenDSSDirect
 
             return memoFileCond
 
-        except ExecOpenDSS:
-            raise ExecOpenDSS("Erro ao carregar as informações dos Condutores:" + tipoCondutor)
+        except:
+            raise class_exception.ExecOpenDSS("Erro ao carregar as informações dos Condutores:" + tipoCondutor)
 
 
     def exec_CONDUTORES_DE_MEDIA_TENSAO(self):
@@ -391,7 +424,7 @@ class C_OpenDSS(): # classe OpenDSSDirect
         lista_de_identificadores_dos_alimentadores = []
 
         for ctdDB in range(0, len(nameFields)):
-            if nameFields[ctdDB].nome in self.unifilarFields_SE_MT_Selecionada:
+            if nameFields[ctdDB].nome in self.nFieldsMT :
                 lista_de_identificadores_dos_alimentadores.append(nameFields[ctdDB].cod_id)
                 lista_de_identificadores_dos_alimentadores = (sorted(set(lista_de_identificadores_dos_alimentadores)))
 
@@ -403,14 +436,14 @@ class C_OpenDSS(): # classe OpenDSSDirect
             ###Teste Alimentador para Chaves de Média Tensão
 
             if testAL_MT is not None: # MT
-                dados_ctmt = self.acessDataBase.getOpenDSS_CTMT(None)
+                dados_ctmt = self.DataBase.getData_CTMT(None)
 
                 lista_de_identificadores_dos_alimentadores = self.getID_Fields(dados_ctmt)
 
             if testAL_MT is not None:  # MT
-                dados_sec = self.acessDataBase.getOpenDSS_SecMT(nomeSE_ATMT,  tipoSEC)
+                dados_sec = self.DataBase.getData_SecMT(nomeSE_ATMT,  tipoSEC)
             else: #AT
-                dados_sec = self.acessDataBase.getOpenDSS_SecAT(nomeSE_ATMT)
+                dados_sec = self.DataBase.getData_SecAT(nomeSE_ATMT)
 
             memoFileSEC = ""
 
@@ -447,28 +480,28 @@ class C_OpenDSS(): # classe OpenDSSDirect
 
             return  memoFileSEC
 
-        except ExecOpenDSS:
-            raise ExecOpenDSS("Erro ao carregar as informações das Seccionadoras:" + tipoSEC)
+        except:
+            raise class_exception.ExecOpenDSS("Erro ao carregar as informações das Seccionadoras:" + tipoSEC)
 
     def exec_SEC_DE_ALTA_TENSAO(self):
 
         self.memoFileSecAT = "\n"+"! CHAVES SECCIONADORAS DE ALTA TENSÃO " +"\n"+"\n"
 
-        self.memoFileSecAT += self.getSEC(self.uniSE_MT_SEL, None, None)
+        self.memoFileSecAT += self.getSEC(self.nSE_MT_Selecionada, None, None)
 
     def getSEC_CONTROL(self, nomeSE_ATMT,  tipoSEC, testAL_MT = None):
         try:
             ###Teste Alimentador para Chaves de Média Tensão
 
             if testAL_MT is not None: # MT
-                dados_ctmt = self.acessDataBase.getOpenDSS_CTMT(None)
+                dados_ctmt = self.DataBase.getData_CTMT(None)
 
                 lista_de_identificadores_dos_alimentadores = self.getID_Fields(dados_ctmt)
 
             if testAL_MT is not None:  # MT
-                dados_sec = self.acessDataBase.getOpenDSS_SecMT(nomeSE_ATMT,  tipoSEC)
+                dados_sec = self.DataBase.getData_SecMT(nomeSE_ATMT,  tipoSEC)
             else: #AT
-                dados_sec = self.acessDataBase.getOpenDSS_SecAT(nomeSE_ATMT)
+                dados_sec = self.DataBase.getData_SecAT(nomeSE_ATMT)
 
 
             memoFileSEC_CONTROL = ""
@@ -548,124 +581,124 @@ class C_OpenDSS(): # classe OpenDSSDirect
 
             return memoFileSEC_CONTROL
 
-        except ExecOpenDSS:
-            raise ExecOpenDSS("Erro ao carregar as informações dos Controles das Seccionadoras:" + tipoSEC)
+        except:
+            raise class_exception.ExecOpenDSS("Erro ao carregar as informações dos Controles das Seccionadoras:" + tipoSEC)
 
     def exec_CONTROLE_SEC_DE_ALTA_TENSAO(self):
 
         self.memoFileSecAT_Control = "\n"+"! CONTROLE DAS CHAVES SECCIONADORAS DE ALTA TENSÃO " +"\n"+"\n"
 
-        self.memoFileSecAT_Control += self.getSEC_CONTROL(self.uniSE_MT_SEL, None, None)
+        self.memoFileSecAT_Control += self.getSEC_CONTROL(self.nSE_MT_Selecionada, None, None)
 
     def exec_SEC_CHAVE_A_OLEO_DE_MEDIA_TENSAO(self):
 
         self.memoFileSecOleoMT = "\n" + "! CHAVES SECCIONADORAS DE MÉDIA TENSÃO DO TIPO A OLÉO " + "\n" + "\n"
 
-        self.memoFileSecOleoMT += self.getSEC(self.uniSE_MT_SEL, "17", "SIM")
+        self.memoFileSecOleoMT += self.getSEC(self.nSE_MT_Selecionada, "17", "SIM")
 
     def exec_CONTROLE_SEC_CHAVE_A_OLEO_DE_MEDIA_TENSAO(self):
 
         self.memoFileSecOleoMT_Control = "\n"+"! CONTROLE DAS CHAVES SECCIONADORAS DE MÉDIA TENSÃO TIPO OLEO " +"\n"+"\n"
 
-        self.memoFileSecOleoMT_Control += self.getSEC_CONTROL(self.uniSE_MT_SEL, "17", "SIM")
+        self.memoFileSecOleoMT_Control += self.getSEC_CONTROL(self.nSE_MT_Selecionada, "17", "SIM")
 
     def exec_SEC_CHAVE_FACA_DE_MEDIA_TENSAO(self):
 
         self.memoFileSecFacaMT = "\n" + "! CHAVES SECCIONADORAS DE MÉDIA TENSÃO DO TIPO FACA " + "\n" + "\n"
 
-        self.memoFileSecFacaMT += self.getSEC(self.uniSE_MT_SEL, "19", "SIM")
+        self.memoFileSecFacaMT += self.getSEC(self.nSE_MT_Selecionada, "19", "SIM")
 
     def exec_CONTROLE_SEC_CHAVE_FACA_DE_MEDIA_TENSAO(self):
 
         self.memoFileSecFacaMT_Control = "\n"+"! CONTROLE DAS CHAVES SECCIONADORAS DE MÉDIA TENSÃO DO TIPO FACA " +"\n"+"\n"
 
-        self.memoFileSecFacaMT_Control += self.getSEC_CONTROL(self.uniSE_MT_SEL, "19", "SIM")
+        self.memoFileSecFacaMT_Control += self.getSEC_CONTROL(self.nSE_MT_Selecionada, "19", "SIM")
 
     def exec_SEC_CHAVE_FACA_TRIPOLAR_DE_MEDIA_TENSAO(self):
 
         self.memoFileSecFacaTripolarMT = "\n" + "! CHAVES SECCIONADORAS DE MÉDIA TENSÃO DO TIPO FACA TRIPOLAR " + "\n" + "\n"
 
-        self.memoFileSecFacaTripolarMT += self.getSEC(self.uniSE_MT_SEL, "20", "SIM")
+        self.memoFileSecFacaTripolarMT += self.getSEC(self.nSE_MT_Selecionada, "20", "SIM")
 
     def exec_CONTROLE_SEC_CHAVE_FACA_TRIPOLAR_DE_MEDIA_TENSAO(self):
 
         self.memoFileSecFacaTripolarMT_Control = "\n"+"! CONTROLE DAS CHAVES SECCIONADORAS DE MÉDIA TENSÃO DO TIPO FACA TRIPOLAR " +"\n"+"\n"
 
-        self.memoFileSecFacaTripolarMT_Control += self.getSEC_CONTROL(self.uniSE_MT_SEL, "20", "SIM")
+        self.memoFileSecFacaTripolarMT_Control += self.getSEC_CONTROL(self.nSE_MT_Selecionada, "20", "SIM")
 
     def exec_SEC_CHAVE_FUSIVEL_DE_MEDIA_TENSAO(self):
 
         self.memoFileSecFusivelMT = "\n" + "! CHAVES SECCIONADORAS DE MÉDIA TENSÃO DO TIPO FUSIVEL " + "\n" + "\n"
 
-        self.memoFileSecFusivelMT += self.getSEC(self.uniSE_MT_SEL, "22", "SIM")
+        self.memoFileSecFusivelMT += self.getSEC(self.nSE_MT_Selecionada, "22", "SIM")
 
     def exec_CONTROLE_SEC_CHAVE_FUSIVEL_DE_MEDIA_TENSAO(self):
 
         self.memoFileSecFusivelMT_Control = "\n"+"! CONTROLE DAS CHAVES SECCIONADORAS DE MÉDIA TENSÃO DO TIPO FUSIVEL " +"\n"+"\n"
 
-        self.memoFileSecFusivelMT_Control += self.getSEC_CONTROL(self.uniSE_MT_SEL, "22", "SIM")
+        self.memoFileSecFusivelMT_Control += self.getSEC_CONTROL(self.nSE_MT_Selecionada, "22", "SIM")
 
     def exec_SEC_CHAVE_DJ_RELE_DE_MEDIA_TENSAO(self):
 
         self.memoFileSecDJReleMT = "\n" + "! CHAVES SECCIONADORAS DE MÉDIA TENSÃO DO TIPO DISJUNTOR " + "\n" + "\n"
 
-        self.memoFileSecDJReleMT += self.getSEC(self.uniSE_MT_SEL, "29", "SIM")
+        self.memoFileSecDJReleMT += self.getSEC(self.nSE_MT_Selecionada, "29", "SIM")
 
     def exec_CONTROLE_SEC_CHAVE_DJ_RELE_DE_MEDIA_TENSAO(self):
 
         self.memoFileSecDJReleMT_Control = "\n"+"! CONTROLE DAS CHAVES SECCIONADORAS DE MÉDIA TENSÃO DO TIPO DISJUNTOR " +"\n"+"\n"
 
-        self.memoFileSecDJReleMT_Control += self.getSEC_CONTROL(self.uniSE_MT_SEL, "29", "SIM")
+        self.memoFileSecDJReleMT_Control += self.getSEC_CONTROL(self.nSE_MT_Selecionada, "29", "SIM")
 
     def exec_SEC_CHAVE_RELIGADOR_DE_MEDIA_TENSAO(self):
 
         self.memoFileSecReligadorMT = "\n" + "! CHAVES SECCIONADORAS RELIGADORES DE MÉDIA TENSÃO " + "\n" + "\n"
 
-        self.memoFileSecReligadorMT += self.getSEC(self.uniSE_MT_SEL, "32", "SIM")
+        self.memoFileSecReligadorMT += self.getSEC(self.nSE_MT_Selecionada, "32", "SIM")
 
     def exec_CONTROLE_SEC_CHAVE_RELIGADOR_DE_MEDIA_TENSAO(self):
 
         self.memoFileSecReligadorMT_Control = "\n" + "! CHAVES SECCIONADORAS RELIGADORES DE MÉDIA TENSÃO  " + "\n" + "\n"
 
-        self.memoFileSecReligadorMT_Control += self.getSEC_CONTROL(self.uniSE_MT_SEL, "32", "SIM")
+        self.memoFileSecReligadorMT_Control += self.getSEC_CONTROL(self.nSE_MT_Selecionada, "32", "SIM")
 
     def exec_SEC_CHAVE_TRIPOLAR_SUBESTACAO_DE_MEDIA_TENSAO(self):
 
         self.memoFileSecTripolarSEMT = "\n" + "! CHAVES SECCIONADORAS DE MÉDIA TENSÃO DO TIPO TRIPOLAR SUBESTACAO" + "\n" + "\n"
 
-        self.memoFileSecTripolarSEMT += self.getSEC(self.uniSE_MT_SEL, "33", "SIM")
+        self.memoFileSecTripolarSEMT += self.getSEC(self.nSE_MT_Selecionada, "33", "SIM")
 
     def exec_CONTROLE_SEC_CHAVE_TRIPOLAR_SUBESTACAO_DE_MEDIA_TENSAO(self):
 
         self.memoFileSecTripolarSEMT_Control = "\n" + "! CHAVES SECCIONADORAS DE MÉDIA TENSÃO DO TIPO TRIPOLAR SUBESTACAO " + "\n" + "\n"
 
-        self.memoFileSecTripolarSEMT_Control += self.getSEC_CONTROL(self.uniSE_MT_SEL, "33", "SIM")
+        self.memoFileSecTripolarSEMT_Control += self.getSEC_CONTROL(self.nSE_MT_Selecionada, "33", "SIM")
 
     def exec_SEC_CHAVE_UNIPOLAR_SUBESTACAO_DE_MEDIA_TENSAO(self):
 
         self.memoFileSecUnipolarSEMT = "\n" + "! CHAVES SECCIONADORAS DE MÉDIA TENSÃO DO TIPO UNIPOLAR SUBESTACAO" + "\n" + "\n"
 
-        self.memoFileSecUnipolarSEMT += self.getSEC(self.uniSE_MT_SEL, "34", "SIM")
+        self.memoFileSecUnipolarSEMT += self.getSEC(self.nSE_MT_Selecionada, "34", "SIM")
 
     def exec_CONTROLE_SEC_CHAVE_UNIPOLAR_SUBESTACAO_DE_MEDIA_TENSAO(self):
 
         self.memoFileSecUnipolarSEMT_Control = "\n" + "! CHAVES SECCIONADORAS DE MÉDIA TENSÃO DO TIPO UNIPOLAR SUBESTACAO " + "\n" + "\n"
 
-        self.memoFileSecUnipolarSEMT_Control += self.getSEC_CONTROL(self.uniSE_MT_SEL, "34", "SIM")
+        self.memoFileSecUnipolarSEMT_Control += self.getSEC_CONTROL(self.nSE_MT_Selecionada, "34", "SIM")
 
     def getSEGLINHA_REGULADOR_MT(self, nomeSE_MT,  tipoSEG_REG):
         try:
 
-            dados_ctmt = self.acessDataBase.getOpenDSS_CTMT(None)
+            dados_ctmt = self.DataBase.getData_CTMT(None)
 
             lista_de_identificadores_dos_alimentadores = self.getID_Fields(dados_ctmt)
 
             if tipoSEG_REG == "SEG":  # Segmentos de Linhas
-                dados_db = self.acessDataBase.getOpenDSS_SegLinhasMT(nomeSE_MT)
+                dados_db = self.DataBase.getData_SegLinhasMT(nomeSE_MT)
             elif tipoSEG_REG == "REG":  # Regulador de Média
-                dados_db = self.acessDataBase.getOpenDSS_ReguladorMT(nomeSE_MT)
+                dados_db = self.DataBase.getData_ReguladorMT(nomeSE_MT)
             else:
-                raise ExecOpenDSS("Erro ao carregar as informações dos Segmentos de Linha ou Regulador, pois o tipo não foi especificado! \n" + tipoSEG_REG)
+                raise class_exception.ExecOpenDSS("Erro ao carregar as informações dos Segmentos de Linha ou Regulador, pois o tipo não foi especificado! \n" + tipoSEG_REG)
 
 
             memoFileLinha = ""
@@ -676,7 +709,7 @@ class C_OpenDSS(): # classe OpenDSSDirect
 
                 if tipoSEG_REG == "SEG": #Segmentos de Linhas
                     if (dados_db[ctd].ctmt in lista_de_identificadores_dos_alimentadores) and \
-                            (dados_db[ctd].pac_1 != self.unifilarFields_SE_MT_Selecionada):
+                            (dados_db[ctd].pac_1 != self.nFieldsMT ):
 
                         memoFileLinha += "New Line.{0}".format(dados_db[ctd].cod_id) + " Phases={0}".format(num_de_fases)
                         memoFileLinha += " Bus1={0}".format(pac_1) + " Bus2={0}".format(pac_2)
@@ -697,39 +730,39 @@ class C_OpenDSS(): # classe OpenDSSDirect
                         memoFileLinha += " Transformer={0}".format(dados_db[ctd].cod_id) + " winding=2 "
                         memoFileLinha += " vreg=125" + " ptratio=60 " + " band=2" + '\n'
                 else:
-                    raise ExecOpenDSS(
+                    raise class_exception.ExecOpenDSS(
                         "Erro ao carregar as informações dos Segmentos de Linha ou Regulador, pois o tipo não foi especificado! \n" + tipoSEG_REG)
 
             return memoFileLinha
 
-        except ExecOpenDSS:
-            raise ExecOpenDSS("Erro ao carregar as informações dos Segmentos de Linha ou Regulador: " + tipoSEG_REG)
+        except:
+            raise class_exception.ExecOpenDSS("Erro ao carregar as informações dos Segmentos de Linha ou Regulador: " + tipoSEG_REG)
 
 
     def exec_SEG_LINHAS_DE_MEDIA_TENSAO(self):
         self.memoFileSegLinhasMT = "\n" + "! SEGMENTOS DE LINHA DE MÉDIA TENSÃO " + "\n" + "\n"
 
-        self.memoFileSegLinhasMT += self.getSEGLINHA_REGULADOR_MT(self.uniSE_MT_SEL, "SEG")
+        self.memoFileSegLinhasMT += self.getSEGLINHA_REGULADOR_MT(self.nSE_MT_Selecionada, "SEG")
 
     def exec_REGULADORES_DE_MEDIA_TENSAO(self):
 
         self.memoFileReguladorMT = "\n" + "! UNIDADES REGULADORAS DE  MÉDIA TENSÃO MODELADA COMO TARNSFORMADORES DE BAIXA IMPEDÂNCIA " + "\n" + "\n"
 
-        self.memoFileReguladorMT += self.getSEGLINHA_REGULADOR_MT(self.uniSE_MT_SEL, "REG")
+        self.memoFileReguladorMT += self.getSEGLINHA_REGULADOR_MT(self.nSE_MT_Selecionada, "REG")
 
     def getUNIDADE_CONSUMIDORA(self, nomeSE_MT, tipoUniCons):
         try:
 
-            dados_ctmt = self.acessDataBase.getOpenDSS_CTMT(None)
+            dados_ctmt = self.DataBase.getData_CTMT(None)
 
             lista_de_identificadores_dos_alimentadores = self.getID_Fields(dados_ctmt)
 
             if tipoUniCons == "MT":  # Segmentos de Linhas
-                dados_db = self.acessDataBase.getOpenDSS_UniConsumidora(nomeSE_MT, "MT")
+                dados_db = self.DataBase.getData_UniConsumidora(nomeSE_MT, "MT")
             elif tipoUniCons == "BT":  # Regulador de Média
-                dados_db = self.acessDataBase.getOpenDSS_UniConsumidora(nomeSE_MT, "BT")
+                dados_db = self.DataBase.getData_UniConsumidora(nomeSE_MT, "BT")
             else:
-                raise ExecOpenDSS("Erro ao carregar as informações das Unidades Consumidoras, pois o tipo não foi especificado! \n" + tipoUniCons)
+                raise class_exception.ExecOpenDSS("Erro ao carregar as informações das Unidades Consumidoras, pois o tipo não foi especificado! \n" + tipoUniCons)
 
             memoFileSEC = ""
 
@@ -782,30 +815,30 @@ class C_OpenDSS(): # classe OpenDSSDirect
 
             return memoFileSEC
 
-        except ExecOpenDSS:
-            raise ExecOpenDSS("Erro ao carregar as informações das Unidades Consumidoras: " + tipoUniCons)
+        except:
+            raise class_exception.ExecOpenDSS("Erro ao carregar as informações das Unidades Consumidoras: " + tipoUniCons)
 
 
     def exec_UNID_CONSUMIDORAS_MT(self):
 
         self.memoFileUniConsumidoraMT = "\n" + "! UNIDADES CONSUMIDORAS DE MÉDIA TENSÃO " + "\n" + "\n"
 
-        self.memoFileUniConsumidoraMT += self.getUNIDADE_CONSUMIDORA(self.uniSE_MT_SEL, "MT")
+        self.memoFileUniConsumidoraMT += self.getUNIDADE_CONSUMIDORA(self.nSE_MT_Selecionada, "MT")
 
     def exec_UNID_CONSUMIDORAS_BT(self):
 
         self.memoFileUniConsumidoraBT = "\n" + "! UNIDADES CONSUMIDORAS DE BAIXA TENSÃO " + "\n" + "\n"
 
-        self.memoFileUniConsumidoraBT += self.getUNIDADE_CONSUMIDORA(self.uniSE_MT_SEL, "BT")
+        self.memoFileUniConsumidoraBT += self.getUNIDADE_CONSUMIDORA(self.nSE_MT_Selecionada, "BT")
 
     def getTRANSFORMADORES_DE_DISTRIBUICAO(self, nomeSE_MT):
         try:
 
-            dados_ctmt = self.acessDataBase.getOpenDSS_CTMT(None)
+            dados_ctmt = self.DataBase.getData_CTMT(None)
 
             lista_de_identificadores_dos_alimentadores = self.getID_Fields(dados_ctmt)
 
-            dados_db = self.acessDataBase.getOpenDSS_TrafoDIST(nomeSE_MT)
+            dados_db = self.DataBase.getData_TrafoDIST(nomeSE_MT)
 
             memoFileSEC = ""
 
@@ -858,28 +891,28 @@ class C_OpenDSS(): # classe OpenDSSDirect
 
             return memoFileSEC
 
-        except ExecOpenDSS:
-            raise ExecOpenDSS("Erro ao carregar as informações dos Transformadores de Distribuição MT: ")
+        except:
+            raise class_exception.ExecOpenDSS("Erro ao carregar as informações dos Transformadores de Distribuição MT: ")
 
     def exec_TRANSFORMADORES_DE_DISTRIBUICAO(self):
 
         self.memoFileTrafoDist = "\n" + "! TRANSFORMADORES DE DISTRIBUIÇÃO " + "\n" + "\n"
 
-        self.memoFileTrafoDist += self.getTRANSFORMADORES_DE_DISTRIBUICAO(self.uniSE_MT_SEL)
+        self.memoFileTrafoDist += self.getTRANSFORMADORES_DE_DISTRIBUICAO(self.nSE_MT_Selecionada)
 
     def getSEG_LINHAS_RAMAL_LIGACAO(self, nomeSE_MT, tipoLinha):
         try:
 
-            dados_ctmt = self.acessDataBase.getOpenDSS_CTMT(None)
+            dados_ctmt = self.DataBase.getData_CTMT(None)
 
             lista_de_identificadores_dos_alimentadores = self.getID_Fields(dados_ctmt)
 
             if tipoLinha == "SEGBT":  # Segmentos de Linhas de Baixa Tensão
-                dados_db = self.acessDataBase.getOpenDSS_SegLinhasRamLigBT(nomeSE_MT, "SEGBT")
+                dados_db = self.DataBase.getData_SegLinhasRamLigBT(nomeSE_MT, "SEGBT")
             elif tipoLinha == "RLIG":  # Ramal de Ligação
-                dados_db = self.acessDataBase.getOpenDSS_SegLinhasRamLigBT(nomeSE_MT, "RLIG")
+                dados_db = self.DataBase.getData_SegLinhasRamLigBT(nomeSE_MT, "RLIG")
             else:
-                raise ExecOpenDSS("Erro ao carregar as informações das Linhas BT, pois o tipo não foi especificado! \n" + tipoLinha)
+                raise class_exception.ExecOpenDSS("Erro ao carregar as informações das Linhas BT, pois o tipo não foi especificado! \n" + tipoLinha)
 
             memoFileLinha = ""
 
@@ -900,33 +933,33 @@ class C_OpenDSS(): # classe OpenDSSDirect
 
             return memoFileLinha
 
-        except ExecOpenDSS:
-            raise ExecOpenDSS("Erro ao carregar as informações das Unidades Consumidoras: " + tipoLinha)
+        except:
+            raise class_exception.ExecOpenDSS("Erro ao carregar as informações das Unidades Consumidoras: " + tipoLinha)
 
     def exec_SEG_LINHAS_DE_BAIXA_TENSAO(self):
         self.memoFileSegLinhasBT = "\n" + "! SEGMENTOS DE LINHA DE BAIXA TENSÃO " + "\n" + "\n"
 
-        self.memoFileSegLinhasBT += self.getSEG_LINHAS_RAMAL_LIGACAO(self.uniSE_MT_SEL, "SEGBT")
+        self.memoFileSegLinhasBT += self.getSEG_LINHAS_RAMAL_LIGACAO(self.nSE_MT_Selecionada, "SEGBT")
 
     def exec_RAMAL_DE_LIGACAO(self):
         self.memoFileRamaisLigBT = "\n" + "! RAMAL_DE_LIGACAO " + "\n" + "\n"
 
-        self.memoFileRamaisLigBT += self.getSEG_LINHAS_RAMAL_LIGACAO(self.uniSE_MT_SEL, "RLIG")
+        self.memoFileRamaisLigBT += self.getSEG_LINHAS_RAMAL_LIGACAO(self.nSE_MT_Selecionada, "RLIG")
 
 
     def getUNID_COMPENSADORAS_DE_REATIVO(self, nomeSE_MT, tipoCAP):
         try:
 
-            dados_ctmt = self.acessDataBase.getOpenDSS_CTMT(None)
+            dados_ctmt = self.DataBase.getData_CTMT(None)
 
             lista_de_identificadores_dos_alimentadores = self.getID_Fields(dados_ctmt)
 
             if tipoCAP == "MT":  # Segmentos de Linhas de Baixa Tensão
-                dados_db = self.acessDataBase.getOpenDSS_UniCompReativo(nomeSE_MT, "MT")
+                dados_db = self.DataBase.getData_UniCompReativo(nomeSE_MT, "MT")
             elif tipoCAP == "BT":  # Ramal de Ligação
-                dados_db = self.acessDataBase.getOpenDSS_UniCompReativo(nomeSE_MT, "BT")
+                dados_db = self.DataBase.getData_UniCompReativo(nomeSE_MT, "BT")
             else:
-                raise ExecOpenDSS("Erro ao carregar as informações das Linhas BT, pois o tipo não foi especificado! \n" + tipoLinha)
+                raise class_exception.ExecOpenDSS("Erro ao carregar as informações das Linhas BT, pois o tipo não foi especificado! \n" + tipoLinha)
 
             memoFileComp = ""
 
@@ -944,18 +977,18 @@ class C_OpenDSS(): # classe OpenDSSDirect
 
             return memoFileComp
 
-        except ExecOpenDSS:
-            raise ExecOpenDSS("Erro ao carregar as informações das Unidades Consumidoras: " + tipoCAP)
+        except:
+            raise class_exception.ExecOpenDSS("Erro ao carregar as informações das Unidades Consumidoras: " + tipoCAP)
 
     def exec_UNID_COMPENSADORAS_DE_REATIVO_DE_MEDIA_TENSAO(self):
         self.memoFileUndCompReatMT = "\n" + "! UNIDADES COMPENSADORAS DE REATIVO DE MÉDIA TENSÃO" + "\n" + "\n"
 
-        self.memoFileUndCompReatMT += self.getUNID_COMPENSADORAS_DE_REATIVO(self.uniSE_MT_SEL, "MT")
+        self.memoFileUndCompReatMT += self.getUNID_COMPENSADORAS_DE_REATIVO(self.nSE_MT_Selecionada, "MT")
 
     def exec_UNID_COMPENSADORAS_DE_REATIVO_DE_BAIXA_TENSAO(self):
         self.memoFileUndCompReatBT = "\n" + "! UNIDADES COMPENSADORAS DE REATIVO DE BAIXA TENSÃO " + "\n" + "\n"
 
-        self.memoFileUndCompReatBT += self.getUNID_COMPENSADORAS_DE_REATIVO(self.uniSE_MT_SEL, "BT")
+        self.memoFileUndCompReatBT += self.getUNID_COMPENSADORAS_DE_REATIVO(self.nSE_MT_Selecionada, "BT")
         
         
     ############### Otimizações Adicionais 

@@ -40,7 +40,7 @@ class dadosTrafoDist(NamedTuple):
     r:str 
     xhl:str 
     xht:str 
-    xlt:str 
+    xlt:str
 
 class dadosUnidCompReat(NamedTuple):
     cod_id:str
@@ -127,11 +127,9 @@ class C_DBaseData():
 
     def __init__(self):
         super(C_DBaseData, self).__init__()
-
-
 ##########################
 
-        self._DataBaseConn = class_database_conn.C_ConnDBase() #Criando a instância do Banco de Dados
+        self._DataBaseConn = class_database_conn.C_DBaseConn() #Criando a instância do Banco de Dados
 
     @property
     def DataBaseConn(self):
@@ -141,17 +139,16 @@ class C_DBaseData():
     def DataBaseConn(self, value):
         self._DataBaseConn = value
 
-######################################## OpenDSS
+######################################## Data
 
-    def getOpenDSS_EqThevenin(self, nomeCircuitoAlta):  # Pega as coordenadas de um alimentador de uma SE MT
+    def getData_EqThevenin(self, nomeCircuitoAlta):  # Pega as coordenadas de um alimentador de uma SE MT
+
 
         try:
-            tmp_nomeCircuitoAlta = []
-            tmp_nomeCircuitoAlta.append(str(nomeCircuitoAlta))
-
             lista_dados = []
 
-            sqlStr = "SELECT nom, ten_nom, cod_id FROM ctat WHERE nom ='" + str(tmp_nomeCircuitoAlta[0]) +"'"
+            sqlStr = "SELECT nom, ten_nom, cod_id FROM ctat WHERE nom ='" + nomeCircuitoAlta[0] +"'"
+
 
             dadosSE = self.DataBaseConn.getSQLDB("CTAT", sqlStr)
 
@@ -169,14 +166,15 @@ class C_DBaseData():
         except:
             raise class_exception.ExecOpenDSS("Erro no processamento do Banco de Dados para o Equivalente de Thevenin!")
 
-    def getOpenDSS_CTMT(self, nomeSE_MT = None):  # Pega as coordenadas de um alimentador de uma SE MT
+    def getData_CTMT(self, nomeSE_MT = None):  # Pega as coordenadas de um alimentador de uma SE MT
+
 
         try:
 
             sqlStr = "SELECT nom, ten_nom, cod_id  FROM ctmt"
 
             if nomeSE_MT is not None:
-                sqlStr += " WHERE sub ='" + nomeSE_MT[0] + "'"
+                sqlStr += " WHERE sub ='" + nomeSE_MT + "'"
 
             lista_dados = []
 
@@ -196,7 +194,7 @@ class C_DBaseData():
         except:
             raise class_exception.ExecOpenDSS("Erro no processamento do Banco de Dados para o Equivalente de Thevenin de Média Tensão!")
 
-    def getOpenDSS_TrafosAT_MT(self, nomeSE_MT):  # Pega os transformadores de AT para MT
+    def getData_TrafosAT_MT(self, nomeSE_MT):  # Pega os transformadores de AT para MT
 
         try:
             sqlStr = "SELECT  cod_id, pac_1, pac_2, pot_nom, lig, ten_pri, ten_sec, ten_ter FROM eqtrs WHERE odi ='" + "1" + nomeSE_MT[0] + "0001" + "'"
@@ -223,7 +221,7 @@ class C_DBaseData():
         except:
             raise class_exception.ExecOpenDSS("Erro no processamento do Banco de Dados para os Transformadores de Média Tensão!")
 
-    def getOpenDSS_Condutores(self, tipoCondutor):  # Pega os condutores de MT
+    def getData_Condutores(self, tipoCondutor):  # Pega os condutores de MT
 
             try:
                 sqlStr = "SELECT cod_id, r1, x1, cnom, cmax FROM segcon WHERE cod_id LIKE '%" + tipoCondutor + "%'"
@@ -247,7 +245,7 @@ class C_DBaseData():
             except:
                 raise class_exception.ExecOpenDSS("Erro no processamento do Banco de Dados para os Condutores: " + tipoCondutor)
 
-    def getOpenDSS_SecAT(self, nomeSE_MT):  # Pega as seccionadoras de AT
+    def getData_SecAT(self, nomeSE_MT):  # Pega as seccionadoras de AT
 
         try:
             sqlStr = "SELECT cod_id, pac_1, pac_2, fas_con, tip_unid, p_n_ope, cap_elo, cor_nom, sit_ativ  FROM unseat WHERE sub = '" + nomeSE_MT[0] + "'"
@@ -276,7 +274,7 @@ class C_DBaseData():
         except:
             raise class_exception.ExecOpenDSS("Erro no processamento do Banco de Dados para as Seccionadoras de AT: " + str(tipoSEC))
 
-    def getOpenDSS_SecMT(self, nomeSE_MT, tipoSEC):  # Pega as seccionadoras de MT
+    def getData_SecMT(self, nomeSE_MT, tipoSEC):  # Pega as seccionadoras de MT
 
         try:
 
@@ -308,7 +306,7 @@ class C_DBaseData():
         except:
             raise class_exception.ExecOpenDSS("Erro no processamento do Banco de Dados para as Seccionadoras MT: " + str(tipoSEC))
 
-    def getOpenDSS_SegLinhasMT(self, nomeSE_MT):  # Pega os segmentos de linhas de MT
+    def getData_SegLinhasMT(self, nomeSE_MT):  # Pega os segmentos de linhas de MT
 
         try:
 
@@ -336,7 +334,7 @@ class C_DBaseData():
         except:
             raise class_exception.ExecOpenDSS("Erro no processamento do Banco de Dados para os Segmentos de Linha! ")
 
-    def getOpenDSS_ReguladorMT(self, nomeSE_MT):  # Pega os reguladores de MT
+    def getData_ReguladorMT(self, nomeSE_MT):  # Pega os reguladores de MT
 
         try:
 
@@ -364,7 +362,7 @@ class C_DBaseData():
             raise class_exception.ExecOpenDSS("Erro no processamento do Banco de Dados para os Reguladores de MT! ")
 
 
-    def getOpenDSS_UniConsumidora(self, nomeSE_MT, tipoUniCons):  # Pega os reguladores
+    def getData_UniConsumidora(self, nomeSE_MT, tipoUniCons):  # Pega os reguladores
 
         try:
             if tipoUniCons == "MT":
@@ -404,7 +402,7 @@ class C_DBaseData():
             raise class_exception.ExecOpenDSS("Erro no processamento do Banco de Dados para as Unidades Consumidoras! ")
 
 
-    def getOpenDSS_TrafoDIST(self, nomeSE_MT):  # Pega os reguladores de MT
+    def getData_TrafoDIST(self, nomeSE_MT):  # Pega os reguladores de MT
 
         try:
 
@@ -480,7 +478,7 @@ class C_DBaseData():
             raise class_exception.ExecOpenDSS("Erro no processamento do Banco de Dados para os Transformadores de Distribuição! ")
 
 
-    def getOpenDSS_SegLinhasRamLigBT(self, nomeSE_MT, tipoLinha):  # Pega os reguladores
+    def getData_SegLinhasRamLigBT(self, nomeSE_MT, tipoLinha):  # Pega os reguladores
 
         try:
             if tipoLinha == "SEGBT":  # Segmentos de Linhas de Baixa Tensão
@@ -520,7 +518,7 @@ class C_DBaseData():
             raise class_exception.ExecOpenDSS("Erro no processamento do Banco de Dados das Linhas de BT e Ramais de Ligação!\n" + tipoLinha)
 
 
-    def getOpenDSS_UniCompReativo(self, nomeSE_MT, tipoCAP):  # Pega os reguladores
+    def getData_UniCompReativo(self, nomeSE_MT, tipoCAP):  # Pega os reguladores
 
         try:
             if tipoCAP == "MT":  # Média Tensão
