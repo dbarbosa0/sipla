@@ -1,5 +1,16 @@
+from typing import NamedTuple
+
 import class_database_conn
-import class_exception 
+import class_exception
+
+
+##Classes de Dados
+class dadosTrafoDist(NamedTuple):
+    cod_id: str
+    pot_nom:str
+    ctmt: str
+    x: str
+    y:str
 
 class C_DBaseCoord():
     def __init__(self):
@@ -44,11 +55,9 @@ class C_DBaseCoord():
 
             lista_de_coordenadas_do_alimentador = []
 
-            #ct_mt = self.DataBaseConn.getSQLDB("CTMT","SELECT * FROM ctmt;")
-
             sqlStr = "SELECT ctmt,x,y,vertex_index,objectid FROM ssdmt WHERE ctmt ='" + str(codAlimentador[0]) + "' ORDER BY objectid"
 
-            cod_al = self.DataBaseConn.getSQLDB("SSDMT",sqlStr)
+            cod_al = self.DataBaseConn.getSQLDB("SSDMT", sqlStr)
 
             dadosCoord =[]
             dadosCoordInicio = []
@@ -68,3 +77,32 @@ class C_DBaseCoord():
 
         except:
             raise class_exception.ExecDataBaseError("Erro ao pegar as Coordenadas dos Alimentadores de Média Tensão!")
+
+    def getData_TrafoDIST(self, nomeSE_MT):  # Pega os reguladores de MT
+
+        try:
+
+            sqlStrUNTRD = "SELECT cod_id, pot_nom, ctmt, x, y " \
+                          " FROM  untrd WHERE sub = '" + nomeSE_MT[0] + "'"
+
+            lista_dados = []
+
+            dadosUNTRD = self.DataBaseConn.getSQLDB("UNTRD", sqlStrUNTRD)
+
+
+            for lnhUNTRD in dadosUNTRD.fetchall():  # Pegando o Transformador
+                tmp_dados = dadosTrafoDist(
+                    lnhUNTRD[0],  # cod_id
+                    lnhUNTRD[1],  # pot_nom
+                    lnhUNTRD[2], #ctmt
+                    lnhUNTRD[3],  # x
+                    lnhUNTRD[4],  # y
+                )
+
+                lista_dados.append(tmp_dados)
+
+            return lista_dados
+
+        except:
+            raise class_exception.ExecData(
+                "Erro no processamento do Banco de Dados para os Transformadores de Distribuição! ")

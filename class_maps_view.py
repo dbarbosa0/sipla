@@ -17,7 +17,8 @@ class C_MapsViewer():
         self.mapFields = ''
         self._ListFieldsColors = [] #Lista com as cores dos alimentadores
         self._ListFields = [] # Lista com os alimentadores
-        self._NameSE_MT = ''
+        self._nameSEMT = ''
+        self._ListFieldsID = []
 
         self.webEngView = QtWebEngineWidgets.QWebEngineView()
         
@@ -25,7 +26,6 @@ class C_MapsViewer():
 
     def initUI(self):
         self.DataBaseCoord.DataBaseConn = self.DataBaseConn
-
 
 
     @property
@@ -37,8 +37,8 @@ class C_MapsViewer():
         return self._ListFields
 
     @property
-    def NameSE_MT(self):
-        return self._NameSE_MT
+    def nameSEMT(self):
+        return self._nameSEMT
 
     @ListFieldsColors.setter
     def ListFieldsColors(self, value):
@@ -48,9 +48,11 @@ class C_MapsViewer():
     def ListFields(self, value):
         self._ListFields = value
 
-    @NameSE_MT.setter
-    def NameSE_MT(self, value):
-        self._NameSE_MT = value
+    @nameSEMT.setter
+    def nameSEMT(self, value):
+        tmp = []
+        tmp.append(value)
+        self._nameSEMT = tmp
 
     @property
     def DataBaseCoord(self):
@@ -68,6 +70,14 @@ class C_MapsViewer():
     def DataBaseConn(self, value):
         self._DataBaseConn = value
 
+    @property
+    def ListFieldsID(self):
+        return self._ListFieldsID
+
+    @ListFieldsID.setter
+    def ListFieldsID(self, value):
+        self._ListFieldsID = value
+
 
     ##################################################################################
 
@@ -75,11 +85,16 @@ class C_MapsViewer():
     def setWebView (self, nameQtWebEngineWidgets):
 
         self.webEngView = nameQtWebEngineWidgets
+
         
-        
-    def createMap(self):
+    def createMap(self, fieldsOptions = None):
+
+        self.DataBaseCoord.DataBaseConn = self.DataBaseConn
 
         #Varendo todos os alimentadores
+        self.mapFields = ''
+
+        self.ListFieldsID = self.DataBaseCoord.getCods_AL_SE_MT_DB(self.ListFields)
 
         for contadorAL in range(0, len(self.ListFields) ):
             #Pegando as coordenadas do Alimentador
@@ -89,7 +104,10 @@ class C_MapsViewer():
             if not self.mapFields : #Melhorar essa criação aqui
                self.mapFields = folium.Map(coordAlimentMT [0][0] ,zoom_start=13) 
             
-            folium.PolyLine( coordAlimentMT , color = self.ListFieldsColors[contadorAL] , weight=3.0, opacity=1, smooth_factor=0).add_to(self.mapFields )
+            folium.PolyLine( coordAlimentMT , color = self.ListFieldsColors[contadorAL] , weight=3.0, opacity=1, smooth_factor=0).add_to( self.mapFields )
+
+        if not fieldsOptions is None:
+            self.execOptionsMap(fieldsOptions)
             
     
     def viewMap(self):
@@ -104,6 +122,28 @@ class C_MapsViewer():
         self.webEngView.setHtml(fileData.getvalue().decode())
         
         self.webEngView.show()
+
+    def execOptionsMap(self, fieldsOptions):
+
+        for ctdOption in fieldsOptions:
+
+            if ctdOption == "TrafoDIST":
+
+                dados_db = self.DataBaseCoord.getData_TrafoDIST(self.nameSEMT)
+
+                for ctd in range(0, len(dados_db)):
+
+                    if (dados_db[ctd].ctmt in self.ListFieldsID):
+
+                        infoText  = '<b>Trafo de Distribuição</b>'
+                        infoText += '<br> ID: ' + dados_db[ctd].cod_id
+                        infoText += '<br> ' + str(dados_db[ctd].pot_nom)  + ' kVA'
+                        folium.Marker(
+                                location = [dados_db[ctd].y, dados_db[ctd].x],
+                                popup = infoText,
+                                icon=folium.Icon(color='red', icon='info-sign')
+                            ).add_to(self.mapFields)
+
 
 
         

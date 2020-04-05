@@ -5,6 +5,7 @@ from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import QApplication, QMainWindow, QStyleFactory
 
 ###
+import class_database_conn
 import class_maps_view
 ###################################
 # Classes de Construção da Interface Inicial
@@ -62,7 +63,6 @@ class mainWindow(QMainWindow):
         self.mainActions.MainWindowStatusBar = self.mainStatusBar
         self.mainActions.MainNetPanel = self.mainDockNet
         self.mainActions.MainMapView = self.mainMapView
-
 
         ### Passando os Dados para o ToolBar
 
