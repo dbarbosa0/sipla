@@ -15,7 +15,6 @@ class C_MainPanel(QWidget):
         self.MapPainel_WebView = QWebEngineView()
         self.MapPainel_WebView.setContextMenuPolicy(Qt.NoContextMenu)
 
-
         self.MapPainel_hLayout.addWidget(self.MapPainel_WebView)
         self.MapPainel_GroupBox.setLayout(self.MapPainel_hLayout)
 
@@ -27,7 +26,6 @@ class C_MainPanel(QWidget):
         folium.Map([-13.518 , -41.248], zoom_start=7).save(fileData, close_file=False)
         self.MapPainel_WebView.setHtml(fileData.getvalue().decode())
         self.MapPainel_WebView.show()
-
 
 
     @property
