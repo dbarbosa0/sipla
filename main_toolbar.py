@@ -58,23 +58,23 @@ class C_MenuToolBar(QDockWidget):
         self.OpenDSS_Config_Act = QAction(QIcon('img/icon_opendss_config.png'), '&Configurar', self)
         self.OpenDSS_Config_Act.setShortcut("F3")
         self.OpenDSS_Config_Act.setStatusTip('Configurar o OpenDSS')
-        #self.OpenDSS_Config_Act.triggered.connect(self.exec_createFileDSS)
+        self.OpenDSS_Config_Act.triggered.connect(self.exec_configDSS)
         self.OpenDSSActRef['OpenDSS_Config_Act'] = self.OpenDSS_Config_Act
 
         self.OpenDSS_Create_Act = QAction(QIcon('img/icon_opendss.png'), '&Gerar Arquivo .DSS', self)
-        #self.OpenDSS_Create_Act.setShortcut("Ctrl+O")
+        self.OpenDSS_Create_Act.setShortcut("Ctrl+Shift+G")
         self.OpenDSS_Create_Act.setStatusTip('Gerar Arquivo .DSS para o OpenDSS')
         self.OpenDSS_Create_Act.triggered.connect(self.exec_createFileDSS)
         self.OpenDSSActRef['OpenDSS_Create_Act'] = self.OpenDSS_Create_Act
 
         self.OpenDSS_Save_Act = QAction(QIcon('img/icon_save.png'), '&Salvar Arquivo .DSS', self)
-        self.OpenDSS_Save_Act.setShortcut("F3")
+        self.OpenDSS_Save_Act.setShortcut("Ctrl+Shift+S")
         self.OpenDSS_Save_Act.setStatusTip('Salvar Arquivo .DSS para o OpenDSS')
         self.OpenDSS_Save_Act.triggered.connect(self.exec_saveFileDSS)
         self.OpenDSSActRef['OpenDSS_Save_Act'] = self.OpenDSS_Save_Act
 
         self.OpenDSS_View_Act = QAction(QIcon('img/icon_opendss_view.png'), '&Visualizar Arquivo .DSS', self)
-        self.OpenDSS_View_Act.setShortcut("F5")
+        self.OpenDSS_View_Act.setShortcut("Ctrl+Shift+V")
         self.OpenDSS_View_Act.setStatusTip('Visualizar o Arquivo .DSS para o OpenDSS')
         self.OpenDSS_View_Act.triggered.connect(self.exec_viewFileDSS)
         self.OpenDSSActRef['OpenDSS_View_Act'] = self.OpenDSS_View_Act
@@ -203,7 +203,8 @@ class C_MenuToolBar(QDockWidget):
     ###################################################################
 
     def exec_configDSS(self):
-        print("Configurar o OpenDSS")
+        self.Actions.exec_configOpenDSS_Settings()
+
 
     def exec_createFileDSS(self):
         self.Actions.execOpenDSS()

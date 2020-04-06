@@ -4,6 +4,7 @@ from PyQt5 import QtCore
 ###
 import class_database_conn
 import class_dialog_opendss
+import class_opendss_config_dialog
 import class_database
 import class_exception
 import class_dialog_opendss
@@ -26,7 +27,9 @@ class C_MainActions():
     def initUI(self): ### Instanciando os objetos
         self.DataBaseConn = class_database_conn.C_DBaseConn()  # Carregando o acesso aos Arquivos do BDGD
         self.DataBase = class_database.C_DBase()
-        self.DialogOpenDSS = class_dialog_opendss.C_Dialog_OpenDSS()
+        #self.DialogOpenDSS = class_dialog_opendss.C_Dialog_OpenDSS()
+        # Contribuição Sandy
+        self.OpenDSS_DialogSettings = class_opendss_config_dialog.C_OpenDSS_ConfigDialog()  # Instânciando a classe dialog Settings
 
 
         ######### Passando os objetos
@@ -86,7 +89,11 @@ class C_MainActions():
     #################################################################################
     ##### VAI SER SUBSTITUIDO PELA INTERFACE DE SANDY
     #################################################################################
-    
+
+    # Contribuição Sandy
+    def exec_configOpenDSS_Settings(self):
+        self.OpenDSS_DialogSettings.InitUI()
+
     def execOpenDSS(self):
 
         self.DialogOpenDSS.DataBaseConn = self.DataBaseConn
