@@ -7,7 +7,7 @@ from PyQt5.QtWebEngineWidgets import*
 from class_database_coord import C_DBase
 from class_maps_view import C_MapsViewer
 from class_exception import C_Error, ConnDataBaseError
-from class_dialog_opendss import C_Dialog_OpenDSS
+from class_opendss import C_Dialog_OpenDSS
 
 import sys
 import platform
