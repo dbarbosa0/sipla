@@ -3,11 +3,10 @@ from PyQt5 import QtCore
 
 ###
 import class_database_conn
-import class_dialog_opendss
+import class_opendss
 import class_opendss_config_dialog
 import class_database
 import class_exception
-import class_dialog_opendss
 import class_maps_view
 import  main_panels_dock
 
@@ -27,7 +26,7 @@ class C_MainActions():
     def initUI(self): ### Instanciando os objetos
         self.DataBaseConn = class_database_conn.C_DBaseConn()  # Carregando o acesso aos Arquivos do BDGD
         self.DataBase = class_database.C_DBase()
-        #self.DialogOpenDSS = class_dialog_opendss.C_Dialog_OpenDSS()
+        self.OpenDSS = class_opendss.C_OpenDSS()
         # Contribuição Sandy
         self.OpenDSS_DialogSettings = class_opendss_config_dialog.C_OpenDSS_ConfigDialog()  # Instânciando a classe dialog Settings
 
@@ -92,21 +91,35 @@ class C_MainActions():
 
     # Contribuição Sandy
     def exec_configOpenDSS_Settings(self):
-        self.OpenDSS_DialogSettings.InitUI()
+
+        self.OpenDSS_DialogSettings.show()
 
     def execOpenDSS(self):
+        self.execCreateDSS() ## Cria o arquivo que será utilizado pelo OpenDSS
 
-        self.DialogOpenDSS.DataBaseConn = self.DataBaseConn
-
-        self.DialogOpenDSS.nCircuitoAT_MT = self.MainNetPanel.getSelectedSEMT_CirATMT()
-        self.DialogOpenDSS.nSE_MT_Selecionada = self.MainNetPanel.getSelectedSEMT()
-        self.DialogOpenDSS.nFieldsMT = self.MainNetPanel.getSelectedFieldsNames()
+        self.OpenDSS.exec_OpenDSS()
 
 
-        self.DialogOpenDSS.createFile()
+    def execCreateDSS(self):
+
+        self.OpenDSS.definedSettings(self.OpenDSS_DialogSettings.dataInfo)
+
+        self.OpenDSS.DataBaseConn = self.DataBaseConn
+        self.OpenDSS.nCircuitoAT_MT = self.MainNetPanel.get_CirATMT_Selected()
+
+        self.OpenDSS.nSE_MT_Selecionada = self.MainNetPanel.getSelectedSEMT()
+        self.OpenDSS.nFieldsMT = self.MainNetPanel.getSelectedFieldsNames()
+
+
+        self.OpenDSS.loadData()
 
     def saveOpenDSS(self):
-        self.opendssDiag.exec_CRIAR_ARQUIVO_NO_FORMATO_OPENDSS()
+
+        self.execCreateDSS()
+
+        self.OpenDSS.exec_SaveFileDialogDSS()
+
+
     #################################################################################
 
 

@@ -49,6 +49,7 @@ class C_DBaseConn(): #Classe de banco de dados
             if not self.defDirDataBase:
                 nameDirDataBase = str(QFileDialog.getExistingDirectory(None, "Selecione o Diretório com o Danco de Dados", "Banco/",
                                                                        QFileDialog.ShowDirsOnly))
+
                 nameDirDataBase += "/"
 
                 if platform.system() == "Windows":

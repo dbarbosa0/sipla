@@ -143,12 +143,10 @@ class C_DBaseData():
 
     def getData_EqThevenin(self, nomeCircuitoAlta):  # Pega as coordenadas de um alimentador de uma SE MT
 
-
         try:
             lista_dados = []
 
-            sqlStr = "SELECT nom, ten_nom, cod_id FROM ctat WHERE nom ='" + nomeCircuitoAlta[0] +"'"
-
+            sqlStr = "SELECT nom, ten_nom, cod_id FROM ctat WHERE nom ='" + nomeCircuitoAlta +"'"
 
             dadosSE = self.DataBaseConn.getSQLDB("CTAT", sqlStr)
 
@@ -197,7 +195,8 @@ class C_DBaseData():
     def getData_TrafosAT_MT(self, nomeSE_MT):  # Pega os transformadores de AT para MT
 
         try:
-            sqlStr = "SELECT  cod_id, pac_1, pac_2, pot_nom, lig, ten_pri, ten_sec, ten_ter FROM eqtrs WHERE odi ='" + "1" + nomeSE_MT[0] + "0001" + "'"
+
+            sqlStr = "SELECT  cod_id, pac_1, pac_2, pot_nom, lig, ten_pri, ten_sec, ten_ter FROM eqtrs WHERE odi ='" + "1" + nomeSE_MT + "0001" + "'"
 
             lista_dados = []
 
@@ -248,7 +247,7 @@ class C_DBaseData():
     def getData_SecAT(self, nomeSE_MT):  # Pega as seccionadoras de AT
 
         try:
-            sqlStr = "SELECT cod_id, pac_1, pac_2, fas_con, tip_unid, p_n_ope, cap_elo, cor_nom, sit_ativ  FROM unseat WHERE sub = '" + nomeSE_MT[0] + "'"
+            sqlStr = "SELECT cod_id, pac_1, pac_2, fas_con, tip_unid, p_n_ope, cap_elo, cor_nom, sit_ativ  FROM unseat WHERE sub = '" + nomeSE_MT + "'"
 
             lista_dados = []
 
@@ -279,7 +278,7 @@ class C_DBaseData():
         try:
 
             sqlStr = "SELECT cod_id, pac_1, pac_2, fas_con, tip_unid, ctmt, uni_tr_s, p_n_ope, cap_elo, cor_nom, sit_ativ  FROM unsemt WHERE sub = '" + \
-                         nomeSE_MT[0] + "' AND tip_unid = '" + tipoSEC + "'"
+                         nomeSE_MT + "' AND tip_unid = '" + tipoSEC + "'"
             lista_dados = []
 
 
@@ -310,10 +309,10 @@ class C_DBaseData():
 
         try:
 
-            sqlStr = "SELECT cod_id, ctmt, pac_1, pac_2, fas_con, comp, tip_cnd FROM ssdmt WHERE sub = '" + \
-                         nomeSE_MT[0] + "'"
-            lista_dados = []
+            sqlStr = "SELECT DISTINCT cod_id, ctmt, pac_1, pac_2, fas_con, comp, tip_cnd FROM ssdmt WHERE sub = '" + \
+                         nomeSE_MT + "'"
 
+            lista_dados = []
 
             dadosSECDB = self.DataBaseConn.getSQLDB("SSDMT", sqlStr)
 
@@ -339,7 +338,7 @@ class C_DBaseData():
         try:
 
             sqlStr = "SELECT cod_id, ctmt, pac_1, pac_2, fas_con, sit_ativ FROM unremt WHERE sub = '" + \
-                         nomeSE_MT[0] + "'"
+                         nomeSE_MT + "'"
 
             lista_dados = []
 
@@ -379,7 +378,7 @@ class C_DBaseData():
             lista_dados = []
 
             sqlStr = "SELECT objectid, pac, ctmt, fas_con, ten_forn, sit_ativ, tip_cc, car_inst FROM " + dbase + " WHERE sub = '" + \
-                     nomeSE_MT[0] + "'"
+                     nomeSE_MT + "'"
 
             dadosUniConsDB = self.DataBaseConn.getSQLDB(dbase, sqlStr)
 
@@ -408,7 +407,7 @@ class C_DBaseData():
 
             sqlStrUNTRD = "SELECT cod_id, pac_1, pac_2, pac_3, fas_con_p, fas_con_s, fas_con_t, sit_ativ, tip_unid, " \
                      " cap_elo, cap_cha, tap, pot_nom, per_fer, per_tot, ctmt, tip_trafo " \
-                     " FROM  untrd WHERE sub = '" + nomeSE_MT[0] + "'"
+                     " FROM  untrd WHERE sub = '" + nomeSE_MT + "'"
 
             sqlStrEQTRD = "SELECT cod_id, pac_1, pac_2, pac_3, fas_con, pot_nom, lig, ten_pri, ten_sec, ten_ter, " \
                          " lig_fas_p, lig_fas_s, lig_fas_t, per_fer, per_tot, r, xhl, xht, xlt  " \
@@ -492,7 +491,7 @@ class C_DBaseData():
             else:
                 raise class_exception.ExecOpenDSS("Erro ao carregar as informações das linhas de BT!\nTipo não foi especificado! \n" + tipoLinha)
 
-            sqlStr = "SELECT cod_id, ctmt, pac_1, pac_2, fas_con, comp, tip_cnd FROM " +  dbase + " WHERE sub = '" + nomeSE_MT[0] + "'"
+            sqlStr = "SELECT cod_id, ctmt, pac_1, pac_2, fas_con, comp, tip_cnd FROM " + dbase + " WHERE sub = '" + nomeSE_MT + "'"
 
             dadosLinhaDB = self.DataBaseConn.getSQLDB(dbase, sqlStr)
 
@@ -512,7 +511,7 @@ class C_DBaseData():
 
                 lista_dados.append(tmp_dados)
 
-            return lista_dados
+            return set(lista_dados)
 
         except:
             raise class_exception.ExecOpenDSS("Erro no processamento do Banco de Dados das Linhas de BT e Ramais de Ligação!\n" + tipoLinha)
@@ -530,7 +529,7 @@ class C_DBaseData():
             else:
                 raise class_exception.ExecOpenDSS("Erro ao carregar as informações dos compensadores de reativo!\nTipo não foi especificado! \n" + tipoCAP)
 
-            sqlStr = "SELECT cod_id, fas_con, pot_nom, pac_1, ctmt FROM " + dbase + " WHERE sub = '" + nomeSE_MT[0] + "'"
+            sqlStr = "SELECT cod_id, fas_con, pot_nom, pac_1, ctmt FROM " + dbase + " WHERE sub = '" + nomeSE_MT + "'"
 
             dadosCapDB = self.DataBaseConn.getSQLDB(dbase, sqlStr)
 

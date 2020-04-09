@@ -47,6 +47,7 @@ class C_MenuToolBar(QDockWidget):
         
         # ******* Actions the OpenDSS Menu  *******
         self.OpenDSSActRef = {'OpenDSS_Config_Act': 0, # Configurar o OpenDSS
+                              'OpenDSS_Run_Act': 0,  # Configurar o OpenDSS
                               'OpenDSS_Create_Act': 0, # Criar Arquivo .DSS
                               'OpenDSS_Save_Act': 0,
                               'OpenDSS_View_Act': 0,} # Salvar Arquivo .DSS
@@ -60,6 +61,12 @@ class C_MenuToolBar(QDockWidget):
         self.OpenDSS_Config_Act.setStatusTip('Configurar o OpenDSS')
         self.OpenDSS_Config_Act.triggered.connect(self.exec_configDSS)
         self.OpenDSSActRef['OpenDSS_Config_Act'] = self.OpenDSS_Config_Act
+
+        self.OpenDSS_Run_Act = QAction(QIcon('img/icon_opendss_run.png'), '&Executar (Solve)', self)
+        self.OpenDSS_Run_Act.setShortcut("F2")
+        self.OpenDSS_Run_Act.setStatusTip('Executar o OpenDSS')
+        self.OpenDSS_Run_Act.triggered.connect(self.exec_OpenDSS)
+        self.OpenDSSActRef['OpenDSS_Run_Act'] = self.OpenDSS_Run_Act
 
         self.OpenDSS_Create_Act = QAction(QIcon('img/icon_opendss.png'), '&Gerar Arquivo .DSS', self)
         self.OpenDSS_Create_Act.setShortcut("Ctrl+Shift+G")
@@ -81,6 +88,7 @@ class C_MenuToolBar(QDockWidget):
 
         # ******* Setup the OpenDSS Menu *******
         self.OpenDSSMenu.addAction(self.OpenDSS_Config_Act)
+        self.OpenDSSMenu.addAction(self.OpenDSS_Run_Act)
         self.OpenDSSMenu.addSeparator()
         self.OpenDSSMenuSubProcess = self.OpenDSSMenu.addMenu(QIcon('img/icon_opendss_subprocess.png'),
                                                               'Sub-processos ')
@@ -106,7 +114,7 @@ class C_MenuToolBar(QDockWidget):
 
         # ******* Create WindowMenu Items *******
         
-        self.Window_show_map_Act = QAction(QIcon('img/icon_map.svg'), '&Visualizar Mapa', self)
+        self.Window_show_map_Act = QAction(QIcon('img/icon_map.png'), '&Visualizar Mapa', self)
         self.Window_show_map_Act.setShortcut("Ctrl+Alt+F")
         self.Window_show_map_Act.setStatusTip('Visualizar Mapa')
         self.Window_show_map_Act.triggered.connect(self.exec_showNetMap)
@@ -205,9 +213,12 @@ class C_MenuToolBar(QDockWidget):
     def exec_configDSS(self):
         self.Actions.exec_configOpenDSS_Settings()
 
+    def exec_OpenDSS(self):
+        self.Actions.execOpenDSS()
+
 
     def exec_createFileDSS(self):
-        self.Actions.execOpenDSS()
+        self.Actions.execCreateDSS()
         
     def exec_saveFileDSS(self):
         self.Actions.saveOpenDSS()

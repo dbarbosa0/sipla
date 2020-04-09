@@ -2,7 +2,7 @@ from PyQt5.QtWidgets import QLabel, QFormLayout, QGroupBox, QDockWidget, QGridLa
 from PyQt5.QtWidgets import QVBoxLayout, QTreeWidget, QTreeWidgetItem, QColorDialog
 from PyQt5.QtCore import Qt
 import random
-from PyQt5.QtGui import QColor
+from PyQt5.QtGui import QColor, QIcon
 import main_actions
 import class_exception
 
@@ -125,7 +125,8 @@ class C_NetPanel(QDockWidget):
         #####################################
 
         self.Deck_GroupBox_MapView_Btn = QPushButton("Visualizar")
-        self.Deck_GroupBox_MapView_Btn.setFixedWidth(300)
+        self.Deck_GroupBox_MapView_Btn.setIcon(QIcon('img/icon_map.png'))
+       # self.Deck_GroupBox_MapView_Btn.setFixedWidth(300)
         self.Deck_GroupBox_MapView_Btn.clicked.connect(self.execView)
 
         self.Deck_GroupBox_Layout.addRow(self.Deck_GroupBox_MapView_Btn)

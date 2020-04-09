@@ -32,14 +32,14 @@ class C_DBaseCoord():
 
             lista_de_identificadores_dos_alimentadores = []
 
-            ct_mt = self.DataBaseConn.getSQLDB("CTMT","SELECT cod_id, nom FROM ctmt;")
+            ct_mt = self.DataBaseConn.getSQLDB("CTMT","SELECT DISTINCT cod_id, nom FROM ctmt;")
 
             for linha in ct_mt.fetchall():
                 for i in range(0, len(listaNomesAL_MT) ):
                     if linha[1] == listaNomesAL_MT[i]:
                         lista_de_identificadores_dos_alimentadores.append(linha[0])
 
-            lista_de_identificadores_dos_alimentadores_filtrados = (sorted(set(lista_de_identificadores_dos_alimentadores)))
+            lista_de_identificadores_dos_alimentadores_filtrados = (sorted(lista_de_identificadores_dos_alimentadores))
 
             return lista_de_identificadores_dos_alimentadores_filtrados
         except:
@@ -55,7 +55,7 @@ class C_DBaseCoord():
 
             lista_de_coordenadas_do_alimentador = []
 
-            sqlStr = "SELECT ctmt,x,y,vertex_index,objectid FROM ssdmt WHERE ctmt ='" + str(codAlimentador[0]) + "' ORDER BY objectid"
+            sqlStr = "SELECT DISTINCT ctmt,x,y,vertex_index,objectid FROM ssdmt WHERE ctmt ='" + str(codAlimentador[0]) + "' ORDER BY objectid"
 
             cod_al = self.DataBaseConn.getSQLDB("SSDMT", sqlStr)
 

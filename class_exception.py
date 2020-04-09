@@ -64,5 +64,17 @@ class ExecSelectionFields(C_Error):
         msg.setWindowIcon(QtGui.QIcon("Imagens/logo.png"))
         msg.exec_()
 
+class ExecConfigOpenDSS(C_Error):
+    def __init__(self, msgText, errorText = None):
+        if errorText is None:
+            errorText = ""
+
+        super(ExecConfigOpenDSS, self).__init__(errorText)
+        # Display the errors
+        msg = QMessageBox(QMessageBox.Warning, "OpenDSS Configuration Error",
+                          msgText + "\n" + errorText,
+                          QMessageBox.Ok)
+        msg.setWindowIcon(QtGui.QIcon("Imagens/logo.png"))
+        msg.exec_()
 
 
