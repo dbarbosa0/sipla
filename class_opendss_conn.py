@@ -1,4 +1,4 @@
-import opendssdirect as dss
+import opendssdirect
 
 class C_OpenDSS_Conn(): # classe OpenDSS com métodos virtuais
 
@@ -20,10 +20,22 @@ class C_OpenDSSDirect_Conn(C_OpenDSS_Conn):  # classe OpenDSSDirect
         pass
 
     def run(self, msg):
-        dss.run_command(msg)
+        opendssdirect.run_command(msg)
 
-    def AllBusNames(self):
-        return dss.Circuit.AllBusNames()
+    def Circuit_AllBusNames(self):
+        return opendssdirect.Circuit.AllBusNames()
+
+    def Topology_AllIsolatedBranches(self):
+        return opendssdirect.Topology.AllIsolatedBranches()
+
+    def Circuit_AllBusVolts(self):
+        return opendssdirect.Circuit.AllBusVolts()
+
+    def Circuit_AllNodeVmagPUByPhase(self, phase):
+        return opendssdirect.Circuit.AllNodeVmagPUByPhase(phase)
+
+    def Circuit_AllNodeVmagByPhase(self, phase):
+        return opendssdirect.Circuit.AllNodeVmagByPhase(phase)
 
 class C_OpenDSSCOM_Conn(C_OpenDSS_Conn):  # classe OpenDSSCOM
 

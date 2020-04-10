@@ -9,6 +9,7 @@ Para executar o software, os seguintes pacotes são necessários:
 pip install PyQt5
 pip install PyQtWebEngine
 pip install folium
+pip install 'OpenDSSDirect.py[extras]'
 ```
 
 **Recomendação**: Instale o Python using [Anaconda](https://www.anaconda.com) se estiver usando o [MS Windows](https://www.microsoft.com/windows/)

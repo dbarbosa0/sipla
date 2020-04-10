@@ -1,5 +1,4 @@
 from PyQt5.QtWidgets import QStatusBar
-from PyQt5 import QtCore
 
 ###
 import class_database_conn
@@ -17,6 +16,7 @@ class C_MainActions():
 
         self.MainWindowStatusBar = QStatusBar()
         self.MainNetPanel = main_panels_dock.C_NetPanel(self)
+        self.MainResultsPanel = main_panels_dock.C_ResultsPanel(self)
         self.MainMapView = class_maps_view.C_MapsViewer()
 
         #############################################
@@ -27,6 +27,7 @@ class C_MainActions():
         self.DataBaseConn = class_database_conn.C_DBaseConn()  # Carregando o acesso aos Arquivos do BDGD
         self.DataBase = class_database.C_DBase()
         self.OpenDSS = class_opendss.C_OpenDSS()
+
         # Contribuição Sandy
         self.OpenDSS_DialogSettings = class_opendss_config_dialog.C_OpenDSS_ConfigDialog()  # Instânciando a classe dialog Settings
 
@@ -62,6 +63,12 @@ class C_MainActions():
             self.MainNetPanel.show()
         else:
             self.MainNetPanel.hide()
+
+    def showDockResultsPanel(self):
+        if self.MainResultsPanel.isHidden():
+            self.MainResultsPanel.show()
+        else:
+            self.MainResultsPanel.hide()
 
     ##### Visualizando no Mapa
     def execMapView(self, viewMap, fieldsOptions = None):
@@ -106,9 +113,9 @@ class C_MainActions():
 
         self.OpenDSS.DataBaseConn = self.DataBaseConn
         self.OpenDSS.nCircuitoAT_MT = self.MainNetPanel.get_CirATMT_Selected()
-
         self.OpenDSS.nSE_MT_Selecionada = self.MainNetPanel.getSelectedSEMT()
         self.OpenDSS.nFieldsMT = self.MainNetPanel.getSelectedFieldsNames()
+        self.OpenDSS.tableVoltageResults = self.MainResultsPanel.TableVoltage
 
 
         self.OpenDSS.loadData()

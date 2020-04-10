@@ -1,7 +1,8 @@
 import os
 import platform
-from PyQt5.QtWidgets import QFileDialog, QVBoxLayout, QGroupBox, QLabel, QProgressBar, QDialog, QStyleFactory
-from PyQt5.QtGui import QIcon
+from PyQt5.QtWidgets import QFileDialog
+from PyQt5.QtWidgets import QTableWidgetItem,QTableWidget
+import cmath
 
 import class_opendss_conn
 import class_database_conn
@@ -22,6 +23,8 @@ class C_OpenDSS(): # classe OpenDSSDirect
         self._nFieldsMT = ''
 
         self._OpenDSSConn = ''
+
+        self.tableVoltageResults = QTableWidget() # Tabela de Resultados
 
     @property
     def OpenDSSConn(self):
@@ -95,10 +98,11 @@ class C_OpenDSS(): # classe OpenDSSDirect
         self.execOpenDSSFunc = {"header": ["Cabeçalho ...", self.dataOpenDSS.exec_HeaderFile],
                       "EqThAT": ["Equivalente de Thevenin ...", self.dataOpenDSS.exec_EQUIVALENTE_DE_THEVENIN],
                       # "EqThMT":["Equivalente de Thevenin MT...",self.dataOpenDSS.exec_EQUIVALENTE_DE_THEVENIN_MEDIA],
+                      "SecEqThAT_SecAT": ["Chaves entre o Equivalente e a SecAT ...", self.dataOpenDSS.exec_SEC_EQTHAT_SECAT],
                       "TrafoATMT": ["Trafo AT - MT...", self.dataOpenDSS.exec_TRANSFORMADORES_DE_ALTA_PARA_MEDIA],
                       "CondMT": ["Condutores MT...", self.dataOpenDSS.exec_CONDUTORES_DE_MEDIA_TENSAO],
                       # "CondBT":["Condutores de BT...",self.dataOpenDSS.exec_CONDUTORES_DE_BAIXA_TENSAO],
-                      "CondRamais": ["Condutores de Ramais ...", self.dataOpenDSS.exec_CONDUTORES_DE_RAMAL],
+                      #"CondRamais": ["Condutores de Ramais ...", self.dataOpenDSS.exec_CONDUTORES_DE_RAMAL],
                       "SecAT": ["Seccionadoras de AT...", self.dataOpenDSS.exec_SEC_DE_ALTA_TENSAO],
                       "SecATControl": ["Controle Seccionadoras de AT...",self.dataOpenDSS.exec_CONTROLE_SEC_DE_ALTA_TENSAO],
                       "SecOleoMT": ["Chave a óleo de MT ...", self.dataOpenDSS.exec_SEC_CHAVE_A_OLEO_DE_MEDIA_TENSAO],
@@ -150,6 +154,7 @@ class C_OpenDSS(): # classe OpenDSSDirect
         self.OpenDSSDataResult = {"header": self.dataOpenDSS.memoFileHeader,
                       "EqThAT": self.dataOpenDSS.memoFileEqTh,
                       # "EqThMT":self.dataOpenDSS.memoFileEqThMT,
+                      "SecEqThAT_SecAT": self.dataOpenDSS.memoFileSecAT_EqThAT,
                       "TrafoATMT": self.dataOpenDSS.memoFileTrafoATMT,
                       "CondMT": self.dataOpenDSS.memoFileCondMT,
                       # "CondBT": self.dataOpenDSS.memoFileCondBT,
@@ -219,12 +224,13 @@ class C_OpenDSS(): # classe OpenDSSDirect
 
         mainFile = ''
 
-        for ctd in self.OpenDSSDataResult:
+        for ctd in self.execOpenDSSFunc:
             if (ctd == "header") or (ctd == "EqThAT") or (ctd == "footer"): # Cabeçalho do arquivo
                 data = self.OpenDSSDataResult[ctd]
                 for cont in data:
                     mainFile += str(cont) + '\n'
             else:
+                mainFile += "! " + self.execOpenDSSFunc[ctd][-2] + "\n"
                 mainFile += "Redirect " + ctd + ".dss "+'\n'
 
         #Falta o final do arquivo
@@ -237,8 +243,9 @@ class C_OpenDSS(): # classe OpenDSSDirect
 
         self.memoFileFooter = self.dataOpenDSS.memoFileFooter
         self.memoFileFooter.append("set voltagebases = [" +  config.VoltageBase +  "]")
+        self.memoFileFooter.append("calcv")
         self.memoFileFooter.append("set mode = direct")
-        #self.FooterFile.append("set mode = " + config.VoltageBase + " stepsize = " +  config.StepSize + " number = " + Number)
+        #self.memoFileFooter.append("set mode = " + config.VoltageBase + " stepsize = " +  config.StepSize + " number = " + config.Number)
 
         #Maxiterations: int
         #Maxcontroliter: int
@@ -251,18 +258,37 @@ class C_OpenDSS(): # classe OpenDSSDirect
             command = self.OpenDSSDataResult[ctd]
 
             for com in command:
-                print(com)
                 self.OpenDSSEngine.run(com)
 
-            self.OpenDSSEngine.run("New Line.PIT32J75 Phases=3 Switch=YES Bus1=PTUPIT.1.2.3 Bus2=PIT2.1.2.3 r1=1e-6 r0=1e-6 x1=0.000 x0=0.000 c1=0.000 c0=0.000 Units=km")
-            self.OpenDSSEngine.run("New Line.PIT32J65 Phases=3 Switch=YES Bus1=PIT9.1.2.3 Bus2=PTUPIT.1.2.3 r1=1e-6 r0=1e-6 x1=0.000 x0=0.000 c1=0.000 c0=0.000 Units=km")
-
             self.OpenDSSEngine.run("Solve")
+
             self.OpenDSSEngine.run("Show Voltages")
 
+            self.getVoltageResults() ## Mostrando o resultado das tensões
 
-        print(self.OpenDSSEngine.AllBusNames())
 
+    def getVoltageResults(self):
+
+        busNames = self.OpenDSSEngine.Circuit_AllBusNames()
+
+
+
+        self.tableVoltageResults.setRowCount(len(busNames))
+
+        for ctdBus in range(0, len(busNames)):
+            ## Nome da Barra
+            self.tableVoltageResults.setItem(ctdBus, 0, QTableWidgetItem( busNames[ctdBus] ))
+            ## Tensões
+
+            # Va = complex(busVoltagesALL[ctdBus][0], busVoltagesALL[ctdBus][1])
+            # Vb = complex(busVoltagesALL[ctdBus][2], busVoltagesALL[ctdBus][3])
+            # Vc = complex(busVoltagesALL[ctdBus][4], busVoltagesALL[ctdBus][5])
+            # self.tableVoltageResults.setItem(ctdBus, 1, QTableWidgetItem(abs(Va) ))
+            # self.tableVoltageResults.setItem(ctdBus, 2, QTableWidgetItem(cmath.phase(Va) * 180 / cmath.pi))
+            # self.tableVoltageResults.setItem(ctdBus, 3, QTableWidgetItem(abs(Vb) ))
+            # self.tableVoltageResults.setItem(ctdBus, 4, QTableWidgetItem(cmath.phase(Vb) * 180 / cmath.pi))
+            # self.tableVoltageResults.setItem(ctdBus, 5, QTableWidgetItem(abs(Vc) ))
+            # self.tableVoltageResults.setItem(ctdBus, 6, QTableWidgetItem(cmath.phase(Vc) * 180 / cmath.pi))
 
 
 

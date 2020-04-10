@@ -57,6 +57,7 @@ class C_OpenDSS_Data(): # classe OpenDSS
         self.memoFileFooter = []  # Rodapé do arquivo
         self.memoFileEqTh = []  # Arquivo Thevenin
         self.memoFileEqThMT = []  # Arquivo Thevenin Média
+        self.memoFileSecAT_EqThAT = [] # Seccionadora entre o Equivalente e a Seccionadora de AT
         self.memoFileTrafoATMT = [] #Transformadores de AT MT
         self.memoFileCondMT = [] #Condutores de Média Tensão
         self.memoFileCondBT = [] #Condutores de Baixa Tensão
@@ -93,6 +94,8 @@ class C_OpenDSS_Data(): # classe OpenDSS
     def exec_HeaderFile(self):
 
         self.DataBase.DataBaseConn = self.DataBaseConn
+
+        self.memoFileHeader = []
 
         self.memoFileHeader.insert(0, "Clear ")
 
@@ -264,6 +267,78 @@ class C_OpenDSS_Data(): # classe OpenDSS
 
         self.memoFileEqThMT.insert(0, "! EQUIVALENTE DE THEVENIN MEDIA")
 
+
+    def getSECEQTH(self, nomeSE_ATMT):
+
+        try:
+
+            tmpTrafo = []
+            dados_trafo = self.DataBase.getData_TrafosAT_MT(nomeSE_ATMT)
+            for ctd in range(0, len(dados_trafo)):
+                tmpTrafo.append(dados_trafo[ctd].pac_1)
+                tmpTrafo.append(dados_trafo[ctd].pac_2)
+
+
+            dados_sec = self.DataBase.getData_SecAT(nomeSE_ATMT)
+
+            tmpPAC1 = []
+            tmpPAC2 = []
+
+            for ctd in range(0, len(dados_sec)):
+                tmpPAC1.append(dados_sec[ctd].pac_1)
+                tmpPAC2.append(dados_sec[ctd].pac_2)
+
+            tmpPAC = [list(set(tmpPAC1) - set(tmpPAC2)) , list(set(tmpPAC2) - set(tmpPAC1)) ]
+
+            tmpPAC = list(set().union(tmpPAC[0],tmpPAC[1])) # Lista de barras que não estão conectadas em si
+
+            tmpPAC = list(set(tmpPAC) - set(tmpTrafo)) # remove as barras dos transformadores
+
+            memoFileSECEQTH = []
+
+
+            for ctd in range(0, len(dados_sec)):
+
+                if ((dados_sec[ctd].pac_1 in tmpPAC) or (dados_sec[ctd].pac_2 in tmpPAC)):
+                        #and ((dados_sec[ctd].pac_1.find(self.nCircuitoAT_MT[0:3]) != -1 ) or (dados_sec[ctd].pac_2.find(self.nCircuitoAT_MT[0:3])) != -1):
+
+                    [num_de_fases, pac_1, pac_2] = self.getFasesConexao(dados_sec[ctd].fas_con, dados_sec[ctd].pac_1, dados_sec[ctd].pac_2)
+
+                    for con in tmpPAC:
+                        pac_1 = pac_1.replace(con, self.nCircuitoAT_MT)
+                        pac_2 = pac_2.replace(con, self.nCircuitoAT_MT)
+
+                    if dados_sec[ctd].fas_con == "ABC":
+                        Linecode = " length=0.0001" + " LineCode=CHAVE_3 "
+                    else:
+                        Linecode = " length=0.0001"
+
+                    if dados_sec[ctd].p_n_ope == "F":
+                        operacao_da_chave = "YES"
+                    if dados_sec[ctd].p_n_ope == "A":
+                        operacao_da_chave = "NO"
+                    if dados_sec[ctd].sit_ativ == "AT":
+                        situacao = "true"
+                    if dados_sec[ctd].sit_ativ == "DS":
+                        situacao = "false"
+
+                    temp_memoFileSEC = "New Line.{0}".format(dados_sec[ctd].cod_id) + "EQTH" + " Phases={0}".format(num_de_fases)
+                    temp_memoFileSEC += " Switch={0}".format(operacao_da_chave) + " Bus1={0}".format(pac_1)
+                    temp_memoFileSEC += " Bus2={0}".format(pac_2) + Linecode
+                    temp_memoFileSEC += " units=km" + " enabled={0}".format(situacao)
+
+                    memoFileSECEQTH.append(temp_memoFileSEC)
+
+            return memoFileSECEQTH
+
+        except:
+            raise class_exception.ExecOpenDSS("Erro ao carregar as informações das Seccionadoras de Conexão:")
+
+    def exec_SEC_EQTHAT_SECAT(self):
+
+        self.memoFileSecAT_EqThAT = self.getSECEQTH(self.nSE_MT_Selecionada)
+
+        self.memoFileSecAT_EqThAT.insert(0, "! CHAVES SECCIONADORAS DE ALTA TENSAO - CONEXAO COM O EQUIVALENTE DE THEVENIN ")
 
 
     def getTRANSFORMADORES_DE_ALTA_PARA_MEDIA(self):
@@ -694,6 +769,7 @@ class C_OpenDSS_Data(): # classe OpenDSS
             for ctd in range(0, len(dados_db)):
 
                 [num_de_fases, pac_1, pac_2] = self.getFasesConexao(dados_db[ctd].fas_con, dados_db[ctd].pac_1, dados_db[ctd].pac_2)
+
 
                 if tipoSEG_REG == "SEG": #Segmentos de Linhas
                     if (dados_db[ctd].ctmt in lista_de_identificadores_dos_alimentadores) and \

@@ -1,5 +1,5 @@
 from PyQt5.QtWidgets import QLabel, QFormLayout, QGroupBox, QDockWidget, QGridLayout, QComboBox, QPushButton, QCheckBox
-from PyQt5.QtWidgets import QVBoxLayout, QTreeWidget, QTreeWidgetItem, QColorDialog
+from PyQt5.QtWidgets import QVBoxLayout, QTreeWidget, QTreeWidgetItem, QColorDialog, QTabWidget, QTableWidget
 from PyQt5.QtCore import Qt
 import random
 from PyQt5.QtGui import QColor, QIcon
@@ -251,7 +251,7 @@ class C_NetPanel(QDockWidget):
         for ctd in range(0, len(dadosFields)):
             NetPanel_Fields_GroupBox_Select_TreeWidget_Item(self.NetPanel_Fields_GroupBox_Select_TreeWidget,
                                                      dadosFields[ctd],
-                                                     colorsList[random.randint(0, len(colorsList))])
+                                                     colorsList[random.randint(0, len(colorsList) -1 )])
 
 
 
@@ -369,13 +369,52 @@ class NetPanel_Options_GroupBox_TreeWidget_Item(QTreeWidgetItem):
         return self.option
 
 
+class C_ResultsPanel(QDockWidget):
+
+    def __init__(self, MainWidget):
+        QDockWidget.__init__(self)
+        self.MainWidget = MainWidget
+
+        self.mainActions = main_actions.C_MainActions
+
+        self.setWindowTitle("Resultados")
+        self.setLayout(QFormLayout())
+        self.setContentsMargins(2, 0, 0, 0)
+        self.hide()
+
+        self.InitUI()
+
+    def InitUI(self):
+
+        ## Tabs
+
+        ##### Voltage
+        self.TabWidget = QTabWidget()
+        self.TableVoltage = TableVoltageResults()  # QWidget
+        self.TabWidget.addTab(self.TableVoltage, "Tensões")
+
+        ######
+
+        self.setWidget(self.TabWidget)
 
 
+class TableVoltageResults(QTableWidget):
+    def __init__(self):
+        super().__init__()
+
+        self.InitUI()
+
+    def InitUI(self):
 
 
+        columnsTable = ('Barras', 'Va (kV)', '\u03B8a ( \u03B1 )', 'Vb (kV)', '\u03B8b ( \u03B1 )', 'Vc (kV)', '\u03B8c ( \u03B1 )', \
+                        'Va (pu)', '\u03B8a ( \u03B1 )', 'Vb (pu)', '\u03B8b ( \u03B1 )', 'Vc (pu)', '\u03B8c ( \u03B1 )')
 
+        self.setColumnCount(len(columnsTable))
 
+        self.setHorizontalHeaderLabels(columnsTable)
 
+        self.setEditTriggers(QTableWidget.NoEditTriggers)
 
 
 

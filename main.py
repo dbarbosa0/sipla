@@ -41,6 +41,7 @@ class mainWindow(QMainWindow):
         self.mainToolBar = main_toolbar.C_MenuToolBar(self)  # Menu e ToolBar
         self.mainPainelCentral = main_panels.C_MainPanel(self)  # Painel Central
         self.mainDockNet = main_panels_dock.C_NetPanel(self)  # Dock com configurações da rede
+        self.mainDockResults = main_panels_dock.C_ResultsPanel(self)  # Dock com configurações da rede
         self.mainActions = main_actions.C_MainActions()  # Carregando os métodos da interface principal
 
         #Instaciando os Demais Objetos
@@ -55,13 +56,17 @@ class mainWindow(QMainWindow):
 
         ## Dock
         self.addDockWidget(Qt.LeftDockWidgetArea, self.mainDockNet)
-        self.setDockOptions(QMainWindow.AnimatedDocks | QMainWindow.ForceTabbedDocks)
+        self.addDockWidget(Qt.BottomDockWidgetArea, self.mainDockResults)
+        self.setDockOptions(QMainWindow.AnimatedDocks)
+
+
         self.mainDockNet.mainActions = self.mainActions
 
 
         ### Passando os Dados para o Actions
         self.mainActions.MainWindowStatusBar = self.mainStatusBar
         self.mainActions.MainNetPanel = self.mainDockNet
+        self.mainActions.MainResultsPanel = self.mainDockResults
         self.mainActions.MainMapView = self.mainMapView
 
         ### Passando os Dados para o ToolBar

@@ -206,6 +206,12 @@ class C_MenuToolBar(QDockWidget):
     def exec_selectBDGD(self):
         self.Actions.acessDataBase()
 
+    def exec_showTableResults(self): #self.metodo_VISUALIZAR_RESULTADOS_POR_TABELA)
+        self.Actions.showDockResultsPanel()
+
+    def exec_showNetMap(self):  #  self.metodo_VISUALIZADOR_DE_REDE_CARREGADA
+        print("Visualizar a Rede")
+
     ###################################################################
     ### OpenDSS
     ###################################################################
@@ -215,7 +221,6 @@ class C_MenuToolBar(QDockWidget):
 
     def exec_OpenDSS(self):
         self.Actions.execOpenDSS()
-
 
     def exec_createFileDSS(self):
         self.Actions.execCreateDSS()
@@ -232,8 +237,4 @@ class C_MenuToolBar(QDockWidget):
     def exec_aboutSIPLA(self):
         print("Sobre o SIPLA")
 
-    def exec_showTableResults(self): #self.metodo_VISUALIZAR_RESULTADOS_POR_TABELA)
-        print("Visualizar resultados em tabela")
 
-    def exec_showNetMap(self):  #  self.metodo_VISUALIZADOR_DE_REDE_CARREGADA
-        print("Visualizar a Rede")
