@@ -1,7 +1,6 @@
 import os
 import platform
 
-
 import class_database_conn
 import class_exception 
 
