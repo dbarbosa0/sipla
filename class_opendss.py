@@ -262,34 +262,62 @@ class C_OpenDSS(): # classe OpenDSSDirect
 
             self.OpenDSSEngine.run("Solve")
 
-            self.OpenDSSEngine.run("Show Voltages")
+            self.OpenDSSEngine.run("Show Voltage LN Nodes")
 
             self.getVoltageResults() ## Mostrando o resultado das tensões
 
 
+
     def getVoltageResults(self):
 
-        busNames = self.OpenDSSEngine.Circuit_AllBusNames()
-
-
+        busNames = self.OpenDSSEngine.Circuit_AllBusNames() ## Lista com nomes de todos os nós
+        VoltagePhaseAPU = self.OpenDSSEngine.Circuit_AllNodeVmagPUByPhase(1) ## Lista com todas as tensões de LN da fase A em PU
+        VoltagePhaseBPU = self.OpenDSSEngine.Circuit_AllNodeVmagPUByPhase(2) ## Lista com todas as tensões de LN da fase B em PU
+        VoltagePhaseCPU = self.OpenDSSEngine.Circuit_AllNodeVmagPUByPhase(3) ## Lista com todas as tensões de LN da fase C em PU
+        busVoltagesALL = self.OpenDSSEngine.Circuit_AllBusVolts() ## Lista com todas as tensões de LN da fase ABN complexa  em PU
 
         self.tableVoltageResults.setRowCount(len(busNames))
 
         for ctdBus in range(0, len(busNames)):
             ## Nome da Barra
             self.tableVoltageResults.setItem(ctdBus, 0, QTableWidgetItem( busNames[ctdBus] ))
-            ## Tensões
+        for ctdVoltage1 in range(0, len(VoltagePhaseAPU)):
+            ##Tensão nodal fase A em pu
+            self.tableVoltageResults.setItem(ctdVoltage1, 7, QTableWidgetItem(str(round(VoltagePhaseAPU[ctdVoltage1] , 5 ))))
+        for ctdVoltage2 in range(0, len(VoltagePhaseBPU)):
+            ##Tensão nodal fase B em pu
+            self.tableVoltageResults.setItem(ctdVoltage2, 9, QTableWidgetItem(str(round(VoltagePhaseBPU[ctdVoltage2] , 5 ))))
+        for ctdVoltage3 in range(0, len(VoltagePhaseCPU)):
+            ##Tensão nodal fase C em pu
+            self.tableVoltageResults.setItem(ctdVoltage3, 11, QTableWidgetItem(str(round(VoltagePhaseCPU[ctdVoltage3] , 5 ))))
 
-            # Va = complex(busVoltagesALL[ctdBus][0], busVoltagesALL[ctdBus][1])
-            # Vb = complex(busVoltagesALL[ctdBus][2], busVoltagesALL[ctdBus][3])
-            # Vc = complex(busVoltagesALL[ctdBus][4], busVoltagesALL[ctdBus][5])
-            # self.tableVoltageResults.setItem(ctdBus, 1, QTableWidgetItem(abs(Va) ))
-            # self.tableVoltageResults.setItem(ctdBus, 2, QTableWidgetItem(cmath.phase(Va) * 180 / cmath.pi))
-            # self.tableVoltageResults.setItem(ctdBus, 3, QTableWidgetItem(abs(Vb) ))
-            # self.tableVoltageResults.setItem(ctdBus, 4, QTableWidgetItem(cmath.phase(Vb) * 180 / cmath.pi))
-            # self.tableVoltageResults.setItem(ctdBus, 5, QTableWidgetItem(abs(Vc) ))
-            # self.tableVoltageResults.setItem(ctdBus, 6, QTableWidgetItem(cmath.phase(Vc) * 180 / cmath.pi))
-
+        for ctdVoltageA in range(0, len(busVoltagesALL)):
+            ## Tensões nodais fase A em V
+            try:
+                Va = complex(busVoltagesALL[ctdVoltageA], busVoltagesALL[ctdVoltageA+1])
+                self.tableVoltageResults.setItem(ctdVoltageA, 1, QTableWidgetItem(str(round(abs(Va)/1000, 5))))
+                self.tableVoltageResults.setItem(ctdVoltageA, 2, QTableWidgetItem(str(round((cmath.phase(Va) * 180 / cmath.pi) ,3 ))))
+                self.tableVoltageResults.setItem(ctdVoltageA, 8, QTableWidgetItem(str(round((cmath.phase(Va) * 180 / cmath.pi), 3))))
+            except:
+                pass
+        for ctdVoltageB in range(0, len(busVoltagesALL)):
+            ## Tensões nodais fase B em V
+            try:
+                Vb = complex(busVoltagesALL[ctdVoltageB+2], busVoltagesALL[ctdVoltageB+3])
+                self.tableVoltageResults.setItem(ctdVoltageB, 3, QTableWidgetItem(str(round(abs(Vb)/1000 , 5))))
+                self.tableVoltageResults.setItem(ctdVoltageB, 4, QTableWidgetItem(str(round( cmath.phase(Vb) * 180 / cmath.pi , 3))))
+                self.tableVoltageResults.setItem(ctdVoltageB, 10, QTableWidgetItem(str(round( cmath.phase(Vb) * 180 / cmath.pi, 3))))
+            except:
+                pass
+        for ctdVoltageC in range(0, len(busVoltagesALL)):
+            ## Tensões nodais fase C em V
+            try:
+                Vc = complex(busVoltagesALL[ctdVoltageC+4], busVoltagesALL[ctdVoltageC+5])
+                self.tableVoltageResults.setItem(ctdVoltageC, 5, QTableWidgetItem(str(round(abs(Vc)/1000 , 5))))
+                self.tableVoltageResults.setItem(ctdVoltageC, 6, QTableWidgetItem(str(round((cmath.phase(Vc) * 180 / cmath.pi),3))))
+                self.tableVoltageResults.setItem(ctdVoltageC, 12, QTableWidgetItem(str(round((cmath.phase(Vc) * 180 / cmath.pi), 3))))
+            except:
+                pass
 
 
 

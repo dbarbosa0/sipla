@@ -31,6 +31,9 @@ class C_OpenDSSDirect_Conn(C_OpenDSS_Conn):  # classe OpenDSSDirect
     def Circuit_AllBusVolts(self):
         return opendssdirect.Circuit.AllBusVolts()
 
+    def Circuit_AllBusVMag(self):
+        return opendssdirect.Circuit.AllBusVMag()
+
     def Circuit_AllNodeVmagPUByPhase(self, phase):
         return opendssdirect.Circuit.AllNodeVmagPUByPhase(phase)
 
