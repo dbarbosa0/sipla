@@ -94,10 +94,11 @@ class NewEnergyMeter(QWidget):
     def __init__(self):
         super().__init__()
 
-        self.Insert_EnergyMeter_GroupBox = QGroupBox(" Novo Medidor")
+
         self.InitUINewEnergyMeter()
 
     def InitUINewEnergyMeter(self):
+        self.Insert_EnergyMeter_GroupBox = QGroupBox(" Novo Medidor")
         self.Insert_EnergyMeter_GroupBox_Name_Label = QLabel("Nome:")
         self.Insert_EnergyMeter_GroupBox_Element_Label = QLabel("Elemento:")
         self.Insert_EnergyMeter_GroupBox_Terminal_Label = QLabel("Terminal:")
