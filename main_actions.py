@@ -4,10 +4,11 @@ from PyQt5.QtWidgets import QStatusBar
 import class_database_conn
 import class_opendss
 import class_opendss_config_dialog
+import class_insert_dialog
 import class_database
 import class_exception
 import class_maps_view
-import  main_panels_dock
+import main_panels_dock
 
 class C_MainActions():
     def __init__(self):
@@ -30,6 +31,7 @@ class C_MainActions():
 
         # Contribuição Sandy
         self.OpenDSS_DialogSettings = class_opendss_config_dialog.C_OpenDSS_ConfigDialog()  # Instânciando a classe dialog Settings
+        self.OpenDSS_DialogInsert = class_insert_dialog.C_Insert_Dialog() # Instânciando a classe dialog Insert
 
 
         ######### Passando os objetos
@@ -105,6 +107,9 @@ class C_MainActions():
         self.execCreateDSS() ## Cria o arquivo que será utilizado pelo OpenDSS
 
         self.OpenDSS.exec_OpenDSS()
+
+    def execInsertDSS(self):
+        self.OpenDSS_DialogInsert.show()
 
 
     def execCreateDSS(self):

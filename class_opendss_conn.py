@@ -40,8 +40,20 @@ class C_OpenDSSDirect_Conn(C_OpenDSS_Conn):  # classe OpenDSSDirect
     def Circuit_AllNodeVmagByPhase(self, phase):
         return opendssdirect.Circuit.AllNodeVmagByPhase(phase)
 
+    #Acesso a classe EnergyMeter
+
+    def EnergyMeter_AllNames(self):
+        return opendssdirect.Meters.AllNames()
+
+
 class C_OpenDSSCOM_Conn(C_OpenDSS_Conn):  # classe OpenDSSCOM
 
     def __init__(self):
+        pass
+
+    def Circuit_AllBusNames(self):
+        pass
+
+    def EnergyMeter_AllNames(self):
         pass
 

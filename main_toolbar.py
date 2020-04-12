@@ -48,6 +48,7 @@ class C_MenuToolBar(QDockWidget):
         # ******* Actions the OpenDSS Menu  *******
         self.OpenDSSActRef = {'OpenDSS_Config_Act': 0, # Configurar o OpenDSS
                               'OpenDSS_Run_Act': 0,  # Configurar o OpenDSS
+                              'OpenDSS_Insert_Act': 0, # Inserir Equipamento na Rede
                               'OpenDSS_Create_Act': 0, # Criar Arquivo .DSS
                               'OpenDSS_Save_Act': 0,
                               'OpenDSS_View_Act': 0,} # Salvar Arquivo .DSS
@@ -57,16 +58,23 @@ class C_MenuToolBar(QDockWidget):
 
         # ******* Create OpenDSSMenu Items *******
         self.OpenDSS_Config_Act = QAction(QIcon('img/icon_opendss_config.png'), '&Configurar', self)
-        self.OpenDSS_Config_Act.setShortcut("F3")
+        self.OpenDSS_Config_Act.setShortcut("F2")
         self.OpenDSS_Config_Act.setStatusTip('Configurar o OpenDSS')
         self.OpenDSS_Config_Act.triggered.connect(self.exec_configDSS)
         self.OpenDSSActRef['OpenDSS_Config_Act'] = self.OpenDSS_Config_Act
 
         self.OpenDSS_Run_Act = QAction(QIcon('img/icon_opendss_run.png'), '&Executar (Solve)', self)
-        self.OpenDSS_Run_Act.setShortcut("F2")
+        self.OpenDSS_Run_Act.setShortcut("F3")
         self.OpenDSS_Run_Act.setStatusTip('Executar o OpenDSS')
         self.OpenDSS_Run_Act.triggered.connect(self.exec_OpenDSS)
         self.OpenDSSActRef['OpenDSS_Run_Act'] = self.OpenDSS_Run_Act
+
+        self.OpenDSS_Insert_Act = QAction(QIcon('img/icon_opendss_insert_equip.png'), '&Insert', self)
+        self.OpenDSS_Insert_Act.setShortcut("")
+        self.OpenDSS_Insert_Act.setStatusTip('Inserir Equipamento na Rede')
+        self.OpenDSS_Insert_Act.triggered.connect(self.exec_InsertDSS)
+        self.OpenDSSActRef['OpenDSS_Insert_Act'] = self.OpenDSS_Insert_Act
+
 
         self.OpenDSS_Create_Act = QAction(QIcon('img/icon_opendss.png'), '&Gerar Arquivo .DSS', self)
         self.OpenDSS_Create_Act.setShortcut("Ctrl+Shift+G")
@@ -90,6 +98,7 @@ class C_MenuToolBar(QDockWidget):
         self.OpenDSSMenu.addAction(self.OpenDSS_Config_Act)
         self.OpenDSSMenu.addAction(self.OpenDSS_Run_Act)
         self.OpenDSSMenu.addSeparator()
+        self.OpenDSSMenu.addAction(self.OpenDSS_Insert_Act)
         self.OpenDSSMenuSubProcess = self.OpenDSSMenu.addMenu(QIcon('img/icon_opendss_subprocess.png'),
                                                               'Sub-processos ')
         self.OpenDSSMenuSubProcess.addAction(self.OpenDSS_Create_Act)
@@ -198,6 +207,21 @@ class C_MenuToolBar(QDockWidget):
                 else:
                     self.mainToolBar.addAction(self.OpenDSSActRef[item])
 
+            # Dynamically Add Items to the Toolbar
+
+            # This represents reading these values in via a Query
+            #toolBarInsertEquipamentLayout =  {0: 'OpenDSS_Create_Act',
+            #                         1: 'Spacer',
+            #                         }
+
+            #for idx in toolBarInsertEquipamentLayout :
+            #    item = toolBarInsertEquipamentLayout [idx]
+
+            #    if item == 'Spacer':
+            #        self.mainToolBar.addSeparator()
+            #    else:
+            #        self.mainToolBar.addAction(self.OpenDSSActRef[item])
+
 
 
     def exec_selectNet(self): #self.metodo_CARREGAMENTO_DE_REDE
@@ -221,6 +245,9 @@ class C_MenuToolBar(QDockWidget):
 
     def exec_OpenDSS(self):
         self.Actions.execOpenDSS()
+
+    def exec_InsertDSS(self):
+        self.Actions.execInsertDSS()
 
     def exec_createFileDSS(self):
         self.Actions.execCreateDSS()

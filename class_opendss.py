@@ -262,9 +262,12 @@ class C_OpenDSS(): # classe OpenDSSDirect
 
             self.OpenDSSEngine.run("Solve")
 
-            self.OpenDSSEngine.run("Show Voltage LN Nodes")
-
+#            self.OpenDSSEngine.run("Show Voltage LN Nodes")
             self.getVoltageResults() ## Mostrando o resultado das tensões
+        self.OpenDSSEngine.run("New energymeter.m1")
+        self.OpenDSSEngine.run("Solve")
+        self.OpenDSSEngine.run("Show Voltage LN Nodes")
+        self.OpenDSSEngine.run("Show Meters")
 
 
 
@@ -318,6 +321,4 @@ class C_OpenDSS(): # classe OpenDSSDirect
                 self.tableVoltageResults.setItem(ctdVoltageC, 12, QTableWidgetItem(str(round((cmath.phase(Vc) * 180 / cmath.pi), 3))))
             except:
                 pass
-
-
 
