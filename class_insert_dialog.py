@@ -1,6 +1,8 @@
 from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import QStyleFactory, QDialog, QGridLayout, QGroupBox, \
-   QVBoxLayout, QTabWidget, QLabel, QComboBox, QPlainTextEdit, QWidget, QLineEdit, QPushButton
+   QVBoxLayout, QTabWidget, QLabel, QComboBox, QPlainTextEdit, QWidget, QLineEdit, QPushButton, QHBoxLayout
+
+from PyQt5.QtCore import Qt
 
 
 
@@ -40,18 +42,24 @@ class EnergyMeter(QWidget):
 
     def InitUIEnergyMeter(self):
 
-        ## GroupBox Inserir Medidores
+        ## GroupBox Medidores
         self.EnergyMeter_GroupBox = QGroupBox("Medidores de Energia ")
         self.EnergyMeter_GroupBox_Label = QLabel("Medidores instalados")
         self.EnergyMeter_GroupBox_ComboBox = QComboBox()
-        self.EnergyMeter_GroupBox_Novo_Pushbutton = QPushButton("Novo")
-        self.EnergyMeter_GroupBox_Novo_Pushbutton.clicked.connect(self.exec_Meters_OpenDSS)
+
+        self.EnergyMeter_GroupBox_Edit_Pushbutton = QPushButton("Editar")
+        self.EnergyMeter_GroupBox_Edit_Pushbutton.setFixedWidth(50)
+
+        self.EnergyMeter_GroupBox_New_Pushbutton = QPushButton("Novo")
+        self.EnergyMeter_GroupBox_New_Pushbutton.setFixedWidth(50)
+        self.EnergyMeter_GroupBox_New_Pushbutton.clicked.connect(self.exec_Meters_OpenDSS)
 
         # Layout do GroupoBox
         self.EnergyMeter_GroupBox_Layout = QGridLayout()
         self.EnergyMeter_GroupBox_Layout.addWidget(self.EnergyMeter_GroupBox_Label, 0, 0, 1, 1)
         self.EnergyMeter_GroupBox_Layout.addWidget(self.EnergyMeter_GroupBox_ComboBox, 0, 1, 1, 1)
-        self.EnergyMeter_GroupBox_Layout.addWidget(self.EnergyMeter_GroupBox_Novo_Pushbutton, 0, 2, 1, 1)
+        self.EnergyMeter_GroupBox_Layout.addWidget(self.EnergyMeter_GroupBox_Edit_Pushbutton, 0, 2, 1, 1)
+        self.EnergyMeter_GroupBox_Layout.addWidget(self.EnergyMeter_GroupBox_New_Pushbutton, 0, 3, 1, 1)
 
         # Layout do GroupoBox
         self.Tab_layout = QVBoxLayout()
@@ -67,6 +75,7 @@ class EnergyMeter(QWidget):
     def exec_Meters_OpenDSS(self):
         self.NewEnergyMetr_Dialog = NewEnergyMeter_Dialog()
         self.NewEnergyMetr_Dialog.show()
+
 
 class NewEnergyMeter_Dialog(QDialog):
     def __init__(self):
@@ -88,6 +97,27 @@ class NewEnergyMeter_Dialog(QDialog):
         self.TabEnergyMeter = NewEnergyMeter()
         self.NewMeterTabWidget.addTab(self.TabEnergyMeter, QIcon('img/icon_opendss_energymeter.png'), "Novo Medidor")
         self.NewEnergyMeter_Layout.addWidget(self.NewMeterTabWidget)
+
+        ##### Botões
+
+        self.NewEnergyMeter_Dialog_Btns_Layout = QHBoxLayout()
+        self.NewEnergyMeter_Dialog_Btns_Layout.setAlignment(Qt.AlignRight)
+
+        self.NewEnergyMeter_Dialog_Btns_Cancel_Btn = QPushButton("Cancelar")
+        self.NewEnergyMeter_Dialog_Btns_Cancel_Btn.setIcon(QIcon('img/icon_cancel.png'))
+        self.NewEnergyMeter_Dialog_Btns_Cancel_Btn.setFixedWidth(100)
+        self.NewEnergyMeter_Dialog_Btns_Cancel_Btn.clicked.connect(self.reject)
+        self.NewEnergyMeter_Dialog_Btns_Layout.addWidget(self.NewEnergyMeter_Dialog_Btns_Cancel_Btn)
+
+        self.NewEnergyMeter_Dialog_Btns_Ok_Btn = QPushButton("OK")
+        self.NewEnergyMeter_Dialog_Btns_Ok_Btn.setIcon(QIcon('img/icon_ok.png'))
+        self.NewEnergyMeter_Dialog_Btns_Ok_Btn.setFixedWidth(100)
+        self.NewEnergyMeter_Dialog_Btns_Ok_Btn.clicked.connect(self.accept)
+        self.NewEnergyMeter_Dialog_Btns_Layout.addWidget(self.NewEnergyMeter_Dialog_Btns_Ok_Btn)
+
+
+        self.NewEnergyMeter_Layout.addLayout(self.NewEnergyMeter_Dialog_Btns_Layout, 0)
+
         self.setLayout(self.NewEnergyMeter_Layout)
 
 class NewEnergyMeter(QWidget):
@@ -108,6 +138,8 @@ class NewEnergyMeter(QWidget):
         self.Insert_EnergyMeter_GroupBox_Terminal_ComboBox = QComboBox()
         self.Insert_EnergyMeter_GroupBox_Terminal_ComboBox.addItems(["1","2"])
 
+#        self.Insert_EnergyMeter_GroupBox_Inserir_PushButton = QPushButton("Inserir")
+
         self.Insert_EnergyMeter_GroupBox_Layout = QGridLayout()
         self.Insert_EnergyMeter_GroupBox_Layout.addWidget(self.Insert_EnergyMeter_GroupBox_Name_Label, 0, 0, 1, 1)
         self.Insert_EnergyMeter_GroupBox_Layout.addWidget(self.Insert_EnergyMeter_GroupBox_Element_Label, 1, 0, 1, 1)
@@ -115,7 +147,7 @@ class NewEnergyMeter(QWidget):
         self.Insert_EnergyMeter_GroupBox_Layout.addWidget(self.Insert_EnergyMeter_GroupBox_Name_LineEdit, 0, 1, 1, 1)
         self.Insert_EnergyMeter_GroupBox_Layout.addWidget(self.Insert_EnergyMeter_GroupBox_Element_ComboBox, 1, 1, 1, 1)
         self.Insert_EnergyMeter_GroupBox_Layout.addWidget(self.Insert_EnergyMeter_GroupBox_Terminal_ComboBox, 2, 1, 1, 1)
-
+#        self.Insert_EnergyMeter_GroupBox_Layout.addWidget(self.Insert_EnergyMeter_GroupBox_Inserir_PushButton, 3, 0, 1,1)
 
         self.Tab_layout = QVBoxLayout()
         self.Tab_layout.addWidget(self.Insert_EnergyMeter_GroupBox)
