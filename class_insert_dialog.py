@@ -129,24 +129,86 @@ class NewEnergyMeter(QWidget):
 
     def InitUINewEnergyMeter(self):
         self.Insert_EnergyMeter_GroupBox = QGroupBox(" Novo Medidor")
+
+        ### Labels
         self.Insert_EnergyMeter_GroupBox_Name_Label = QLabel("Nome:")
         self.Insert_EnergyMeter_GroupBox_Element_Label = QLabel("Elemento:")
         self.Insert_EnergyMeter_GroupBox_Terminal_Label = QLabel("Terminal:")
+        self.Insert_EnergyMeter_GroupBox_3phaseLosses_Label = QLabel("3phaseLosses:")
+        self.Insert_EnergyMeter_GroupBox_LineLosses_Label = QLabel("LineLosses:")
+        self.Insert_EnergyMeter_GroupBox_Losses_Label = QLabel("Losses:")
+        self.Insert_EnergyMeter_GroupBox_SeqLosses_Label = QLabel("SeqLosses:")
+        self.Insert_EnergyMeter_GroupBox_VbaseLosses_Label = QLabel("VbaseLosses:")
+        self.Insert_EnergyMeter_GroupBox_XfmrLosses_Label = QLabel("XfmrLosses:")
+        self.Insert_EnergyMeter_GroupBox_LocalOnly_Label = QLabel("LocalOnly:")
+        self.Insert_EnergyMeter_GroupBox_PhaseVoltageReport_Label = QLabel("PhaseVoltageReport:")
+        self.Insert_EnergyMeter_GroupBox_Enabled_Label = QLabel("Enabled:")
+        self.Insert_EnergyMeter_GroupBox_Action_Label = QLabel("Action:")
 
+        ### LineEdits
         self.Insert_EnergyMeter_GroupBox_Name_LineEdit = QLineEdit()
+
+        #Comboboxs
         self.Insert_EnergyMeter_GroupBox_Element_ComboBox = QComboBox()
         self.Insert_EnergyMeter_GroupBox_Terminal_ComboBox = QComboBox()
         self.Insert_EnergyMeter_GroupBox_Terminal_ComboBox.addItems(["1","2"])
+        self.Insert_EnergyMeter_GroupBox_3phaseLosses_ComboBox = QComboBox()
+        self.Insert_EnergyMeter_GroupBox_3phaseLosses_ComboBox.addItems(["Yes","No"])
+        self.Insert_EnergyMeter_GroupBox_LineLosses_ComboBox = QComboBox()
+        self.Insert_EnergyMeter_GroupBox_LineLosses_ComboBox.addItems(["Yes","No"])
+        self.Insert_EnergyMeter_GroupBox_Losses_ComboBox = QComboBox()
+        self.Insert_EnergyMeter_GroupBox_Losses_ComboBox.addItems(["Yes","No"])
+        self.Insert_EnergyMeter_GroupBox_SeqLosses_ComboBox = QComboBox()
+        self.Insert_EnergyMeter_GroupBox_SeqLosses_ComboBox.addItems(["Yes","No"])
+        self.Insert_EnergyMeter_GroupBox_VbaseLosses_ComboBox = QComboBox()
+        self.Insert_EnergyMeter_GroupBox_VbaseLosses_ComboBox.addItems(["Yes","No"])
+        self.Insert_EnergyMeter_GroupBox_XfmrLosses_ComboBox = QComboBox()
+        self.Insert_EnergyMeter_GroupBox_XfmrLosses_ComboBox.addItems(["Yes","No"])
+        self.Insert_EnergyMeter_GroupBox_LocalOnly_ComboBox = QComboBox()
+        self.Insert_EnergyMeter_GroupBox_LocalOnly_ComboBox.addItems(["Yes","No"])
+        self.Insert_EnergyMeter_GroupBox_PhaseVoltageReport_ComboBox = QComboBox()
+        self.Insert_EnergyMeter_GroupBox_PhaseVoltageReport_ComboBox.addItems(["Yes","No"])
+        self.Insert_EnergyMeter_GroupBox_Action_ComboBox = QComboBox()
+        self.Insert_EnergyMeter_GroupBox_Action_ComboBox.addItems(["Clear","Save", "Take", "Zonedump", "Allocate", "Reduce"])
+        self.Insert_EnergyMeter_GroupBox_Enabled_ComboBox = QComboBox()
+        self.Insert_EnergyMeter_GroupBox_Enabled_ComboBox.addItems(["Yes","No"])
 
-#        self.Insert_EnergyMeter_GroupBox_Inserir_PushButton = QPushButton("Inserir")
-
+        ### Layout
         self.Insert_EnergyMeter_GroupBox_Layout = QGridLayout()
         self.Insert_EnergyMeter_GroupBox_Layout.addWidget(self.Insert_EnergyMeter_GroupBox_Name_Label, 0, 0, 1, 1)
         self.Insert_EnergyMeter_GroupBox_Layout.addWidget(self.Insert_EnergyMeter_GroupBox_Element_Label, 1, 0, 1, 1)
         self.Insert_EnergyMeter_GroupBox_Layout.addWidget(self.Insert_EnergyMeter_GroupBox_Terminal_Label, 2, 0, 1, 1)
+        self.Insert_EnergyMeter_GroupBox_Layout.addWidget(self.Insert_EnergyMeter_GroupBox_3phaseLosses_Label,3,0,1,1)
+        self.Insert_EnergyMeter_GroupBox_Layout.addWidget(self.Insert_EnergyMeter_GroupBox_LineLosses_Label,4,0,1,1)
+        self.Insert_EnergyMeter_GroupBox_Layout.addWidget(self.Insert_EnergyMeter_GroupBox_Losses_Label,5,0,1,1)
+        self.Insert_EnergyMeter_GroupBox_Layout.addWidget(self.Insert_EnergyMeter_GroupBox_SeqLosses_Label,6,0,1,1)
+        self.Insert_EnergyMeter_GroupBox_Layout.addWidget(self.Insert_EnergyMeter_GroupBox_VbaseLosses_Label,7,0,1,1)
+        self.Insert_EnergyMeter_GroupBox_Layout.addWidget(self.Insert_EnergyMeter_GroupBox_XfmrLosses_Label,8,0,1,1)
+        self.Insert_EnergyMeter_GroupBox_Layout.addWidget(self.Insert_EnergyMeter_GroupBox_LocalOnly_Label,9,0,1,1)
+        self.Insert_EnergyMeter_GroupBox_Layout.addWidget(self.Insert_EnergyMeter_GroupBox_PhaseVoltageReport_Label,10,0,1,1)
+        self.Insert_EnergyMeter_GroupBox_Layout.addWidget(self.Insert_EnergyMeter_GroupBox_Enabled_Label,11,0,1,1)
+        self.Insert_EnergyMeter_GroupBox_Layout.addWidget(self.Insert_EnergyMeter_GroupBox_Action_Label,12,0,1,1)
+
+
+
+
         self.Insert_EnergyMeter_GroupBox_Layout.addWidget(self.Insert_EnergyMeter_GroupBox_Name_LineEdit, 0, 1, 1, 1)
         self.Insert_EnergyMeter_GroupBox_Layout.addWidget(self.Insert_EnergyMeter_GroupBox_Element_ComboBox, 1, 1, 1, 1)
         self.Insert_EnergyMeter_GroupBox_Layout.addWidget(self.Insert_EnergyMeter_GroupBox_Terminal_ComboBox, 2, 1, 1, 1)
+        self.Insert_EnergyMeter_GroupBox_Layout.addWidget(self.Insert_EnergyMeter_GroupBox_3phaseLosses_ComboBox, 3, 1, 1, 1)
+        self.Insert_EnergyMeter_GroupBox_Layout.addWidget(self.Insert_EnergyMeter_GroupBox_LineLosses_ComboBox, 4, 1, 1, 1)
+        self.Insert_EnergyMeter_GroupBox_Layout.addWidget(self.Insert_EnergyMeter_GroupBox_Losses_ComboBox, 5, 1, 1, 1)
+        self.Insert_EnergyMeter_GroupBox_Layout.addWidget(self.Insert_EnergyMeter_GroupBox_SeqLosses_ComboBox, 6, 1, 1, 1)
+        self.Insert_EnergyMeter_GroupBox_Layout.addWidget(self.Insert_EnergyMeter_GroupBox_VbaseLosses_ComboBox, 7, 1, 1, 1)
+        self.Insert_EnergyMeter_GroupBox_Layout.addWidget(self.Insert_EnergyMeter_GroupBox_XfmrLosses_ComboBox, 8, 1, 1, 1)
+        self.Insert_EnergyMeter_GroupBox_Layout.addWidget(self.Insert_EnergyMeter_GroupBox_LocalOnly_ComboBox, 9, 1, 1, 1)
+        self.Insert_EnergyMeter_GroupBox_Layout.addWidget(self.Insert_EnergyMeter_GroupBox_PhaseVoltageReport_ComboBox, 10, 1, 1, 1)
+        self.Insert_EnergyMeter_GroupBox_Layout.addWidget(self.Insert_EnergyMeter_GroupBox_Enabled_ComboBox, 11, 1, 1, 1)
+        self.Insert_EnergyMeter_GroupBox_Layout.addWidget(self.Insert_EnergyMeter_GroupBox_Action_ComboBox, 12, 1, 1, 1)
+
+
+
+
 #        self.Insert_EnergyMeter_GroupBox_Layout.addWidget(self.Insert_EnergyMeter_GroupBox_Inserir_PushButton, 3, 0, 1,1)
 
         self.Tab_layout = QVBoxLayout()
