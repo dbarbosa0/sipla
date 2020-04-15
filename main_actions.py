@@ -32,7 +32,7 @@ class C_MainActions():
         # Contribuição Sandy
         self.OpenDSS_DialogSettings = class_opendss_config_dialog.C_OpenDSS_ConfigDialog()  # Instânciando a classe dialog Settings
         self.OpenDSS_DialogInsert = class_insert_dialog.C_Insert_Dialog() # Instânciando a classe dialog Insert
-
+        self.OpenDSS_DialogInsert_EnergyMeter = class_insert_dialog.EnergyMeter() # Instânciando a classe dialog Insert
 
         ######### Passando os objetos
         self.DataBase.DataBaseConn = self.DataBaseConn
@@ -108,8 +108,11 @@ class C_MainActions():
 
         self.OpenDSS.exec_OpenDSS()
 
+
     def execInsertDSS(self):
         self.OpenDSS_DialogInsert.show()
+        self.OpenDSS_DialogInsert_EnergyMeter.teste()
+
 
 
     def execCreateDSS(self):
@@ -122,8 +125,10 @@ class C_MainActions():
         self.OpenDSS.nFieldsMT = self.MainNetPanel.getSelectedFieldsNames()
         self.OpenDSS.tableVoltageResults = self.MainResultsPanel.TableVoltage
 
-
         self.OpenDSS.loadData()
+
+
+
 
     def saveOpenDSS(self):
 

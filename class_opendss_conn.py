@@ -45,6 +45,9 @@ class C_OpenDSSDirect_Conn(C_OpenDSS_Conn):  # classe OpenDSSDirect
     def EnergyMeter_AllNames(self):
         return opendssdirect.Meters.AllNames()
 
+    def EnergyMeter_AllElementNames(self):
+        return opendssdirect.Circuit.AllElementNames()
+
 
 class C_OpenDSSCOM_Conn(C_OpenDSS_Conn):  # classe OpenDSSCOM
 
