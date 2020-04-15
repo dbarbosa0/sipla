@@ -48,7 +48,7 @@ class EnergyMeter(QWidget):
         ## GroupBox Medidores
         self.EnergyMeter_GroupBox = QGroupBox("Medidores de Energia ")
 
-        self.EnergyMeter_GroupBox_Ver_PushButton = QPushButton(QIcon('img/icon_opendss_atualizar.png'), None)
+        self.EnergyMeter_GroupBox_Ver_PushButton = QPushButton(QIcon('img/icon_opendss_atualizar.png'), str(None))
         self.EnergyMeter_GroupBox_Ver_PushButton.setFixedWidth(25)
         self.EnergyMeter_GroupBox_Ver_PushButton.clicked.connect(self.get_EnergyMeter_AllBusNames)
 
@@ -81,7 +81,8 @@ class EnergyMeter(QWidget):
         self.setLayout(self.Tab_layout)
 
 
-    def teste(self):
+    def get_EnergyMeter_AllBusNames_(self):
+        self.EnergyMeter_GroupBox_ComboBox.clear()
         self.EnergyMeter_GroupBox_ComboBox.addItems(self.acces_energymeter.EnergyMeter_AllNames())
 
 
@@ -200,7 +201,7 @@ class NewEnergyMeter(QWidget):
         self.Insert_EnergyMeter_GroupBox_Enabled_ComboBox = QComboBox()
         self.Insert_EnergyMeter_GroupBox_Enabled_ComboBox.addItems(["Yes","No"])
 
-        self.Insert_EnergyMeter_GroupBox_Element_PushButton = QPushButton(QIcon('img/icon_opendss_pesquisar.png'), None)
+        self.Insert_EnergyMeter_GroupBox_Element_PushButton = QPushButton(QIcon('img/icon_opendss_pesquisar.png'), str(None))
         self.Insert_EnergyMeter_GroupBox_Element_PushButton.clicked.connect(self.get_EnergyMeter_AllElementNames)
 
 

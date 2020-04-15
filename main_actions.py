@@ -111,9 +111,7 @@ class C_MainActions():
 
     def execInsertDSS(self):
         self.OpenDSS_DialogInsert.show()
-        self.OpenDSS_DialogInsert_EnergyMeter.teste()
-
-
+        self.OpenDSS_DialogInsert.TabEnergyMeter.get_EnergyMeter_AllBusNames_()
 
     def execCreateDSS(self):
 
