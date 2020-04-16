@@ -83,7 +83,7 @@ class ExecEnergyMeter(C_Error):
     def __init__(self, msgText):
         super(ExecEnergyMeter, self).__init__()
         # Display the errors
-        msg = QMessageBox(QMessageBox.Warning, "Error de inserção de dados",
+        msg = QMessageBox(QMessageBox.Warning, "Insert Error",
                           msgText,
                           QMessageBox.Ok)
         msg.setWindowIcon(QtGui.QIcon("Imagens/logo.png"))
