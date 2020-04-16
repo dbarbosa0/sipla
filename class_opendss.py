@@ -266,7 +266,7 @@ class C_OpenDSS(): # classe OpenDSSDirect
             self.getVoltageResults() ## Mostrando o resultado das tensões
         self.OpenDSSEngine.run("Solve")
         #self.OpenDSSEngine.run("Show Voltage LN Nodes")
-        class_exception.ExecSolve(" Fluxo de potência resolvido!")
+        #class_exception.ExecSolve(" Fluxo de potência resolvido!")
 
 
 
