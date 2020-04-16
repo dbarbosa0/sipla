@@ -264,10 +264,9 @@ class C_OpenDSS(): # classe OpenDSSDirect
 
 #            self.OpenDSSEngine.run("Show Voltage LN Nodes")
             self.getVoltageResults() ## Mostrando o resultado das tensões
-        self.OpenDSSEngine.run("New energymeter.m1")
         self.OpenDSSEngine.run("Solve")
-        self.OpenDSSEngine.run("Show Voltage LN Nodes")
-        self.OpenDSSEngine.run("Show Meters")
+        #self.OpenDSSEngine.run("Show Voltage LN Nodes")
+        class_exception.ExecSolve(" Fluxo de potência resolvido!")
 
 
 
