@@ -8,7 +8,7 @@ import class_opendss_conn
 import class_exception
 
 
-class C_Insert_Dialog(QDialog):
+class C_Insert_Dialog(QDialog): ## Classe Dialog principal
     def __init__(self):
         super().__init__()
 
@@ -20,7 +20,7 @@ class C_Insert_Dialog(QDialog):
         self.InitUI()
 
     def InitUI(self):
-        self.setWindowTitle(self.titleWindow)
+        self.setWindowTitle(self.titleWindow) # titulo janela
         self.setWindowIcon(QIcon(self.iconWindow))  # ícone da janela
         self.setStyle(QStyleFactory.create('Cleanlooks'))  # Estilo da Interface
         self.resize(500, 200)
@@ -31,13 +31,13 @@ class C_Insert_Dialog(QDialog):
         self.TabWidget = QTabWidget()
         self.TabEnergyMeter = EnergyMeter()  # QWidget
         self.TabMonitor = Monitor()  # QWidget
-        self.TabWidget.addTab(self.TabEnergyMeter, QIcon('img/icon_opendss_energymeter.png'), "Medidor")
-        self.TabWidget.addTab(self.TabMonitor, QIcon('img/icon_opendss_monitor.png'), "Monitor")
+        self.TabWidget.addTab(self.TabEnergyMeter, QIcon('img/icon_opendss_energymeter.png'), "Medidor") # icone tab1
+        self.TabWidget.addTab(self.TabMonitor, QIcon('img/icon_opendss_monitor.png'), "Monitor") # icone tab2
         self.Dialog_Layout.addWidget(self.TabWidget)
 
         self.setLayout(self.Dialog_Layout)
 
-class EnergyMeter(QWidget):
+class EnergyMeter(QWidget): # Classe widget define a configuração visual da classe principal
     def __init__(self):
         super().__init__()
 
@@ -47,7 +47,7 @@ class EnergyMeter(QWidget):
 
     def InitUIEnergyMeter(self):
         ## GroupBox Medidores
-        self.EnergyMeter_GroupBox = QGroupBox("Medidores de Energia ")
+        self.EnergyMeter_GroupBox = QGroupBox("Medidores de Energia ") # conteners principal da classe filha
 
         self.EnergyMeter_GroupBox_Ver_PushButton = QPushButton(QIcon('img/icon_opendss_atualizar.png'), str())
         self.EnergyMeter_GroupBox_Ver_PushButton.setFixedWidth(25)
@@ -87,7 +87,7 @@ class EnergyMeter(QWidget):
         self.setLayout(self.Tab_layout)
 
 
-    def get_EnergyMeter_AllBusNames_(self):
+    def get_EnergyMeter_AllBusNames_(self): ## Add uma lista de medidores existentes ao combobox correspondente
         self.EnergyMeter_GroupBox_ComboBox.clear()
         self.EnergyMeter_GroupBox_ComboBox.addItems(self.acces_energymeter.EnergyMeter_AllNames())
 
@@ -101,20 +101,20 @@ class EnergyMeter(QWidget):
             self.EnergyMeter_GroupBox_ComboBox.addItems(self.acces_energymeter.EnergyMeter_AllNames())
 
 
-    def exec_NewMeters_OpenDSS(self):
-        self.NewEnergyMetr_Dialog = NewEnergyMeter_Dialog()
-        self.NewEnergyMetr_Dialog.show()
+    def exec_NewMeters_OpenDSS(self): ## Metodo que cria a janela de inserção de novos medidores
+        self.NewEnergyMetr_Dialog = NewEnergyMeter_Dialog() ## instancia a classe
+        self.NewEnergyMetr_Dialog.show() ## mostra a clase instanciada
 
-    def exec_EditMeters_OpenDSS(self):
-        self.EditEnergyMetr_Dialog = EditEnergyMeter_Dialog()
-        self.EditEnergyMetr_Dialog.show()
-        self.EditEnergyMetr_Dialog.TabEnergyMeter_edit.get_EnergyMeter_AllMetersNames_()
+    def exec_EditMeters_OpenDSS(self): ## Metodo que cria a janela de edição de medidores existentes
+        self.EditEnergyMetr_Dialog = EditEnergyMeter_Dialog() ## instancia a classe
+        self.EditEnergyMetr_Dialog.show() ## mostra a clase instanciada
+        self.EditEnergyMetr_Dialog.TabEnergyMeter_edit.get_EnergyMeter_AllMetersNames_() ## escreve no combobox correspondente o nome dos medidores já instalados
 
     def exec_ResetMeters_OpenDSS(self):
         self.acces_energymeter.EnergyMeter_ResetAll()
 
 
-class NewEnergyMeter_Dialog(QDialog):
+class NewEnergyMeter_Dialog(QDialog): ## classe responsável por criar uma Dialog para inserção de novos medidores
     def __init__(self):
         super().__init__()
         self.titleWindow = "New EnergyMeter"
@@ -168,7 +168,7 @@ class NewEnergyMeter_Dialog(QDialog):
 
 
 
-class NewEnergyMeter(QWidget):
+class NewEnergyMeter(QWidget): #Classe Widget para inserção de novos medidores
     def __init__(self):
         super().__init__()
 
@@ -270,7 +270,7 @@ class NewEnergyMeter(QWidget):
         self.setLayout(self.Tab_layout)
 
 
-    def get_EnergyMeter_AllElementNames(self):
+    def get_EnergyMeter_AllElementNames(self): # método que gerencia os comboboxs correspondentes
         if len(self.acces_energymeter.EnergyMeter_AllElementNames()) == 0:
             self.Insert_EnergyMeter_GroupBox_Element_ComboBox.clear()
             self.Insert_EnergyMeter_GroupBox_Element_ComboBox.addItems(["Nenhum"])
@@ -346,7 +346,7 @@ class NewEnergyMeter(QWidget):
 ########################################################################################################################
 ########################################################################################################################
 
-class EditEnergyMeter_Dialog(QDialog):
+class EditEnergyMeter_Dialog(QDialog): # classe responsável por criar uma Dialog para edição de medidores existentes
     def __init__(self):
         super().__init__()
         self.titleWindow = "New EnergyMeter"
