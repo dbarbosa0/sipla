@@ -9,6 +9,7 @@ import configparser
 import class_exception
 import platform
 
+
 class simulationOpenDSS(typing.NamedTuple):
     ### Default
     openDSSConn: str
@@ -123,7 +124,6 @@ class C_OpenDSS_ConfigDialog(QDialog):
 
     def Accept(self):
         self.loadParameters()
-
         self.close()
 
     def saveDefaultParameters(self):
@@ -148,8 +148,10 @@ class C_OpenDSS_ConfigDialog(QDialog):
 
             QMessageBox(QMessageBox.Information, "OpenDSS Configuration", "Configurações Salvas com Sucesso!", QMessageBox.Ok).exec()
 
+
         except:
             raise class_exception.ExecConfigOpenDSS("Configuração da Simulação", "Erro ao salvar os parâmetros do Fluxo de Carga!")
+
 
     def loadDefaultParameters(self): # Só carrega quando abre a janela pela primeira vez
         try:
@@ -175,7 +177,9 @@ class C_OpenDSS_ConfigDialog(QDialog):
 
             ##### Carregando parâmetros
 
+
             self.loadParameters()
+
         except:
             raise class_exception.ExecConfigOpenDSS("Configuração da Simulação", "Erro ao carregar os parâmetros do Fluxo de Carga!")
 
