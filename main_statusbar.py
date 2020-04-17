@@ -29,6 +29,14 @@ class C_StatusBar(QStatusBar):
         self.MainStatusBar.addPermanentWidget(QFrame())
         self.MainStatusBar.addPermanentWidget(self.StatusBar_Fluxo)
 
+
+        self.StatusBar_Fluxo_status = QLabel("Not Solved")
+        self.StatusBar_Fluxo_status.setObjectName("StatusBarApp_Fluxo_status")
+        #self.StatusBar_Fluxo.setStyleSheet('border: 0; background-color: #DCDCDC;')
+        self.MainStatusBar.addPermanentWidget(QFrame())
+        self.MainStatusBar.addPermanentWidget(self.StatusBar_Fluxo_status)
+
+
         self.StatusBar_Plataform = QLabel(platform.system())
         self.StatusBar_Plataform.setObjectName("StatusBarApp_Plataform")
         #self.StatusBar_Plataform.setStyleSheet('border: 0; background-color: #DCDCDC;')
@@ -46,3 +54,6 @@ class C_StatusBar(QStatusBar):
 
     def setStatusBar_Fluxo_Text(self, msgText):
         self.StatusBar_Fluxo.setText(msgText)
+
+    def setStatusBar_Fluxo_status_Text(self, msgText):
+        self.StatusBar_Fluxo_status.setText(msgText)
