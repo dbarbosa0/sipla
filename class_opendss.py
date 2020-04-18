@@ -123,7 +123,7 @@ class C_OpenDSS(): # classe OpenDSSDirect
                       "ChUnipolarSEMTControl": ["Controle da Chave Unipolar da SE MT ...",self.dataOpenDSS.exec_CONTROLE_SEC_CHAVE_UNIPOLAR_SUBESTACAO_DE_MEDIA_TENSAO],
                       # ObsSandy1             #"Reg":["Regulador MT ...",self.dataOpenDSS.exec_REGULADORES_DE_MEDIA_TENSAO],
                       "SegMT": ["Segmentos de Linhas MT ...", self.dataOpenDSS.exec_SEG_LINHAS_DE_MEDIA_TENSAO],
-                      "UConMT": ["Unidades Consumidoras MT ...", self.dataOpenDSS.exec_UNID_CONSUMIDORAS_MT],
+                      #"UConMT": ["Unidades Consumidoras MT ...", self.dataOpenDSS.exec_UNID_CONSUMIDORAS_MT],
                       # ObsSandy2            #"TrafoDist":["Trafos de Distribuição ...",self.dataOpenDSS.exec_TRANSFORMADORES_DE_DISTRIBUICAO],
                       # "SegBT":["Segmentos de Linhas BT ...",self.dataOpenDSS.exec_SEG_LINHAS_DE_BAIXA_TENSAO],
                       # "UConBT":["Unidades Consumidoras BT ...",self.dataOpenDSS.exec_UNID_CONSUMIDORAS_BT],
@@ -260,14 +260,15 @@ class C_OpenDSS(): # classe OpenDSSDirect
             for com in command:
                 self.OpenDSSEngine.run(com)
 
+        try:
             self.OpenDSSEngine.run("Solve")
+        except:
+            class_exception.ExecOpenDSS("Erro ao executar o fluxo de potência resolvido!")
 
 #            self.OpenDSSEngine.run("Show Voltage LN Nodes")
-            self.getVoltageResults() ## Mostrando o resultado das tensões
-        self.OpenDSSEngine.run("Solve")
+        self.getVoltageResults() ## Mostrando o resultado das tensões
+        #self.OpenDSSEngine.run("Solve")
         #self.OpenDSSEngine.run("Show Voltage LN Nodes")
-        class_exception.ExecSolve(" Fluxo de potência resolvido!")
-
 
 
     def getVoltageResults(self):
@@ -283,41 +284,46 @@ class C_OpenDSS(): # classe OpenDSSDirect
         for ctdBus in range(0, len(busNames)):
             ## Nome da Barra
             self.tableVoltageResults.setItem(ctdBus, 0, QTableWidgetItem( busNames[ctdBus] ))
-        for ctdVoltage1 in range(0, len(VoltagePhaseAPU)):
+        for ctdVoltageA in range(0, len(VoltagePhaseAPU)):
             ##Tensão nodal fase A em pu
-            self.tableVoltageResults.setItem(ctdVoltage1, 7, QTableWidgetItem(str(round(VoltagePhaseAPU[ctdVoltage1] , 5 ))))
-        for ctdVoltage2 in range(0, len(VoltagePhaseBPU)):
+            self.tableVoltageResults.setItem(ctdVoltageA, 7, QTableWidgetItem(str(round(VoltagePhaseAPU[ctdVoltageA] , 5 ))))
+        for ctdVoltageB in range(0, len(VoltagePhaseBPU)):
             ##Tensão nodal fase B em pu
-            self.tableVoltageResults.setItem(ctdVoltage2, 9, QTableWidgetItem(str(round(VoltagePhaseBPU[ctdVoltage2] , 5 ))))
-        for ctdVoltage3 in range(0, len(VoltagePhaseCPU)):
+            self.tableVoltageResults.setItem(ctdVoltageB, 9, QTableWidgetItem(str(round(VoltagePhaseBPU[ctdVoltageB] , 5 ))))
+        for ctdVoltageC in range(0, len(VoltagePhaseCPU)):
             ##Tensão nodal fase C em pu
-            self.tableVoltageResults.setItem(ctdVoltage3, 11, QTableWidgetItem(str(round(VoltagePhaseCPU[ctdVoltage3] , 5 ))))
+            self.tableVoltageResults.setItem(ctdVoltageC, 11, QTableWidgetItem(str(round(VoltagePhaseCPU[ctdVoltageC] , 5 ))))
 
-        for ctdVoltageA in range(0, len(busVoltagesALL)):
-            ## Tensões nodais fase A em V
-            try:
+        try:
+            for ctdVoltageA in range(0, len(busVoltagesALL)):
+                ## Tensões nodais fase A em V
                 Va = complex(busVoltagesALL[ctdVoltageA], busVoltagesALL[ctdVoltageA+1])
                 self.tableVoltageResults.setItem(ctdVoltageA, 1, QTableWidgetItem(str(round(abs(Va)/1000, 5))))
                 self.tableVoltageResults.setItem(ctdVoltageA, 2, QTableWidgetItem(str(round((cmath.phase(Va) * 180 / cmath.pi) ,3 ))))
                 self.tableVoltageResults.setItem(ctdVoltageA, 8, QTableWidgetItem(str(round((cmath.phase(Va) * 180 / cmath.pi), 3))))
-            except:
-                pass
-        for ctdVoltageB in range(0, len(busVoltagesALL)):
-            ## Tensões nodais fase B em V
-            try:
+        except:
+            pass
+        #    class_exception.ExecOpenDSS("Erro ao processar as tensões!", "Fase A")
+
+        try:
+            for ctdVoltageB in range(0, len(busVoltagesALL)):
+                ## Tensões nodais fase B em V
                 Vb = complex(busVoltagesALL[ctdVoltageB+2], busVoltagesALL[ctdVoltageB+3])
                 self.tableVoltageResults.setItem(ctdVoltageB, 3, QTableWidgetItem(str(round(abs(Vb)/1000 , 5))))
                 self.tableVoltageResults.setItem(ctdVoltageB, 4, QTableWidgetItem(str(round( cmath.phase(Vb) * 180 / cmath.pi , 3))))
                 self.tableVoltageResults.setItem(ctdVoltageB, 10, QTableWidgetItem(str(round( cmath.phase(Vb) * 180 / cmath.pi, 3))))
-            except:
-                pass
-        for ctdVoltageC in range(0, len(busVoltagesALL)):
-            ## Tensões nodais fase C em V
-            try:
+        except:
+            pass
+            #class_exception.ExecOpenDSS("Erro ao processar as tensões!", "Fase B")
+
+        try:
+            for ctdVoltageC in range(0, len(busVoltagesALL)):
+                ## Tensões nodais fase C em V
                 Vc = complex(busVoltagesALL[ctdVoltageC+4], busVoltagesALL[ctdVoltageC+5])
                 self.tableVoltageResults.setItem(ctdVoltageC, 5, QTableWidgetItem(str(round(abs(Vc)/1000 , 5))))
                 self.tableVoltageResults.setItem(ctdVoltageC, 6, QTableWidgetItem(str(round((cmath.phase(Vc) * 180 / cmath.pi),3))))
                 self.tableVoltageResults.setItem(ctdVoltageC, 12, QTableWidgetItem(str(round((cmath.phase(Vc) * 180 / cmath.pi), 3))))
-            except:
-                pass
+        except:
+            pass
+            #class_exception.ExecOpenDSS("Erro ao processar as tensões!", "Fase C")
 

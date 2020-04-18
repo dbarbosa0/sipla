@@ -296,6 +296,8 @@ class C_OpenDSS_Data(): # classe OpenDSS
 
             memoFileSECEQTH = []
 
+            ##Definindo o LINECODE3
+            memoFileSECEQTH.append("New linecode.CHAVE_3 nphases = 3 BaseFreq = 60 r1 = 1e-3 x1 = 0.000 r0 = 1e-3 x0 = 0.000 c1 = 0.000 c0 = 0.000")
 
             for ctd in range(0, len(dados_sec)):
 

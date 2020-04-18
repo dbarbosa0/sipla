@@ -13,47 +13,46 @@ class C_OpenDSS_Conn(): # classe OpenDSS com métodos virtuais
     def run(cls, argFileMsg):
         pass
 
-    @classmethod
-    def AllBusNames(cls):
-        pass
+    def Topology_AllIsolatedBranches(self):
+        return self.engineTopology.AllIsolatedBranches()
+
+    def Circuit_AllBusVMag(self):
+        return self.engineCircuit.AllBusVMag()
+
+    def Circuit_AllNodeVmagPUByPhase(self, phase):
+        return self.engineCircuit.AllNodeVmagPUByPhase(phase)
+
+    def Circuit_AllNodeVmagByPhase(self, phase):
+        return self.engineCircuit.AllNodeVmagByPhase(phase)
+
+    #Acesso a classe EnergyMeter
+
+    def EnergyMeter_AllNames(self):
+        return self.engineMeters.AllNames()
+
+    def EnergyMeter_AllElementNames(self):
+        return self.engineCircuit.AllElementNames()
+
+    def EnergyMeter_ResetAll(self):
+        return self.run("Show losses")
 
 
 class C_OpenDSSDirect_Conn(C_OpenDSS_Conn):  # classe OpenDSSDirect
 
     def __init__(self):
         self.engine = opendssdirect
+        self.engineCircuit = self.engine.Circuit
+        self.engineTopoly = self.engine.Topology
+        self.engineMeters = self.engine.Meters
 
     def run(self, msg):
         self.engine.run_command(msg)
 
     def Circuit_AllBusNames(self):
-        return self.engine.Circuit.AllBusNames()
-
-    def Topology_AllIsolatedBranches(self):
-        return self.engine.Topology.AllIsolatedBranches()
+        return self.engineCircuit.AllBusNames()
 
     def Circuit_AllBusVolts(self):
-        return self.engine.Circuit.AllBusVolts()
-
-    def Circuit_AllBusVMag(self):
-        return self.engine.Circuit.AllBusVMag()
-
-    def Circuit_AllNodeVmagPUByPhase(self, phase):
-        return self.engine.Circuit.AllNodeVmagPUByPhase(phase)
-
-    def Circuit_AllNodeVmagByPhase(self, phase):
-        return self.engine.Circuit.AllNodeVmagByPhase(phase)
-
-    #Acesso a classe EnergyMeter
-
-    def EnergyMeter_AllNames(self):
-        return self.engine.Meters.AllNames()
-
-    def EnergyMeter_AllElementNames(self):
-        return self.engine.Circuit.AllElementNames()
-
-    def EnergyMeter_ResetAll(self):
-        return self.run(" Show losses")
+        return self.engineCircuit.AllBusVolts()
 
 
 class C_OpenDSSCOM_Conn(C_OpenDSS_Conn):  # classe OpenDSSCOM
@@ -65,9 +64,15 @@ class C_OpenDSSCOM_Conn(C_OpenDSS_Conn):  # classe OpenDSSCOM
         self.engine.Start("0")
         # use the Text interface to OpenDSS
         self.engine.Text.Command = "clear"
-        self.engine.ActiveCircuit
+        self.engineCircuit = self.engine.ActiveCircuit
 
     def run(self, msg):
-        print(msg)
         self.engine.Text.Command = msg
+
+    def Circuit_AllBusNames(self):
+        return self.engineCircuit.AllBusNames
+
+    def Circuit_AllBusVolts(self):
+        return self.engineCircuit.AllBusVolts
+
 

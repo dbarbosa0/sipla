@@ -88,13 +88,3 @@ class ExecEnergyMeter(C_Error):
                           QMessageBox.Ok)
         msg.setWindowIcon(QtGui.QIcon("Imagens/logo.png"))
         msg.exec_()
-
-class ExecSolve(C_Error):
-    def __init__(self, msgText):
-        super(ExecSolve, self).__init__()
-        # Display the errors
-        msg = QMessageBox(QMessageBox.Information, "Solve",
-                          msgText,
-                          QMessageBox.Ok)
-        msg.setWindowIcon(QtGui.QIcon("Imagens/logo.png"))
-        msg.exec_()
