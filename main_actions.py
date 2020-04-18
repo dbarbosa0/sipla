@@ -9,6 +9,7 @@ import class_database
 import class_exception
 import class_maps_view
 import main_panels_dock
+import configparser
 
 class C_MainActions():
     def __init__(self):
@@ -32,9 +33,6 @@ class C_MainActions():
         # Contribuição Sandy
         self.OpenDSS_DialogSettings = class_opendss_config_dialog.C_OpenDSS_ConfigDialog()  # Instânciando a classe dialog Settings
         self.OpenDSS_DialogInsert = class_insert_dialog.C_Insert_Dialog() # Instânciando a classe dialog Insert
-        self.OpenDSS_DialogInsert_EnergyMeter = class_insert_dialog.EnergyMeter() # Instânciando a classe dialog Insert
-
-        ######### Passando os objetos
         self.DataBase.DataBaseConn = self.DataBaseConn
         self.MainMapView.DataBaseConn = self.DataBaseConn
 
@@ -108,10 +106,20 @@ class C_MainActions():
 
         self.OpenDSS.exec_OpenDSS()
 
+        config = configparser.ConfigParser()
+        config.read('siplaconfig.ini')
+
+        self.MainWindowStatusBar.setStatusBar_Fluxo_Text("Fluxo: " + config['LoadFlow']['mode'])
+        self.MainWindowStatusBar.setStatusBar_Fluxo_status_Text("Solved")
+
+    #teste
+
+
 
     def execInsertDSS(self):
         self.OpenDSS_DialogInsert.show()
         self.OpenDSS_DialogInsert.TabEnergyMeter.get_EnergyMeter_AllBusNames_()
+
 
     def execCreateDSS(self):
 
