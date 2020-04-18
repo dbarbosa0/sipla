@@ -1,6 +1,6 @@
 from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import QStyleFactory, QDialog, QGridLayout, QGroupBox, \
-   QVBoxLayout, QTabWidget, QLabel, QComboBox, QPlainTextEdit, QWidget, QLineEdit, QPushButton, QHBoxLayout, QMessageBox
+   QVBoxLayout, QTabWidget, QLabel, QComboBox, QWidget, QLineEdit, QPushButton, QHBoxLayout
 
 from PyQt5.QtCore import Qt
 
@@ -15,7 +15,6 @@ class C_Insert_Dialog(QDialog): ## Classe Dialog principal
         self.titleWindow = "OpenDSS Insert"
         self.iconWindow = "img/logo.png"
         self.stylesheet = "fusion"
-
 
         self.InitUI()
 
@@ -47,7 +46,7 @@ class EnergyMeter(QWidget): # Classe widget define a configuração visual da cl
 
     def InitUIEnergyMeter(self):
         ## GroupBox Medidores
-        self.EnergyMeter_GroupBox = QGroupBox("Medidores de Energia ") # conteners principal da classe filha
+        self.EnergyMeter_GroupBox = QGroupBox("Medidores de Energia") # conteners principal da classe filha
 
         self.EnergyMeter_GroupBox_Ver_PushButton = QPushButton(QIcon('img/icon_opendss_atualizar.png'), str())
         self.EnergyMeter_GroupBox_Ver_PushButton.setFixedWidth(25)
@@ -55,7 +54,7 @@ class EnergyMeter(QWidget): # Classe widget define a configuração visual da cl
 
         self.EnergyMeter_GroupBox_ComboBox = QComboBox()
 
-        self.EnergyMeter_GroupBox_Edit_Pushbutton = QPushButton("Editar"'')
+        self.EnergyMeter_GroupBox_Edit_Pushbutton = QPushButton("Editar")
         self.EnergyMeter_GroupBox_Edit_Pushbutton.setFixedWidth(50)
         self.EnergyMeter_GroupBox_Edit_Pushbutton.clicked.connect(self.exec_EditMeters_OpenDSS)
 
@@ -518,14 +517,16 @@ class EditEnergyMeter(QWidget):
     def get_NameEnergyMeter(self):
         self.NameEnergyMeter = self.Insert_EnergyMeter_GroupBox_Name_ComboBox.currentText()
         if self.NameEnergyMeter == "":
-            class_exception.ExecEnergyMeter("Selecione um nome para o medidor !")
+            ## ESTÁ ERRADO
+            class_exception.ExecEnergyMeter("Selecione um nome para o medidor!")
         else:
             return self.NameEnergyMeter
 
     def get_ElementEnergyMeter(self):
         self.ElementEnergyMeter = self.Insert_EnergyMeter_GroupBox_Element_ComboBox.currentText()
         if self.ElementEnergyMeter == "Pesquisar":
-            class_exception.ExecEnergyMeter("Selecione um elemento do circuito !")
+            ## ESTÁ ERRADO
+            class_exception.ExecEnergyMeter("Selecione um elemento do circuito!")
         else:
             return self.ElementEnergyMeter
 

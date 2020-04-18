@@ -1,8 +1,5 @@
 from PyQt5.QtGui import QIcon
-from PyQt5.QtWidgets import QStyleFactory, QDialog, QGridLayout, QGroupBox, QHBoxLayout, \
-    QPushButton, QVBoxLayout, QTabWidget, QLabel, QComboBox, QLineEdit, QRadioButton, QSpinBox, QWidget, QMessageBox
-from PyQt5.QtCore import Qt
-
+from PyQt5.QtWidgets import QStyleFactory, QDialog
 
 class C_PVSystem_ConfigDialog(QDialog):
     def __init__(self):
