@@ -1,4 +1,8 @@
 import opendssdirect
+import platform
+
+if platform.system() == "Windows":
+    import win32com.client
 
 class C_OpenDSS_Conn(): # classe OpenDSS com métodos virtuais
 
@@ -17,36 +21,36 @@ class C_OpenDSS_Conn(): # classe OpenDSS com métodos virtuais
 class C_OpenDSSDirect_Conn(C_OpenDSS_Conn):  # classe OpenDSSDirect
 
     def __init__(self):
-        pass
+        self.engine = opendssdirect
 
     def run(self, msg):
-        opendssdirect.run_command(msg)
+        self.engine.run_command(msg)
 
     def Circuit_AllBusNames(self):
-        return opendssdirect.Circuit.AllBusNames()
+        return self.engine.Circuit.AllBusNames()
 
     def Topology_AllIsolatedBranches(self):
-        return opendssdirect.Topology.AllIsolatedBranches()
+        return self.engine.Topology.AllIsolatedBranches()
 
     def Circuit_AllBusVolts(self):
-        return opendssdirect.Circuit.AllBusVolts()
+        return self.engine.Circuit.AllBusVolts()
 
     def Circuit_AllBusVMag(self):
-        return opendssdirect.Circuit.AllBusVMag()
+        return self.engine.Circuit.AllBusVMag()
 
     def Circuit_AllNodeVmagPUByPhase(self, phase):
-        return opendssdirect.Circuit.AllNodeVmagPUByPhase(phase)
+        return self.engine.Circuit.AllNodeVmagPUByPhase(phase)
 
     def Circuit_AllNodeVmagByPhase(self, phase):
-        return opendssdirect.Circuit.AllNodeVmagByPhase(phase)
+        return self.engine.Circuit.AllNodeVmagByPhase(phase)
 
     #Acesso a classe EnergyMeter
 
     def EnergyMeter_AllNames(self):
-        return opendssdirect.Meters.AllNames()
+        return self.engine.Meters.AllNames()
 
     def EnergyMeter_AllElementNames(self):
-        return opendssdirect.Circuit.AllElementNames()
+        return self.engine.Circuit.AllElementNames()
 
     def EnergyMeter_ResetAll(self):
         return self.run(" Show losses")
@@ -55,7 +59,13 @@ class C_OpenDSSDirect_Conn(C_OpenDSS_Conn):  # classe OpenDSSDirect
 class C_OpenDSSCOM_Conn(C_OpenDSS_Conn):  # classe OpenDSSCOM
 
     def __init__(self):
-        pass
+        # start an embedded DSS engine through COM
+        # note: OpenDSSEngine.dll must already be registered
+        self.engine = win32com.client.Dispatch("OpenDSSEngine.DSS")
+        self.engine.Start("0")
+
+        # use the Text interface to OpenDSS
+        self.engine.Text.Command = "clear"
 
     def Circuit_AllBusNames(self):
         pass

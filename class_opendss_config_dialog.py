@@ -92,7 +92,7 @@ class C_OpenDSS_ConfigDialog(QDialog):
         self.Dilalog_Btns_Ok_Btn = QPushButton("OK")
         self.Dilalog_Btns_Ok_Btn.setIcon(QIcon('img/icon_ok.png'))
         self.Dilalog_Btns_Ok_Btn.setFixedWidth(100)
-        self.Dilalog_Btns_Ok_Btn.clicked.connect(self.accept)
+        self.Dilalog_Btns_Ok_Btn.clicked.connect(self.Accept)
         self.Dilalog_Btns_Layout.addWidget(self.Dilalog_Btns_Ok_Btn)
 
 

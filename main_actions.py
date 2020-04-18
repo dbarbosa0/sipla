@@ -106,14 +106,8 @@ class C_MainActions():
 
         self.OpenDSS.exec_OpenDSS()
 
-        config = configparser.ConfigParser()
-        config.read('siplaconfig.ini')
-
-        self.MainWindowStatusBar.setStatusBar_Fluxo_Text("Fluxo: " + config['LoadFlow']['mode'])
+        self.MainWindowStatusBar.setStatusBar_Fluxo_Text("Fluxo: " + self.OpenDSS_DialogSettings.dataInfo.Mode)
         self.MainWindowStatusBar.setStatusBar_Fluxo_status_Text("Solved")
-
-    #teste
-
 
 
     def execInsertDSS(self):
@@ -139,7 +133,6 @@ class C_MainActions():
     def saveOpenDSS(self):
 
         self.execCreateDSS()
-
         self.OpenDSS.exec_SaveFileDialogDSS()
 
 
