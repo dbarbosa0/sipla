@@ -63,13 +63,11 @@ class C_OpenDSSCOM_Conn(C_OpenDSS_Conn):  # classe OpenDSSCOM
         # note: OpenDSSEngine.dll must already be registered
         self.engine = win32com.client.Dispatch("OpenDSSEngine.DSS")
         self.engine.Start("0")
-
         # use the Text interface to OpenDSS
         self.engine.Text.Command = "clear"
+        self.engine.ActiveCircuit
 
-    def Circuit_AllBusNames(self):
-        pass
-
-    def EnergyMeter_AllNames(self):
-        pass
+    def run(self, msg):
+        print(msg)
+        self.engine.Text.Command = msg
 
