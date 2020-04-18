@@ -112,7 +112,7 @@ class C_MainActions():
         self.MainWindowStatusBar.setStatusBar_Fluxo_Text("Fluxo: " + config['LoadFlow']['mode'])
         self.MainWindowStatusBar.setStatusBar_Fluxo_status_Text("Solved")
 
-
+    #teste
 
 
 
