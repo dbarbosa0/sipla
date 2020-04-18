@@ -53,7 +53,7 @@ class C_OpenDSSDirect_Conn(C_OpenDSS_Conn):  # classe OpenDSSDirect
         return self.engine.Circuit.AllElementNames()
 
     def EnergyMeter_ResetAll(self):
-        return self.run(" Show losses")
+        return self.run("Show losses")
 
 
 class C_OpenDSSCOM_Conn(C_OpenDSS_Conn):  # classe OpenDSSCOM

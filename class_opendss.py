@@ -123,7 +123,7 @@ class C_OpenDSS(): # classe OpenDSSDirect
                       "ChUnipolarSEMTControl": ["Controle da Chave Unipolar da SE MT ...",self.dataOpenDSS.exec_CONTROLE_SEC_CHAVE_UNIPOLAR_SUBESTACAO_DE_MEDIA_TENSAO],
                       # ObsSandy1             #"Reg":["Regulador MT ...",self.dataOpenDSS.exec_REGULADORES_DE_MEDIA_TENSAO],
                       "SegMT": ["Segmentos de Linhas MT ...", self.dataOpenDSS.exec_SEG_LINHAS_DE_MEDIA_TENSAO],
-                      "UConMT": ["Unidades Consumidoras MT ...", self.dataOpenDSS.exec_UNID_CONSUMIDORAS_MT],
+                      #"UConMT": ["Unidades Consumidoras MT ...", self.dataOpenDSS.exec_UNID_CONSUMIDORAS_MT],
                       # ObsSandy2            #"TrafoDist":["Trafos de Distribuição ...",self.dataOpenDSS.exec_TRANSFORMADORES_DE_DISTRIBUICAO],
                       # "SegBT":["Segmentos de Linhas BT ...",self.dataOpenDSS.exec_SEG_LINHAS_DE_BAIXA_TENSAO],
                       # "UConBT":["Unidades Consumidoras BT ...",self.dataOpenDSS.exec_UNID_CONSUMIDORAS_BT],
@@ -260,11 +260,12 @@ class C_OpenDSS(): # classe OpenDSSDirect
             for com in command:
                 self.OpenDSSEngine.run(com)
 
-            self.OpenDSSEngine.run("Solve")
+
+        self.OpenDSSEngine.run("Solve")
 
 #            self.OpenDSSEngine.run("Show Voltage LN Nodes")
-            self.getVoltageResults() ## Mostrando o resultado das tensões
-        self.OpenDSSEngine.run("Solve")
+        self.getVoltageResults() ## Mostrando o resultado das tensões
+        #self.OpenDSSEngine.run("Solve")
         #self.OpenDSSEngine.run("Show Voltage LN Nodes")
         class_exception.ExecSolve(" Fluxo de potência resolvido!")
 
