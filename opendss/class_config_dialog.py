@@ -3,26 +3,15 @@ from PyQt5.QtWidgets import QStyleFactory, QDialog, QGridLayout, QGroupBox, QHBo
     QPushButton, QVBoxLayout, QTabWidget, QLabel, QComboBox, QLineEdit, QRadioButton, QSpinBox, QWidget, QMessageBox
 from PyQt5.QtCore import Qt
 
-
-import typing
 import configparser
 import class_exception
 import platform
 
-
-class simulationOpenDSS(typing.NamedTuple):
-    ### Default
-    openDSSConn: str
-    ### LoadFlow
-    VoltageBase: str
-    Mode: str
-    StepSize: str
-    Number: str
-    Maxiterations: int
-    Maxcontroliter: int
+import opendss.class_config_loadshape_dialog
 
 
-class C_OpenDSS_ConfigDialog(QDialog):
+
+class C_ConfigDialog(QDialog):
     def __init__(self):
         super().__init__()
 
@@ -30,7 +19,21 @@ class C_OpenDSS_ConfigDialog(QDialog):
         self.iconWindow = "img/logo.png"
         self.stylesheet = "fusion"
 
+        self.dataInfo = {### Default
+                        "openDSSConn": "",
+                        ### LoadFlow
+                        "VoltageBase": "",
+                        "Mode": "",
+                        "StepSize": "",
+                        "Number": "",
+                        "Maxiterations": 0,
+                        "Maxcontroliter": 0,
+                        "LoadShapes":{}
+                        }
+
         self.InitUI()
+
+
 
     def InitUI(self):
 
@@ -38,6 +41,7 @@ class C_OpenDSS_ConfigDialog(QDialog):
         self.setWindowIcon(QIcon(self.iconWindow))  # ícone da janela
         self.setStyle(QStyleFactory.create('Cleanlooks'))  # Estilo da Interface
         self.resize(500, 500)
+
 
         self.Dialog_Layout = QVBoxLayout() #Layout da Dialog
 
@@ -69,6 +73,7 @@ class C_OpenDSS_ConfigDialog(QDialog):
         self.TabWidget = QTabWidget()
         self.TabLoadFlow = LoadFlow()  # QWidget
         self.TabWidget.addTab(self.TabLoadFlow, "Simulação")
+
 
         self.Dialog_Layout.addWidget(self.TabWidget)
 
@@ -110,17 +115,22 @@ class C_OpenDSS_ConfigDialog(QDialog):
             return "COM"
 
     def loadParameters(self):
-        self.dataInfo = simulationOpenDSS(
-            ## Geral
-            self.getConn_GroupBox_Radio_Btn(),
-            ## Laod Flow
-            self.TabLoadFlow.get_VoltageBases(), #voltagebase
-            self.TabLoadFlow.get_Mode(), #mode
-            self.TabLoadFlow.get_Stepsize(), #stepsize
-            self.TabLoadFlow.get_Number(), #number
-            self.TabLoadFlow.get_Maxiterations(), #maxiterations
-            self.TabLoadFlow.get_Maxcontroliter() #maxcontroliter
-            )
+
+        ## Geral
+        self.dataInfo["openDSSConn"] = self.getConn_GroupBox_Radio_Btn()
+        ### LoadFlow
+        self.dataInfo["VoltageBase"] = self.TabLoadFlow.get_VoltageBases() #voltagebase
+        self.dataInfo["Mode"] = self.TabLoadFlow.get_Mode()
+        if self.dataInfo["Mode"] == "Daily":
+            self.dataInfo["StepSize"] = self.TabLoadFlow.get_Stepsize()
+            self.dataInfo["Number"] = self.TabLoadFlow.get_Number()
+            self.dataInfo["Maxiterations"] = self.TabLoadFlow.get_Maxiterations()
+            self.dataInfo["Maxcontroliter"] = self.TabLoadFlow.get_Maxcontroliter()
+            self.dataInfo["LoadShapes"] = self.TabLoadFlow.get_LoadShapes()
+
+            if not self.dataInfo["LoadShapes"]:
+                QMessageBox(QMessageBox.Information, "OpenDSS Configuration", "Curvas de cargas não estão carregadas!",
+                            QMessageBox.Ok).exec()
 
     def Accept(self):
         self.loadParameters()
@@ -170,10 +180,10 @@ class C_OpenDSS_ConfigDialog(QDialog):
             ### Tab Load Flow
             self.TabLoadFlow.LoadFlow_GroupBox_VoltageBase_LineEdit.setText(config['LoadFlow']['VoltageBase'])
             self.TabLoadFlow.Mode_GroupBox_ComboBox.setCurrentText(config['LoadFlow']['Mode'] )
-            self.TabLoadFlow.Complements_GroupBox_Stepsize_LineEdit.setText( config['LoadFlow']['StepSize'])
-            self.TabLoadFlow.Complements_GroupBox_Number_LineEdit.setText( config['LoadFlow']['Number'] )
-            self.TabLoadFlow.Complements_GroupBox_Maxiterations_SpinBox.setValue( int(config['LoadFlow']['Maxiterations']))
-            self.TabLoadFlow.Complements_GroupBox_Maxcontroliter_SpinBox.setValue(int(config['LoadFlow']['Maxcontroliter']))
+            self.TabLoadFlow.Complements_Daily_GroupBox_Stepsize_LineEdit.setText( config['LoadFlow']['StepSize'])
+            self.TabLoadFlow.Complements_Daily_GroupBox_Number_LineEdit.setText( config['LoadFlow']['Number'] )
+            self.TabLoadFlow.Complements_Daily_GroupBox_Maxiterations_SpinBox.setValue( int(config['LoadFlow']['Maxiterations']))
+            self.TabLoadFlow.Complements_Daily_GroupBox_Maxcontroliter_SpinBox.setValue(int(config['LoadFlow']['Maxcontroliter']))
 
             ##### Carregando parâmetros
 
@@ -193,6 +203,8 @@ class LoadFlow(QWidget):
         self.InitUILoadFlow()
 
     def InitUILoadFlow(self):
+        #Curvas de Carga
+        self.LoadShapesDialog = opendss.class_config_loadshape_dialog.C_Config_LoadShape_Dialog()
 
 
         ## GroupBox Fluxo de Carga
@@ -213,10 +225,10 @@ class LoadFlow(QWidget):
         self.Mode_GroupBox_Label = QLabel("Set Mode")
         self.Mode_GroupBox_ComboBox = QComboBox()
         self.Mode_GroupBox_ComboBox.addItems(self.listmode)
-        self.Mode_GroupBox_ComboBox.currentIndexChanged.connect( self.setDisabled_Complements_GroupBox)
+        self.Mode_GroupBox_ComboBox.currentIndexChanged.connect(self.setDisabled_Complements_Snapshot_GroupBox)
         self.Mode_GroupBox_QPushButton = QPushButton("Ok")
         self.Mode_GroupBox_QPushButton.setFixedWidth(30)
-        self.Mode_GroupBox_QPushButton.clicked.connect(self.setDisabled_Complements_GroupBox)
+        self.Mode_GroupBox_QPushButton.clicked.connect(self.setDisabled_Complements_Snapshot_GroupBox)
 
         # Layout do GroupoBox modo
         self.Mode_GroupBox_Layout = QGridLayout()
@@ -224,86 +236,108 @@ class LoadFlow(QWidget):
         self.Mode_GroupBox_Layout.addWidget(self.Mode_GroupBox_ComboBox, 1, 2, 1, 1)
         self.Mode_GroupBox_Layout.addWidget(self.Mode_GroupBox_QPushButton, 1, 3, 1, 1)
 
-        ## GroupBox complementos
-        self.Complements_GroupBox = QGroupBox("Complementos")
-        self.Complements_GroupBox_Stepsize_Label = QLabel("Set Stepsize:")
-        self.Complements_GroupBox_Number_Label = QLabel("Set Number:")
-        self.Complements_GroupBox_Maxiterations_Label = QLabel("Set Maxiterations:")
-        self.Complements_GroupBox_Maxcontroliter_Label = QLabel("Set Maxcontroliter:")
+        ## GroupBox complementos do Daily
+        self.Complements_Daily_GroupBox = QGroupBox("Complementos do Daily")
+
+        self.Complements_Daily_GroupBox_Stepsize_Label = QLabel("Set Stepsize:")
+        self.Complements_Daily_GroupBox_Number_Label = QLabel("Set Number:")
+        self.Complements_Daily_GroupBox_Maxiterations_Label = QLabel("Set Maxiterations:")
+        self.Complements_Daily_GroupBox_Maxcontroliter_Label = QLabel("Set Maxcontroliter:")
 
         ## LineEdit complementos
 
-        self.Complements_GroupBox_Stepsize_LineEdit = QLineEdit()
-        self.Complements_GroupBox_Number_LineEdit = QLineEdit()
-        self.Complements_GroupBox_Maxiterations_SpinBox = QSpinBox()
-        self.Complements_GroupBox_Maxcontroliter_SpinBox = QSpinBox()
+        self.Complements_Daily_GroupBox_Stepsize_LineEdit = QLineEdit()
+        self.Complements_Daily_GroupBox_Number_LineEdit = QLineEdit()
+        self.Complements_Daily_GroupBox_Maxiterations_SpinBox = QSpinBox()
+        self.Complements_Daily_GroupBox_Maxcontroliter_SpinBox = QSpinBox()
+
+        self.Complements_Daily_LoadShape_Btn = QPushButton("Load Shapes")
+        self.Complements_Daily_LoadShape_Btn.setIcon(QIcon('img/icon_ok.png'))
+        #self.Complements_Daily_LoadShape_Btn.setFixedWidth(300)
+        self.Complements_Daily_LoadShape_Btn.clicked.connect(self.dialogLoadShape)
+
 
         # Layout do GroupoBox complementos
-        self.Complements_GroupBox_Layout = QGridLayout()
-        self.Complements_GroupBox_Layout.addWidget(self.Complements_GroupBox_Stepsize_Label, 0, 0, 1, 1)
-        self.Complements_GroupBox_Layout.addWidget(self.Complements_GroupBox_Number_Label, 1, 0, 1, 1)
-        self.Complements_GroupBox_Layout.addWidget(self.Complements_GroupBox_Stepsize_LineEdit, 0, 1, 1, 1)
-        self.Complements_GroupBox_Layout.addWidget(self.Complements_GroupBox_Number_LineEdit, 1, 1, 1, 1)
-        self.Complements_GroupBox_Layout.addWidget(self.Complements_GroupBox_Maxiterations_Label, 2, 0, 1, 1)
-        self.Complements_GroupBox_Layout.addWidget(self.Complements_GroupBox_Maxcontroliter_Label, 3, 0, 1, 1)
-        self.Complements_GroupBox_Layout.addWidget(self.Complements_GroupBox_Maxiterations_SpinBox, 2, 1, 1, 1)
-        self.Complements_GroupBox_Layout.addWidget(self.Complements_GroupBox_Maxcontroliter_SpinBox, 3, 1, 1, 1)
+        self.Complements_Daily_GroupBox_Layout = QGridLayout()
+        self.Complements_Daily_GroupBox_Layout.addWidget(self.Complements_Daily_GroupBox_Stepsize_Label, 0, 0, 1, 1)
+        self.Complements_Daily_GroupBox_Layout.addWidget(self.Complements_Daily_GroupBox_Number_Label, 1, 0, 1, 1)
+        self.Complements_Daily_GroupBox_Layout.addWidget(self.Complements_Daily_GroupBox_Stepsize_LineEdit, 0, 1, 1, 1)
+        self.Complements_Daily_GroupBox_Layout.addWidget(self.Complements_Daily_GroupBox_Number_LineEdit, 1, 1, 1, 1)
+        self.Complements_Daily_GroupBox_Layout.addWidget(self.Complements_Daily_GroupBox_Maxiterations_Label, 2, 0, 1, 1)
+        self.Complements_Daily_GroupBox_Layout.addWidget(self.Complements_Daily_GroupBox_Maxcontroliter_Label, 3, 0, 1, 1)
+        self.Complements_Daily_GroupBox_Layout.addWidget(self.Complements_Daily_GroupBox_Maxiterations_SpinBox, 2, 1, 1, 1)
+        self.Complements_Daily_GroupBox_Layout.addWidget(self.Complements_Daily_GroupBox_Maxcontroliter_SpinBox, 3, 1, 1, 1)
+        self.Complements_Daily_GroupBox_Layout.addWidget(self.Complements_Daily_LoadShape_Btn, 4, 1, 1, 1)
 
         # Seta layouts
 
         self.LoadFlow_GroupBox.setLayout(self.LoadFlow_GroupBox_Layout)
         self.Mode_GroupBox.setLayout(self.Mode_GroupBox_Layout)
-        self.Complements_GroupBox.setLayout(self.Complements_GroupBox_Layout)
+        self.Complements_Daily_GroupBox.setLayout(self.Complements_Daily_GroupBox_Layout)
 
         ## Layout da TAB1
         self.Tab_layout = QVBoxLayout()
         self.Tab_layout.addWidget(self.LoadFlow_GroupBox)
         self.Tab_layout.addWidget(self.Mode_GroupBox)
-        self.Tab_layout.addWidget(self.Complements_GroupBox)
+        self.Tab_layout.addWidget(self.Complements_Daily_GroupBox)
 
         self.setLayout(self.Tab_layout)
 
-        self.setDisabled_Complements_GroupBox()
+        self.setDisabled_Complements_Snapshot_GroupBox()
 
-    def setDisabled_Complements_GroupBox(self):
+    def setDisabled_Complements_Snapshot_GroupBox(self):
 
         if self.Mode_GroupBox_ComboBox.currentText() == "Daily":
-            self.Complements_GroupBox_Stepsize_LineEdit.setEnabled(True)
-            self.Complements_GroupBox_Number_LineEdit.setEnabled(True)
-            self.Complements_GroupBox_Maxiterations_SpinBox.setEnabled(True)
-            self.Complements_GroupBox_Maxcontroliter_SpinBox.setEnabled(True)
+            self.Complements_Daily_GroupBox.setHidden(False)
+            self.Complements_Daily_GroupBox_Stepsize_LineEdit.setEnabled(True)
+            self.Complements_Daily_GroupBox_Number_LineEdit.setEnabled(True)
+            self.Complements_Daily_GroupBox_Maxiterations_SpinBox.setEnabled(True)
+            self.Complements_Daily_GroupBox_Maxcontroliter_SpinBox.setEnabled(True)
+            self.Complements_Daily_LoadShape_Btn.setEnabled(True)
         else:
-            self.Complements_GroupBox_Stepsize_LineEdit.setEnabled(False)
-            self.Complements_GroupBox_Number_LineEdit.setEnabled(False)
-            self.Complements_GroupBox_Maxiterations_SpinBox.setEnabled(False)
-            self.Complements_GroupBox_Maxcontroliter_SpinBox.setEnabled(False)
+            self.Complements_Daily_GroupBox.setHidden(True)
+            self.Complements_Daily_GroupBox_Stepsize_LineEdit.setEnabled(False)
+            self.Complements_Daily_GroupBox_Number_LineEdit.setEnabled(False)
+            self.Complements_Daily_GroupBox_Maxiterations_SpinBox.setEnabled(False)
+            self.Complements_Daily_GroupBox_Maxcontroliter_SpinBox.setEnabled(False)
+            self.Complements_Daily_LoadShape_Btn.setEnabled(False)
+
 
     # Métodos Set Variáveis
 
+    def dialogLoadShape(self):
+        self.LoadShapesDialog.nPointsLoadDef = self.get_Number()
+        self.LoadShapesDialog.nStepSizeDef = self.get_Stepsize()
+        self.LoadShapesDialog.show()
+
 
     def get_VoltageBases(self):
-        self.VoltageBases = self.LoadFlow_GroupBox_VoltageBase_LineEdit.text()
-        return self.VoltageBases
+        VoltageBases = self.LoadFlow_GroupBox_VoltageBase_LineEdit.text()
+        return VoltageBases
 
     def get_Mode(self):
-        self.mode = self.Mode_GroupBox_ComboBox.currentText()
-        return self.mode
+        mode = self.Mode_GroupBox_ComboBox.currentText()
+        return mode
 
     def get_Stepsize(self):
-        self.stepsize = self.Complements_GroupBox_Stepsize_LineEdit.text()
-        return self.stepsize
+        stepsize = self.Complements_Daily_GroupBox_Stepsize_LineEdit.text()
+        return stepsize
 
     def get_Number(self):
-        self.Number = self.Complements_GroupBox_Number_LineEdit.text()
-        return self.Number
+        Number = self.Complements_Daily_GroupBox_Number_LineEdit.text()
+        return Number
 
     def get_Maxiterations(self):
-        self.Maxiterations = self.Complements_GroupBox_Maxiterations_SpinBox.value()
-        return self.Maxiterations
+        Maxiterations = self.Complements_Daily_GroupBox_Maxiterations_SpinBox.value()
+        return Maxiterations
 
     def get_Maxcontroliter(self):
-        self.Maxcontroliter = self.Complements_GroupBox_Maxcontroliter_SpinBox.value()
-        return self.Maxcontroliter
+        Maxcontroliter = self.Complements_Daily_GroupBox_Maxcontroliter_SpinBox.value()
+        return Maxcontroliter
+
+    def get_LoadShapes(self):
+        loadShapes = self.LoadShapesDialog.dataLoadShapes
+        return loadShapes
 
 
 

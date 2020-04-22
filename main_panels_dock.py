@@ -5,7 +5,7 @@ import random
 from PyQt5.QtGui import QColor, QIcon
 import main_actions
 import class_exception
-
+import config
 
 class C_NetPanel(QDockWidget):
     def __init__(self, MainWidget):
@@ -230,28 +230,11 @@ class C_NetPanel(QDockWidget):
 
         self.NetPanel_Fields_GroupBox_Select_TreeWidget.clear()
 
-        ##colorsList = QColor.colorNames()
-        colorsList = ['aqua', 'aquamarine', 'bisque', 'black', 'blanchedalmond', 'blue', 'blueviolet', 'brown', 'burlywood',
-             'cadetblue', 'chartreuse', 'chocolate', 'coral', 'cornflowerblue', 'cornsilk', 'crimson', 'cyan', 'darkblue',
-             'darkcyan', 'darkgoldenrod', 'darkgray', 'darkgreen', 'darkgrey', 'darkkhaki', 'darkmagenta', 'darkolivegreen',
-             'darkorange', 'darkorchid', 'darksalmon', 'darkseagreen', 'darkslateblue', 'darkslategray', 'darkslategrey',
-             'darkturquoise', 'darkviolet', 'deeppink', 'deepskyblue', 'dimgray', 'dimgrey', 'dodgerblue', 'firebrick',
-             'forestgreen', 'fuchsia', 'gainsboro', 'gold', 'goldenrod', 'gray', 'green', 'greenyellow', 'grey', 'honeydew',
-             'hotpink', 'indigo', 'khaki', 'lavenderblush', 'lawngreen', 'lemonchiffon', 'lightblue', 'lightcoral',
-             'lightgray', 'lightgreen', 'lightgrey', 'lightpink', 'lightsalmon', 'lightseagreen', 'lightskyblue',
-             'lightslategray', 'lightslategrey', 'lightsteelblue', 'lime', 'limegreen', 'magenta', 'maroon',
-             'mediumaquamarine', 'mediumblue', 'mediumorchid', 'mediumpurple', 'mediumseagreen', 'mediumslateblue',
-             'mediumspringgreen', 'mediumturquoise', 'midnightblue', 'mintcream', 'mistyrose', 'moccasin', 'navy',
-             'oldlace', 'olive', 'olivedrab', 'orange', 'orchid', 'palegoldenrod', 'palegreen', 'paleturquoise',
-             'papayawhip', 'peachpuff', 'peru', 'pink', 'plum', 'powderblue', 'purple', 'rosybrown', 'royalblue',
-             'saddlebrown', 'salmon', 'sandybrown', 'seagreen', 'seashell', 'sienna', 'silver', 'skyblue', 'slateblue',
-             'slategray', 'slategrey', 'springgreen', 'steelblue', 'tan', 'teal', 'thistle', 'tomato', 'transparent',
-             'turquoise', 'violet', 'wheat', 'yellow', 'yellowgreen']
 
         for ctd in range(0, len(dadosFields)):
             NetPanel_Fields_GroupBox_Select_TreeWidget_Item(self.NetPanel_Fields_GroupBox_Select_TreeWidget,
                                                      dadosFields[ctd],
-                                                     colorsList[random.randint(0, len(colorsList) -1 )])
+                                                     config.colorsList[random.randint(0, len(config.colorsList) -1 )])
 
 
 

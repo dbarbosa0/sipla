@@ -1,13 +1,13 @@
 from PyQt5.QtWidgets import QStatusBar
 
 ###
-import class_database_conn
-import class_opendss
-import class_opendss_config_dialog
-import class_insert_dialog
-import class_database
+import database.class_conn
+import opendss.class_opendss
+import opendss.class_config_dialog
+import opendss.class_insert_dialog
+import database.class_base
 import class_exception
-import class_maps_view
+import maps.class_view
 import main_panels_dock
 import configparser
 
@@ -19,20 +19,20 @@ class C_MainActions():
         self.MainWindowStatusBar = QStatusBar()
         self.MainNetPanel = main_panels_dock.C_NetPanel(self)
         self.MainResultsPanel = main_panels_dock.C_ResultsPanel(self)
-        self.MainMapView = class_maps_view.C_MapsViewer()
+        self.MainMapView = maps.class_view.C_Viewer()
 
         #############################################
 
         self.initUI()
 
     def initUI(self): ### Instanciando os objetos
-        self.DataBaseConn = class_database_conn.C_DBaseConn()  # Carregando o acesso aos Arquivos do BDGD
-        self.DataBase = class_database.C_DBase()
-        self.OpenDSS = class_opendss.C_OpenDSS()
+        self.DataBaseConn = database.class_conn.C_DBaseConn()  # Carregando o acesso aos Arquivos do BDGD
+        self.DataBase = database.class_base.C_DBase()
+        self.OpenDSS = opendss.class_opendss.C_OpenDSS()
 
         # Contribuição Sandy
-        self.OpenDSS_DialogSettings = class_opendss_config_dialog.C_OpenDSS_ConfigDialog()  # Instânciando a classe dialog Settings
-        self.OpenDSS_DialogInsert = class_insert_dialog.C_Insert_Dialog() # Instânciando a classe dialog Insert
+        self.OpenDSS_DialogSettings = opendss.class_config_dialog.C_ConfigDialog()  # Instânciando a classe dialog Settings
+        self.OpenDSS_DialogInsert = opendss.class_insert_dialog.C_Insert_Dialog() # Instânciando a classe dialog Insert
         self.DataBase.DataBaseConn = self.DataBaseConn
         self.MainMapView.DataBaseConn = self.DataBaseConn
 
@@ -106,7 +106,7 @@ class C_MainActions():
 
         self.OpenDSS.exec_OpenDSS()
 
-        self.MainWindowStatusBar.setStatusBar_Fluxo_Text("Fluxo: " + self.OpenDSS_DialogSettings.dataInfo.Mode)
+        self.MainWindowStatusBar.setStatusBar_Fluxo_Text("Fluxo: " + self.OpenDSS_DialogSettings.dataInfo["Mode"])
         self.MainWindowStatusBar.setStatusBar_Fluxo_status_Text("Solved")
 
 

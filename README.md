@@ -8,6 +8,7 @@ Para executar o software, os seguintes pacotes são necessários:
 ```
 pip install PyQt5
 pip install PyQtWebEngine
+pip install git+https://github.com/pyqtgraph/pyqtgraph@develop
 pip install folium
 pip install 'OpenDSSDirect.py[extras]'
 ```

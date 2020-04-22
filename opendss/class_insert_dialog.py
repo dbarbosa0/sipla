@@ -4,7 +4,7 @@ from PyQt5.QtWidgets import QStyleFactory, QDialog, QGridLayout, QGroupBox, \
 
 from PyQt5.QtCore import Qt
 
-import class_opendss_conn
+import opendss.class_conn
 import class_exception
 
 
@@ -40,7 +40,7 @@ class EnergyMeter(QWidget): # Classe widget define a configuração visual da cl
     def __init__(self):
         super().__init__()
 
-        self.acces_energymeter = class_opendss_conn.C_OpenDSSDirect_Conn()
+        self.acces_energymeter = opendss.class_conn.C_OpenDSSDirect_Conn()
 
         self.InitUIEnergyMeter()
 

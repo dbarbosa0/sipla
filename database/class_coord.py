@@ -1,6 +1,6 @@
 from typing import NamedTuple
 
-import class_database_conn
+import database.class_conn
 import class_exception
 
 
@@ -14,7 +14,7 @@ class dadosTrafoDist(NamedTuple):
 
 class C_DBaseCoord():
     def __init__(self):
-        self._DataBaseConn = class_database_conn.C_DBaseConn()
+        self._DataBaseConn = database.class_conn.C_DBaseConn()
 
     @property
     def DataBaseConn(self):

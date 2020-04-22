@@ -4,9 +4,9 @@ from PyQt5.QtWidgets import QFileDialog
 from PyQt5.QtWidgets import QTableWidgetItem,QTableWidget
 import cmath
 
-import class_opendss_conn
-import class_database_conn
-import class_opendss_data
+import opendss.class_conn
+import database.class_conn
+import opendss.class_data
 import class_exception
 
 
@@ -14,9 +14,9 @@ class C_OpenDSS(): # classe OpenDSSDirect
 
     def __init__(self):
 
-        self.dataOpenDSS = class_opendss_data.C_OpenDSS_Data() #Acesso ao Banco de Dados
+        self.dataOpenDSS = opendss.class_data.C_Data() #Acesso ao Banco de Dados
 
-        self._DataBaseConn = class_database_conn.C_DBaseConn()  # Criando a instância do Banco de Dados
+        self._DataBaseConn = database.class_conn.C_DBaseConn()  # Criando a instância do Banco de Dados
 
         self._nCircuitoAT_MT = ''
         self._nSE_MT_Selecionada = ''
@@ -79,9 +79,9 @@ class C_OpenDSS(): # classe OpenDSSDirect
         ######## Define o Engine do OpenDSS
         try:
             if self.OpenDSSConn == "OpenDSSDirect":
-                self.OpenDSSEngine = class_opendss_conn.C_OpenDSSDirect_Conn()
+                self.OpenDSSEngine = opendss.class_conn.C_OpenDSSDirect_Conn()
             elif self.OpenDSSConn == "COM":
-                self.OpenDSSEngine = class_opendss_conn.C_OpenDSSCOM_Conn()
+                self.OpenDSSEngine = opendss.class_conn.C_OpenDSSCOM_Conn()
             else:
                 raise class_exception.ExecOpenDSS("Erro ao definir o Engine do OpenDSS!")
         except:
@@ -239,13 +239,13 @@ class C_OpenDSS(): # classe OpenDSSDirect
 
     def definedSettings(self, config):
 
-        self.OpenDSSConn = config.openDSSConn
+        self.OpenDSSConn = config["openDSSConn"]
 
         self.memoFileFooter = self.dataOpenDSS.memoFileFooter
-        self.memoFileFooter.append("set voltagebases = [" +  config.VoltageBase +  "]")
+        self.memoFileFooter.append("set voltagebases = [" +  config["VoltageBase"] +  "]")
         self.memoFileFooter.append("calcv")
         self.memoFileFooter.append("set mode = direct")
-        #self.memoFileFooter.append("set mode = " + config.VoltageBase + " stepsize = " +  config.StepSize + " number = " + config.Number)
+        #self.memoFileFooter.append("set mode = " + config["VoltageBase"] + " stepsize = " +  config["StepSize"] + " number = " + config["Number"])
 
         #Maxiterations: int
         #Maxcontroliter: int
