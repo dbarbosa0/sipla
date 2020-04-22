@@ -1,7 +1,7 @@
 import os
 import platform
 
-import class_database_conn
+import database.class_conn
 import class_exception 
 
 class C_DBase():
@@ -9,7 +9,7 @@ class C_DBase():
 
 ##########################
 
-        self.DataBaseConn = class_database_conn.C_DBaseConn() #Criando a instância do Banco de Dados
+        self.DataBaseConn = database.class_conn.C_DBaseConn() #Criando a instância do Banco de Dados
 
 ################################# Métodos Novos
 

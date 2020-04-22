@@ -4,7 +4,7 @@ import platform
 if platform.system() == "Windows":
     import win32com.client
 
-class C_OpenDSS_Conn(): # classe OpenDSS com métodos virtuais
+class C_Conn(): # classe OpenDSS com métodos virtuais
 
     def __init__(self):
         self.FileOpenDSS = ''
@@ -37,7 +37,7 @@ class C_OpenDSS_Conn(): # classe OpenDSS com métodos virtuais
         return self.run("Show losses")
 
 
-class C_OpenDSSDirect_Conn(C_OpenDSS_Conn):  # classe OpenDSSDirect
+class C_OpenDSSDirect_Conn(C_Conn):  # classe OpenDSSDirect
 
     def __init__(self):
         self.engine = opendssdirect
@@ -55,7 +55,7 @@ class C_OpenDSSDirect_Conn(C_OpenDSS_Conn):  # classe OpenDSSDirect
         return self.engineCircuit.AllBusVolts()
 
 
-class C_OpenDSSCOM_Conn(C_OpenDSS_Conn):  # classe OpenDSSCOM
+class C_OpenDSSCOM_Conn(C_Conn):  # classe OpenDSSCOM
 
     def __init__(self):
         # start an embedded DSS engine through COM

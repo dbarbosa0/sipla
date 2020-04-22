@@ -1,14 +1,14 @@
-import class_database_data
+import database.class_data
 import class_exception
 
-import class_database_conn
+import database.class_conn
 
-class C_OpenDSS_Data(): # classe OpenDSS
+class C_Data(): # classe OpenDSS
 
     def __init__(self):
 
-        self.DataBase = class_database_data.C_DBaseData() #Acesso ao Banco de Dados
-        self._DataBaseConn = class_database_conn.C_DBaseConn()  # Carregando o acesso aos Arquivos do BDGD
+        self.DataBase = database.class_data.C_DBaseData() #Acesso ao Banco de Dados
+        self._DataBaseConn = database.class_conn.C_DBaseConn()  # Carregando o acesso aos Arquivos do BDGD
         
         
         self._nCircuitoAT_MT = ''

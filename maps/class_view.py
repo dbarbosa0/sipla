@@ -2,16 +2,16 @@ import io
 import folium
 from PyQt5 import QtWebEngineWidgets
 
-import class_database_coord
-import class_database_conn
+import database.class_coord
+import database.class_conn
 
-class C_MapsViewer():
+class C_Viewer():
 
     def __init__(self):
 
         #################################
-        self._DataBaseCoord = class_database_coord.C_DBaseCoord()
-        self._DataBaseConn = class_database_conn.C_DBaseConn()
+        self._DataBaseCoord = database.class_coord.C_DBaseCoord()
+        self._DataBaseConn = database.class_conn.C_DBaseConn()
         #################################
 
         self.mapFields = ''

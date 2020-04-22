@@ -5,8 +5,8 @@ from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import QApplication, QMainWindow, QStyleFactory
 
 ###
-import class_database_conn
-import class_maps_view
+import config
+import maps.class_view
 ###################################
 # Classes de Construção da Interface Inicial
 import main_statusbar
@@ -16,14 +16,13 @@ import main_panels
 import main_panels_dock
 
 
-__version__ = "0.0.2"
 
 
 class mainWindow(QMainWindow):
     def __init__(self, parent=None):
         super(mainWindow, self).__init__(parent)
 
-        self.titleWindow = "SIPLA - Version: " + __version__
+        self.titleWindow = "SIPLA - Version: " + config.__version__
         self.iconWindow = "img/logo.png"
         self.stylesheet = "fusion"
 
@@ -45,7 +44,7 @@ class mainWindow(QMainWindow):
         self.mainActions = main_actions.C_MainActions()  # Carregando os métodos da interface principal
 
         #Instaciando os Demais Objetos
-        self.mainMapView = class_maps_view.C_MapsViewer() ##Carregando Mapa
+        self.mainMapView = maps.class_view.C_Viewer() ##Carregando Mapa
 
         ### Vinculando o Motor do Mapa ao Painel Central
         self.mainMapView.setWebView(self.mainPainelCentral.MapPainel_WebView)
