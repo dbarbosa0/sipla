@@ -25,16 +25,13 @@ class C_Conn(): # classe OpenDSS com métodos virtuais
     def Circuit_AllNodeVmagByPhase(self, phase):
         return self.engineCircuit.AllNodeVmagByPhase(phase)
 
+    def Circuit_AllElementNames(self):
+        return self.engineCircuit.AllElementNames()
+
     #Acesso a classe EnergyMeter
 
     def EnergyMeter_AllNames(self):
         return self.engineMeters.AllNames()
-
-    def EnergyMeter_AllElementNames(self):
-        return self.engineCircuit.AllElementNames()
-
-    def EnergyMeter_ResetAll(self):
-        return self.run("Show losses")
 
 
 class C_OpenDSSDirect_Conn(C_Conn):  # classe OpenDSSDirect

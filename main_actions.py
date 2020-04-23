@@ -21,6 +21,7 @@ class C_MainActions():
         self.MainResultsPanel = main_panels_dock.C_ResultsPanel(self)
         self.MainMapView = maps.class_view.C_Viewer()
 
+
         #############################################
 
         self.initUI()
@@ -33,6 +34,7 @@ class C_MainActions():
         # Contribuição Sandy
         self.OpenDSS_DialogSettings = opendss.class_config_dialog.C_ConfigDialog()  # Instânciando a classe dialog Settings
         self.OpenDSS_DialogInsert = opendss.class_insert_dialog.C_Insert_Dialog() # Instânciando a classe dialog Insert
+        self.OpenDSS_DialogInsert.TabEnergyMeter.OpenDSS = self.OpenDSS
         self.DataBase.DataBaseConn = self.DataBaseConn
         self.MainMapView.DataBaseConn = self.DataBaseConn
 
@@ -118,8 +120,8 @@ class C_MainActions():
         self.setStatusBar("FlowStatus", "Solved")
 
     def execInsertDSS(self):
+        self.OpenDSS_DialogInsert.TabEnergyMeter.updateDialog()
         self.OpenDSS_DialogInsert.show()
-        self.OpenDSS_DialogInsert.TabEnergyMeter.get_EnergyMeter_AllBusNames_()
 
 
     def execCreateDSS(self):

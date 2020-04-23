@@ -22,6 +22,7 @@ class C_OpenDSS(): # classe OpenDSSDirect
         self._nSE_MT_Selecionada = ''
         self._nFieldsMT = ''
 
+        self.OpenDSSEngine = opendss.class_conn.C_Conn()
         self._OpenDSSConfig = {}
         self.memoLoadShapes = ''
 
@@ -147,7 +148,7 @@ class C_OpenDSS(): # classe OpenDSSDirect
                     self.execOpenDSSFunc[ctd][-1]()
             else:
                 self.execOpenDSSFunc[ctd][-1]()
-            print(msg)
+            #print(msg)
 
 
 
@@ -218,6 +219,7 @@ class C_OpenDSS(): # classe OpenDSSDirect
 
 
     def saveFileDSS(self, dirSave, nameMemo, dataMemo ): #Salvar em Arquivo
+
         arquivo = open(dirSave +  nameMemo + ".dss", 'w', encoding='utf-8')
         arquivo.writelines( dataMemo )
         arquivo.close()
@@ -276,15 +278,17 @@ class C_OpenDSS(): # classe OpenDSSDirect
                 self.OpenDSSEngine.run(com)
 
         try:
-            self.OpenDSSEngine.run("Solve")
+            self.exec_OpenDSSRun("Solve")
         except:
             class_exception.ExecOpenDSS("Erro ao executar o fluxo de potência resolvido!")
 
 #            self.OpenDSSEngine.run("Show Voltage LN Nodes")
         self.getVoltageResults() ## Mostrando o resultado das tensões
         #self.OpenDSSEngine.run("Solve")
-        self.OpenDSSEngine.run("Show Voltage LN Nodes")
+        self.exec_OpenDSSRun("Show Voltage LN Nodes")
 
+    def exec_OpenDSSRun(self, command):
+        self.OpenDSSEngine.run(command)
 
     def getVoltageResults(self):
 
@@ -342,3 +346,12 @@ class C_OpenDSS(): # classe OpenDSSDirect
             pass
             #class_exception.ExecOpenDSS("Erro ao processar as tensões!", "Fase C")
 
+    ## Gets class_insert_dialog
+
+    def getAllNamesEnergyMeter(self):
+
+        return self.OpenDSSEngine.EnergyMeter_AllNames()
+
+    def getAllNamesElements(self):
+
+        return self.OpenDSSEngine.Circuit_AllElementNames()
