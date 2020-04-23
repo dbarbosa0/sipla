@@ -36,7 +36,6 @@ class C_MainActions():
         self.DataBase.DataBaseConn = self.DataBaseConn
         self.MainMapView.DataBaseConn = self.DataBaseConn
 
-
         #############################################
 
     def acessDataBase(self):

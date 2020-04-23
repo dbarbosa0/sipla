@@ -22,17 +22,18 @@ class C_OpenDSS(): # classe OpenDSSDirect
         self._nSE_MT_Selecionada = ''
         self._nFieldsMT = ''
 
-        self._OpenDSSConn = ''
+        self._OpenDSSConfig = {}
 
         self.tableVoltageResults = QTableWidget() # Tabela de Resultados
 
-    @property
-    def OpenDSSConn(self):
-        return self._OpenDSSConn
 
-    @OpenDSSConn.setter
-    def OpenDSSConn(self, value):
-        self._OpenDSSConn = value
+    @property
+    def OpenDSSConfig(self):
+        return self._OpenDSSConfig
+
+    @OpenDSSConfig.setter
+    def OpenDSSConfig(self, value):
+        self._OpenDSSConfig = value
 
     @property
     def DataBaseConn(self):
@@ -78,9 +79,9 @@ class C_OpenDSS(): # classe OpenDSSDirect
 
         ######## Define o Engine do OpenDSS
         try:
-            if self.OpenDSSConn == "OpenDSSDirect":
+            if self.OpenDSSConfig["openDSSConn"] == "OpenDSSDirect":
                 self.OpenDSSEngine = opendss.class_conn.C_OpenDSSDirect_Conn()
-            elif self.OpenDSSConn == "COM":
+            elif self.OpenDSSConfig["openDSSConn"] == "COM":
                 self.OpenDSSEngine = opendss.class_conn.C_OpenDSSCOM_Conn()
             else:
                 raise class_exception.ExecOpenDSS("Erro ao definir o Engine do OpenDSS!")
@@ -97,6 +98,7 @@ class C_OpenDSS(): # classe OpenDSSDirect
 
         self.execOpenDSSFunc = {"header": ["Cabeçalho ...", self.dataOpenDSS.exec_HeaderFile],
                       "EqThAT": ["Equivalente de Thevenin ...", self.dataOpenDSS.exec_EQUIVALENTE_DE_THEVENIN],
+                      "LoadShapes": ["Curvas de Carga ...", self.exec_LOADSHAPES],
                       # "EqThMT":["Equivalente de Thevenin MT...",self.dataOpenDSS.exec_EQUIVALENTE_DE_THEVENIN_MEDIA],
                       "SecEqThAT_SecAT": ["Chaves entre o Equivalente e a SecAT ...", self.dataOpenDSS.exec_SEC_EQTHAT_SECAT],
                       "TrafoATMT": ["Trafo AT - MT...", self.dataOpenDSS.exec_TRANSFORMADORES_DE_ALTA_PARA_MEDIA],
@@ -123,7 +125,8 @@ class C_OpenDSS(): # classe OpenDSSDirect
                       "ChUnipolarSEMTControl": ["Controle da Chave Unipolar da SE MT ...",self.dataOpenDSS.exec_CONTROLE_SEC_CHAVE_UNIPOLAR_SUBESTACAO_DE_MEDIA_TENSAO],
                       # ObsSandy1             #"Reg":["Regulador MT ...",self.dataOpenDSS.exec_REGULADORES_DE_MEDIA_TENSAO],
                       "SegMT": ["Segmentos de Linhas MT ...", self.dataOpenDSS.exec_SEG_LINHAS_DE_MEDIA_TENSAO],
-                      #"UConMT": ["Unidades Consumidoras MT ...", self.dataOpenDSS.exec_UNID_CONSUMIDORAS_MT],
+                      "UConMT": ["Unidades Consumidoras MT ...", self.dataOpenDSS.exec_UNID_CONSUMIDORAS_MT],
+                      "UConMTLoadShapes": ["Unidades Consumidoras MT - Curvas de Carga ...", self.dataOpenDSS.exec_UNID_CONSUMIDORAS_LOADSHAPES_MT],
                       # ObsSandy2            #"TrafoDist":["Trafos de Distribuição ...",self.dataOpenDSS.exec_TRANSFORMADORES_DE_DISTRIBUICAO],
                       # "SegBT":["Segmentos de Linhas BT ...",self.dataOpenDSS.exec_SEG_LINHAS_DE_BAIXA_TENSAO],
                       # "UConBT":["Unidades Consumidoras BT ...",self.dataOpenDSS.exec_UNID_CONSUMIDORAS_BT],
@@ -142,7 +145,12 @@ class C_OpenDSS(): # classe OpenDSSDirect
         for ctd in self.execOpenDSSFunc:
             msg = self.execOpenDSSFunc[ctd][-2]
             #Executando a função
-            self.execOpenDSSFunc[ctd][-1]()
+            ### Verificando o modo de operação
+            if (ctd == "UConMTLoadShapes") or (ctd == "LoadShapes"):
+                if self.OpenDSSConfig["Mode"] == "Daily":
+                    self.execOpenDSSFunc[ctd][-1]()
+            else:
+                self.execOpenDSSFunc[ctd][-1]()
 
         #   ctdN += 1
         #    self.OpenDSS_Progress_Dialog.Info_GroupBox_MsgLabel.setText(msg)
@@ -153,6 +161,7 @@ class C_OpenDSS(): # classe OpenDSSDirect
 
         self.OpenDSSDataResult = {"header": self.dataOpenDSS.memoFileHeader,
                       "EqThAT": self.dataOpenDSS.memoFileEqTh,
+                      "LoadShapes": self.memoLoadShapes,
                       # "EqThMT":self.dataOpenDSS.memoFileEqThMT,
                       "SecEqThAT_SecAT": self.dataOpenDSS.memoFileSecAT_EqThAT,
                       "TrafoATMT": self.dataOpenDSS.memoFileTrafoATMT,
@@ -180,6 +189,7 @@ class C_OpenDSS(): # classe OpenDSSDirect
                       # ObsSandy1             #"Reg":self.dataOpenDSS.memoFileReguladorMT,
                       "SegMT":self.dataOpenDSS.memoFileSegLinhasMT,
                       "UConMT":self.dataOpenDSS.memoFileUniConsumidoraMT,
+                      "UConMTLoadShapes": self.dataOpenDSS.memoFileUniConsumidoraLoadShapesMT,
                       # ObsSandy2            #"TrafoDist":self.dataOpenDSS.memoFileTrafoDist,
                       # "SegBT":self.dataOpenDSS.memoFileSegLinhasBT,
                       # "UConBT":self.dataOpenDSS.memoFileUniConsumidoraBT,
@@ -239,17 +249,30 @@ class C_OpenDSS(): # classe OpenDSSDirect
 
     def definedSettings(self, config):
 
-        self.OpenDSSConn = config["openDSSConn"]
+        ## Configurando os parâmetros
+        self.OpenDSSConfig = config
 
+        ######
         self.memoFileFooter = self.dataOpenDSS.memoFileFooter
-        self.memoFileFooter.append("set voltagebases = [" +  config["VoltageBase"] +  "]")
-        self.memoFileFooter.append("calcv")
-        self.memoFileFooter.append("set mode = direct")
-        #self.memoFileFooter.append("set mode = " + config["VoltageBase"] + " stepsize = " +  config["StepSize"] + " number = " + config["Number"])
+        self.memoFileFooter.append("set voltagebases = [" + self.OpenDSSConfig["VoltageBase"] + "]")
+        self.memoFileFooter.append("Calcvoltagebases")
 
-        #Maxiterations: int
-        #Maxcontroliter: int
+        if self.OpenDSSConfig["Mode"] == "Daily":
+            self.memoFileFooter.append("set mode = " + self.OpenDSSConfig["Mode"] + " stepsize = " \
+                                       + self.OpenDSSConfig["StepSize"] + " number = " + self.OpenDSSConfig["Number"])
+        else:
+            self.memoFileFooter.append("set mode = " + self.OpenDSSConfig["Mode"])
 
+    def exec_LOADSHAPES(self):
+
+        loadShapes = self.OpenDSSConfig["LoadShapes"]
+
+        self.memoLoadShapes = []
+
+        for ctd in loadShapes:
+            self.memoLoadShapes.append("New LoadShape.{0}".format(ctd) + " npts={0}".format(self.OpenDSSConfig["Number"]) \
+                                       + " interval={0}".format(self.OpenDSSConfig["StepSize"]) \
+                                       + " mult =" + str(loadShapes[ctd]) + " action = normalize")
 
     def exec_OpenDSS(self):
 

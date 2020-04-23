@@ -83,9 +83,11 @@ class C_Data(): # classe OpenDSS
         self.memoFileReguladorMT = []  # Regulador de  Média Tensão
         self.memoFileSegLinhasMT = []  # Segmentos de Linhas de  Média Tensão
         self.memoFileUniConsumidoraMT = []  # Unidade Consumidora de Média Tensão
+        self.memoFileUniConsumidoraLoadShapesMT = []  # Unidade Consumidora de Média Tensão - Curvas de Carga
         self.memoFileTrafoDist = []  #Transformadores de Distribuição
         self.memoFileSegLinhasBT = []  # Segmentos de Linhas de Baixa Tensão
         self.memoFileUniConsumidoraBT = []  # Unidade Consumidora de Baixa Tensão
+        self.memoFileUniConsumidoraLoadShapesBT = []  # Unidade Consumidora de Baixa Tensão - Curvas de Carga
         self.memoFileRamaisLigBT = [] # Ramais de Ligação
         self.memoFileUndCompReatMT = [] #Unidade de Compensação de Reativo de Baixa Tensão
         self.memoFileUndCompReatBT = [] #Unidade de Compensação de Reativo de Baixa Tensão
@@ -882,7 +884,7 @@ class C_Data(): # classe OpenDSS
                     tmp = "New Load.{0}".format(dados_db[ctd].objectid) + " Bus1={0}".format(pac_1) +  " Phases={0}".format(num_de_fases)
                     tmp += " model=8 ZIPV=[0.5 0 0.5 1 0 0]" + " Kv={0}".format(nivel_de_tensao)
                     tmp += " kW={0}".format(dados_db[ctd].car_inst) + " PF= 0.92"
-                    tmp += " conn={0}".format(conexao) + " daily={0}".format(str(dados_db[ctd].tip_cc.replace(' ', "")))
+                    tmp += " conn={0}".format(conexao)
 
                     memoFileSEC.append(tmp)
 
@@ -903,6 +905,48 @@ class C_Data(): # classe OpenDSS
         self.memoFileUniConsumidoraBT = self.getUNIDADE_CONSUMIDORA(self.nSE_MT_Selecionada, "BT")
 
         self.memoFileUniConsumidoraBT.insert(0, "! UNIDADES CONSUMIDORAS DE BAIXA TENSAO ")
+
+    def getUNIDADE_CONSUMIDORA_LOADSHAPES(self, nomeSE_MT, tipoUniCons):
+        try:
+
+            dados_ctmt = self.DataBase.getData_CTMT(None)
+
+            lista_de_identificadores_dos_alimentadores = self.getID_Fields(dados_ctmt)
+
+            if tipoUniCons == "MT":  # Segmentos de Linhas
+                dados_db = self.DataBase.getData_UniConsumidora(nomeSE_MT, "MT")
+            elif tipoUniCons == "BT":  # Regulador de Média
+                dados_db = self.DataBase.getData_UniConsumidora(nomeSE_MT, "BT")
+            else:
+                raise class_exception.ExecOpenDSS("Erro ao carregar as informações das Unidades Consumidoras, pois o tipo não foi especificado! \n" + tipoUniCons)
+
+            memoFileSEC = []
+
+            for ctd in range(0, len(dados_db)):
+
+                if (dados_db[ctd].ctmt in lista_de_identificadores_dos_alimentadores):
+
+                    tmp = "Edit Load.{0}".format(dados_db[ctd].objectid) + " daily={0}".format(str(dados_db[ctd].tip_cc.replace(' ', "")))
+
+                    memoFileSEC.append(tmp)
+
+            return memoFileSEC
+
+        except:
+            raise class_exception.ExecOpenDSS("Erro ao carregar as informações das Unidades Consumidoras: " + tipoUniCons)
+
+    def exec_UNID_CONSUMIDORAS_LOADSHAPES_MT(self):
+
+        self.memoFileUniConsumidoraLoadShapesMT = self.getUNIDADE_CONSUMIDORA_LOADSHAPES(self.nSE_MT_Selecionada, "MT")
+
+        self.memoFileUniConsumidoraLoadShapesMT.insert(0, "! UNIDADES CONSUMIDORAS DE MEDIA TENSAO  - CURVAS DE CARGA")
+
+    def exec_UNID_CONSUMIDORAS_LOADSHAPES_BT(self):
+
+        self.memoFileUniConsumidoraLoadShapesBT = self.getUNIDADE_CONSUMIDORA_LOADSHAPES(self.nSE_MT_Selecionada, "BT")
+
+        self.memoFileUniConsumidoraLoadShapesBT.insert(0, "! UNIDADES CONSUMIDORAS DE BAIXA TENSAO - CURVAS DE CARGA ")
+
 
     def getTRANSFORMADORES_DE_DISTRIBUICAO(self, nomeSE_MT):
         try:

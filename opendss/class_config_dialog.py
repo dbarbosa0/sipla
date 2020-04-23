@@ -33,8 +33,6 @@ class C_ConfigDialog(QDialog):
 
         self.InitUI()
 
-
-
     def InitUI(self):
 
         self.setWindowTitle(self.titleWindow)
@@ -186,8 +184,6 @@ class C_ConfigDialog(QDialog):
             self.TabLoadFlow.Complements_Daily_GroupBox_Maxcontroliter_SpinBox.setValue(int(config['LoadFlow']['Maxcontroliter']))
 
             ##### Carregando parâmetros
-
-
             self.loadParameters()
 
         except:
@@ -198,14 +194,13 @@ class LoadFlow(QWidget):
     def __init__(self):
         super().__init__()
 
-        self.listmode = ["Snapshot", "Daily"]  # lista de modos disponíveis
+        self.listmode = ["Direct", "Snapshot", "Daily"]  # lista de modos disponíveis
 
         self.InitUILoadFlow()
 
     def InitUILoadFlow(self):
         #Curvas de Carga
         self.LoadShapesDialog = opendss.class_config_loadshape_dialog.C_Config_LoadShape_Dialog()
-
 
         ## GroupBox Fluxo de Carga
         self.LoadFlow_GroupBox = QGroupBox("Fluxo de Carga")
@@ -216,7 +211,6 @@ class LoadFlow(QWidget):
         self.LoadFlow_GroupBox_Layout = QGridLayout()
         self.LoadFlow_GroupBox_Layout.addWidget(self.LoadFlow_GroupBox_VoltageBase_Label, 0, 0, 1, 1)
         self.LoadFlow_GroupBox_Layout.addWidget(self.LoadFlow_GroupBox_VoltageBase_LineEdit, 0, 1, 1, 1)
-        
         
 
         ## GroupBox Modo
@@ -338,7 +332,5 @@ class LoadFlow(QWidget):
     def get_LoadShapes(self):
         loadShapes = self.LoadShapesDialog.dataLoadShapes
         return loadShapes
-
-
 
 

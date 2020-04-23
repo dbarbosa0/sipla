@@ -22,7 +22,7 @@ class mainWindow(QMainWindow):
     def __init__(self, parent=None):
         super(mainWindow, self).__init__(parent)
 
-        self.titleWindow = "SIPLA - Version: " + config.__version__
+        self.titleWindow = config.__name__ + " - Version: " + config.__version__
         self.iconWindow = "img/logo.png"
         self.stylesheet = "fusion"
 
