@@ -101,6 +101,7 @@ class C_MainActions():
         self.OpenDSS_DialogSettings.show()
 
     def execOpenDSS(self):
+
         self.execCreateDSS() ## Cria o arquivo que será utilizado pelo OpenDSS
 
         self.OpenDSS.exec_OpenDSS()

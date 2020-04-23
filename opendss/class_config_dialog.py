@@ -211,7 +211,6 @@ class LoadFlow(QWidget):
         self.LoadFlow_GroupBox_Layout = QGridLayout()
         self.LoadFlow_GroupBox_Layout.addWidget(self.LoadFlow_GroupBox_VoltageBase_Label, 0, 0, 1, 1)
         self.LoadFlow_GroupBox_Layout.addWidget(self.LoadFlow_GroupBox_VoltageBase_LineEdit, 0, 1, 1, 1)
-        
 
         ## GroupBox Modo
         self.Mode_GroupBox = QGroupBox("Modo")
