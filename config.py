@@ -1,3 +1,5 @@
+__name__ = "SIPLA"
+
 __version__ = "0.0.2"
 
 ##colorsList = QColor.colorNames()

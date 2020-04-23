@@ -177,9 +177,7 @@ class C_Config_LoadShape_Dialog(QDialog):
             check = Qt.Unchecked
 
         for ctd in range(0, self.Shapes_GroupBox_TreeWidget.topLevelItemCount()):
-
             Item = self.Shapes_GroupBox_TreeWidget.topLevelItem(ctd)
-
             Item.setCheckState(0, check)
 
 
@@ -188,7 +186,6 @@ class C_Config_LoadShape_Dialog(QDialog):
         self.dataLoadShapes = {}
 
         try:
-
             for ctd in range(0, self.Shapes_GroupBox_TreeWidget.topLevelItemCount()):
 
                 Item = self.Shapes_GroupBox_TreeWidget.topLevelItem(ctd)
