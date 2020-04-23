@@ -23,6 +23,7 @@ class C_OpenDSS(): # classe OpenDSSDirect
         self._nFieldsMT = ''
 
         self._OpenDSSConfig = {}
+        self.memoLoadShapes = ''
 
         self.tableVoltageResults = QTableWidget() # Tabela de Resultados
 
