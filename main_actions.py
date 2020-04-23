@@ -38,10 +38,19 @@ class C_MainActions():
 
         #############################################
 
+    def setStatusBar(self, type, msg):
+
+        if type == "Status":
+            self.MainWindowStatusBar.setStatusBar_Status_Text(msg)
+        elif type == "Flow":
+            self.MainWindowStatusBar.setStatusBar_Fluxo_Text(msg)
+        elif type == "FlowStatus":
+            self.MainWindowStatusBar.setStatusBar_Fluxo_status_Text(msg)
+
     def acessDataBase(self):
         try:
             self.DataBaseConn.setDirDataBase()
-            self.MainWindowStatusBar.setStatusBar_Status_Text("On-Line")
+            self.setStatusBar("Status", "On-Line")
             self.getSE_AT_DB()
 
         except class_exception.ConnDataBaseError:
@@ -105,10 +114,8 @@ class C_MainActions():
         self.execCreateDSS() ## Cria o arquivo que será utilizado pelo OpenDSS
 
         self.OpenDSS.exec_OpenDSS()
-
-        self.MainWindowStatusBar.setStatusBar_Fluxo_Text("Fluxo: " + self.OpenDSS_DialogSettings.dataInfo["Mode"])
-        self.MainWindowStatusBar.setStatusBar_Fluxo_status_Text("Solved")
-
+        self.setStatusBar("Flow", self.OpenDSS_DialogSettings.dataInfo["Mode"])
+        self.setStatusBar("FlowStatus", "Solved")
 
     def execInsertDSS(self):
         self.OpenDSS_DialogInsert.show()
@@ -116,7 +123,10 @@ class C_MainActions():
 
 
     def execCreateDSS(self):
+        ## Zerando os resultados anteriores
+        #self.MainResultsPanel.reloadTabs()
 
+        ## Passando Parâmetros
         self.OpenDSS.definedSettings(self.OpenDSS_DialogSettings.dataInfo)
 
         self.OpenDSS.DataBaseConn = self.DataBaseConn
@@ -126,8 +136,6 @@ class C_MainActions():
         self.OpenDSS.tableVoltageResults = self.MainResultsPanel.TableVoltage
 
         self.OpenDSS.loadData()
-
-
 
 
     def saveOpenDSS(self):

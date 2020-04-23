@@ -92,7 +92,6 @@ class C_OpenDSS(): # classe OpenDSSDirect
 
 
     ##########
-       # self.OpenDSS_Progress_Dialog = C_OpenDSS_ExecDialog()
 
 
         ##### Executa os Arquitvos que serão executados e inseridos
@@ -138,11 +137,7 @@ class C_OpenDSS(): # classe OpenDSSDirect
                       }
 
 
-       # self.OpenDSS_Progress_Dialog.progBar.setMaximum(len(self.execFunc))
-
-        #self.OpenDSS_Progress_Dialog.show()
-
-        #ctdN = 0
+        ctdN = 0
         for ctd in self.execOpenDSSFunc:
             msg = self.execOpenDSSFunc[ctd][-2]
             #Executando a função
@@ -152,12 +147,8 @@ class C_OpenDSS(): # classe OpenDSSDirect
                     self.execOpenDSSFunc[ctd][-1]()
             else:
                 self.execOpenDSSFunc[ctd][-1]()
+            print(msg)
 
-        #   ctdN += 1
-        #    self.OpenDSS_Progress_Dialog.Info_GroupBox_MsgLabel.setText(msg)
-       #     self.OpenDSS_Progress_Dialog.progBar.setValue(ctdN)
-       #     print(self.OpenDSS_Progress_Dialog.progBar.value())
-            #self.OpenDSS_Progress_Dialog.close()
 
 
         self.OpenDSSDataResult = {"header": self.dataOpenDSS.memoFileHeader,
@@ -292,7 +283,7 @@ class C_OpenDSS(): # classe OpenDSSDirect
 #            self.OpenDSSEngine.run("Show Voltage LN Nodes")
         self.getVoltageResults() ## Mostrando o resultado das tensões
         #self.OpenDSSEngine.run("Solve")
-        #self.OpenDSSEngine.run("Show Voltage LN Nodes")
+        self.OpenDSSEngine.run("Show Voltage LN Nodes")
 
 
     def getVoltageResults(self):

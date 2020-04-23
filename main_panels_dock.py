@@ -11,7 +11,6 @@ class C_NetPanel(QDockWidget):
     def __init__(self, MainWidget):
         QDockWidget.__init__(self)
         self.MainWidget = MainWidget
-
         self.mainActions = main_actions.C_MainActions
 
         self.setWindowTitle("Dados da Rede")
@@ -370,15 +369,20 @@ class C_ResultsPanel(QDockWidget):
     def InitUI(self):
 
         ## Tabs
+        self.TabWidget = QTabWidget()
+        ######
+        self.reloadTabs() ##Carregando os Tabs
+        self.setWidget(self.TabWidget)
+
+    def reloadTabs(self):
+
+        for ctd in range(0, self.TabWidget.count()):
+            self.TabWidget.removeTab(ctd)
 
         ##### Voltage
-        self.TabWidget = QTabWidget()
+
         self.TableVoltage = TableVoltageResults()  # QWidget
         self.TabWidget.addTab(self.TableVoltage, "Tensões")
-
-        ######
-
-        self.setWidget(self.TabWidget)
 
 
 class TableVoltageResults(QTableWidget):
@@ -388,7 +392,6 @@ class TableVoltageResults(QTableWidget):
         self.InitUI()
 
     def InitUI(self):
-
 
         columnsTable = ('Barras', 'Va (kV)', '\u03B8a ( \u03B1 )', 'Vb (kV)', '\u03B8b ( \u03B1 )', 'Vc (kV)', '\u03B8c ( \u03B1 )', \
                         'Va (pu)', '\u03B8a ( \u03B1 )', 'Vb (pu)', '\u03B8b ( \u03B1 )', 'Vc (pu)', '\u03B8c ( \u03B1 )')
