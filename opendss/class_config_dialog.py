@@ -1,5 +1,5 @@
 from PyQt5.QtGui import QIcon
-from PyQt5.QtWidgets import QStyleFactory, QDialog, QGridLayout, QGroupBox, QHBoxLayout,\
+from PyQt5.QtWidgets import QStyleFactory, QDialog, QGridLayout, QGroupBox, QHBoxLayout, QCheckBox, \
     QPushButton, QVBoxLayout, QTabWidget, QLabel, QComboBox, QLineEdit, QRadioButton, QSpinBox, QWidget, QMessageBox
 from PyQt5.QtCore import Qt
 
@@ -19,17 +19,7 @@ class C_ConfigDialog(QDialog):
         self.iconWindow = "img/logo.png"
         self.stylesheet = "fusion"
 
-        self.dataInfo = {### Default
-                        "openDSSConn": "",
-                        ### LoadFlow
-                        "VoltageBase": "",
-                        "Mode": "",
-                        "StepSize": "",
-                        "Number": "",
-                        "Maxiterations": 0,
-                        "Maxcontroliter": 0,
-                        "LoadShapes":{}
-                        }
+        self.dataInfo = {}
 
         self.InitUI()
 
@@ -118,7 +108,10 @@ class C_ConfigDialog(QDialog):
         self.dataInfo["openDSSConn"] = self.getConn_GroupBox_Radio_Btn()
         ### LoadFlow
         self.dataInfo["VoltageBase"] = self.TabLoadFlow.get_VoltageBases() #voltagebase
+        self.dataInfo["UNCMT"] = self.TabLoadFlow.get_UNC(self.TabLoadFlow.LoadFlow_GroupBox_UNCMT_CheckBox)
+        self.dataInfo["UNCBTTD"] = self.TabLoadFlow.get_UNC(self.TabLoadFlow.LoadFlow_GroupBox_UNCBT_TD_CheckBox)
         self.dataInfo["Mode"] = self.TabLoadFlow.get_Mode()
+
         if self.dataInfo["Mode"] == "Daily":
             self.dataInfo["StepSize"] = self.TabLoadFlow.get_Stepsize()
             self.dataInfo["Number"] = self.TabLoadFlow.get_Number()
@@ -128,6 +121,10 @@ class C_ConfigDialog(QDialog):
 
             if not self.dataInfo["LoadShapes"]:
                 QMessageBox(QMessageBox.Information, "OpenDSS Configuration", "Curvas de cargas não estão carregadas!",
+                            QMessageBox.Ok).exec()
+
+            if (self.dataInfo["UNCMT"] == "0") or (self.dataInfo["UNCBTTD"] == "0"):
+                QMessageBox(QMessageBox.Information, "OpenDSS Configuration", "Algumas cargas não serão consideradas!",
                             QMessageBox.Ok).exec()
 
     def Accept(self):
@@ -145,6 +142,8 @@ class C_ConfigDialog(QDialog):
             ## Load Flow
             config['LoadFlow']= {  }
             config['LoadFlow']['VoltageBase'] = self.TabLoadFlow.get_VoltageBases()
+            config['LoadFlow']["UNCMT"] = self.TabLoadFlow.get_UNC(self.TabLoadFlow.LoadFlow_GroupBox_UNCMT_CheckBox)
+            config['LoadFlow']["UNCBTTD"] = self.TabLoadFlow.get_UNC(self.TabLoadFlow.LoadFlow_GroupBox_UNCBT_TD_CheckBox)
             config['LoadFlow']['Mode'] = self.TabLoadFlow.get_Mode()
             config['LoadFlow']['StepSize'] = self.TabLoadFlow.get_Stepsize()
             config['LoadFlow']['Number'] = self.TabLoadFlow.get_Number()
@@ -156,7 +155,6 @@ class C_ConfigDialog(QDialog):
 
             QMessageBox(QMessageBox.Information, "OpenDSS Configuration", "Configurações Salvas com Sucesso!", QMessageBox.Ok).exec()
 
-
         except:
             raise class_exception.ExecConfigOpenDSS("Configuração da Simulação", "Erro ao salvar os parâmetros do Fluxo de Carga!")
 
@@ -167,12 +165,22 @@ class C_ConfigDialog(QDialog):
             config.read('siplaconfig.ini')
 
             ## Default
-            if config['Default']['OpenDSSConn']  == "OpenDSSDirect":
+            if config['Default']['OpenDSSConn'] == "OpenDSSDirect":
                 self.Conn_GroupBox_OpenDSSDirect.setChecked(True)
                 self.Conn_GroupBox_COMInterface.setChecked(False)
             else:
                 self.Conn_GroupBox_OpenDSSDirect.setChecked(False)
                 self.Conn_GroupBox_COMInterface.setChecked(True)
+
+            if config['LoadFlow']["UNCMT"] == "1":
+                self.TabLoadFlow.LoadFlow_GroupBox_UNCMT_CheckBox.setChecked(True)
+            else:
+                self.TabLoadFlow.LoadFlow_GroupBox_UNCMT_CheckBox.setChecked(False)
+
+            if config['LoadFlow']["UNCBTTD"] == "1":
+                self.TabLoadFlow.LoadFlow_GroupBox_UNCMT_CheckBox.setChecked(True)
+            else:
+                self.TabLoadFlow.LoadFlow_GroupBox_UNCMT_CheckBox.setChecked(False)
 
 
             ### Tab Load Flow
@@ -206,11 +214,17 @@ class LoadFlow(QWidget):
         self.LoadFlow_GroupBox = QGroupBox("Fluxo de Carga")
         self.LoadFlow_GroupBox_VoltageBase_Label = QLabel("Set VoltageBases")
         self.LoadFlow_GroupBox_VoltageBase_LineEdit = QLineEdit()
-
         # Layout do GroupoBox Fluxo de Carga
         self.LoadFlow_GroupBox_Layout = QGridLayout()
         self.LoadFlow_GroupBox_Layout.addWidget(self.LoadFlow_GroupBox_VoltageBase_Label, 0, 0, 1, 1)
         self.LoadFlow_GroupBox_Layout.addWidget(self.LoadFlow_GroupBox_VoltageBase_LineEdit, 0, 1, 1, 1)
+
+        ##
+        self.LoadFlow_GroupBox_UNCMT_CheckBox = QCheckBox("Considerar Cargas de Média Tensão")
+        self.LoadFlow_GroupBox_UNCBT_TD_CheckBox = QCheckBox("Considerar Cargas de Baixa Tensão no Transformador de Distribuição")
+
+        self.LoadFlow_GroupBox_Layout.addWidget(self.LoadFlow_GroupBox_UNCMT_CheckBox, 1, 0, 1, 2)
+        self.LoadFlow_GroupBox_Layout.addWidget(self.LoadFlow_GroupBox_UNCBT_TD_CheckBox, 2, 0, 1, 2)
 
         ## GroupBox Modo
         self.Mode_GroupBox = QGroupBox("Modo")
@@ -306,6 +320,12 @@ class LoadFlow(QWidget):
 
     def get_VoltageBases(self):
         return self.LoadFlow_GroupBox_VoltageBase_LineEdit.text()
+
+    def get_UNC(self, obj):
+        if obj.checkState() == Qt.Checked:
+            return "1"
+        else:
+            return "0"
 
     def get_Mode(self):
         return self.Mode_GroupBox_ComboBox.currentText()

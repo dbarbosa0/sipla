@@ -75,6 +75,7 @@ class dadosUnidCons(NamedTuple):
     sit_ativ: str
     tip_cc: str
     car_inst: str
+    uni_tr: str
 
 class dadosCondutores(NamedTuple):
     cod_id: str
@@ -169,7 +170,7 @@ class C_DBaseData():
 
         try:
 
-            sqlStr = "SELECT nom, ten_nom, cod_id  FROM ctmt"
+            sqlStr = "SELECT nom, ten_nom, cod_id  FROM ctmt ORDER BY cod_id"
 
             if nomeSE_MT is not None:
                 sqlStr += " WHERE sub ='" + nomeSE_MT + "'"
@@ -223,7 +224,7 @@ class C_DBaseData():
     def getData_Condutores(self, tipoCondutor):  # Pega os condutores de MT
 
             try:
-                sqlStr = "SELECT cod_id, r1, x1, cnom, cmax FROM segcon WHERE cod_id LIKE '%" + tipoCondutor + "%'"
+                sqlStr = "SELECT cod_id, r1, x1, cnom, cmax FROM segcon WHERE cod_id LIKE '%" + tipoCondutor + "%' ORDER BY cod_id"
 
                 lista_dados = []
 
@@ -278,7 +279,7 @@ class C_DBaseData():
         try:
 
             sqlStr = "SELECT cod_id, pac_1, pac_2, fas_con, tip_unid, ctmt, uni_tr_s, p_n_ope, cap_elo, cor_nom, sit_ativ  FROM unsemt WHERE sub = '" + \
-                         nomeSE_MT + "' AND tip_unid = '" + tipoSEC + "'"
+                         nomeSE_MT + "' AND tip_unid = '" + tipoSEC + "' ORDER BY tip_unid"
             lista_dados = []
 
 
@@ -310,7 +311,7 @@ class C_DBaseData():
         try:
 
             sqlStr = "SELECT DISTINCT cod_id, ctmt, pac_1, pac_2, fas_con, comp, tip_cnd FROM ssdmt WHERE sub = '" + \
-                         nomeSE_MT + "'"
+                         nomeSE_MT + "' ORDER BY ctmt"
 
             lista_dados = []
 
@@ -367,18 +368,20 @@ class C_DBaseData():
             if tipoUniCons == "MT":
 
                 dbase = "UCMT"
+                uni_tr = "uni_tr_s"
 
             elif tipoUniCons == "BT":
 
                 dbase = "UCBT"
+                uni_tr = "uni_tr_d"
 
             else:
                 raise class_exception.ExecOpenDSS("Erro ao carregar as informações das Unidades Consumidoras!\nTipo não foi especificado! \n" + tipoUniCons)
 
             lista_dados = []
 
-            sqlStr = "SELECT objectid, pac, ctmt, fas_con, ten_forn, sit_ativ, tip_cc, car_inst FROM " + dbase + " WHERE sub = '" + \
-                     nomeSE_MT + "'"
+            sqlStr = "SELECT objectid, pac, ctmt, fas_con, ten_forn, sit_ativ, tip_cc, car_inst, " + uni_tr + " FROM " + dbase + " WHERE sub = '" + \
+                     nomeSE_MT + "' ORDER BY " + uni_tr
 
             dadosUniConsDB = self.DataBaseConn.getSQLDB(dbase, sqlStr)
 
@@ -391,7 +394,8 @@ class C_DBaseData():
                     linha[4],  # ten_forn
                     linha[5],  # sit_ativ
                     linha[6],  # tip_cc
-                    linha[7]  # car_inst
+                    linha[7],  # car_inst
+                    linha[8]   # uni_tr
                 )
                 lista_dados.append(tmp_dados)
 
@@ -407,11 +411,11 @@ class C_DBaseData():
 
             sqlStrUNTRD = "SELECT cod_id, pac_1, pac_2, pac_3, fas_con_p, fas_con_s, fas_con_t, sit_ativ, tip_unid, " \
                      " cap_elo, cap_cha, tap, pot_nom, per_fer, per_tot, ctmt, tip_trafo " \
-                     " FROM  untrd WHERE sub = '" + nomeSE_MT + "'"
+                     " FROM  untrd WHERE sub = '" + nomeSE_MT + "' ORDER BY cod_id"
 
             sqlStrEQTRD = "SELECT cod_id, pac_1, pac_2, pac_3, fas_con, pot_nom, lig, ten_pri, ten_sec, ten_ter, " \
-                         " lig_fas_p, lig_fas_s, lig_fas_t, per_fer, per_tot, r, xhl, xht, xlt  " \
-                         " FROM  eqtrd WHERE dist = '47'"
+                         " lig_fas_p, lig_fas_s, lig_fas_t, per_fer, per_tot, r, xhl, xht, xlt " \
+                         " FROM  eqtrd"
 
             lista_dados = []
 
