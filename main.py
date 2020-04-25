@@ -4,6 +4,9 @@ from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import QApplication, QMainWindow, QStyleFactory
 
+
+###
+#import opendss.class_insert_dialog
 ###
 import config
 import maps.class_view
@@ -14,8 +17,6 @@ import main_toolbar
 import main_actions
 import main_panels
 import main_panels_dock
-
-
 
 
 class mainWindow(QMainWindow):
@@ -29,6 +30,7 @@ class mainWindow(QMainWindow):
         self.setWindowTitle(self.titleWindow)
         self.setWindowIcon(QIcon(self.iconWindow))  # ícone da janela
         self.resize(1366, 768)
+        self.showMaximized()
         self.setStyle(QStyleFactory.create('Cleanlooks'))  # Estilo da Interface
 
         self.initUI()
@@ -42,6 +44,8 @@ class mainWindow(QMainWindow):
         self.mainDockNet = main_panels_dock.C_NetPanel(self)  # Dock com configurações da rede
         self.mainDockResults = main_panels_dock.C_ResultsPanel(self)  # Dock com configurações da rede
         self.mainActions = main_actions.C_MainActions()  # Carregando os métodos da interface principal
+        #####
+        #self.OpenDSS_Insert_dialog = opendss.class_insert_dialog.C_Insert_Dialog()
 
         #Instaciando os Demais Objetos
         self.mainMapView = maps.class_view.C_Viewer() ##Carregando Mapa
@@ -51,7 +55,6 @@ class mainWindow(QMainWindow):
 
         ## Painel Central
         self.setCentralWidget(self.mainPainelCentral)
-
 
         ## Dock
         self.addDockWidget(Qt.LeftDockWidgetArea, self.mainDockNet)
@@ -64,6 +67,8 @@ class mainWindow(QMainWindow):
 
         ### Passando os Dados para o Actions
         self.mainActions.MainWindowStatusBar = self.mainStatusBar
+        self.mainActions.MainWindowToolBar = self.mainToolBar
+        self.mainActions.updateToobarMenu()
         self.mainActions.MainNetPanel = self.mainDockNet
         self.mainActions.MainResultsPanel = self.mainDockResults
         self.mainActions.MainMapView = self.mainMapView

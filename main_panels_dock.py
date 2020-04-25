@@ -11,7 +11,6 @@ class C_NetPanel(QDockWidget):
     def __init__(self, MainWidget):
         QDockWidget.__init__(self)
         self.MainWidget = MainWidget
-
         self.mainActions = main_actions.C_MainActions
 
         self.setWindowTitle("Dados da Rede")
@@ -88,6 +87,12 @@ class C_NetPanel(QDockWidget):
 
         self.NetPanel_Fields_GroupBox_Select_Layout.addWidget(self.NetPanel_Fields_GroupBox_Select_TreeWidget)
 
+
+        self.NetPanel_Fields_GroupBox_Select_Checkbox_SelectAll = QCheckBox("Selecionar todos os alimentadores")
+        self.NetPanel_Fields_GroupBox_Select_Checkbox_SelectAll.clicked.connect(self.onSelectAllFields)
+        self.NetPanel_Fields_GroupBox_Select_Layout.addWidget(self.NetPanel_Fields_GroupBox_Select_Checkbox_SelectAll)
+
+
         self.NetPanel_Fields_GroupBox_Select.setLayout(self.NetPanel_Fields_GroupBox_Select_Layout)
 
         self.NetPanel_Fields_GroupBox_Layout.addWidget(self.NetPanel_Fields_GroupBox_Select)
@@ -101,8 +106,8 @@ class C_NetPanel(QDockWidget):
         ###### Opções #####################
 
         self.NetPanel_Options_GroupBox = QGroupBox("&Itens para Mostrar")
+        self.NetPanel_Options_GroupBox.setMaximumHeight(100)
         self.NetPanel_Options_GroupBox_Layout = QGridLayout()
-
         self.NetPanel_Options_GroupBox_TreeWidget = QTreeWidget()
         self.NetPanel_Options_GroupBox_TreeWidget.setHeaderLabels(['Item','Option'])
         #self.NetPanel_Options_GroupBox_TreeWidget.setColumnWidth(250,30)
@@ -115,12 +120,6 @@ class C_NetPanel(QDockWidget):
         self.NetPanel_Options_GroupBox.setLayout(self.NetPanel_Options_GroupBox_Layout)
 
         self.Deck_GroupBox_Layout.addRow(self.NetPanel_Options_GroupBox)  # Adiciona o Grupo de Alimentadores ao Deck
-
-        #####################################
-
-        self.Deck_GroupBox_MapView_CheckBox = QCheckBox("Visualizar o Mapa")
-        self.Deck_GroupBox_MapView_CheckBox.setChecked(True)
-        self.Deck_GroupBox_Layout.addRow(self.Deck_GroupBox_MapView_CheckBox)
 
         #####################################
 
@@ -230,7 +229,6 @@ class C_NetPanel(QDockWidget):
 
         self.NetPanel_Fields_GroupBox_Select_TreeWidget.clear()
 
-
         for ctd in range(0, len(dadosFields)):
             NetPanel_Fields_GroupBox_Select_TreeWidget_Item(self.NetPanel_Fields_GroupBox_Select_TreeWidget,
                                                      dadosFields[ctd],
@@ -239,8 +237,6 @@ class C_NetPanel(QDockWidget):
 
 
     ############# Configuração para aparecer ou não os botões ################
-
-
 
     def setDisabled_NetPanel_Config_GroupBox_SEAT_Btn(self):
         self.NetPanel_Config_GroupBox_SEAT_Btn.setEnabled(True)
@@ -270,7 +266,13 @@ class C_NetPanel(QDockWidget):
             Item = self.NetPanel_Fields_GroupBox_Select_TreeWidget.topLevelItem(ctd)
             if Item.checkState(0) == Qt.Checked:
                 self.Deck_GroupBox_MapView_Btn.setEnabled(True)
+                self.mainActions.updateToobarMenu()
 
+    def onSelectAllFields(self):
+
+        for ctd in range(0, self.NetPanel_Fields_GroupBox_Select_TreeWidget.topLevelItemCount()):
+            Item = self.NetPanel_Fields_GroupBox_Select_TreeWidget.topLevelItem(ctd)
+            Item.setCheckState(0, self.NetPanel_Fields_GroupBox_Select_Checkbox_SelectAll.checkState())
 
     #############################################
     def NetPanel_Options_GroupBox_TreeWidget_LoadOptions(self):
@@ -286,7 +288,7 @@ class C_NetPanel(QDockWidget):
                 listOptions.append(Item.getOption())
 
 
-        self.mainActions.execMapView(self.Deck_GroupBox_MapView_CheckBox, listOptions)
+        self.mainActions.execMapView(listOptions)
 
 
 class NetPanel_Fields_GroupBox_Select_TreeWidget_Item(QTreeWidgetItem):
@@ -370,15 +372,20 @@ class C_ResultsPanel(QDockWidget):
     def InitUI(self):
 
         ## Tabs
+        self.TabWidget = QTabWidget()
+        ######
+        self.reloadTabs() ##Carregando os Tabs
+        self.setWidget(self.TabWidget)
+
+    def reloadTabs(self):
+
+        for ctd in range(0, self.TabWidget.count()):
+            self.TabWidget.removeTab(ctd)
 
         ##### Voltage
-        self.TabWidget = QTabWidget()
+
         self.TableVoltage = TableVoltageResults()  # QWidget
         self.TabWidget.addTab(self.TableVoltage, "Tensões")
-
-        ######
-
-        self.setWidget(self.TabWidget)
 
 
 class TableVoltageResults(QTableWidget):
@@ -388,7 +395,6 @@ class TableVoltageResults(QTableWidget):
         self.InitUI()
 
     def InitUI(self):
-
 
         columnsTable = ('Barras', 'Va (kV)', '\u03B8a ( \u03B1 )', 'Vb (kV)', '\u03B8b ( \u03B1 )', 'Vc (kV)', '\u03B8c ( \u03B1 )', \
                         'Va (pu)', '\u03B8a ( \u03B1 )', 'Vb (pu)', '\u03B8b ( \u03B1 )', 'Vc (pu)', '\u03B8c ( \u03B1 )')

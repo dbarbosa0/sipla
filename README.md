@@ -10,6 +10,9 @@ pip install PyQt5
 pip install PyQtWebEngine
 pip install git+https://github.com/pyqtgraph/pyqtgraph@develop
 pip install folium
+pip install numpy
+pip install scipy
+pip install matplotlib
 pip install 'OpenDSSDirect.py[extras]'
 ```
 
@@ -18,9 +21,6 @@ Para utilização do OpenDSS via [_Component Object Model_ (COM)](https://docs.m
 
 ```
 pip install pywin32
-pip install numpy
-pip install scipy
-pip install matplotlib
 ```
 
 **Recomendação**: Verifique a instalação utilizando o _script_ _dssvplot35.py_ na pasta "Examples" do OpenDSS.

@@ -305,31 +305,24 @@ class LoadFlow(QWidget):
 
 
     def get_VoltageBases(self):
-        VoltageBases = self.LoadFlow_GroupBox_VoltageBase_LineEdit.text()
-        return VoltageBases
+        return self.LoadFlow_GroupBox_VoltageBase_LineEdit.text()
 
     def get_Mode(self):
-        mode = self.Mode_GroupBox_ComboBox.currentText()
-        return mode
+        return self.Mode_GroupBox_ComboBox.currentText()
 
     def get_Stepsize(self):
-        stepsize = self.Complements_Daily_GroupBox_Stepsize_LineEdit.text()
-        return stepsize
+        return self.Complements_Daily_GroupBox_Stepsize_LineEdit.text()
 
     def get_Number(self):
-        Number = self.Complements_Daily_GroupBox_Number_LineEdit.text()
-        return Number
+        return self.Complements_Daily_GroupBox_Number_LineEdit.text()
 
     def get_Maxiterations(self):
-        Maxiterations = self.Complements_Daily_GroupBox_Maxiterations_SpinBox.value()
-        return Maxiterations
+        return self.Complements_Daily_GroupBox_Maxiterations_SpinBox.value()
 
     def get_Maxcontroliter(self):
-        Maxcontroliter = self.Complements_Daily_GroupBox_Maxcontroliter_SpinBox.value()
-        return Maxcontroliter
+        return self.Complements_Daily_GroupBox_Maxcontroliter_SpinBox.value()
 
     def get_LoadShapes(self):
-        loadShapes = self.LoadShapesDialog.dataLoadShapes
-        return loadShapes
+        return self.LoadShapesDialog.dataLoadShapes
 
 
