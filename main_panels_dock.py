@@ -87,6 +87,12 @@ class C_NetPanel(QDockWidget):
 
         self.NetPanel_Fields_GroupBox_Select_Layout.addWidget(self.NetPanel_Fields_GroupBox_Select_TreeWidget)
 
+
+        self.NetPanel_Fields_GroupBox_Select_Checkbox_SelectAll = QCheckBox("Selecionar todos os alimentadores")
+        self.NetPanel_Fields_GroupBox_Select_Checkbox_SelectAll.clicked.connect(self.onSelectAllFields)
+        self.NetPanel_Fields_GroupBox_Select_Layout.addWidget(self.NetPanel_Fields_GroupBox_Select_Checkbox_SelectAll)
+
+
         self.NetPanel_Fields_GroupBox_Select.setLayout(self.NetPanel_Fields_GroupBox_Select_Layout)
 
         self.NetPanel_Fields_GroupBox_Layout.addWidget(self.NetPanel_Fields_GroupBox_Select)
@@ -262,6 +268,11 @@ class C_NetPanel(QDockWidget):
                 self.Deck_GroupBox_MapView_Btn.setEnabled(True)
                 self.mainActions.updateToobarMenu()
 
+    def onSelectAllFields(self):
+
+        for ctd in range(0, self.NetPanel_Fields_GroupBox_Select_TreeWidget.topLevelItemCount()):
+            Item = self.NetPanel_Fields_GroupBox_Select_TreeWidget.topLevelItem(ctd)
+            Item.setCheckState(0, self.NetPanel_Fields_GroupBox_Select_Checkbox_SelectAll.checkState())
 
     #############################################
     def NetPanel_Options_GroupBox_TreeWidget_LoadOptions(self):

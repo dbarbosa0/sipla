@@ -1,7 +1,7 @@
 from PyQt5.QtWidgets import QStatusBar, QLabel, QDockWidget,QFrame
 import platform
 
-
+import config as cfg
 import configparser
 
 class C_StatusBar(QStatusBar):
@@ -43,7 +43,7 @@ class C_StatusBar(QStatusBar):
         self.MainStatusBar.addPermanentWidget(QFrame())
         self.MainStatusBar.addPermanentWidget(self.StatusBar_Plataform)
 
-        self.StatusBar_Version = QLabel("SIPLA BETA")
+        self.StatusBar_Version = QLabel(cfg.__name__)
         self.StatusBar_Version.setObjectName("StatusBarApp_Version")
         self.MainStatusBar.setStyleSheet('border: 0; background-color: #DCDCDC;')
         #self.MainStatusBar.setStyleSheet("QStatusBar::item {border: none;}")

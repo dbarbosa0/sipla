@@ -22,7 +22,7 @@ class C_OpenDSS(): # classe OpenDSSDirect
         self._nSE_MT_Selecionada = ''
         self._nFieldsMT = ''
 
-        self.OpenDSSEngine = opendss.class_conn.C_Conn()
+        self.OpenDSSEngine = opendss.class_conn.C_Conn() ## Apenas para o Objeto Existir, depois será sobrecarregado
         self._OpenDSSConfig = {}
         self.memoLoadShapes = ''
 

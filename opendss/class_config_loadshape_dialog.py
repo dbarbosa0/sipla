@@ -182,14 +182,9 @@ class C_Config_LoadShape_Dialog(QDialog):
 
     def onAllCurves(self):
 
-        if self.Shapes_GroupBox_Checkbox_SelectAll.checkState() == Qt.Checked:
-            check = Qt.Checked
-        else:
-            check = Qt.Unchecked
-
         for ctd in range(0, self.Shapes_GroupBox_TreeWidget.topLevelItemCount()):
             Item = self.Shapes_GroupBox_TreeWidget.topLevelItem(ctd)
-            Item.setCheckState(0, check)
+            Item.setCheckState(0, self.Shapes_GroupBox_Checkbox_SelectAll.checkState())
 
 
     def setDataLoadShapes(self):
