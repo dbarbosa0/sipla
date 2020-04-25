@@ -100,8 +100,8 @@ class C_NetPanel(QDockWidget):
         ###### Opções #####################
 
         self.NetPanel_Options_GroupBox = QGroupBox("&Itens para Mostrar")
+        self.NetPanel_Options_GroupBox.setMaximumHeight(100)
         self.NetPanel_Options_GroupBox_Layout = QGridLayout()
-
         self.NetPanel_Options_GroupBox_TreeWidget = QTreeWidget()
         self.NetPanel_Options_GroupBox_TreeWidget.setHeaderLabels(['Item','Option'])
         #self.NetPanel_Options_GroupBox_TreeWidget.setColumnWidth(250,30)
@@ -114,12 +114,6 @@ class C_NetPanel(QDockWidget):
         self.NetPanel_Options_GroupBox.setLayout(self.NetPanel_Options_GroupBox_Layout)
 
         self.Deck_GroupBox_Layout.addRow(self.NetPanel_Options_GroupBox)  # Adiciona o Grupo de Alimentadores ao Deck
-
-        #####################################
-
-        self.Deck_GroupBox_MapView_CheckBox = QCheckBox("Visualizar o Mapa")
-        self.Deck_GroupBox_MapView_CheckBox.setChecked(True)
-        self.Deck_GroupBox_Layout.addRow(self.Deck_GroupBox_MapView_CheckBox)
 
         #####################################
 
@@ -229,7 +223,6 @@ class C_NetPanel(QDockWidget):
 
         self.NetPanel_Fields_GroupBox_Select_TreeWidget.clear()
 
-
         for ctd in range(0, len(dadosFields)):
             NetPanel_Fields_GroupBox_Select_TreeWidget_Item(self.NetPanel_Fields_GroupBox_Select_TreeWidget,
                                                      dadosFields[ctd],
@@ -238,8 +231,6 @@ class C_NetPanel(QDockWidget):
 
 
     ############# Configuração para aparecer ou não os botões ################
-
-
 
     def setDisabled_NetPanel_Config_GroupBox_SEAT_Btn(self):
         self.NetPanel_Config_GroupBox_SEAT_Btn.setEnabled(True)
@@ -269,6 +260,7 @@ class C_NetPanel(QDockWidget):
             Item = self.NetPanel_Fields_GroupBox_Select_TreeWidget.topLevelItem(ctd)
             if Item.checkState(0) == Qt.Checked:
                 self.Deck_GroupBox_MapView_Btn.setEnabled(True)
+                self.mainActions.updateToobarMenu()
 
 
     #############################################
@@ -285,7 +277,7 @@ class C_NetPanel(QDockWidget):
                 listOptions.append(Item.getOption())
 
 
-        self.mainActions.execMapView(self.Deck_GroupBox_MapView_CheckBox, listOptions)
+        self.mainActions.execMapView(listOptions)
 
 
 class NetPanel_Fields_GroupBox_Select_TreeWidget_Item(QTreeWidgetItem):

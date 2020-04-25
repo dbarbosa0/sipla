@@ -67,6 +67,8 @@ class mainWindow(QMainWindow):
 
         ### Passando os Dados para o Actions
         self.mainActions.MainWindowStatusBar = self.mainStatusBar
+        self.mainActions.MainWindowToolBar = self.mainToolBar
+        self.mainActions.updateToobarMenu()
         self.mainActions.MainNetPanel = self.mainDockNet
         self.mainActions.MainResultsPanel = self.mainDockResults
         self.mainActions.MainMapView = self.mainMapView

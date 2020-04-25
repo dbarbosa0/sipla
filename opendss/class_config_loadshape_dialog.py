@@ -69,7 +69,7 @@ class C_Config_LoadShape_Dialog(QDialog):
 
         ##### Load Shapes
         self.Shapes_GroupBox = QGroupBox("Curvas de Carga")
-        self.Shapes_GroupBox.setFixedWidth(350)
+        self.Shapes_GroupBox.setFixedWidth(400)
 
         self.Shapes_GroupBox_Layout = QGridLayout()
         self.Shapes_GroupBox_TreeWidget = QTreeWidget()
@@ -77,9 +77,20 @@ class C_Config_LoadShape_Dialog(QDialog):
         self.Shapes_GroupBox_TreeWidget.setColumnWidth(1, 20)
         self.Shapes_GroupBox_Layout.addWidget(self.Shapes_GroupBox_TreeWidget, 1, 1, 1, 2)
 
-        self.Shapes_GroupBox_checkbox = QCheckBox("Selecionar todas as curvas")
-        self.Shapes_GroupBox_checkbox.clicked.connect(self.onAllCurves)
-        self.Shapes_GroupBox_Layout.addWidget(self.Shapes_GroupBox_checkbox, 2, 1, 1, 2)
+        self.Shapes_GroupBox_Checkbox_GroupBox = QGroupBox()
+        self.Shapes_GroupBox_Checkbox_Layout = QHBoxLayout()
+        self.Shapes_GroupBox_Checkbox_SelectAll = QCheckBox("Selecionar todas as curvas")
+        self.Shapes_GroupBox_Checkbox_SelectAll.clicked.connect(self.onAllCurves)
+        self.Shapes_GroupBox_Checkbox_Layout.addWidget(self.Shapes_GroupBox_Checkbox_SelectAll)
+
+        self.Shapes_GroupBox_Checkbox_Normalize = QCheckBox("Visualizar as curvas normalizadas")
+        self.Shapes_GroupBox_Checkbox_Normalize.setChecked(True)
+        self.Shapes_GroupBox_Checkbox_Layout.addWidget(self.Shapes_GroupBox_Checkbox_Normalize)
+        self.Shapes_GroupBox_Checkbox_GroupBox.setLayout(self.Shapes_GroupBox_Checkbox_Layout)
+
+        self.Shapes_GroupBox_Layout.addWidget(self.Shapes_GroupBox_Checkbox_GroupBox, 2, 1, 1, 2)
+
+
 
         self.Shapes_GroupBox_Remover_Btn = QPushButton("Remover")
         self.Shapes_GroupBox_Remover_Btn.setIcon(QIcon('img/icon_remove.png'))
@@ -171,7 +182,7 @@ class C_Config_LoadShape_Dialog(QDialog):
 
     def onAllCurves(self):
 
-        if self.Shapes_GroupBox_checkbox.checkState() == Qt.Checked:
+        if self.Shapes_GroupBox_Checkbox_SelectAll.checkState() == Qt.Checked:
             check = Qt.Checked
         else:
             check = Qt.Unchecked
@@ -256,6 +267,7 @@ class C_Config_LoadShape_Dialog(QDialog):
                 for ctd in dataCSV:
                     if self.checkLoadShape(ctd, str(dataCSV[ctd]).strip('[]').replace("'","")):
                         Config_LoadShape_Shapes_GroupBox_TreeWidget_Item(self.Shapes_GroupBox_TreeWidget,
+                                                                         self.Shapes_GroupBox_Checkbox_SelectAll.checkState(),
                                                                         ctd, str(dataCSV[ctd]).strip('[]').replace("'",""),
                                                                         config.colorsList[random.randint(0, len(config.colorsList) - 1)])
 
@@ -361,9 +373,17 @@ class C_Config_LoadShape_Dialog(QDialog):
             Item = self.Shapes_GroupBox_TreeWidget.topLevelItem(ctd)
 
             if Item.checkState(0) == Qt.Checked:
+
                 pen = pyqtgraph.mkPen(color = Item.getColorRGB())
 
-                self.graphWidget.plot(plot_x, Item.getPointsList(), name=Item.name, pen=pen, symbol='o', symbolSize=10, symbolBrush=Item.getColorRGB())
+                if self.Shapes_GroupBox_Checkbox_Normalize.checkState() == Qt.Checked:
+
+                    pointsList = Item.getPointsList()
+                    pointsList[:] = [x / max(pointsList) for x in pointsList]
+                else:
+                    pointsList = Item.getPointsList()
+
+                self.graphWidget.plot(plot_x, pointsList, name=Item.name, pen=pen, symbol='o', symbolSize=10, symbolBrush=Item.getColorRGB())
 
                 countSelected += 1
 
@@ -374,7 +394,7 @@ class C_Config_LoadShape_Dialog(QDialog):
 
 
 class Config_LoadShape_Shapes_GroupBox_TreeWidget_Item(QTreeWidgetItem):
-    def __init__(self, parent, name, points, color):
+    def __init__(self, parent, check, name, points, color):
         ## Init super class ( QtGui.QTreeWidgetItem )
         super(Config_LoadShape_Shapes_GroupBox_TreeWidget_Item, self).__init__(parent)
 
@@ -383,7 +403,7 @@ class Config_LoadShape_Shapes_GroupBox_TreeWidget_Item(QTreeWidgetItem):
 
         self.setText(0, name)
         self.setFlags(self.flags() | Qt.ItemIsUserCheckable | Qt.ItemIsEditable)
-        self.setCheckState(0, Qt.Unchecked)
+        self.setCheckState(0, check)
 
         self.color = color
 
