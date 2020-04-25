@@ -124,7 +124,7 @@ class C_OpenDSS(): # classe OpenDSSDirect
                       "ChTripolarSEMTControl": ["Controle Chave Tripolar da SE MT ...",self.dataOpenDSS.exec_CONTROLE_SEC_CHAVE_TRIPOLAR_SUBESTACAO_DE_MEDIA_TENSAO],
                       "ChUnipolarSEMT": ["Chave Unipolar da SE MT ...",self.dataOpenDSS.exec_SEC_CHAVE_UNIPOLAR_SUBESTACAO_DE_MEDIA_TENSAO],
                       "ChUnipolarSEMTControl": ["Controle da Chave Unipolar da SE MT ...",self.dataOpenDSS.exec_CONTROLE_SEC_CHAVE_UNIPOLAR_SUBESTACAO_DE_MEDIA_TENSAO],
-                      # ObsSandy1             #"Reg":["Regulador MT ...",self.dataOpenDSS.exec_REGULADORES_DE_MEDIA_TENSAO],
+                      #"Reg":["Regulador MT ...",self.dataOpenDSS.exec_REGULADORES_DE_MEDIA_TENSAO],
                       "SegMT": ["Segmentos de Linhas MT ...", self.dataOpenDSS.exec_SEG_LINHAS_DE_MEDIA_TENSAO],
                       "UConMT": ["Unidades Consumidoras MT ...", self.dataOpenDSS.exec_UNID_CONSUMIDORAS_MT],
                       "UConMTLoadShapes": ["Unidades Consumidoras MT - Curvas de Carga ...", self.dataOpenDSS.exec_UNID_CONSUMIDORAS_LOADSHAPES_MT],
@@ -189,14 +189,14 @@ class C_OpenDSS(): # classe OpenDSSDirect
                       "ChTripolarSEMTControl": self.dataOpenDSS.memoFileSecTripolarSEMT_Control,
                       "ChUnipolarSEMT":self.dataOpenDSS.memoFileSecUnipolarSEMT,
                       "ChUnipolarSEMTControl": self.dataOpenDSS.memoFileSecUnipolarSEMT_Control ,
-                      # ObsSandy1             #"Reg":self.dataOpenDSS.memoFileReguladorMT,
+                      #"Reg":self.dataOpenDSS.memoFileReguladorMT,
                       "SegMT":self.dataOpenDSS.memoFileSegLinhasMT,
                       "UConMT":self.dataOpenDSS.memoFileUniConsumidoraMT,
                       "UConMTLoadShapes": self.dataOpenDSS.memoFileUniConsumidoraLoadShapesMT,
                       "TrafoDist":self.dataOpenDSS.memoFileTrafoDist,
                       # "SegBT":self.dataOpenDSS.memoFileSegLinhasBT,
                       #"UConBT":self.dataOpenDSS.memoFileUniConsumidoraBT,
-                      "UConBT": self.dataOpenDSS.memoFileUniConsumidoraBT_TD,
+                      "UConBTTD": self.dataOpenDSS.memoFileUniConsumidoraBT_TD,
                       "UConBTLoadShapes": self.dataOpenDSS.memoFileUniConsumidoraLoadShapesBT,
                       # "RamLig":self.dataOpenDSS.memoFileRamaisLigBT,self.memoFileRamaisLigBT,
                       "CompMT": self.dataOpenDSS.memoFileUndCompReatMT,
@@ -212,7 +212,7 @@ class C_OpenDSS(): # classe OpenDSSDirect
 
         nome_do_arquivo_criado = os.path.basename(str(arquivoSalvo))
 
-        diretorio = os.path.dirname(str(arquivoSalvo)) +  "/"
+        diretorio = os.path.dirname(str(arquivoSalvo)) + "/"
 
         if platform.system() == "Windows":
             diretorio = diretorio.replace('/', '\\')
@@ -227,7 +227,14 @@ class C_OpenDSS(): # classe OpenDSSDirect
                 for cont in data:
                     redirectFile += str(cont) + '\n'
 
-            self.saveFileDSS(diretorio, ctd, redirectFile )
+            if (ctd == "UConMTLoadShapes") or (ctd == "LoadShapes") or (ctd == "UConBTLoadShapes"):
+                if self.OpenDSSConfig["Mode"] == "Daily":
+                    self.saveFileDSS(diretorio, ctd, redirectFile)
+            elif (ctd == "UConBTTD"):
+                if self.OpenDSSConfig["UNCBTTD"] == "1":
+                    self.saveFileDSS(diretorio, ctd, redirectFile)
+            else:
+                self.saveFileDSS(diretorio, ctd, redirectFile)
 
 
     def saveFileDSS(self, dirSave, nameMemo, dataMemo ): #Salvar em Arquivo
@@ -246,8 +253,18 @@ class C_OpenDSS(): # classe OpenDSSDirect
                 for cont in data:
                     mainFile += str(cont) + '\n'
             else:
-                mainFile += "! " + self.execOpenDSSFunc[ctd][-2] + "\n"
-                mainFile += "Redirect " + ctd + ".dss "+'\n'
+                if (ctd == "UConMTLoadShapes") or (ctd == "LoadShapes") or (ctd == "UConBTLoadShapes"):
+                    if self.OpenDSSConfig["Mode"] == "Daily":
+                        mainFile += "! " + self.execOpenDSSFunc[ctd][-2] + "\n"
+                        mainFile += "Redirect " + ctd + ".dss " + '\n'
+                elif (ctd == "UConBTTD"):
+                    if self.OpenDSSConfig["UNCBTTD"] == "1":
+                        mainFile += "! " + self.execOpenDSSFunc[ctd][-2] + "\n"
+                        mainFile += "Redirect " + ctd + ".dss " + '\n'
+                else:
+                    mainFile += "! " + self.execOpenDSSFunc[ctd][-2] + "\n"
+                    mainFile += "Redirect " + ctd + ".dss " + '\n'
+
 
         #Falta o final do arquivo
 

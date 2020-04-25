@@ -725,7 +725,7 @@ class C_Data():  # classe OpenDSS
         self.memoFileReguladorMT = self.getSEGLINHA_REGULADOR_MT(self.nSE_MT_Selecionada, "REG")
 
         self.memoFileReguladorMT.insert(0,
-                                        "! UNIDADES REGULADORAS DE  MEDIA TENSAO MODELADA COMO TARNSFORMADORES DE BAIXA IMPEDÂNCIA ")
+                                        "! UNIDADES REGULADORAS DE  MEDIA TENSAO MODELADA COMO TARNSFORMADORES DE BAIXA IMPEDANCIA ")
 
     def getUNIDADE_CONSUMIDORA(self, nomeSE_MT, tipoUniCons, conBTTD = None):
 
@@ -773,7 +773,7 @@ class C_Data():  # classe OpenDSS
                     ######
                     if conBTTD == True:
                         pac_1 = self.trafoDistUniCons[dados_db[ctd].uni_tr]
-                        memoFileUC.append("! Tranformador de Distribuição: " + dados_db[ctd].uni_tr)
+                        memoFileUC.append("! Tranformador de Distribuicao: " + dados_db[ctd].uni_tr)
                     ######
 
                     tmp = "New Load.{0}".format(dados_db[ctd].objectid) + " Bus1={0}".format(
