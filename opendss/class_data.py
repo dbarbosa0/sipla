@@ -89,6 +89,7 @@ class C_Data():  # classe OpenDSS
         self.memoFileTrafoDist = []  # Transformadores de Distribuição
         self.memoFileSegLinhasBT = []  # Segmentos de Linhas de Baixa Tensão
         self.memoFileUniConsumidoraBT = []  # Unidade Consumidora de Baixa Tensão
+        self.memoFileUniConsumidoraBT_TD = []  # Unidade Consumidora de Baixa Tensão no Transformador de Distribuição
         self.memoFileUniConsumidoraLoadShapesBT = []  # Unidade Consumidora de Baixa Tensão - Curvas de Carga
         self.memoFileRamaisLigBT = []  # Ramais de Ligação
         self.memoFileUndCompReatMT = []  # Unidade de Compensação de Reativo de Baixa Tensão
@@ -726,7 +727,7 @@ class C_Data():  # classe OpenDSS
         self.memoFileReguladorMT.insert(0,
                                         "! UNIDADES REGULADORAS DE  MEDIA TENSAO MODELADA COMO TARNSFORMADORES DE BAIXA IMPEDÂNCIA ")
 
-    def getUNIDADE_CONSUMIDORA(self, nomeSE_MT, tipoUniCons):
+    def getUNIDADE_CONSUMIDORA(self, nomeSE_MT, tipoUniCons, conBTTD = None):
 
         try:
             # Curvas de Carga para se for Daily não precisar fazer nova consulta
@@ -769,6 +770,12 @@ class C_Data():  # classe OpenDSS
                     if dados_db[ctd].fas_con == "CN":
                         conexao = "wye"
 
+                    ######
+                    if conBTTD == True:
+                        pac_1 = self.trafoDistUniCons[dados_db[ctd].uni_tr]
+                        memoFileUC.append("! Tranformador de Distribuição: " + dados_db[ctd].uni_tr)
+                    ######
+
                     tmp = "New Load.{0}".format(dados_db[ctd].objectid) + " Bus1={0}".format(
                         pac_1) + " Phases={0}".format(num_de_fases)
                     tmp += " model=8 ZIPV=[0.5 0 0.5 1 0 0]" + " Kv={0}".format(nivel_de_tensao)
@@ -776,6 +783,7 @@ class C_Data():  # classe OpenDSS
                     tmp += " conn={0}".format(conexao)
 
                     memoFileUC.append(tmp)
+
                     self.loadShapeUniCons[tipoUniCons].append(
                         [dados_db[ctd].objectid, str(dados_db[ctd].tip_cc.replace(' ', ""))])
 
@@ -787,15 +795,21 @@ class C_Data():  # classe OpenDSS
 
     def exec_UNID_CONSUMIDORAS_MT(self):
 
-        self.memoFileUniConsumidoraMT = self.getUNIDADE_CONSUMIDORA(self.nSE_MT_Selecionada, "MT")
+        self.memoFileUniConsumidoraMT = self.getUNIDADE_CONSUMIDORA(self.nSE_MT_Selecionada, "MT", None)
 
         self.memoFileUniConsumidoraMT.insert(0, "! UNIDADES CONSUMIDORAS DE MEDIA TENSAO ")
 
     def exec_UNID_CONSUMIDORAS_BT(self):
 
-        self.memoFileUniConsumidoraBT = self.getUNIDADE_CONSUMIDORA(self.nSE_MT_Selecionada, "BT")
+        self.memoFileUniConsumidoraBT = self.getUNIDADE_CONSUMIDORA(self.nSE_MT_Selecionada, "BT", None)
 
         self.memoFileUniConsumidoraBT.insert(0, "! UNIDADES CONSUMIDORAS DE BAIXA TENSAO ")
+
+    def exec_UNID_CONSUMIDORAS_BT_TD(self):
+
+        self.memoFileUniConsumidoraBT_TD = self.getUNIDADE_CONSUMIDORA(self.nSE_MT_Selecionada, "BT", True)
+
+        self.memoFileUniConsumidoraBT_TD.insert(0, "! UNIDADES CONSUMIDORAS DE BAIXA TENSAO NO TRANSFORMADOR DE DISTRIBUICAO")
 
     def getUNIDADE_CONSUMIDORA_LOADSHAPES(self, tipoUniCons):
 
@@ -822,6 +836,9 @@ class C_Data():  # classe OpenDSS
 
     def getTRANSFORMADORES_DE_DISTRIBUICAO(self, nomeSE_MT):
         try:
+            # Transformadores
+            self.trafoDistUniCons = {}
+
             dados_ctmt = self.DataBase.getData_CTMT(None)
 
             lista_de_identificadores_dos_alimentadores = self.getID_Fields(dados_ctmt)
@@ -842,6 +859,7 @@ class C_Data():  # classe OpenDSS
 
                     ligacao = tlig.TLIG[dados_db[ctd].lig]
 
+
                     memoFileTD.append("! ALIMENTADOR: " + dados_db[ctd].ctmt)
                     # UNTRD
                     tmp = "New Transformer.{0}".format(dados_db[ctd].cod_id) + " windings={0}".format('2')
@@ -854,6 +872,9 @@ class C_Data():  # classe OpenDSS
                     tmp += " XHL={0}".format(dados_db[ctd].xhl)
 
                     memoFileTD.append(tmp)
+
+                    ### trafo paras as cargas
+                    self.trafoDistUniCons[str(dados_db[ctd].cod_id)] = pac_2
 
             return memoFileTD
 

@@ -10,7 +10,6 @@ import opendss.class_data
 import class_exception
 
 
-
 class C_OpenDSS(): # classe OpenDSSDirect
 
     def __init__(self):
@@ -131,8 +130,9 @@ class C_OpenDSS(): # classe OpenDSSDirect
                       "UConMTLoadShapes": ["Unidades Consumidoras MT - Curvas de Carga ...", self.dataOpenDSS.exec_UNID_CONSUMIDORAS_LOADSHAPES_MT],
                       "TrafoDist":["Trafos de Distribuição ...",self.dataOpenDSS.exec_TRANSFORMADORES_DE_DISTRIBUICAO],
                       # "SegBT":["Segmentos de Linhas BT ...",self.dataOpenDSS.exec_SEG_LINHAS_DE_BAIXA_TENSAO],
-                      # "UConBT":["Unidades Consumidoras BT ...",self.dataOpenDSS.exec_UNID_CONSUMIDORAS_BT],
-                      #"UConBTLoadShapes": ["Unidades Consumidoras BT - Curvas de Carga ...", self.dataOpenDSS.exec_UNID_CONSUMIDORAS_LOADSHAPES_BT],
+                      #"UConBT":["Unidades Consumidoras BT ...",self.dataOpenDSS.exec_UNID_CONSUMIDORAS_BT],
+                      "UConBTTD": ["Unidades Consumidoras BT no Transformador de Distribuição ...", self.dataOpenDSS.exec_UNID_CONSUMIDORAS_BT_TD],
+                      "UConBTLoadShapes": ["Unidades Consumidoras BT - Curvas de Carga ...", self.dataOpenDSS.exec_UNID_CONSUMIDORAS_LOADSHAPES_BT],
                       # "RamLig":["Ramais de Ligação  ...",self.dataOpenDSS.exec_RAMAL_DE_LIGACAO,self.dataOpenDSS.memoFileRamaisLigBT],
                       "CompMT": ["Unidades Compensadoras de MT ...",self.dataOpenDSS.exec_UNID_COMPENSADORAS_DE_REATIVO_DE_MEDIA_TENSAO],
                       # "CompBT":["Unidades Compensadoras de BT ...",self.dataOpenDSS.exec_UNID_COMPENSADORAS_DE_REATIVO_DE_BAIXA_TENSAO],
@@ -145,11 +145,19 @@ class C_OpenDSS(): # classe OpenDSSDirect
             msg = self.execOpenDSSFunc[ctd][-2]
             #Executando a função
             ### Verificando o modo de operação
-            if (ctd == "UConMTLoadShapes") or (ctd == "LoadShapes"):
+            if (ctd == "UConMTLoadShapes") or (ctd == "LoadShapes") or (ctd == "UConBTLoadShapes"):
                 if self.OpenDSSConfig["Mode"] == "Daily":
+                    self.execOpenDSSFunc[ctd][-1]()
+            elif (ctd == "UConBTTD"):
+                if self.OpenDSSConfig["UNCBTTD"] == "1":
                     self.execOpenDSSFunc[ctd][-1]()
             else:
                 self.execOpenDSSFunc[ctd][-1]()
+
+            ### Verificando se é necessário os UNCBTTD
+
+
+
             #print(msg)
 
 
@@ -187,7 +195,9 @@ class C_OpenDSS(): # classe OpenDSSDirect
                       "UConMTLoadShapes": self.dataOpenDSS.memoFileUniConsumidoraLoadShapesMT,
                       "TrafoDist":self.dataOpenDSS.memoFileTrafoDist,
                       # "SegBT":self.dataOpenDSS.memoFileSegLinhasBT,
-                      # "UConBT":self.dataOpenDSS.memoFileUniConsumidoraBT,
+                      #"UConBT":self.dataOpenDSS.memoFileUniConsumidoraBT,
+                      "UConBT": self.dataOpenDSS.memoFileUniConsumidoraBT_TD,
+                      "UConBTLoadShapes": self.dataOpenDSS.memoFileUniConsumidoraLoadShapesBT,
                       # "RamLig":self.dataOpenDSS.memoFileRamaisLigBT,self.memoFileRamaisLigBT,
                       "CompMT": self.dataOpenDSS.memoFileUndCompReatMT,
                       # "CompBT":self.dataOpenDSS.memoFileUndCompReatBT,
