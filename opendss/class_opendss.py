@@ -10,6 +10,7 @@ import opendss.class_data
 import class_exception
 
 
+
 class C_OpenDSS(): # classe OpenDSSDirect
 
     def __init__(self):
@@ -128,9 +129,10 @@ class C_OpenDSS(): # classe OpenDSSDirect
                       "SegMT": ["Segmentos de Linhas MT ...", self.dataOpenDSS.exec_SEG_LINHAS_DE_MEDIA_TENSAO],
                       "UConMT": ["Unidades Consumidoras MT ...", self.dataOpenDSS.exec_UNID_CONSUMIDORAS_MT],
                       "UConMTLoadShapes": ["Unidades Consumidoras MT - Curvas de Carga ...", self.dataOpenDSS.exec_UNID_CONSUMIDORAS_LOADSHAPES_MT],
-                      # ObsSandy2            #"TrafoDist":["Trafos de Distribuição ...",self.dataOpenDSS.exec_TRANSFORMADORES_DE_DISTRIBUICAO],
+                      "TrafoDist":["Trafos de Distribuição ...",self.dataOpenDSS.exec_TRANSFORMADORES_DE_DISTRIBUICAO],
                       # "SegBT":["Segmentos de Linhas BT ...",self.dataOpenDSS.exec_SEG_LINHAS_DE_BAIXA_TENSAO],
                       # "UConBT":["Unidades Consumidoras BT ...",self.dataOpenDSS.exec_UNID_CONSUMIDORAS_BT],
+                      #"UConBTLoadShapes": ["Unidades Consumidoras BT - Curvas de Carga ...", self.dataOpenDSS.exec_UNID_CONSUMIDORAS_LOADSHAPES_BT],
                       # "RamLig":["Ramais de Ligação  ...",self.dataOpenDSS.exec_RAMAL_DE_LIGACAO,self.dataOpenDSS.memoFileRamaisLigBT],
                       "CompMT": ["Unidades Compensadoras de MT ...",self.dataOpenDSS.exec_UNID_COMPENSADORAS_DE_REATIVO_DE_MEDIA_TENSAO],
                       # "CompBT":["Unidades Compensadoras de BT ...",self.dataOpenDSS.exec_UNID_COMPENSADORAS_DE_REATIVO_DE_BAIXA_TENSAO],
@@ -183,7 +185,7 @@ class C_OpenDSS(): # classe OpenDSSDirect
                       "SegMT":self.dataOpenDSS.memoFileSegLinhasMT,
                       "UConMT":self.dataOpenDSS.memoFileUniConsumidoraMT,
                       "UConMTLoadShapes": self.dataOpenDSS.memoFileUniConsumidoraLoadShapesMT,
-                      # ObsSandy2            #"TrafoDist":self.dataOpenDSS.memoFileTrafoDist,
+                      "TrafoDist":self.dataOpenDSS.memoFileTrafoDist,
                       # "SegBT":self.dataOpenDSS.memoFileSegLinhasBT,
                       # "UConBT":self.dataOpenDSS.memoFileUniConsumidoraBT,
                       # "RamLig":self.dataOpenDSS.memoFileRamaisLigBT,self.memoFileRamaisLigBT,

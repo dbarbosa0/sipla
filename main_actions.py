@@ -179,7 +179,7 @@ class C_MainActions():
 
     def saveOpenDSS(self):
 
-        self.execCreateDSS()
+        #self.execCreateDSS()
         self.OpenDSS.exec_SaveFileDialogDSS()
 
 
