@@ -313,6 +313,7 @@ class C_Config_LoadShape_Dialog(QDialog):
                 pts = [0 for ctd in range(0,self.nPointsLoadDef)]
                 pts = str(pts).strip('[]').replace("'","")
                 Config_LoadShape_Shapes_GroupBox_TreeWidget_Item(self.Shapes_GroupBox_TreeWidget,
+                                                                 self.Shapes_GroupBox_Checkbox_SelectAll.checkState(),
                                                                  inputLoadName, pts,
                                                                  config.colorsList[
                                                                      random.randint(0, len(config.colorsList) - 1)])
