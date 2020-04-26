@@ -6,6 +6,7 @@ import opendss.class_opendss
 import opendss.class_config_dialog
 import opendss.class_insert_dialog
 import database.class_base
+import database.class_config_dialog
 import class_exception
 import maps.class_view
 import main_panels_dock
@@ -31,6 +32,7 @@ class C_MainActions():
     def initUI(self): ### Instanciando os objetos
         self.DataBaseConn = database.class_conn.C_DBaseConn()  # Carregando o acesso aos Arquivos do BDGD
         self.DataBase = database.class_base.C_DBase()
+        self.DataBase_DialogSettings = database.class_config_dialog.C_ConfigDialog() # Instânciando a classe dialog Settings
         self.OpenDSS = opendss.class_opendss.C_OpenDSS()
 
         # Contribuição Sandy
@@ -41,6 +43,7 @@ class C_MainActions():
         self.MainMapView.DataBaseConn = self.DataBaseConn
 
     #############################################
+
 
     def setStatusBar(self, type, msg):
 
@@ -85,14 +88,16 @@ class C_MainActions():
 
     #############################################
 
-    def acessDataBase(self):
-        try:
-            self.DataBaseConn.setDirDataBase()
-            self.setStatusBar("Status", "On-Line")
+    def connectDataBase(self):
+        if (self.DataBase_DialogSettings.databaseInfo["Conn"] == "sqlite") and (
+        self.DataBase_DialogSettings.databaseInfo["DirDataBase"]):
+            self.DataBaseConn.DataBaseInfo = self.DataBase_DialogSettings.databaseInfo
             self.getSE_AT_DB()
+            self.setStatusBar("Status", "On-Line")
 
-        except class_exception.ConnDataBaseError:
-            pass
+    def configDataBase(self):
+        self.DataBase_DialogSettings.show()
+        self.connectDataBase()
 
     def getSE_AT_DB(self): ## Carregando as subestações de Alta tensão
         self.MainNetPanel.set_SEAT(self.DataBase.getSE_AT_DB())

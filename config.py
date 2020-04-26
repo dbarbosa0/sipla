@@ -2,6 +2,11 @@ __name__ = "SIPLA BETA"
 
 __version__ = "0.0.1"
 
+sipla_icon = "img/logo.png"
+
+sipla_stylesheet = "fusion"
+
+
 ##colorsList = QColor.colorNames()
 colorsList = ['black', 'blue', 'blueviolet', 'brown', 'cadetblue', 'chartreuse', 'chocolate', 'coral', 'cornflowerblue', \
               'crimson', 'cyan', 'darkblue', 'darkcyan', 'darkgoldenrod', 'darkgray', 'darkgreen', 'darkkhaki', \

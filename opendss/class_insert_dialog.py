@@ -19,8 +19,9 @@ class C_Insert_Dialog(QDialog): ## Classe Dialog principal
     def InitUI(self):
         self.setWindowTitle(self.titleWindow) # titulo janela
         self.setWindowIcon(QIcon(self.iconWindow))  # ícone da janela
+        self.setWindowModality(Qt.ApplicationModal)
         self.setStyle(QStyleFactory.create('Cleanlooks'))  # Estilo da Interface
-        self.resize(500, 200)
+        self.adjustSize()
 
         self.Dialog_Layout = QVBoxLayout() #Layout da Dialog
 

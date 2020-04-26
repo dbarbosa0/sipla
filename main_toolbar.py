@@ -151,21 +151,33 @@ class C_MenuToolBar(QDockWidget):
         ########################################################################################################
 
         # ******* Actions the Configuration Menu  *******
-        self.ConfigActRef = {'Config_BDGD_Act': 0}
+        self.ConfigActRef = {'Config_BDGD_Act': 0,
+                             'Connect_BDGD_Act': 0}
 
         # ******* Create the Configuration Menu *******
         self.ConfigMenu = self.MainMenu.addMenu('&Configuração')
-        self.Config_BDGD_Act = QAction(QIcon('img/icon_opendatabase.png'), 'BDGD', self)
-        self.Config_BDGD_Act.setShortcut("Ctrl+Alt+C")
-        self.Config_BDGD_Act.setStatusTip('Configura a Pasta do Banco de Dados BDGD')
-        self.Config_BDGD_Act.triggered.connect(self.exec_selectBDGD)
+        self.Config_BDGD_Act = QAction(QIcon('img/icon_opendatabase.png'), 'Configurar o BDGD', self)
+        self.Config_BDGD_Act.setShortcut("Ctrl+Alt+D")
+        self.Config_BDGD_Act.setStatusTip('Configura a Conexão com o Banco de Dados BDGD')
+        self.Config_BDGD_Act.triggered.connect(self.exec_configBDGD)
         self.Config_BDGD_Act.setObjectName('Config_BDGD_Act')
         self.ConfigActRef['Config_BDGD_Act'] = self.Config_BDGD_Act
+
+        self.Connect_BDGD_Act = QAction(QIcon('img/icon_database_connect.png'), 'Conectar ao BDGD', self)
+        self.Connect_BDGD_Act.setShortcut("Ctrl+Alt+C")
+        self.Connect_BDGD_Act.setStatusTip('Conecta ao BDGD')
+        self.Connect_BDGD_Act.triggered.connect(self.exec_connBDGD)
+        self.Connect_BDGD_Act.setObjectName('Connect_BDGD_Act')
+        self.ConfigActRef['Connect_BDGD_Act'] = self.Connect_BDGD_Act
+
+
 
         # ******* Create Configuration Menu Items *******
 
         # ******* Setup the Configuration Menu *******
+        self.ConfigMenu.addAction(self.Connect_BDGD_Act)
         self.ConfigMenu.addAction(self.Config_BDGD_Act)
+
 
         ########################################################################################################
 
@@ -245,8 +257,11 @@ class C_MenuToolBar(QDockWidget):
     def exec_selectNet(self): #self.metodo_CARREGAMENTO_DE_REDE
         self.Actions.showDockNetPanel()
 
-    def exec_selectBDGD(self):
-        self.Actions.acessDataBase()
+    def exec_configBDGD(self):
+        self.Actions.configDataBase()
+
+    def exec_connBDGD(self):
+        self.Actions.connectDataBase()
 
     def exec_showTableResults(self): #self.metodo_VISUALIZAR_RESULTADOS_POR_TABELA)
         self.Actions.showDockResultsPanel()
