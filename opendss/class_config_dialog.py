@@ -6,6 +6,7 @@ from PyQt5.QtCore import Qt
 import configparser
 import class_exception
 import platform
+import config as cfg
 
 import opendss.class_config_loadshape_dialog
 
@@ -16,8 +17,8 @@ class C_ConfigDialog(QDialog):
         super().__init__()
 
         self.titleWindow = "OpenDSS Settings"
-        self.iconWindow = "img/logo.png"
-        self.stylesheet = "fusion"
+        self.iconWindow = cfg.sipla_icon
+        self.stylesheet = cfg.sipla_stylesheet
 
         self.dataInfo = {}
 
@@ -27,8 +28,9 @@ class C_ConfigDialog(QDialog):
 
         self.setWindowTitle(self.titleWindow)
         self.setWindowIcon(QIcon(self.iconWindow))  # ícone da janela
+        self.setWindowModality(Qt.ApplicationModal)
         self.setStyle(QStyleFactory.create('Cleanlooks'))  # Estilo da Interface
-        self.resize(500, 500)
+        self.adjustSize()
 
 
         self.Dialog_Layout = QVBoxLayout() #Layout da Dialog
@@ -56,12 +58,10 @@ class C_ConfigDialog(QDialog):
 
         self.Dialog_Layout.addWidget(self.Conn_GroupBox)
 
-
         ###### Tabs
         self.TabWidget = QTabWidget()
         self.TabLoadFlow = LoadFlow()  # QWidget
         self.TabWidget.addTab(self.TabLoadFlow, "Simulação")
-
 
         self.Dialog_Layout.addWidget(self.TabWidget)
 

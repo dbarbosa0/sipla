@@ -33,7 +33,7 @@ class FileDataBaseError(C_Error):
         if errorText is None:
             errorText = ""
         # Display the errors
-        msg = QMessageBox(QMessageBox.Warning, "Data Base Folder Error",
+        msg = QMessageBox(QMessageBox.Warning, "Data Base Error",
                           msgText + "\n" + errorText,
                           QMessageBox.Ok)
         msg.setWindowIcon(QtGui.QIcon("Imagens/logo.png"))
