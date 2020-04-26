@@ -178,9 +178,9 @@ class C_ConfigDialog(QDialog):
                 self.TabLoadFlow.LoadFlow_GroupBox_UNCMT_CheckBox.setChecked(False)
 
             if config['LoadFlow']["UNCBTTD"] == "1":
-                self.TabLoadFlow.LoadFlow_GroupBox_UNCMT_CheckBox.setChecked(True)
+                self.TabLoadFlow.LoadFlow_GroupBox_UNCBT_TD_CheckBox.setChecked(True)
             else:
-                self.TabLoadFlow.LoadFlow_GroupBox_UNCMT_CheckBox.setChecked(False)
+                self.TabLoadFlow.LoadFlow_GroupBox_UNCBT_TD_CheckBox.setChecked(False)
 
 
             ### Tab Load Flow

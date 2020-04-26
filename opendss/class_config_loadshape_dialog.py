@@ -10,7 +10,7 @@ import platform
 import pyqtgraph
 import re
 
-import config
+import config as cfg
 import class_exception
 
 
@@ -20,8 +20,8 @@ class C_Config_LoadShape_Dialog(QDialog):
         super().__init__()
 
         self.titleWindow = "OpenDSS Load Shapes Settings"
-        self.iconWindow = "img/logo.png"
-        self.stylesheet = "fusion"
+        self.iconWindow = cfg.sipla_icon
+        self.stylesheet = cfg.sipla_stylesheet
 
         self._nPointsLoadDef = 0
         self._nStepSizeDef = 0
@@ -265,7 +265,7 @@ class C_Config_LoadShape_Dialog(QDialog):
                         Config_LoadShape_Shapes_GroupBox_TreeWidget_Item(self.Shapes_GroupBox_TreeWidget,
                                                                          self.Shapes_GroupBox_Checkbox_SelectAll.checkState(),
                                                                         ctd, str(dataCSV[ctd]).strip('[]').replace("'",""),
-                                                                        config.colorsList[random.randint(0, len(config.colorsList) - 1)])
+                                                                        cfg.colorsList[random.randint(0, len(cfg.colorsList) - 1)])
 
         except:
             class_exception.ExecConfigOpenDSS("Erro ao importar a(s) Curva(s) de Carga!","Verifique o arquivo CSV!")
@@ -316,8 +316,8 @@ class C_Config_LoadShape_Dialog(QDialog):
                 Config_LoadShape_Shapes_GroupBox_TreeWidget_Item(self.Shapes_GroupBox_TreeWidget,
                                                                  self.Shapes_GroupBox_Checkbox_SelectAll.checkState(),
                                                                  inputLoadName, pts,
-                                                                 config.colorsList[
-                                                                     random.randint(0, len(config.colorsList) - 1)])
+                                                                 cfg.colorsList[
+                                                                     random.randint(0, len(cfg.colorsList) - 1)])
             else:
                 msg = QMessageBox()
                 msg.information(self, 'Curvas de Carga', "Não foi possível adicionar a curva de carga!\nCurva de carga já existente!")
