@@ -143,8 +143,7 @@ class C_Config_LoadShape_Dialog(QDialog):
         self.View_GroupBox.setLayout(self.View_GroupBox_Layout)
 
         self.Dialog_Layout.addWidget(self.View_GroupBox, 1, 2, 1, 2)
-        
-        
+
 
         ##############################################################################################
 

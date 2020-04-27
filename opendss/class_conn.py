@@ -41,6 +41,7 @@ class C_OpenDSSDirect_Conn(C_Conn):  # classe OpenDSSDirect
         self.engineCircuit = self.engine.Circuit
         self.engineTopoly = self.engine.Topology
         self.engineMeters = self.engine.Meters
+        self.engineMonitors = self.engine.Monitors
 
     def run(self, msg):
         self.engine.run_command(msg)
@@ -50,6 +51,19 @@ class C_OpenDSSDirect_Conn(C_Conn):  # classe OpenDSSDirect
 
     def Circuit_AllBusVolts(self):
         return self.engineCircuit.AllBusVolts()
+
+################
+    def Monitor_AllNames(self):
+        return self.engineMonitors.AllNames()
+
+    def set_MonitorActive(self, name):
+        self.engineMonitors.Name(name)
+
+    def get_MonitorActive_ChannelNames(self):
+        return self.engineMonitors.Header()
+
+    def get_MonitorActive_DataChannel(self,idx):
+        return self.engineMonitors.Channel(idx)
 
 
 class C_OpenDSSCOM_Conn(C_Conn):  # classe OpenDSSCOM

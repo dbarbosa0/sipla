@@ -238,12 +238,13 @@ class C_Insert_Monitor_Dialog(QDialog): ## Classe Dialog principal
         
     def removeMonitor(self):
         
-        for ctd in range(0, len(self.Monitors)):
-            meter = self.Monitors[ctd]
-            if meter["Name"] == self.Monitor_GroupBox_MEnergy_ComboBox.currentText():
+        for ctd in self.Monitors:
+            if ctd["Name"] == self.Monitor_GroupBox_MEnergy_ComboBox.currentText():
                 self.Monitors.remove(ctd)
-                QMessageBox(QMessageBox.Warning, "Energy Monitor", "Energy Monitor " + meter["Name"] + " removido com sucesso!",
+                QMessageBox(QMessageBox.Warning, "Energy Monitor", "Energy Monitor " + ctd["Name"] + " removido com sucesso!",
                             QMessageBox.Ok).exec()
+
+        self.updateDialog()
                 
     def AcceptAddEditMonitor(self): ## Dá para otimizar e muito // Somente um teste
         
@@ -313,6 +314,7 @@ class C_Insert_Monitor_Dialog(QDialog): ## Classe Dialog principal
             
     def updateDialog(self):
         self.Monitor_GroupBox_MEnergy_ComboBox.clear()
+
         for ctd in self.Monitors:
             self.Monitor_GroupBox_MEnergy_ComboBox.addItem(ctd["Name"])
 
