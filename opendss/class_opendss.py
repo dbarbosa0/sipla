@@ -22,8 +22,12 @@ class C_OpenDSS(): # classe OpenDSSDirect
         self._nSE_MT_Selecionada = ''
         self._nFieldsMT = ''
 
+        #### Energy Monitors
+        self._EnergyMeters = []
+
         self.OpenDSSEngine = opendss.class_conn.C_Conn() ## Apenas para o Objeto Existir, depois será sobrecarregado
         self._OpenDSSConfig = {}
+
         self.memoLoadShapes = ''
 
         self.tableVoltageResults = QTableWidget() # Tabela de Resultados
@@ -68,6 +72,14 @@ class C_OpenDSS(): # classe OpenDSSDirect
     @nFieldsMT.setter
     def nFieldsMT(self, value):
         self._nFieldsMT = value
+
+    @property
+    def EnergyMeters(self):
+        return self._EnergyMeters
+
+    @EnergyMeters.setter
+    def EnergyMeters(self, value):
+        self._EnergyMeters = value
 
 
     def loadData(self):
@@ -136,6 +148,7 @@ class C_OpenDSS(): # classe OpenDSSDirect
                       # "RamLig":["Ramais de Ligação  ...",self.dataOpenDSS.exec_RAMAL_DE_LIGACAO,self.dataOpenDSS.memoFileRamaisLigBT],
                       "CompMT": ["Unidades Compensadoras de MT ...",self.dataOpenDSS.exec_UNID_COMPENSADORAS_DE_REATIVO_DE_MEDIA_TENSAO],
                       # "CompBT":["Unidades Compensadoras de BT ...",self.dataOpenDSS.exec_UNID_COMPENSADORAS_DE_REATIVO_DE_BAIXA_TENSAO],
+                      "EnergyMeters":["Inserindo os Energy Meters na Rede ...", self.exec_EnergyMeters],
                       "footer": ["Rodapé ...", self.dataOpenDSS.exec_FooterFile],
                       }
 
@@ -201,6 +214,7 @@ class C_OpenDSS(): # classe OpenDSSDirect
                       # "RamLig":self.dataOpenDSS.memoFileRamaisLigBT,self.memoFileRamaisLigBT,
                       "CompMT": self.dataOpenDSS.memoFileUndCompReatMT,
                       # "CompBT":self.dataOpenDSS.memoFileUndCompReatBT,
+                      "EnergyMeters": self.memoFileEnergyMeters,
                       "footer":self.memoFileFooter,
                       }
 
@@ -276,7 +290,7 @@ class C_OpenDSS(): # classe OpenDSSDirect
         self.OpenDSSConfig = config
 
         ######
-        self.memoFileFooter = self.dataOpenDSS.memoFileFooter
+        self.memoFileFooter = []
         self.memoFileFooter.append("set voltagebases = [" + self.OpenDSSConfig["VoltageBase"] + "]")
         self.memoFileFooter.append("Calcvoltagebases")
 
@@ -384,3 +398,26 @@ class C_OpenDSS(): # classe OpenDSSDirect
     def getAllNamesElements(self):
 
         return self.OpenDSSEngine.Circuit_AllElementNames()
+
+    #######Monitor
+
+    def exec_EnergyMeters(self):
+
+        self.memoFileEnergyMeters = []
+
+        for ctd in self.EnergyMeters:
+            tmp = "New EnergyMeter." + ctd["Name"] + \
+                  " Element=" + ctd["Element"] + \
+                  " Terminal=" + ctd["Terminal"] + \
+                  " 3phaseLosses=" + ctd["3phaseLosses"]  + \
+                  " LineLosses=" + ctd["LineLosses"] + \
+                  " Losses=" + ctd["Losses"]  + \
+                  " SeqLosses=" + ctd["SeqLosses"] + \
+                  " VbaseLosses=" + ctd["VbaseLosses"] + \
+                  " XfmrLosses=" + ctd["XfmrLosses"] + \
+                  " LocalOnly=" + ctd["LocalOnly"]  + \
+                  " PhaseVoltageReport=" + ctd["PhaseVoltageReport"] + \
+                  " Action=" + ctd["Action"] + \
+                  " Enabled=" + ctd["Enabled"]
+
+            self.memoFileEnergyMeters.append(tmp)

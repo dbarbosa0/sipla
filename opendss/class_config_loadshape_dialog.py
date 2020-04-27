@@ -9,7 +9,6 @@ import pathlib
 import platform
 import pyqtgraph
 import re
-
 import config as cfg
 import class_exception
 
