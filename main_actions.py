@@ -4,7 +4,8 @@ from PyQt5.QtWidgets import QStatusBar, QMessageBox
 import database.class_conn
 import opendss.class_opendss
 import opendss.class_config_dialog
-import opendss.class_insert_dialog
+import opendss.class_insert_energymeter_dialog
+import opendss.class_insert_monitor_dialog
 import database.class_base
 import database.class_config_dialog
 import class_exception
@@ -37,10 +38,14 @@ class C_MainActions():
 
         # Contribuição Sandy
         self.OpenDSS_DialogSettings = opendss.class_config_dialog.C_ConfigDialog()  # Instânciando a classe dialog Settings
-        self.OpenDSS_DialogInsert = opendss.class_insert_dialog.C_Insert_Dialog() # Instânciando a classe dialog Insert
-        self.OpenDSS_DialogInsert.TabEnergyMeter.OpenDSS = self.OpenDSS
         self.DataBase.DataBaseConn = self.DataBaseConn
         self.MainMapView.DataBaseConn = self.DataBaseConn
+        ###
+        self.OpenDSS_DialogInsertEnergyMeter = opendss.class_insert_energymeter_dialog.C_Insert_EnergyMeter_Dialog() # Instânciando a classe dialog Insert
+        self.OpenDSS_DialogInsertEnergyMeter.OpenDSS = self.OpenDSS
+        self.OpenDSS_DialogInsertMonitor = opendss.class_insert_monitor_dialog.C_Insert_Monitor_Dialog()  # Instânciando a classe dialog Insert
+        self.OpenDSS_DialogInsertMonitor.OpenDSS = self.OpenDSS
+
 
     #############################################
 
@@ -68,12 +73,14 @@ class C_MainActions():
         ##Funções que precisam do Fluxo
 
         if self.getStatusBar("FlowStatus") == "Solved":
-            self.MainWindowToolBar.OpenDSS_Insert_Act.setEnabled(True)
+            self.MainWindowToolBar.OpenDSS_InsertEnergyMeter_Act.setEnabled(True)
+            self.MainWindowToolBar.OpenDSS_InsertMonitor_Act.setEnabled(True)
             self.MainWindowToolBar.OpenDSS_Save_Act.setEnabled(True)
             self.MainWindowToolBar.OpenDSS_Create_Act.setEnabled(True)
             self.MainWindowToolBar.OpenDSS_View_Act.setEnabled(True)
         else:
-            self.MainWindowToolBar.OpenDSS_Insert_Act.setEnabled(False)
+            self.MainWindowToolBar.OpenDSS_InsertEnergyMeter_Act.setEnabled(False)
+            self.MainWindowToolBar.OpenDSS_InsertMonitor_Act.setEnabled(False)
             self.MainWindowToolBar.OpenDSS_Save_Act.setEnabled(False)
             self.MainWindowToolBar.OpenDSS_Create_Act.setEnabled(False)
             self.MainWindowToolBar.OpenDSS_View_Act.setEnabled(False)
@@ -161,9 +168,13 @@ class C_MainActions():
             ##Atualizando o ToolBar
             self.updateToobarMenu()
 
-    def execInsertDSS(self):
-        self.OpenDSS_DialogInsert.TabEnergyMeter.updateDialog()
-        self.OpenDSS_DialogInsert.show()
+    def execInsertEnergyMeter(self):
+        self.OpenDSS_DialogInsertEnergyMeter.updateDialog()
+        self.OpenDSS_DialogInsertEnergyMeter.show()
+
+    def execInsertMonitor(self):
+        self.OpenDSS_DialogInsertMonitor.updateDialog()
+        self.OpenDSS_DialogInsertMonitor.show()
 
 
     def execCreateDSS(self):

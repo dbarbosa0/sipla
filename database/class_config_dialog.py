@@ -54,7 +54,7 @@ class C_ConfigDialog(QDialog):
 
 
         #### Grupo do Sqlite
-        self.Conn_GroupBox_Sqlite = QGroupBox("Método de Conexão com o BDGD")
+        self.Conn_GroupBox_Sqlite = QGroupBox("Conexão Local")
         self.Conn_GroupBox_Sqlite_Layout = QHBoxLayout()
 
         self.Conn_GroupBox_Sqlite_Label = QLabel("Diretório:")
