@@ -7,7 +7,7 @@ from PyQt5.QtCore import Qt
 import opendss.class_opendss
 import config as cfg
 
-class C_Insert_Dialog(QDialog): ## Classe Dialog principal
+class C_Insert_EnergyMeter_Dialog(QDialog): ## Classe Dialog principal
     def __init__(self):
         super().__init__()
 
