@@ -5,7 +5,7 @@ import database.class_conn
 import opendss.class_opendss
 import opendss.class_config_dialog
 import opendss.class_insert_energymeter_dialog
-import opendss.class_insert_energymonitor_dialog
+import opendss.class_insert_monitor_dialog
 import database.class_base
 import database.class_config_dialog
 import class_exception
@@ -43,8 +43,8 @@ class C_MainActions():
         ###
         self.OpenDSS_DialogInsertEnergyMeter = opendss.class_insert_energymeter_dialog.C_Insert_EnergyMeter_Dialog() # Instânciando a classe dialog Insert
         self.OpenDSS_DialogInsertEnergyMeter.OpenDSS = self.OpenDSS
-        self.OpenDSS_DialogInsertEnergyMonitor = opendss.class_insert_energymonitor_dialog.C_Insert_EnergyMonitor_Dialog()  # Instânciando a classe dialog Insert
-        self.OpenDSS_DialogInsertEnergyMonitor.OpenDSS = self.OpenDSS
+        self.OpenDSS_DialogInsertMonitor = opendss.class_insert_monitor_dialog.C_Insert_Monitor_Dialog()  # Instânciando a classe dialog Insert
+        self.OpenDSS_DialogInsertMonitor.OpenDSS = self.OpenDSS
 
 
     #############################################
@@ -74,13 +74,13 @@ class C_MainActions():
 
         if self.getStatusBar("FlowStatus") == "Solved":
             self.MainWindowToolBar.OpenDSS_InsertEnergyMeter_Act.setEnabled(True)
-            self.MainWindowToolBar.OpenDSS_InsertEnergyMonitor_Act.setEnabled(True)
+            self.MainWindowToolBar.OpenDSS_InsertMonitor_Act.setEnabled(True)
             self.MainWindowToolBar.OpenDSS_Save_Act.setEnabled(True)
             self.MainWindowToolBar.OpenDSS_Create_Act.setEnabled(True)
             self.MainWindowToolBar.OpenDSS_View_Act.setEnabled(True)
         else:
             self.MainWindowToolBar.OpenDSS_InsertEnergyMeter_Act.setEnabled(False)
-            self.MainWindowToolBar.OpenDSS_InsertEnergyMonitor_Act.setEnabled(False)
+            self.MainWindowToolBar.OpenDSS_InsertMonitor_Act.setEnabled(False)
             self.MainWindowToolBar.OpenDSS_Save_Act.setEnabled(False)
             self.MainWindowToolBar.OpenDSS_Create_Act.setEnabled(False)
             self.MainWindowToolBar.OpenDSS_View_Act.setEnabled(False)
@@ -172,9 +172,9 @@ class C_MainActions():
         self.OpenDSS_DialogInsertEnergyMeter.updateDialog()
         self.OpenDSS_DialogInsertEnergyMeter.show()
 
-    def execInsertEnergyMonitor(self):
-        self.OpenDSS_DialogInsertEnergyMonitor.updateDialog()
-        self.OpenDSS_DialogInsertEnergyMonitor.show()
+    def execInsertMonitor(self):
+        self.OpenDSS_DialogInsertMonitor.updateDialog()
+        self.OpenDSS_DialogInsertMonitor.show()
 
 
     def execCreateDSS(self):

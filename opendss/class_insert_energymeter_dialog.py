@@ -11,7 +11,7 @@ class C_Insert_EnergyMeter_Dialog(QDialog): ## Classe Dialog principal
     def __init__(self):
         super().__init__()
 
-        self.titleWindow = "OpenDSS Insert"
+        self.titleWindow = "OpenDSS Energy Meter Insert"
         self.iconWindow = cfg.sipla_icon
         self.stylesheet = cfg.sipla_stylesheet
         self.InitUI()
@@ -232,18 +232,18 @@ class C_Insert_EnergyMeter_Dialog(QDialog): ## Classe Dialog principal
     
     def clearEnergyMeterParameters(self):
         self.EnergyMeter_Name.setText("")
-        self.EnergyMeter_Element_ComboBox.setCurrentText("")
-        self.EnergyMeter_Terminal_ComboBox.setCurrentText("")
-        self.EnergyMeter_3phaseLosses_ComboBox.setCurrentText("")
-        self.EnergyMeter_LineLosses_ComboBox.setCurrentText("")
-        self.EnergyMeter_Losses_ComboBox.setCurrentText("")
-        self.EnergyMeter_SeqLosses_ComboBox.setCurrentText("")
-        self.EnergyMeter_VbaseLosses_ComboBox.setCurrentText("")
-        self.EnergyMeter_XfmrLosses_ComboBox.setCurrentText("")
-        self.EnergyMeter_LocalOnly_ComboBox.setCurrentText("")
-        self.EnergyMeter_PhaseVoltageReport_ComboBox.setCurrentText("")
-        self.EnergyMeter_Action_ComboBox.setCurrentText("")
-        self.EnergyMeter_Enabled_ComboBox.setCurrentText("")
+        self.EnergyMeter_Element_ComboBox.setCurrentIndex(0)
+        self.EnergyMeter_Terminal_ComboBox.setCurrentIndex(0)
+        self.EnergyMeter_3phaseLosses_ComboBox.setCurrentIndex(0)
+        self.EnergyMeter_LineLosses_ComboBox.setCurrentIndex(0)
+        self.EnergyMeter_Losses_ComboBox.setCurrentIndex(0)
+        self.EnergyMeter_SeqLosses_ComboBox.setCurrentIndex(0)
+        self.EnergyMeter_VbaseLosses_ComboBox.setCurrentIndex(0)
+        self.EnergyMeter_XfmrLosses_ComboBox.setCurrentIndex(0)
+        self.EnergyMeter_LocalOnly_ComboBox.setCurrentIndex(0)
+        self.EnergyMeter_PhaseVoltageReport_ComboBox.setCurrentIndex(0)
+        self.EnergyMeter_Action_ComboBox.setCurrentIndex(0)
+        self.EnergyMeter_Enabled_ComboBox.setCurrentIndex(0)
         
     def addEnergyMeter(self):
         self.clearEnergyMeterParameters()

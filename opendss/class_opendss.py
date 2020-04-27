@@ -333,10 +333,10 @@ class C_OpenDSS(): # classe OpenDSSDirect
             #### Exportando os Medidores
 
             for ctd in self.EnergyMeters:
-                self.exec_OpenDSSRun("Export " + ctd)
+                self.exec_OpenDSSRun("Export EnergyMeter " + ctd["Name"])
 
             for ctd in self.EnergyMonitors:
-                self.exec_OpenDSSRun("Export " + ctd)
+                self.exec_OpenDSSRun("Export monitor " + ctd["Name"])
 
 
         except:
@@ -443,13 +443,15 @@ class C_OpenDSS(): # classe OpenDSSDirect
 
         self.memoFileEnergyMonitors = []
 
-
         for ctd in self.EnergyMonitors:
             tmp = "New Monitor." + ctd["Name"] + \
                   " Element=" + ctd["Element"] + \
                   " Terminal=" + ctd["Terminal"] + \
-                  " Mode=" + ctd["Mode"]  + \
-                  " Ppolar=" + ctd["Ppolar"]
+                  " Mode=" + str(ctd["Mode"])  + \
+                  " Action=" + ctd["Action"] + \
+                  " Enable=" + ctd["Enable"] + \
+                  " Ppolar=" + ctd["Ppolar"] + \
+                  " VIPolar="  + ctd["VIpolar"]
 
 
             self.memoFileEnergyMonitors.append(tmp)
