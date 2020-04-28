@@ -105,7 +105,6 @@ class C_MainActions():
             self.MainWindowToolBar.OpenDSS_Run_Act.setEnabled(False)
 
 
-
     #############################################
 
     def connectDataBase(self):
