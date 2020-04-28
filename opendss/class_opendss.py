@@ -340,15 +340,6 @@ class C_OpenDSS(): # classe OpenDSSDirect
         try:
             self.exec_OpenDSSRun("Solve")
 
-            #### Exportando os Medidores
-
-            for ctd in self.EnergyMeters:
-                self.exec_OpenDSSRun("Export EnergyMeter " + ctd["Name"])
-
-            for ctd in self.Monitors:
-                self.exec_OpenDSSRun("Export Monitor " + ctd["Name"])
-
-
         except:
             class_exception.ExecOpenDSS("Erro ao executar o fluxo de potência resolvido!")
 
