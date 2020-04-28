@@ -57,7 +57,9 @@ class C_MenuToolBar(QDockWidget):
                               'OpenDSS_InsertMonitor_Act': 0,  # Inserir o Energy Meter
                               'OpenDSS_Create_Act': 0, # Criar Arquivo .DSS
                               'OpenDSS_Save_Act': 0,
-                              'OpenDSS_View_Act': 0,} # Salvar Arquivo .DSS
+                              'OpenDSS_View_Act': 0,
+                              'SCAnalyze_Config_Act': 0,  # Configurar SCAn
+                              'SCAnalyze_Run_Act': 0, }  # Run SCAn
 
         # ******* Create the OpenDSSuration Menu *******
         self.OpenDSSMenu = self.MainMenu.addMenu('&OpenDSS')
@@ -113,6 +115,22 @@ class C_MenuToolBar(QDockWidget):
         self.OpenDSS_View_Act.setObjectName('OpenDSS_View_Act')
         self.OpenDSSActRef['OpenDSS_View_Act'] = self.OpenDSS_View_Act
 
+        #Contribuição Carvalho
+        self.SCAnalyze_Config_Act = QAction(QIcon('img/icon_opendss_sc_config.png'), '&Configure', self)
+        self.SCAnalyze_Config_Act.setShortcut("Alt+1")
+        self.SCAnalyze_Config_Act.setStatusTip('Configure Short Circuit Analyze')
+        self.SCAnalyze_Config_Act.triggered.connect(self.exec_configSCAnalyze)
+        self.SCAnalyze_Config_Act.setObjectName('SCAnalyze_Config_Act')
+        self.OpenDSSActRef['SCAnalyze_Config_Act'] = self.SCAnalyze_Config_Act
+
+        self.SCAnalyze_Run_Act = QAction(QIcon('img/icon_opendss_sc_run.png'), '&Run', self)
+        self.SCAnalyze_Run_Act.setShortcut("Alt+2")
+        self.SCAnalyze_Run_Act.setStatusTip('Run Short Circuit Analyze')
+        self.SCAnalyze_Run_Act.triggered.connect(self.exec_dynamicFlt)
+        self.SCAnalyze_Run_Act.setObjectName('SCAnalyze_Run_Act')
+        self.OpenDSSActRef['SCAnalyze_Run_Act'] = self.SCAnalyze_Run_Act
+
+
         # ******* Setup the OpenDSS Menu *******
         self.OpenDSSMenu.addAction(self.OpenDSS_Config_Act)
         self.OpenDSSMenu.addAction(self.OpenDSS_Run_Act)
@@ -125,8 +143,27 @@ class C_MenuToolBar(QDockWidget):
                                                               'Sub-processos ')
         self.OpenDSSMenuSubProcess.addAction(self.OpenDSS_Create_Act)
         self.OpenDSSMenuSubProcess.addAction(self.OpenDSS_Save_Act)
+        self.OpenDSSMenuSubSCAnalyze = self.OpenDSSMenu.addMenu(QIcon('img/icon_opendss_sc.png'),
+                                                             'Short Circuit')
+        self.OpenDSSMenuSubSCAnalyze.addAction(self.SCAnalyze_Config_Act)
+        self.OpenDSSMenuSubSCAnalyze.addAction(self.SCAnalyze_Run_Act)
+
         self.OpenDSSMenu.addSeparator()
         self.OpenDSSMenu.addAction(self.OpenDSS_View_Act)
+        self.OpenDSSMenu.addSeparator()
+
+        # ******* Actions the Plot Menu  ******************************************************************************
+        self.PlotActRef = {'Plot_Act': 0}
+        self.PlotMenu = self.MainMenu.addMenu("&Plot")
+        self.Plot_Monitor_Act = QAction(QIcon('img/icon_opendss_monitor.png'), 'G&ráficos dos Monitores', self)
+        self.Plot_Monitor_Act.setShortcut("Ctrl+Alt+P")
+        self.Plot_Monitor_Act.setStatusTip('Plotar Gráficos dos Monitores')
+        self.Plot_Monitor_Act.triggered.connect(self.exec_PlotMonitor)
+        self.Plot_Monitor_Act.setObjectName('Plot_Monitor_Act')
+        self.PlotActRef['Plot_Monitor_Act'] = self.Plot_Monitor_Act
+
+        self.PlotMenu.addAction(self.Plot_Monitor_Act)
+
 
         ########################################################################################################
 
@@ -188,8 +225,8 @@ class C_MenuToolBar(QDockWidget):
         self.ConfigMenu.addAction(self.Connect_BDGD_Act)
         self.ConfigMenu.addAction(self.Config_BDGD_Act)
 
+        #########################################################################################################
 
-        ########################################################################################################
 
         # ******* Actions the Help Menu  *******
         self.HelpActRef = {'Help_About_Act': 0}
@@ -304,6 +341,17 @@ class C_MenuToolBar(QDockWidget):
     def exec_viewFileDSS(self):
         print("Visualizar o Arquivo do OpenDSS")
 
+    # Contribuição Carvalho
+    def exec_configSCAnalyze(self):
+        self.Actions.exec_configSCAnalyze_Settings()
+
+    def exec_dynamicFlt(self):
+        self.Actions.exec_SCAnalyze()
+
+    ####################################################################
+
+    def exec_PlotMonitor(self):
+        self.Actions.execPlotMonitor()
 
     ####################################################################
 

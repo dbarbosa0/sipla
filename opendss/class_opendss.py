@@ -24,8 +24,10 @@ class C_OpenDSS(): # classe OpenDSSDirect
 
         #### Energy Meters
         self._EnergyMeters = []
-        #### Energy Monitors
-        self._EnergyMonitors = []
+        #### Monitors
+        self._Monitors = []
+        ##SC Carvalho
+        self._SCDataInfo = []
 
         self.OpenDSSEngine = opendss.class_conn.C_Conn() ## Apenas para o Objeto Existir, depois será sobrecarregado
         self._OpenDSSConfig = {}
@@ -84,12 +86,20 @@ class C_OpenDSS(): # classe OpenDSSDirect
         self._EnergyMeters = value
 
     @property
-    def EnergyMonitors(self):
-        return self._EnergyMonitors
+    def Monitors(self):
+        return self._Monitors
 
-    @EnergyMonitors.setter
-    def EnergyMonitors(self, value):
-        self._EnergyMonitors = value
+    @Monitors.setter
+    def Monitors(self, value):
+        self._Monitors = value
+
+    @property
+    def SCDataInfo(self):
+        return self._SCDataInfo
+
+    @SCDataInfo.setter
+    def SCDataInfo(self, value):
+        self._SCDataInfo = value
 
     def loadData(self):
 
@@ -158,7 +168,7 @@ class C_OpenDSS(): # classe OpenDSSDirect
                       "CompMT": ["Unidades Compensadoras de MT ...",self.dataOpenDSS.exec_UNID_COMPENSADORAS_DE_REATIVO_DE_MEDIA_TENSAO],
                       # "CompBT":["Unidades Compensadoras de BT ...",self.dataOpenDSS.exec_UNID_COMPENSADORAS_DE_REATIVO_DE_BAIXA_TENSAO],
                       "EnergyMeters":["Inserindo os Energy Meters ...", self.exec_EnergyMeters],
-                      "EnergyMonitors": ["Inserindo os Energy Monitors ...", self.exec_EnergyMonitors],
+                      "Monitors": ["Inserindo os Monitors ...", self.exec_Monitors],
                       "footer": ["Rodapé ...", self.dataOpenDSS.exec_FooterFile],
                       }
 
@@ -168,10 +178,10 @@ class C_OpenDSS(): # classe OpenDSSDirect
             msg = self.execOpenDSSFunc[ctd][-2]
             #Executando a função
             ### Verificando o modo de operação
-            if (ctd == "UConMTLoadShapes") or (ctd == "LoadShapes") or (ctd == "UConBTLoadShapes"):
+            if (ctd == "UConMTLoadShapes") or (ctd == "LoadShapes"):
                 if self.OpenDSSConfig["Mode"] == "Daily":
                     self.execOpenDSSFunc[ctd][-1]()
-            elif (ctd == "UConBTTD"):
+            elif (ctd == "UConBTTD") or (ctd == "UConBTLoadShapes"):
                 if self.OpenDSSConfig["UNCBTTD"] == "1":
                     self.execOpenDSSFunc[ctd][-1]()
             else:
@@ -220,7 +230,7 @@ class C_OpenDSS(): # classe OpenDSSDirect
                       "CompMT": self.dataOpenDSS.memoFileUndCompReatMT,
                       # "CompBT":self.dataOpenDSS.memoFileUndCompReatBT,
                       "EnergyMeters": self.memoFileEnergyMeters,
-                      "EnergyMonitors": self.memoFileEnergyMonitors,
+                      "Monitors": self.memoFileMonitors,
                       "footer":self.memoFileFooter,
                       }
 
@@ -230,7 +240,7 @@ class C_OpenDSS(): # classe OpenDSSDirect
         arquivoSalvo = QFileDialog.getSaveFileName(None, "Save OpenDSS File", "Results/",
                                                             "DSS Files (*.dss)")[0]
 
-        nome_do_arquivo_criado = os.path.basename(str(arquivoSalvo))
+        nome_do_arquivo_criado = os.path.basename(str(arquivoSalvo)).replace(".dss","")
 
         diretorio = os.path.dirname(str(arquivoSalvo)) + "/"
 
@@ -259,7 +269,7 @@ class C_OpenDSS(): # classe OpenDSSDirect
 
     def saveFileDSS(self, dirSave, nameMemo, dataMemo ): #Salvar em Arquivo
 
-        arquivo = open(dirSave +  nameMemo + ".dss", 'w', encoding='utf-8')
+        arquivo = open(dirSave + nameMemo + ".dss", 'w', encoding='utf-8')
         arquivo.writelines( dataMemo )
         arquivo.close()
 
@@ -335,8 +345,8 @@ class C_OpenDSS(): # classe OpenDSSDirect
             for ctd in self.EnergyMeters:
                 self.exec_OpenDSSRun("Export EnergyMeter " + ctd["Name"])
 
-            for ctd in self.EnergyMonitors:
-                self.exec_OpenDSSRun("Export monitor " + ctd["Name"])
+            for ctd in self.Monitors:
+                self.exec_OpenDSSRun("Export Monitor " + ctd["Name"])
 
 
         except:
@@ -412,9 +422,24 @@ class C_OpenDSS(): # classe OpenDSSDirect
 
         return self.OpenDSSEngine.EnergyMeter_AllNames()
 
+    def getAllNamesMonitor(self):
+        return self.OpenDSSEngine.Monitor_AllNames()
+
     def getAllNamesElements(self):
 
         return self.OpenDSSEngine.Circuit_AllElementNames()
+
+    def getAllBusNames(self):
+        return self.OpenDSSEngine.Circuit_AllBusNames()
+
+    def setMonitorActive(self, name):
+        self.OpenDSSEngine.set_MonitorActive(name)
+
+    def getMonitorActive_ChannelNames(self):
+        return self.OpenDSSEngine.get_MonitorActive_ChannelNames()
+
+    def get_MonitorActive_DataChannel(self, idx):
+        return self.OpenDSSEngine.get_MonitorActive_DataChannel(idx)
 
     #######Monitor
 
@@ -439,11 +464,11 @@ class C_OpenDSS(): # classe OpenDSSDirect
 
             self.memoFileEnergyMeters.append(tmp)
 
-    def exec_EnergyMonitors(self):
+    def exec_Monitors(self):
 
-        self.memoFileEnergyMonitors = []
+        self.memoFileMonitors = []
 
-        for ctd in self.EnergyMonitors:
+        for ctd in self.Monitors:
             tmp = "New Monitor." + ctd["Name"] + \
                   " Element=" + ctd["Element"] + \
                   " Terminal=" + ctd["Terminal"] + \
@@ -454,4 +479,35 @@ class C_OpenDSS(): # classe OpenDSSDirect
                   " VIPolar="  + ctd["VIpolar"]
 
 
-            self.memoFileEnergyMonitors.append(tmp)
+            self.memoFileMonitors.append(tmp)
+
+
+    ######################################################################################
+    ###
+    def exec_DynamicFlt(self):
+
+        self.memoFileSC = []
+        faultstr = ''
+        for stdSC in self.SCDataInfo:
+            faultstr = 'New Fault.DynamicFault'
+            faultstr += " bus1=" + stdSC["FltBus"]
+            faultstr += " phases=" + stdSC["FltPhases"]
+            faultstr += " r=" + stdSC["FltRst"]
+            faultstr += " ontime=" + stdSC["FltTime"]
+            faultstr += " temporary=" + stdSC["FltType"]
+
+            if not (stdSC["FltBus2"] == " " or stdSC["FltBus2"] == 'None'):
+                faultstr += " bus2=" + stdSC["FltBus2"]
+
+            faultstr += " basefreq=" + stdSC["FltBaseFreq"]
+
+            if stdSC["FltRstDev"] != "" :
+                faultstr += " %stddev=" + stdSC["FltRstDev"]
+
+            if stdSC["FltRepair"] != "" :
+                faultstr += " repair=" + stdSC["FltRepair"]
+        print(faultstr)
+        self.exec_OpenDSSRun(faultstr)
+        self.exec_OpenDSSRun("set mode=dynamic controlmode=time time=(0,0) stepsize=0.01 number=4000")
+        self.exec_OpenDSSRun("Solve")
+        self.exec_OpenDSSRun("show eventlog")

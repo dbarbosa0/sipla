@@ -60,8 +60,6 @@ class mainWindow(QMainWindow):
         self.addDockWidget(Qt.LeftDockWidgetArea, self.mainDockNet)
         self.addDockWidget(Qt.BottomDockWidgetArea, self.mainDockResults)
         self.setDockOptions(QMainWindow.AnimatedDocks)
-
-
         self.mainDockNet.mainActions = self.mainActions
 
 

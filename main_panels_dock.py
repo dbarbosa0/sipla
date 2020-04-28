@@ -266,13 +266,16 @@ class C_NetPanel(QDockWidget):
             Item = self.NetPanel_Fields_GroupBox_Select_TreeWidget.topLevelItem(ctd)
             if Item.checkState(0) == Qt.Checked:
                 self.Deck_GroupBox_MapView_Btn.setEnabled(True)
-                self.mainActions.updateToobarMenu()
+
+            self.mainActions.updateToobarMenu()
 
     def onSelectAllFields(self):
 
         for ctd in range(0, self.NetPanel_Fields_GroupBox_Select_TreeWidget.topLevelItemCount()):
             Item = self.NetPanel_Fields_GroupBox_Select_TreeWidget.topLevelItem(ctd)
             Item.setCheckState(0, self.NetPanel_Fields_GroupBox_Select_Checkbox_SelectAll.checkState())
+
+        self.setDisabled_NetPanel_Fields_GroupBox_Select_Btn()
 
     #############################################
     def NetPanel_Options_GroupBox_TreeWidget_LoadOptions(self):

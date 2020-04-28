@@ -6,12 +6,13 @@ import opendss.class_opendss
 import opendss.class_config_dialog
 import opendss.class_insert_energymeter_dialog
 import opendss.class_insert_monitor_dialog
+import opendss.class_config_plot_monitor_dialog
+import opendss.class_scan_config_dialog
 import database.class_base
 import database.class_config_dialog
 import class_exception
 import maps.class_view
 import main_panels_dock
-import configparser
 import main_toolbar
 
 class C_MainActions():
@@ -45,6 +46,12 @@ class C_MainActions():
         self.OpenDSS_DialogInsertEnergyMeter.OpenDSS = self.OpenDSS
         self.OpenDSS_DialogInsertMonitor = opendss.class_insert_monitor_dialog.C_Insert_Monitor_Dialog()  # Instânciando a classe dialog Insert
         self.OpenDSS_DialogInsertMonitor.OpenDSS = self.OpenDSS
+        self.OpenDSS_DialogPlotMonitor = opendss.class_config_plot_monitor_dialog.C_Config_Plot_Dialog()
+        self.OpenDSS_DialogPlotMonitor.OpenDSS = self.OpenDSS
+        # Contribuição Carvalho
+        self.SCAnalyze_DialogSettings = opendss.class_scan_config_dialog.C_SCAnalyze_ConfigDialog()
+        self.SCAnalyze_DialogSettings.OpenDSS = self.OpenDSS #Apontando o ponteiro de OpenDSS C_MainActions
+
 
 
     #############################################
@@ -78,19 +85,25 @@ class C_MainActions():
             self.MainWindowToolBar.OpenDSS_Save_Act.setEnabled(True)
             self.MainWindowToolBar.OpenDSS_Create_Act.setEnabled(True)
             self.MainWindowToolBar.OpenDSS_View_Act.setEnabled(True)
+            self.MainWindowToolBar.SCAnalyze_Config_Act.setEnabled(True)
+            self.MainWindowToolBar.SCAnalyze_Run_Act.setEnabled(True)
+            self.MainWindowToolBar.Plot_Monitor_Act.setEnabled(True)
         else:
             self.MainWindowToolBar.OpenDSS_InsertEnergyMeter_Act.setEnabled(False)
             self.MainWindowToolBar.OpenDSS_InsertMonitor_Act.setEnabled(False)
             self.MainWindowToolBar.OpenDSS_Save_Act.setEnabled(False)
             self.MainWindowToolBar.OpenDSS_Create_Act.setEnabled(False)
             self.MainWindowToolBar.OpenDSS_View_Act.setEnabled(False)
+            self.MainWindowToolBar.SCAnalyze_Config_Act.setEnabled(False)
+            self.MainWindowToolBar.SCAnalyze_Run_Act.setEnabled(False)
+            self.MainWindowToolBar.Plot_Monitor_Act.setEnabled(False)
 
         ## Habilitar o Solve Apenas se puder visualizar, o que significa que está tudo certo
         if self.MainNetPanel.Deck_GroupBox_MapView_Btn.isEnabled():
             self.MainWindowToolBar.OpenDSS_Run_Act.setEnabled(True)
-
         else:
             self.MainWindowToolBar.OpenDSS_Run_Act.setEnabled(False)
+
 
 
     #############################################
@@ -101,10 +114,13 @@ class C_MainActions():
             self.DataBaseConn.DataBaseInfo = self.DataBase_DialogSettings.databaseInfo
             self.getSE_AT_DB()
             self.setStatusBar("Status", "On-Line")
+        else:
+            QMessageBox(QMessageBox.Warning, "DataBase Configuration", \
+                        "A Conexão com o Banco de Dados deve ser configurada!", QMessageBox.Ok).exec()
+
 
     def configDataBase(self):
         self.DataBase_DialogSettings.show()
-        self.connectDataBase()
 
     def getSE_AT_DB(self): ## Carregando as subestações de Alta tensão
         self.MainNetPanel.set_SEAT(self.DataBase.getSE_AT_DB())
@@ -176,6 +192,9 @@ class C_MainActions():
         self.OpenDSS_DialogInsertMonitor.updateDialog()
         self.OpenDSS_DialogInsertMonitor.show()
 
+    def execPlotMonitor(self):
+        self.OpenDSS_DialogPlotMonitor.updateDialog()
+        self.OpenDSS_DialogPlotMonitor.show()
 
     def execCreateDSS(self):
         ## Zerando os resultados anteriores
@@ -194,9 +213,17 @@ class C_MainActions():
 
 
     def saveOpenDSS(self):
-
         #self.execCreateDSS()
         self.OpenDSS.exec_SaveFileDialogDSS()
+
+    # Contribuição Carvalho
+    def exec_configSCAnalyze_Settings(self):
+        self.SCAnalyze_DialogSettings.updateDialog()
+        self.SCAnalyze_DialogSettings.show()
+
+    def exec_SCAnalyze(self):
+        self.OpenDSS.exec_DynamicFlt()
+
 
 
     #################################################################################
