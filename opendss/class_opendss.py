@@ -122,10 +122,6 @@ class C_OpenDSS(): # classe OpenDSSDirect
             pass
 
 
-
-    ##########
-
-
         ##### Executa os Arquitvos que serão executados e inseridos
 
         self.execOpenDSSFunc = {"header": ["Cabeçalho ...", self.dataOpenDSS.exec_HeaderFile],
@@ -329,6 +325,7 @@ class C_OpenDSS(): # classe OpenDSSDirect
 
     def exec_OpenDSS(self):
 
+        self.OpenDSSEngine.clear()
 
         for ctd in self.OpenDSSDataResult:
 
@@ -497,7 +494,7 @@ class C_OpenDSS(): # classe OpenDSSDirect
 
             if stdSC["FltRepair"] != "" :
                 faultstr += " repair=" + stdSC["FltRepair"]
-        print(faultstr)
+
         self.exec_OpenDSSRun(faultstr)
         self.exec_OpenDSSRun("set mode=dynamic controlmode=time time=(0,0) stepsize=0.01 number=4000")
         self.exec_OpenDSSRun("Solve")

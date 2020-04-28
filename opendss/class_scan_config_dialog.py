@@ -153,6 +153,7 @@ class C_SCAnalyze_ConfigDialog(QDialog):
         self.close()
 
     def updateDialog(self):
+        self.TabBasic.FltBus_GroupBox_ComboBox.clear()
         buslist = self.OpenDSS.getAllBusNames()
         for index, item in enumerate(buslist):
             self.TabBasic.FltBus_GroupBox_ComboBox.addItem(item, item)
@@ -238,6 +239,7 @@ class BasicTab(QWidget):
         self.setLayout(self.Tab_layout)
 
     def addBusesFltBus2(self):
+
         tmpFltBus2 = self.FltBus2_GroupBox_ComboBox.currentText()
 
         self.FltBus2_GroupBox_ComboBox.clear()

@@ -38,6 +38,7 @@ class C_OpenDSSDirect_Conn(C_Conn):  # classe OpenDSSDirect
 
     def __init__(self):
         self.engine = opendssdirect
+        self.engineBasic = self.engine.Basic
         self.engineCircuit = self.engine.Circuit
         self.engineTopoly = self.engine.Topology
         self.engineMeters = self.engine.Meters
@@ -45,6 +46,9 @@ class C_OpenDSSDirect_Conn(C_Conn):  # classe OpenDSSDirect
 
     def run(self, msg):
         self.engine.run_command(msg)
+
+    def clear(self):
+        self.engineBasic.ClearAll()
 
     def Circuit_AllBusNames(self):
         return self.engineCircuit.AllBusNames()
@@ -79,6 +83,9 @@ class C_OpenDSSCOM_Conn(C_Conn):  # classe OpenDSSCOM
 
     def run(self, msg):
         self.engine.Text.Command = msg
+
+    def clear(self):
+        self.engine.Text.Command = "clear"
 
     def Circuit_AllBusNames(self):
         return self.engineCircuit.AllBusNames
