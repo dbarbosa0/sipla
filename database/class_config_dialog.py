@@ -120,7 +120,7 @@ class C_ConfigDialog(QDialog):
     def get_DirDataBaseSqlite(self):
         dirDataBase = self.Conn_GroupBox_Sqlite_Edit.text()
 
-        if self.checkDirDataBaseSqlite(dirDataBase):
+        if (dirDataBase != "") and (self.checkDirDataBaseSqlite(dirDataBase)):
             return dirDataBase
         else:
             return ""
@@ -136,8 +136,11 @@ class C_ConfigDialog(QDialog):
             elif config['BDGD']['Conn'] == "mysql":
                 self.Conn_GroupBox_Radio_Mysql.setChecked(False)
 
-            if self.checkDirDataBaseSqlite(config['BDGD']['dir']):
-                self.Conn_GroupBox_Sqlite_Edit.setText(config['BDGD']['dir'])
+            if os.path.isdir(config['BDGD']['dir']):
+                if self.checkDirDataBaseSqlite(config['BDGD']['dir']):
+                    self.Conn_GroupBox_Sqlite_Edit.setText(config['BDGD']['dir'])
+            else:
+                self.Conn_GroupBox_Sqlite_Edit.clear()
 
             ##### Carregando parâmetros
             self.loadParameters()

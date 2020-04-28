@@ -240,7 +240,7 @@ class C_OpenDSS(): # classe OpenDSSDirect
         arquivoSalvo = QFileDialog.getSaveFileName(None, "Save OpenDSS File", "Results/",
                                                             "DSS Files (*.dss)")[0]
 
-        nome_do_arquivo_criado = os.path.basename(str(arquivoSalvo))
+        nome_do_arquivo_criado = os.path.basename(str(arquivoSalvo)).replace(".dss","")
 
         diretorio = os.path.dirname(str(arquivoSalvo)) + "/"
 
@@ -269,7 +269,7 @@ class C_OpenDSS(): # classe OpenDSSDirect
 
     def saveFileDSS(self, dirSave, nameMemo, dataMemo ): #Salvar em Arquivo
 
-        arquivo = open(dirSave +  nameMemo + ".dss", 'w', encoding='utf-8')
+        arquivo = open(dirSave + nameMemo + ".dss", 'w', encoding='utf-8')
         arquivo.writelines( dataMemo )
         arquivo.close()
 

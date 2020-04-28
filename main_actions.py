@@ -13,7 +13,6 @@ import database.class_config_dialog
 import class_exception
 import maps.class_view
 import main_panels_dock
-import configparser
 import main_toolbar
 
 class C_MainActions():
@@ -88,6 +87,7 @@ class C_MainActions():
             self.MainWindowToolBar.OpenDSS_View_Act.setEnabled(True)
             self.MainWindowToolBar.SCAnalyze_Config_Act.setEnabled(True)
             self.MainWindowToolBar.SCAnalyze_Run_Act.setEnabled(True)
+            self.MainWindowToolBar.Plot_Monitor_Act.setEnabled(True)
         else:
             self.MainWindowToolBar.OpenDSS_InsertEnergyMeter_Act.setEnabled(False)
             self.MainWindowToolBar.OpenDSS_InsertMonitor_Act.setEnabled(False)
@@ -96,13 +96,14 @@ class C_MainActions():
             self.MainWindowToolBar.OpenDSS_View_Act.setEnabled(False)
             self.MainWindowToolBar.SCAnalyze_Config_Act.setEnabled(False)
             self.MainWindowToolBar.SCAnalyze_Run_Act.setEnabled(False)
+            self.MainWindowToolBar.Plot_Monitor_Act.setEnabled(False)
 
         ## Habilitar o Solve Apenas se puder visualizar, o que significa que está tudo certo
         if self.MainNetPanel.Deck_GroupBox_MapView_Btn.isEnabled():
             self.MainWindowToolBar.OpenDSS_Run_Act.setEnabled(True)
-
         else:
             self.MainWindowToolBar.OpenDSS_Run_Act.setEnabled(False)
+
 
 
     #############################################
@@ -113,10 +114,13 @@ class C_MainActions():
             self.DataBaseConn.DataBaseInfo = self.DataBase_DialogSettings.databaseInfo
             self.getSE_AT_DB()
             self.setStatusBar("Status", "On-Line")
+        else:
+            QMessageBox(QMessageBox.Warning, "DataBase Configuration", \
+                        "A Conexão com o Banco de Dados deve ser configurada!", QMessageBox.Ok).exec()
+
 
     def configDataBase(self):
         self.DataBase_DialogSettings.show()
-        self.connectDataBase()
 
     def getSE_AT_DB(self): ## Carregando as subestações de Alta tensão
         self.MainNetPanel.set_SEAT(self.DataBase.getSE_AT_DB())
