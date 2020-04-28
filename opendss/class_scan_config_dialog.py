@@ -153,8 +153,10 @@ class C_SCAnalyze_ConfigDialog(QDialog):
         self.close()
 
     def updateDialog(self):
+        buslist = self.OpenDSS.getAllBusNames()
+        for index, item in enumerate(buslist):
+            self.TabBasic.FltBus_GroupBox_ComboBox.addItem(item, item)
 
-        self.TabBasic.FltBus_GroupBox_ComboBox.addItems(self.OpenDSS.getAllBusNames())
 
 
 class BasicTab(QWidget):
@@ -242,7 +244,8 @@ class BasicTab(QWidget):
         self.FltBus2_GroupBox_ComboBox.addItem("")
         listBus = [self.FltBus_GroupBox_ComboBox.itemText(i) for i in range(0, self.FltBus_GroupBox_ComboBox.count())]
         listBus.remove(self.FltBus_GroupBox_ComboBox.currentText())
-        self.FltBus2_GroupBox_ComboBox.addItems(listBus)
+        for index, item in enumerate(listBus):
+            self.FltBus2_GroupBox_ComboBox.addItem(item, item)
 
         if self.FltBus_GroupBox_ComboBox.currentText() != tmpFltBus2:
             self.FltBus2_GroupBox_ComboBox.setCurrentText(tmpFltBus2)

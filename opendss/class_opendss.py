@@ -487,26 +487,26 @@ class C_OpenDSS(): # classe OpenDSSDirect
     def exec_DynamicFlt(self):
 
         self.memoFileSC = []
-
+        faultstr = ''
         for stdSC in self.SCDataInfo:
             faultstr = 'New Fault.DynamicFault'
-            faultstr += " bus1 =" + stdSC["FltBus"]
-            faultstr += " phases =" + stdSC["FltBus"]
-            faultstr += " r =" + stdSC["FltRst"]
-            faultstr += " ontime =" + stdSC["FltTime"]
-            faultstr += " temporary =" + stdSC["FltType"]
+            faultstr += " bus1=" + stdSC["FltBus"]
+            faultstr += " phases=" + stdSC["FltPhases"]
+            faultstr += " r=" + stdSC["FltRst"]
+            faultstr += " ontime=" + stdSC["FltTime"]
+            faultstr += " temporary=" + stdSC["FltType"]
 
-            if stdSC["FltBus2"] != "":
-                faultstr += " bus2 =" + stdSC["FltBus2"]
+            if stdSC["FltBus2"] != "" or str(stdSC["FltBus2"]) != 'None':
+                faultstr += " bus2=" + stdSC["FltBus2"]
 
-            faultstr += " basefreq =" + stdSC["FltBaseFreq"]
+            faultstr += " basefreq=" + stdSC["FltBaseFreq"]
 
-            if stdSC["FltRstDev"] != "":
-                faultstr += " %stddev =" + stdSC["FltRstDev"]
+            if stdSC["FltRstDev"] != "" :
+                faultstr += " %stddev=" + stdSC["FltRstDev"]
 
-            if stdSC["FltRepair"] != "":
-                faultstr += " repair =" + stdSC["FltRepair"]
-
+            if stdSC["FltRepair"] != "" :
+                faultstr += " repair=" + stdSC["FltRepair"]
+        print(faultstr)
         self.exec_OpenDSSRun(faultstr)
         self.exec_OpenDSSRun("set mode=dynamic controlmode=time time=(0,0) stepsize=0.01 number=4000")
         self.exec_OpenDSSRun("Solve")
