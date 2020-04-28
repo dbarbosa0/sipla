@@ -496,7 +496,7 @@ class C_OpenDSS(): # classe OpenDSSDirect
             faultstr += " ontime=" + stdSC["FltTime"]
             faultstr += " temporary=" + stdSC["FltType"]
 
-            if stdSC["FltBus2"] != "" or str(stdSC["FltBus2"]) != 'None':
+            if not (stdSC["FltBus2"] == " " or stdSC["FltBus2"] == 'None'):
                 faultstr += " bus2=" + stdSC["FltBus2"]
 
             faultstr += " basefreq=" + stdSC["FltBaseFreq"]
