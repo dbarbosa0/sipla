@@ -155,7 +155,7 @@ class C_ConfigDialog(QDialog):
             ## Load Flow
             config['BDGD']= { }
             config['BDGD']['Conn'] = self.getConn_GroupBox_Radio_Btn()
-            config['BDGD']['dir'] = self.get_DirDataBase()
+            config['BDGD']['dir'] = self.get_DirDataBaseSqlite()
 
             with open('siplaconfigdatabase.ini', 'w') as configfile:
                 config.write(configfile)
