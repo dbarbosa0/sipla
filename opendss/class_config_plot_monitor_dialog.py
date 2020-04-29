@@ -1,6 +1,6 @@
 from PyQt5.QtGui import QColor, QIcon
 from PyQt5.QtWidgets import QStyleFactory, QDialog, QGridLayout, QGroupBox, QHBoxLayout, QTreeWidgetItem, \
-    QPushButton, QTreeWidget, QFileDialog, QColorDialog, QMessageBox, QInputDialog, QCheckBox,QVBoxLayout, QComboBox
+    QPushButton, QTreeWidget, QColorDialog, QMessageBox, QCheckBox,QVBoxLayout, QComboBox
 from PyQt5.QtCore import Qt
 
 import pyqtgraph
