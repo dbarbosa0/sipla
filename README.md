@@ -13,6 +13,7 @@ pip install folium
 pip install numpy
 pip install scipy
 pip install matplotlib
+pip install Unidecode
 pip install 'OpenDSSDirect.py[extras]'
 ```
 
