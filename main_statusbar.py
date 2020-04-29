@@ -23,7 +23,7 @@ class C_StatusBar(QStatusBar):
         self.MainStatusBar.addPermanentWidget(QFrame())
         self.MainStatusBar.addPermanentWidget(self.StatusBar_Status)
 
-        self.StatusBar_Fluxo = QLabel("Fluxo: " + config['LoadFlow']['mode'])
+        self.StatusBar_Fluxo = QLabel(config['LoadFlow']['mode'])
         self.StatusBar_Fluxo.setObjectName("StatusBarApp_Fluxo")
         #self.StatusBar_Fluxo.setStyleSheet('border: 0; background-color: #DCDCDC;')
         self.MainStatusBar.addPermanentWidget(QFrame())
