@@ -180,18 +180,18 @@ class C_OpenDSS(): # classe OpenDSSDirect
             ### Roda com a flag em 1
             if (ctd == "UConMT") and (self.OpenDSSConfig["UNCMT"] == "1"):
                 self.execOpenDSSFunc[ctd][-1]()
-                print(msg)
+                #print(msg)
             elif (ctd == "UConBTTD") and (self.OpenDSSConfig["UNCBTTD"] == "1"):
                 self.execOpenDSSFunc[ctd][-1]()
-                print(msg)
+                #print(msg)
             elif (ctd == "UConMTLoadShapes") or (ctd == "LoadShapes"):
                 if (self.OpenDSSConfig["Mode"] == "Daily") and (self.OpenDSSConfig["UNCMT"] == "1"):
                     self.execOpenDSSFunc[ctd][-1]()
-                    print(msg)
+                    #print(msg)
             elif (ctd == "UConBTTD") or (ctd == "UConBTLoadShapes"):
                 if (self.OpenDSSConfig["Mode"] == "Daily") and (self.OpenDSSConfig["UNCBTTD"] == "1"):
                     self.execOpenDSSFunc[ctd][-1]()
-                    print(msg)
+                    #print(msg)
             else:
                 self.execOpenDSSFunc[ctd][-1]()
 
