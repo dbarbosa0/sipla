@@ -323,6 +323,7 @@ class LoadFlow(QWidget):
     def dialogLoadShape(self):
         self.LoadShapesDialog.nPointsLoadDef = self.get_Number()
         self.LoadShapesDialog.nStepSizeDef = self.get_Stepsize()
+        self.LoadShapesDialog.nStepSizeTimeDef = self.get_Stepsize_Time()
         self.LoadShapesDialog.show()
 
 
