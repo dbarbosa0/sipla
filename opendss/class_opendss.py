@@ -8,7 +8,7 @@ import opendss.class_conn
 import database.class_conn
 import opendss.class_data
 import class_exception
-
+import time
 
 class C_OpenDSS(): # classe OpenDSSDirect
 
@@ -350,6 +350,8 @@ class C_OpenDSS(): # classe OpenDSSDirect
 
     def exec_OpenDSS(self):
 
+        start_time = time.time()
+
         self.OpenDSSEngine.clear()
 
         for ctd in self.OpenDSSDataResult:
@@ -371,7 +373,7 @@ class C_OpenDSS(): # classe OpenDSSDirect
 
 
         ##Status
-        self.StatusSolutionProcessTime = self.getSolutionProcessTime()
+        self.StatusSolutionProcessTime =  time.time() - start_time
 
     def exec_OpenDSSRun(self, command):
         self.OpenDSSEngine.run(command)
@@ -431,37 +433,6 @@ class C_OpenDSS(): # classe OpenDSSDirect
         except:
             pass
             #class_exception.ExecOpenDSS("Erro ao processar as tensões!", "Fase C")
-
-    ## Gets class_insert_dialog
-
-    def getAllNamesEnergyMeter(self):
-
-        return self.OpenDSSEngine.get_EnergyMeter_AllNames()
-
-    def getAllNamesMonitor(self):
-        return self.OpenDSSEngine.get_Monitor_AllNames()
-
-    def getAllNamesElements(self):
-
-        return self.OpenDSSEngine.get_Circuit_AllElementNames()
-
-    def getAllBusNames(self):
-        return self.OpenDSSEngine.get_Circuit_AllBusNames()
-
-    def setMonitorActive(self, name):
-        self.OpenDSSEngine.set_MonitorActive(name)
-
-    def getMonitorActive_ChannelNames(self):
-        return self.OpenDSSEngine.get_MonitorActive_ChannelNames()
-
-    def getMonitorActive_DataChannel(self, idx):
-        return self.OpenDSSEngine.get_MonitorActive_DataChannel(idx)
-
-    def getSolutionProcessTime(self):
-        return self.OpenDSSEngine.get_Solution_ProcessTime()
-
-    def Monitor_Save(self):
-        self.OpenDSSEngine.Monitor_Save()
 
     #######Monitor
 
@@ -533,3 +504,38 @@ class C_OpenDSS(): # classe OpenDSSDirect
         self.exec_OpenDSSRun("set mode=dynamic controlmode=time time=(0,0) stepsize=0.01 number=4000")
         self.exec_OpenDSSRun("Solve")
         self.exec_OpenDSSRun("show eventlog")
+
+
+    ## Gets class_insert_dialog
+
+    def getAllNamesEnergyMeter(self):
+
+        return self.OpenDSSEngine.get_EnergyMeter_AllNames()
+
+    def getAllNamesMonitor(self):
+        return self.OpenDSSEngine.get_Monitor_AllNames()
+
+    def getAllNamesElements(self):
+        return self.OpenDSSEngine.get_Circuit_AllElementNames()
+
+    def getAllBusNames(self):
+        return self.OpenDSSEngine.get_Circuit_AllBusNames()
+
+    def setMonitorActive(self, name):
+        self.OpenDSSEngine.set_MonitorActive(name)
+
+    def getMonitorActive_ChannelNames(self):
+        return self.OpenDSSEngine.get_MonitorActive_ChannelNames()
+
+    def getMonitorActive_DataChannel(self, idx):
+        return self.OpenDSSEngine.get_MonitorActive_DataChannel(idx)
+
+    def Monitor_Save(self):
+        self.OpenDSSEngine.Monitor_Save()
+
+    def getSolutionModelID(self):
+        return self.OpenDSSEngine.get_Solution_ModelID()
+
+    def getMonitor_ByteStream(self):
+
+        return self.OpenDSSEngine.get_Monitor_ByteStream()

@@ -25,7 +25,7 @@ class C_Conn(): # classe OpenDSS com métodos virtuais
     def get_Circuit_AllNodeVmagByPhase(self, phase):
         return self.engineCircuit.AllNodeVmagByPhase(phase)
 
-    #Acesso a classe EnergyMeter
+    #Testes
 
     def get_MonitorActive_ChannelNames(self):
         return self.engineMonitors.Header()
@@ -35,6 +35,15 @@ class C_Conn(): # classe OpenDSS com métodos virtuais
 
     def Monitor_Save(self):
         self.engineMonitors.Save()
+
+    def get_Monitor_ByteStream(self):
+        self.engineMonitors.ByteStream()
+
+    def get_Solution_ModelID(self):
+        return self.engineSolution.ModeID()
+
+    def get_Solution_TotalTime(self):
+        return self.engineSolution.TotalTime()
 
 
 
@@ -63,6 +72,7 @@ class C_OpenDSSDirect_Conn(C_Conn):  # classe OpenDSSDirect
 
     def get_Solution_ProcessTime(self):
         return self.engineSolution.ProcessTime()
+
 
     def get_Monitor_AllNames(self):
         return self.engineMonitors.AllNames()
@@ -117,7 +127,5 @@ class C_OpenDSSCOM_Conn(C_Conn):  # classe OpenDSSCOM
     def get_Circuit_AllElementNames(self):
         return self.engineCircuit.AllElementNames
 
-    def set_MonitorActive(self, name):
-        self.engineMonitors.SetName(name)
 
 

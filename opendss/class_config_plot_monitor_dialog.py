@@ -125,12 +125,14 @@ class C_Config_Plot_Dialog(QDialog):
         listChannels = self.OpenDSS.getMonitorActive_ChannelNames()
 
         for ctd in range(0, len(listChannels)):
-
             data = self.OpenDSS.getMonitorActive_DataChannel(ctd)
             Monitor_Select_Variable_GroupBox_TreeWidget_Item(self.Monitor_Select_Variable_GroupBox_TreeWidget,
                                                              self.Monitor_Select_Variable_SelectAll.checkState(),
                                                              listChannels[ctd], data,
                                                              cfg.colorsList[random.randint(0, len(cfg.colorsList) - 1)])
+
+
+
 
     def viewVariable(self):
 
