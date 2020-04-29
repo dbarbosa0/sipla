@@ -118,10 +118,8 @@ class C_OpenDSS(): # classe OpenDSSDirect
                 self.OpenDSSEngine = opendss.class_conn.C_OpenDSSDirect_Conn()
             elif self.OpenDSSConfig["openDSSConn"] == "COM":
                 self.OpenDSSEngine = opendss.class_conn.C_OpenDSSCOM_Conn()
-            else:
-                raise class_exception.ExecOpenDSS("Erro ao definir o Engine do OpenDSS!")
         except:
-            pass
+            raise class_exception.ExecOpenDSS("Erro ao definir o Engine do OpenDSS!")
 
 
         ##### Executa os Arquitvos que serão executados e inseridos
@@ -326,11 +324,14 @@ class C_OpenDSS(): # classe OpenDSSDirect
         self.memoFileFooter.append("set voltagebases = [" + self.OpenDSSConfig["VoltageBase"] + "]")
         self.memoFileFooter.append("Calcvoltagebases")
 
+        sztime = self.OpenDSSConfig["StepSizeTime"][0]
+
+
         if self.OpenDSSConfig["Mode"] == "Daily":
-            self.memoFileFooter.append("set mode = " + self.OpenDSSConfig["Mode"] + " stepsize = " \
-                                       + self.OpenDSSConfig["StepSize"] + " number = " + self.OpenDSSConfig["Number"])
+            self.memoFileFooter.append("set mode=" + self.OpenDSSConfig["Mode"] + " stepsize=" \
+                                       + str(self.OpenDSSConfig["StepSize"]) + sztime + " number=" + str(self.OpenDSSConfig["Number"]))
         else:
-            self.memoFileFooter.append("set mode = " + self.OpenDSSConfig["Mode"])
+            self.memoFileFooter.append("set mode=" + self.OpenDSSConfig["Mode"])
 
     def exec_LOADSHAPES(self):
 
@@ -338,10 +339,14 @@ class C_OpenDSS(): # classe OpenDSSDirect
 
         self.memoLoadShapes = []
 
+        sztime = self.OpenDSSConfig["StepSizeTime"][0]
+        if sztime == "h":
+            sztime = ""
+
         for ctd in loadShapes:
             self.memoLoadShapes.append("New LoadShape.{0}".format(ctd) + " npts={0}".format(self.OpenDSSConfig["Number"]) \
-                                       + " interval={0}".format(self.OpenDSSConfig["StepSize"]) \
-                                       + " mult =" + str(loadShapes[ctd]) + " action = normalize")
+                                       + " "+ sztime + "interval={0}".format(self.OpenDSSConfig["StepSize"]) \
+                                       + " mult =" + str(loadShapes[ctd]).replace("[","(").replace("]",")") + " Action=Normalize")
 
     def exec_OpenDSS(self):
 
@@ -454,6 +459,9 @@ class C_OpenDSS(): # classe OpenDSSDirect
 
     def getSolutionProcessTime(self):
         return self.OpenDSSEngine.get_Solution_ProcessTime()
+
+    def Monitor_Save(self):
+        self.OpenDSSEngine.Monitor_Save()
 
     #######Monitor
 

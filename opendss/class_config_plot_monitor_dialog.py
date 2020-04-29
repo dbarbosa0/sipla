@@ -117,12 +117,16 @@ class C_Config_Plot_Dialog(QDialog):
 
     def SelectCurve(self):
         ##Pegar os Dados do MOnitor selecionado
+        self.Monitor_Select_Variable_GroupBox_TreeWidget.clear()
+
         self.OpenDSS.setMonitorActive(self.Monitor_Select_GroupBox_ComboBox.currentText())
+        self.OpenDSS.Monitor_Save()
 
         listChannels = self.OpenDSS.getMonitorActive_ChannelNames()
 
         for ctd in range(0, len(listChannels)):
-            data = self.OpenDSS.get_MonitorActive_DataChannel(ctd)
+
+            data = self.OpenDSS.getMonitorActive_DataChannel(ctd)
             Monitor_Select_Variable_GroupBox_TreeWidget_Item(self.Monitor_Select_Variable_GroupBox_TreeWidget,
                                                              self.Monitor_Select_Variable_SelectAll.checkState(),
                                                              listChannels[ctd], data,
@@ -176,6 +180,7 @@ class C_Config_Plot_Dialog(QDialog):
 
     def updateDialog(self):
         self.Monitor_Select_Variable_GroupBox_TreeWidget.clear()
+        self.Monitor_Select_GroupBox_ComboBox.clear()
 
         nMonitors = self.OpenDSS.getAllNamesMonitor()
 

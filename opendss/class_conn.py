@@ -30,11 +30,19 @@ class C_Conn(): # classe OpenDSS com métodos virtuais
 
     #Acesso a classe EnergyMeter
 
-    def get_EnergyMeter_AllNames(self):
-        return self.engineMeters.AllNames()
 
-    def get_Solution_ProcessTime(self):
-        return 0
+    def set_MonitorActive(self, name):
+        self.engineMonitors.Name(name)
+
+    def get_MonitorActive_ChannelNames(self):
+        return self.engineMonitors.Header()
+
+    def get_MonitorActive_DataChannel(self, idx):
+        return self.engineMonitors.Channel(idx)
+
+    def Monitor_Save(self):
+        self.engineMonitors.Save()
+
 
 
 class C_OpenDSSDirect_Conn(C_Conn):  # classe OpenDSSDirect
@@ -54,27 +62,22 @@ class C_OpenDSSDirect_Conn(C_Conn):  # classe OpenDSSDirect
     def clear(self):
         self.engineBasic.ClearAll()
 
-    def get_Solution_ProcessTime(self):
-        return self.engineSolution.ProcessTime()
-
     def get_Circuit_AllBusNames(self):
         return self.engineCircuit.AllBusNames()
 
     def get_Circuit_AllBusVolts(self):
         return self.engineCircuit.AllBusVolts()
 
-################
+    def get_Solution_ProcessTime(self):
+        return self.engineSolution.ProcessTime()
+
     def get_Monitor_AllNames(self):
         return self.engineMonitors.AllNames()
 
-    def set_MonitorActive(self, name):
-        self.engineMonitors.Name(name)
+    def get_EnergyMeter_AllNames(self):
+        return self.engineMeters.AllNames()
 
-    def get_MonitorActive_ChannelNames(self):
-        return self.engineMonitors.Header()
-
-    def get_MonitorActive_DataChannel(self,idx):
-        return self.engineMonitors.Channel(idx)
+################
 
 
 class C_OpenDSSCOM_Conn(C_Conn):  # classe OpenDSSCOM
@@ -87,17 +90,29 @@ class C_OpenDSSCOM_Conn(C_Conn):  # classe OpenDSSCOM
         # use the Text interface to OpenDSS
         self.engine.Text.Command = "clear"
         self.engineCircuit = self.engine.ActiveCircuit
+        self.engineSolution = self.engineCircuit.Solution
+        self.engineMeters = self.engineCircuit.Meters
+        self.engineMonitors = self.engineCircuit.Monitors
 
     def run(self, msg):
         self.engine.Text.Command = msg
 
     def clear(self):
-        self.engine.Text.Command = "clear"
+        self.run("clear")
 
     def get_Circuit_AllBusNames(self):
         return self.engineCircuit.AllBusNames
 
     def get_Circuit_AllBusVolts(self):
         return self.engineCircuit.AllBusVolts
+
+    def get_Solution_ProcessTime(self):
+        return self.engineSolution.Process_Time
+
+    def get_Monitor_AllNames(self):
+        return self.engineMonitors.AllNames
+
+    def get_EnergyMeter_AllNames(self):
+        return self.engineMeters.AllNames
 
 

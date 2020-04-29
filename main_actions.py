@@ -38,11 +38,11 @@ class C_MainActions():
         self.DataBase = database.class_base.C_DBase()
         self.DataBase_DialogSettings = database.class_config_dialog.C_ConfigDialog() # Instânciando a classe dialog Settings
         self.OpenDSS = opendss.class_opendss.C_OpenDSS()
+        self.OpenDSS.DataBaseConn = self.DataBaseConn
 
         # Contribuição Sandy
         self.OpenDSS_DialogSettings = opendss.class_config_dialog.C_ConfigDialog()  # Instânciando a classe dialog Settings
 
-        self.OpenDSS.DataBaseConn = self.DataBaseConn
         self.OpenDSS.OpenDSSConfig = self.OpenDSS_DialogSettings.dataInfo
         self.DataBase.DataBaseConn = self.DataBaseConn
         self.MainMapView.DataBaseConn = self.DataBaseConn
@@ -59,7 +59,6 @@ class C_MainActions():
         self.SCAnalyze_DialogSettings.OpenDSS = self.OpenDSS #Apontando o ponteiro de OpenDSS C_MainActions
 
 
-
     #############################################
 
     def updateStatusBar(self):
@@ -73,12 +72,12 @@ class C_MainActions():
         self.MainWindowStatusBar.StatusBar_Fluxo.setText("Fluxo: " + self.OpenDSS_DialogSettings.dataInfo["Mode"])
         if self.OpenDSS.StatusSolutionProcessTime > 0:
             self.MainWindowStatusBar.StatusBar_Fluxo_Status.setText("Solved: "\
-                                + str(datetime.timedelta(milliseconds=self.OpenDSS.StatusSolutionProcessTime)))
+                                + str(datetime.timedelta(seconds=self.OpenDSS.StatusSolutionProcessTime)))
 
     def updateToobarMenu(self):
         ##Funções que precisam do Fluxo
 
-        if self.MainWindowStatusBar.StatusBar_Fluxo_Status.text() != "Not Solved":
+        if self.OpenDSS.StatusSolutionProcessTime > 0:
             self.MainWindowToolBar.OpenDSS_InsertEnergyMeter_Act.setEnabled(True)
             self.MainWindowToolBar.OpenDSS_InsertMonitor_Act.setEnabled(True)
             self.MainWindowToolBar.OpenDSS_Save_Act.setEnabled(True)

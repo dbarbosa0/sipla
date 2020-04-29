@@ -238,7 +238,7 @@ class C_Config_LoadShape_Dialog(QDialog):
             dataCSV = {} #Dicionário para as variáveis
 
             fname = QFileDialog.getOpenFileName(self, 'Open CSV file',
-                                                "", "CSV files (*.csv)")
+                                                "LoadShapes", "CSV files (*.csv)")
                                                 #str(pathlib.Path.home()), "CSV files (*.csv)")
 
             if platform.system() == "Windows":
