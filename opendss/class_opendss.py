@@ -177,12 +177,21 @@ class C_OpenDSS(): # classe OpenDSSDirect
             #Executando a função
             ### Verificando o modo de operação
 
-            if (ctd == "UConMTLoadShapes") or (ctd == "LoadShapes"):
+            ### Roda com a flag em 1
+            if (ctd == "UConMT") and (self.OpenDSSConfig["UNCMT"] == "1"):
+                self.execOpenDSSFunc[ctd][-1]()
+                print(msg)
+            elif (ctd == "UConBTTD") and (self.OpenDSSConfig["UNCBTTD"] == "1"):
+                self.execOpenDSSFunc[ctd][-1]()
+                print(msg)
+            elif (ctd == "UConMTLoadShapes") or (ctd == "LoadShapes"):
                 if (self.OpenDSSConfig["Mode"] == "Daily") and (self.OpenDSSConfig["UNCMT"] == "1"):
                     self.execOpenDSSFunc[ctd][-1]()
+                    print(msg)
             elif (ctd == "UConBTTD") or (ctd == "UConBTLoadShapes"):
                 if (self.OpenDSSConfig["Mode"] == "Daily") and (self.OpenDSSConfig["UNCBTTD"] == "1"):
                     self.execOpenDSSFunc[ctd][-1]()
+                    print(msg)
             else:
                 self.execOpenDSSFunc[ctd][-1]()
 
@@ -256,7 +265,11 @@ class C_OpenDSS(): # classe OpenDSSDirect
                 for cont in data:
                     redirectFile += str(cont) + '\n'
 
-            if (ctd == "UConMTLoadShapes") or (ctd == "LoadShapes"):
+            if (ctd == "UConMT") and (self.OpenDSSConfig["UNCMT"] == "1"):
+                self.saveFileDSS(diretorio, ctd, redirectFile)
+            elif (ctd == "UConBTTD") and (self.OpenDSSConfig["UNCBTTD"] == "1"):
+                self.saveFileDSS(diretorio, ctd, redirectFile)
+            elif (ctd == "UConMTLoadShapes") or (ctd == "LoadShapes"):
                 if (self.OpenDSSConfig["Mode"] == "Daily") and (self.OpenDSSConfig["UNCMT"] == "1"):
                     self.saveFileDSS(diretorio, ctd, redirectFile)
             elif (ctd == "UConBTTD") or (ctd == "UConBTLoadShapes"):
@@ -282,7 +295,14 @@ class C_OpenDSS(): # classe OpenDSSDirect
                 for cont in data:
                     mainFile += str(cont) + '\n'
             else:
-                if (ctd == "UConMTLoadShapes") or (ctd == "LoadShapes"):
+
+                if (ctd == "UConMT") and (self.OpenDSSConfig["UNCMT"] == "1"):
+                    mainFile += "! " + self.execOpenDSSFunc[ctd][-2] + "\n"
+                    mainFile += "Redirect " + ctd + ".dss " + '\n'
+                elif (ctd == "UConBTTD") and (self.OpenDSSConfig["UNCBTTD"] == "1"):
+                    mainFile += "! " + self.execOpenDSSFunc[ctd][-2] + "\n"
+                    mainFile += "Redirect " + ctd + ".dss " + '\n'
+                elif (ctd == "UConMTLoadShapes") or (ctd == "LoadShapes"):
                     if (self.OpenDSSConfig["Mode"] == "Daily") and (self.OpenDSSConfig["UNCMT"] == "1"):
                         mainFile += "! " + self.execOpenDSSFunc[ctd][-2] + "\n"
                         mainFile += "Redirect " + ctd + ".dss " + '\n'
