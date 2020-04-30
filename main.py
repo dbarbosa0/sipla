@@ -4,7 +4,7 @@ from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import QApplication, QMainWindow, QStyleFactory
 
-
+#eu comentei
 ###
 #import opendss.class_insert_dialog
 ###
