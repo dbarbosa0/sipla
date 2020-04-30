@@ -45,7 +45,6 @@ class C_MainActions():
 
         self.OpenDSS.OpenDSSConfig = self.OpenDSS_DialogSettings.dataInfo
         self.DataBase.DataBaseConn = self.DataBaseConn
-        self.MainMapView.DataBaseConn = self.DataBaseConn
 
         ###
         self.OpenDSS_DialogInsertEnergyMeter = opendss.class_insert_energymeter_dialog.C_Insert_EnergyMeter_Dialog() # Instânciando a classe dialog Insert
@@ -145,6 +144,7 @@ class C_MainActions():
     def execMapView(self, fieldsOptions = None):
 
         ##### Definindo variáveis
+        self.MainMapView.DataBaseConn = self.DataBaseConn
 
         self.MainMapView.ListFields = self.MainNetPanel.getSelectedFieldsNames()
         self.MainMapView.ListFieldsColors = self.MainNetPanel.getSelectedFieldsColors()
