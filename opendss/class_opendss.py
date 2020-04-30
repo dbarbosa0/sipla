@@ -163,9 +163,10 @@ class C_OpenDSS(): # classe OpenDSSDirect
                       # "RamLig":["Ramais de Ligação  ...",self.dataOpenDSS.exec_RAMAL_DE_LIGACAO,self.dataOpenDSS.memoFileRamaisLigBT],
                       "CompMT": ["Unidades Compensadoras de MT ...",self.dataOpenDSS.exec_UNID_COMPENSADORAS_DE_REATIVO_DE_MEDIA_TENSAO],
                       # "CompBT":["Unidades Compensadoras de BT ...",self.dataOpenDSS.exec_UNID_COMPENSADORAS_DE_REATIVO_DE_BAIXA_TENSAO],
-                      "EnergyMeters":["Inserindo os Energy Meters ...", self.exec_EnergyMeters],
+                      "VoltageBase": ["Bases de Tensão ...", self.exec_VoltageBase],
+                      "EnergyMeters": ["Inserindo os Energy Meters ...", self.exec_EnergyMeters],
                       "Monitors": ["Inserindo os Monitors ...", self.exec_Monitors],
-                      "footer": ["Rodapé ...", self.dataOpenDSS.exec_FooterFile],
+                      "Mode": ["Modo de Operação ...", self.exec_Mode],
                       }
 
 
@@ -235,9 +236,10 @@ class C_OpenDSS(): # classe OpenDSSDirect
                       # "RamLig":self.dataOpenDSS.memoFileRamaisLigBT,self.memoFileRamaisLigBT,
                       "CompMT": self.dataOpenDSS.memoFileUndCompReatMT,
                       # "CompBT":self.dataOpenDSS.memoFileUndCompReatBT,
+                      "VoltageBase":self.memoFileVoltageBase,
                       "EnergyMeters": self.memoFileEnergyMeters,
                       "Monitors": self.memoFileMonitors,
-                      "footer":self.memoFileFooter,
+                      "Mode": self.memoFileMode,
                       }
 
 
@@ -258,7 +260,7 @@ class C_OpenDSS(): # classe OpenDSSDirect
 
         for ctd in self.OpenDSSDataResult:
             redirectFile = ''
-            if (ctd != "header") and (ctd != "EqThAT") and (ctd != "footer"):  # Cabeçalho do arquivo
+            if (ctd != "header") and (ctd != "EqThAT") and (ctd != "VoltageBase") and (ctd != "Mode"):  # Cabeçalho do arquivo
                 data = self.OpenDSSDataResult[ctd]
                 for cont in data:
                     redirectFile += str(cont) + '\n'
@@ -288,7 +290,7 @@ class C_OpenDSS(): # classe OpenDSSDirect
         mainFile = ''
 
         for ctd in self.execOpenDSSFunc:
-            if (ctd == "header") or (ctd == "EqThAT") or (ctd == "footer"): # Cabeçalho do arquivo
+            if (ctd == "header") or (ctd == "EqThAT") or (ctd != "VoltageBase") or (ctd != "Mode"): # Cabeçalho do arquivo
                 data = self.OpenDSSDataResult[ctd]
                 for cont in data:
                     mainFile += str(cont) + '\n'
@@ -317,21 +319,25 @@ class C_OpenDSS(): # classe OpenDSSDirect
 
         return mainFile
 
-    def definedSettings(self):
+    def exec_VoltageBase(self):
 
         ######
-        self.memoFileFooter = []
-        self.memoFileFooter.append("set voltagebases = [" + self.OpenDSSConfig["VoltageBase"] + "]")
-        self.memoFileFooter.append("Calcvoltagebases")
+        self.memoFileVoltageBase = []
+        self.memoFileVoltageBase.append("set voltagebases = [" + self.OpenDSSConfig["VoltageBase"] + "]")
+        self.memoFileVoltageBase.append("Calcvoltagebases")
+
+    def exec_Mode(self):
+
+        self.memoFileMode = []
 
         sztime = self.OpenDSSConfig["StepSizeTime"][0]
 
-
         if self.OpenDSSConfig["Mode"] == "Daily":
-            self.memoFileFooter.append("set mode=" + self.OpenDSSConfig["Mode"] + " stepsize=" \
+            self.memoFileMode.append("set mode=" + self.OpenDSSConfig["Mode"] + " stepsize=" \
                                        + str(self.OpenDSSConfig["StepSize"]) + sztime + " number=" + str(self.OpenDSSConfig["Number"]))
         else:
-            self.memoFileFooter.append("set mode=" + self.OpenDSSConfig["Mode"])
+            self.memoFileMode.append("set mode=" + self.OpenDSSConfig["Mode"])
+
 
     def exec_LOADSHAPES(self):
 
@@ -359,9 +365,13 @@ class C_OpenDSS(): # classe OpenDSSDirect
             command = self.OpenDSSDataResult[ctd]
 
             for com in command:
-                self.OpenDSSEngine.run(com)
+                self.exec_OpenDSSRun(com)
 
         try:
+
+            #for ctd in self.Monitors:
+            #    self.exec_OpenDSSRun("Export monitor " + ctd["Name"])
+
             self.exec_OpenDSSRun("Solve")
 
         except:
@@ -524,18 +534,9 @@ class C_OpenDSS(): # classe OpenDSSDirect
     def setMonitorActive(self, name):
         self.OpenDSSEngine.set_MonitorActive(name)
 
+
     def getMonitorActive_ChannelNames(self):
         return self.OpenDSSEngine.get_MonitorActive_ChannelNames()
 
     def getMonitorActive_DataChannel(self, idx):
         return self.OpenDSSEngine.get_MonitorActive_DataChannel(idx)
-
-    def Monitor_Save(self):
-        self.OpenDSSEngine.Monitor_Save()
-
-    def getSolutionModelID(self):
-        return self.OpenDSSEngine.get_Solution_ModelID()
-
-    def getMonitor_ByteStream(self):
-
-        return self.OpenDSSEngine.get_Monitor_ByteStream()

@@ -35,19 +35,6 @@ class C_Conn(): # classe OpenDSS com métodos virtuais
     def get_MonitorActive_DataChannel(self, idx):
         return self.engineMonitors.Channel(idx)
 
-    def Monitor_Save(self):
-        self.engineMonitors.Save()
-
-    def get_Monitor_ByteStream(self):
-        self.engineMonitors.ByteStream()
-
-    def get_Solution_ModelID(self):
-        return self.engineSolution.ModeID()
-
-    def get_Solution_TotalTime(self):
-        return self.engineSolution.TotalTime()
-
-
 
 class C_OpenDSSDirect_Conn(C_Conn):  # classe OpenDSSDirect
 
@@ -59,6 +46,7 @@ class C_OpenDSSDirect_Conn(C_Conn):  # classe OpenDSSDirect
         self.engineMeters = self.engine.Meters
         self.engineMonitors = self.engine.Monitors
         self.engineSolution = self.engine.Solution
+        self.engineLoads = self.engine.Loads
 
     def run(self, msg):
         self.engine.run_command(unidecode.unidecode(msg))

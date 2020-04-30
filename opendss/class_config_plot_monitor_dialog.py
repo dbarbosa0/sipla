@@ -20,6 +20,8 @@ class C_Config_Plot_Dialog(QDialog):
 
         self.InitUI()
 
+        self.StepSizeTime = ""
+        self.StepSize = 0
 
     def InitUI(self):
 
@@ -120,19 +122,19 @@ class C_Config_Plot_Dialog(QDialog):
         self.Monitor_Select_Variable_GroupBox_TreeWidget.clear()
 
         self.OpenDSS.setMonitorActive(self.Monitor_Select_GroupBox_ComboBox.currentText())
-        self.OpenDSS.Monitor_Save()
 
         listChannels = self.OpenDSS.getMonitorActive_ChannelNames()
 
-        for ctd in range(0, len(listChannels)):
+        for ctd in range(0, len(listChannels) + 1):
+
             data = self.OpenDSS.getMonitorActive_DataChannel(ctd)
-            Monitor_Select_Variable_GroupBox_TreeWidget_Item(self.Monitor_Select_Variable_GroupBox_TreeWidget,
-                                                             self.Monitor_Select_Variable_SelectAll.checkState(),
-                                                             listChannels[ctd], data,
-                                                             cfg.colorsList[random.randint(0, len(cfg.colorsList) - 1)])
-
-
-
+            if ctd == 0:
+                time = data
+            else:
+                Monitor_Select_Variable_GroupBox_TreeWidget_Item(self.Monitor_Select_Variable_GroupBox_TreeWidget,
+                                                                 self.Monitor_Select_Variable_SelectAll.checkState(),
+                                                                 listChannels[ctd -1], data,
+                                                                 cfg.colorsList[random.randint(0, len(cfg.colorsList) - 1)])
 
     def viewVariable(self):
 
@@ -164,7 +166,15 @@ class C_Config_Plot_Dialog(QDialog):
                 pointsList = Item.getPoints()
 
                 ##Definindo o X
-                plot_x = [ctd for ctd in range(0, len(pointsList))]
+
+                if self.StepSizeTime[0] == "m":
+                    dStepSizeTime = 60
+                elif self.StepSizeTime[0] == "s":
+                    dStepSizeTime = 3600
+                else:
+                    dStepSizeTime = 1
+
+                plot_x = [self.StepSize * ctd / dStepSizeTime for ctd in range(0, len(pointsList))]
 
                 symbol = Item.getMarker()
 

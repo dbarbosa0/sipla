@@ -72,7 +72,7 @@ class C_MainActions():
         self.MainWindowStatusBar.StatusBar_Fluxo.setText("Fluxo: " + self.OpenDSS_DialogSettings.dataInfo["Mode"])
         if self.OpenDSS.StatusSolutionProcessTime > 0:
             self.MainWindowStatusBar.StatusBar_Fluxo_Status.setText("Solved: "\
-                                + str(datetime.timedelta(seconds=self.OpenDSS.StatusSolutionProcessTime)))
+                                + str(datetime.timedelta(minutes=self.OpenDSS.StatusSolutionProcessTime)))
 
     def updateToobarMenu(self):
         ##Funções que precisam do Fluxo
@@ -188,6 +188,8 @@ class C_MainActions():
         self.OpenDSS_DialogInsertMonitor.show()
 
     def execPlotMonitor(self):
+        self.OpenDSS_DialogPlotMonitor.StepSizeTime = self.OpenDSS_DialogSettings.dataInfo["StepSizeTime"]
+        self.OpenDSS_DialogPlotMonitor.StepSize = self.OpenDSS_DialogSettings.dataInfo["StepSize"]
         self.OpenDSS_DialogPlotMonitor.updateDialog()
         self.OpenDSS_DialogPlotMonitor.show()
 
@@ -196,7 +198,6 @@ class C_MainActions():
         #self.MainResultsPanel.reloadTabs()
 
         ## Passando Parâmetros
-        self.OpenDSS.definedSettings()
         self.OpenDSS.nCircuitoAT_MT = self.MainNetPanel.get_CirATMT_Selected()
         self.OpenDSS.nSE_MT_Selecionada = self.MainNetPanel.getSelectedSEMT()
         self.OpenDSS.nFieldsMT = self.MainNetPanel.getSelectedFieldsNames()
