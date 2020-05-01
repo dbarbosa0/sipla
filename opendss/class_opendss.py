@@ -9,12 +9,16 @@ import database.class_conn
 import opendss.class_data
 import class_exception
 import time
+import multiprocessing
 
 ##Thread
-import opendss.class_thread_load
+#import opendss.class_thread_load
+#import queue
+#import threading
+
+##Process
+import opendss.class_process_load
 import queue
-import threading
-import multiprocessing
 
 class C_OpenDSS(): # classe OpenDSSDirect
 
@@ -165,6 +169,7 @@ class C_OpenDSS(): # classe OpenDSSDirect
                       "Monitors": ["Inserindo os Monitors ...", self.exec_Monitors],
                       "Mode": ["Modo de Operação ...", self.exec_Mode],
                       }
+
 
         ##Thread
         #https://www.tutorialspoint.com/python/python_multithreading.htm
