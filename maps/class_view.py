@@ -94,8 +94,6 @@ class C_Viewer():
         #Varendo todos os alimentadores
         self.mapFields = ''
 
-        self.getListFieldsID()
-
         for contadorAL in range(0, len(self.ListFields) ):
             #Pegando as coordenadas do Alimentador
 
@@ -106,7 +104,6 @@ class C_Viewer():
             
             folium.PolyLine( coordAlimentMT , color = self.ListFieldsColors[contadorAL] , weight=3.0, opacity=1, smooth_factor=0).add_to( self.mapFields )
 
-        self.mapFieldsDefault = self.mapFields ## Salvar só o alimentador
 
     
     def viewMap(self):
@@ -126,34 +123,32 @@ class C_Viewer():
 
         self.DataBaseCoord.DataBaseConn = self.DataBaseConn
 
-        for ctdOption in fieldsOptions:
+        if fieldsOptions:
 
-            self.getListFieldsID()
+            self.ListFieldsID = self.DataBaseCoord.getCods_AL_SE_MT_DB(self.ListFields)
 
-            if ctdOption == "TrafoDIST":
+            for ctdOption in fieldsOptions:
 
-                dados_db = self.DataBaseCoord.getData_TrafoDIST(self.nameSEMT)
+                if ctdOption == "TrafoDIST":
 
-                if not self.mapFields:  # Melhorar essa criação aqui
-                    self.mapFields = folium.Map([dados_db[0].y, dados_db[0].x], zoom_start=13)
+                    dados_db = self.DataBaseCoord.getData_TrafoDIST(self.nameSEMT)
 
-                for ctd in range(0, len(dados_db)):
+                    if not self.mapFields:  # Melhorar essa criação aqui
+                        self.mapFields = folium.Map([dados_db[0].y, dados_db[0].x], zoom_start=13)
 
-                    if (dados_db[ctd].ctmt in self.ListFieldsID):
+                    for ctd in range(0, len(dados_db)):
 
-                        infoText  = '<b>Trafo de Distribuição</b>'
-                        infoText += '<br> ID: ' + dados_db[ctd].cod_id
-                        infoText += '<br> ' + str(dados_db[ctd].pot_nom)  + ' kVA'
-                        folium.Marker(
-                                location = [dados_db[ctd].y, dados_db[ctd].x],
-                                popup = infoText,
-                                icon=folium.Icon(color='red', icon='info-sign')
-                            ).add_to(self.mapFields)
+                        if (dados_db[ctd].ctmt in self.ListFieldsID):
 
+                            infoText  = '<b>Trafo de Distribuição</b>'
+                            infoText += '<br> ID: ' + dados_db[ctd].cod_id
+                            infoText += '<br> ' + str(dados_db[ctd].pot_nom)  + ' kVA'
+                            folium.Marker(
+                                    location = [dados_db[ctd].y, dados_db[ctd].x],
+                                    popup = infoText,
+                                    icon=folium.Icon(color='red', icon='info-sign')
+                                ).add_to(self.mapFields)
 
-
-    def getListFieldsID(self):
-        self.ListFieldsID = self.DataBaseCoord.getCods_AL_SE_MT_DB(self.ListFields)
         
         
         
