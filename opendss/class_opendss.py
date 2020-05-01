@@ -1,14 +1,24 @@
 import os
 import platform
 from PyQt5.QtWidgets import QFileDialog
-from PyQt5.QtWidgets import QTableWidgetItem,QTableWidget
+from PyQt5.QtWidgets import QTableWidgetItem, QTableWidget
 import cmath
 
 import opendss.class_conn
 import database.class_conn
 import opendss.class_data
 import class_exception
+import time
+import multiprocessing
 
+##Thread
+#import opendss.class_thread_load
+#import queue
+#import threading
+
+##Process
+import opendss.class_process_load
+import queue
 
 class C_OpenDSS(): # classe OpenDSSDirect
 
@@ -35,6 +45,9 @@ class C_OpenDSS(): # classe OpenDSSDirect
         self.memoLoadShapes = ''
 
         self.tableVoltageResults = QTableWidget() # Tabela de Resultados
+
+        ###
+        self.StatusSolutionProcessTime = 0.0
 
 
     @property
@@ -105,25 +118,9 @@ class C_OpenDSS(): # classe OpenDSSDirect
 
         ### Passando as variáveis
         self.dataOpenDSS.DataBaseConn = self.DataBaseConn
-
         self.dataOpenDSS.nFieldsMT = self.nFieldsMT
         self.dataOpenDSS.nCircuitoAT_MT = self.nCircuitoAT_MT
         self.dataOpenDSS.nSE_MT_Selecionada = self.nSE_MT_Selecionada
-
-        ######## Define o Engine do OpenDSS
-        try:
-            if self.OpenDSSConfig["openDSSConn"] == "OpenDSSDirect":
-                self.OpenDSSEngine = opendss.class_conn.C_OpenDSSDirect_Conn()
-            elif self.OpenDSSConfig["openDSSConn"] == "COM":
-                self.OpenDSSEngine = opendss.class_conn.C_OpenDSSCOM_Conn()
-            else:
-                raise class_exception.ExecOpenDSS("Erro ao definir o Engine do OpenDSS!")
-        except:
-            pass
-
-
-
-    ##########
 
 
         ##### Executa os Arquitvos que serão executados e inseridos
@@ -167,28 +164,101 @@ class C_OpenDSS(): # classe OpenDSSDirect
                       # "RamLig":["Ramais de Ligação  ...",self.dataOpenDSS.exec_RAMAL_DE_LIGACAO,self.dataOpenDSS.memoFileRamaisLigBT],
                       "CompMT": ["Unidades Compensadoras de MT ...",self.dataOpenDSS.exec_UNID_COMPENSADORAS_DE_REATIVO_DE_MEDIA_TENSAO],
                       # "CompBT":["Unidades Compensadoras de BT ...",self.dataOpenDSS.exec_UNID_COMPENSADORAS_DE_REATIVO_DE_BAIXA_TENSAO],
-                      "EnergyMeters":["Inserindo os Energy Meters ...", self.exec_EnergyMeters],
+                      "VoltageBase": ["Bases de Tensão ...", self.exec_VoltageBase],
+                      "EnergyMeters": ["Inserindo os Energy Meters ...", self.exec_EnergyMeters],
                       "Monitors": ["Inserindo os Monitors ...", self.exec_Monitors],
-                      "footer": ["Rodapé ...", self.dataOpenDSS.exec_FooterFile],
+                      "Mode": ["Modo de Operação ...", self.exec_Mode],
                       }
 
 
-        ctdN = 0
+        ##Thread
+        #https://www.tutorialspoint.com/python/python_multithreading.htm
+        # nCPU = multiprocessing.cpu_count()
+        # queueLock = threading.Lock()
+        # workQueue = queue.Queue(len(self.execOpenDSSFunc)) ## Quantidade de Tarefas para serem realizadas
+        # threads = []
+        #
+        # # Create new threads
+        # for threadID in range(1, nCPU):
+        #     thread = opendss.class_thread_load.C_LoadDataThread(threadID, workQueue, queueLock)
+        #     ##Variávies que as Threads podem utilizar nas funções que irão executar
+        #     thread.DataBaseConn = self.DataBaseConn
+        #     thread.nFieldsMT = self.nFieldsMT
+        #     thread.nCircuitoAT_MT = self.nCircuitoAT_MT
+        #     thread.nSE_MT_Selecionada = self.nSE_MT_Selecionada
+        #     thread.OpenDSSConfig = self.OpenDSSConfig
+        #
+        #     thread.start()
+        #     threads.append(thread)
+        #
+        #
+        # # Fill the queue
+        # queueLock.acquire()
+        #
+        # for ctd in self.execOpenDSSFunc:
+        #     msg = self.execOpenDSSFunc[ctd][-2]
+        #     #Executando a função
+        #     ### Verificando o modo de operação
+        #
+        #     ### Roda com a flag em 1
+        #     if (ctd == "UConMT") and (self.OpenDSSConfig["UNCMT"] == "1"):
+        #         workQueue.put(self.execOpenDSSFunc[ctd][-1])
+        #         #print(msg)
+        #     elif (ctd == "UConBTTD") and (self.OpenDSSConfig["UNCBTTD"] == "1"):
+        #         workQueue.put(self.execOpenDSSFunc[ctd][-1])
+        #         #print(msg)
+        #     elif (ctd == "UConMTLoadShapes") or (ctd == "LoadShapes"):
+        #         if (self.OpenDSSConfig["Mode"] == "Daily") and (self.OpenDSSConfig["UNCMT"] == "1"):
+        #             workQueue.put(self.execOpenDSSFunc[ctd][-1])
+        #             #print(msg)
+        #     elif (ctd == "UConBTTD") or (ctd == "UConBTLoadShapes"):
+        #         if (self.OpenDSSConfig["Mode"] == "Daily") and (self.OpenDSSConfig["UNCBTTD"] == "1"):
+        #             workQueue.put(self.execOpenDSSFunc[ctd][-1])
+        #             #print(msg)
+        #     else:
+        #         workQueue.put(self.execOpenDSSFunc[ctd][-1])
+        #
+        # queueLock.release()
+        #
+        # # Wait for queue to empty
+        # while not workQueue.empty():
+        #     pass
+        #
+        # # Wait for all threads to complete
+        # for t in threads:
+        #     t.exitFlag = 1
+        #     t.join()
+        # print("Exiting Main Thread")
+
         for ctd in self.execOpenDSSFunc:
             msg = self.execOpenDSSFunc[ctd][-2]
-            #Executando a função
+            # Executando a função
             ### Verificando o modo de operação
-            if (ctd == "UConMTLoadShapes") or (ctd == "LoadShapes"):
-                if self.OpenDSSConfig["Mode"] == "Daily":
+
+            ### Roda com a flag em 1
+            if (ctd == "UConMT") and (self.OpenDSSConfig["UNCMT"] == "1"):
+                self.execOpenDSSFunc[ctd][-1]()
+                # print(msg)
+            elif (ctd == "UConBTTD") and (self.OpenDSSConfig["UNCBTTD"] == "1"):
+                self.execOpenDSSFunc[ctd][-1]()
+                # print(msg)
+            elif (ctd == "UConMTLoadShapes") or (ctd == "LoadShapes"):
+                if (self.OpenDSSConfig["Mode"] == "Daily") and (self.OpenDSSConfig["UNCMT"] == "1"):
                     self.execOpenDSSFunc[ctd][-1]()
+                    # print(msg)
             elif (ctd == "UConBTTD") or (ctd == "UConBTLoadShapes"):
-                if self.OpenDSSConfig["UNCBTTD"] == "1":
+                if (self.OpenDSSConfig["Mode"] == "Daily") and (self.OpenDSSConfig["UNCBTTD"] == "1"):
                     self.execOpenDSSFunc[ctd][-1]()
+                    # print(msg)
             else:
                 self.execOpenDSSFunc[ctd][-1]()
 
+            ## Fazendo as Threads
+
             ### Verificando se é necessário os UNCBTTD
 
+
+    def loadDataResult(self):
 
         self.OpenDSSDataResult = {"header": self.dataOpenDSS.memoFileHeader,
                       "EqThAT": self.dataOpenDSS.memoFileEqTh,
@@ -229,9 +299,10 @@ class C_OpenDSS(): # classe OpenDSSDirect
                       # "RamLig":self.dataOpenDSS.memoFileRamaisLigBT,self.memoFileRamaisLigBT,
                       "CompMT": self.dataOpenDSS.memoFileUndCompReatMT,
                       # "CompBT":self.dataOpenDSS.memoFileUndCompReatBT,
+                      "VoltageBase":self.memoFileVoltageBase,
                       "EnergyMeters": self.memoFileEnergyMeters,
                       "Monitors": self.memoFileMonitors,
-                      "footer":self.memoFileFooter,
+                      "Mode": self.memoFileMode,
                       }
 
 
@@ -252,16 +323,20 @@ class C_OpenDSS(): # classe OpenDSSDirect
 
         for ctd in self.OpenDSSDataResult:
             redirectFile = ''
-            if (ctd != "header") and (ctd != "EqThAT") and (ctd != "footer"):  # Cabeçalho do arquivo
+            if (ctd != "header") and (ctd != "EqThAT") and (ctd != "VoltageBase") and (ctd != "Mode"):  # Cabeçalho do arquivo
                 data = self.OpenDSSDataResult[ctd]
                 for cont in data:
                     redirectFile += str(cont) + '\n'
 
-            if (ctd == "UConMTLoadShapes") or (ctd == "LoadShapes") or (ctd == "UConBTLoadShapes"):
-                if self.OpenDSSConfig["Mode"] == "Daily":
+            if (ctd == "UConMT") and (self.OpenDSSConfig["UNCMT"] == "1"):
+                self.saveFileDSS(diretorio, ctd, redirectFile)
+            elif (ctd == "UConBTTD") and (self.OpenDSSConfig["UNCBTTD"] == "1"):
+                self.saveFileDSS(diretorio, ctd, redirectFile)
+            elif (ctd == "UConMTLoadShapes") or (ctd == "LoadShapes"):
+                if (self.OpenDSSConfig["Mode"] == "Daily") and (self.OpenDSSConfig["UNCMT"] == "1"):
                     self.saveFileDSS(diretorio, ctd, redirectFile)
-            elif (ctd == "UConBTTD"):
-                if self.OpenDSSConfig["UNCBTTD"] == "1":
+            elif (ctd == "UConBTTD") or (ctd == "UConBTLoadShapes"):
+                if (self.OpenDSSConfig["Mode"] == "Daily") and (self.OpenDSSConfig["UNCBTTD"] == "1"):
                     self.saveFileDSS(diretorio, ctd, redirectFile)
             else:
                 self.saveFileDSS(diretorio, ctd, redirectFile)
@@ -278,17 +353,24 @@ class C_OpenDSS(): # classe OpenDSSDirect
         mainFile = ''
 
         for ctd in self.execOpenDSSFunc:
-            if (ctd == "header") or (ctd == "EqThAT") or (ctd == "footer"): # Cabeçalho do arquivo
+            if (ctd == "header") or (ctd == "EqThAT") or (ctd != "VoltageBase") or (ctd != "Mode"): # Cabeçalho do arquivo
                 data = self.OpenDSSDataResult[ctd]
                 for cont in data:
                     mainFile += str(cont) + '\n'
             else:
-                if (ctd == "UConMTLoadShapes") or (ctd == "LoadShapes") or (ctd == "UConBTLoadShapes"):
-                    if self.OpenDSSConfig["Mode"] == "Daily":
+
+                if (ctd == "UConMT") and (self.OpenDSSConfig["UNCMT"] == "1"):
+                    mainFile += "! " + self.execOpenDSSFunc[ctd][-2] + "\n"
+                    mainFile += "Redirect " + ctd + ".dss " + '\n'
+                elif (ctd == "UConBTTD") and (self.OpenDSSConfig["UNCBTTD"] == "1"):
+                    mainFile += "! " + self.execOpenDSSFunc[ctd][-2] + "\n"
+                    mainFile += "Redirect " + ctd + ".dss " + '\n'
+                elif (ctd == "UConMTLoadShapes") or (ctd == "LoadShapes"):
+                    if (self.OpenDSSConfig["Mode"] == "Daily") and (self.OpenDSSConfig["UNCMT"] == "1"):
                         mainFile += "! " + self.execOpenDSSFunc[ctd][-2] + "\n"
                         mainFile += "Redirect " + ctd + ".dss " + '\n'
-                elif (ctd == "UConBTTD"):
-                    if self.OpenDSSConfig["UNCBTTD"] == "1":
+                elif (ctd == "UConBTTD") or (ctd == "UConBTLoadShapes"):
+                    if (self.OpenDSSConfig["Mode"] == "Daily") and (self.OpenDSSConfig["UNCBTTD"] == "1"):
                         mainFile += "! " + self.execOpenDSSFunc[ctd][-2] + "\n"
                         mainFile += "Redirect " + ctd + ".dss " + '\n'
                 else:
@@ -300,21 +382,24 @@ class C_OpenDSS(): # classe OpenDSSDirect
 
         return mainFile
 
-    def definedSettings(self, config):
-
-        ## Configurando os parâmetros
-        self.OpenDSSConfig = config
+    def exec_VoltageBase(self):
 
         ######
-        self.memoFileFooter = []
-        self.memoFileFooter.append("set voltagebases = [" + self.OpenDSSConfig["VoltageBase"] + "]")
-        self.memoFileFooter.append("Calcvoltagebases")
+        self.memoFileVoltageBase = []
+        self.memoFileVoltageBase.append("set voltagebases = [" + self.OpenDSSConfig["VoltageBase"] + "]")
+        self.memoFileVoltageBase.append("Calcvoltagebases")
+
+    def exec_Mode(self):
+
+        self.memoFileMode = []
 
         if self.OpenDSSConfig["Mode"] == "Daily":
-            self.memoFileFooter.append("set mode = " + self.OpenDSSConfig["Mode"] + " stepsize = " \
-                                       + self.OpenDSSConfig["StepSize"] + " number = " + self.OpenDSSConfig["Number"])
+            sztime = self.OpenDSSConfig["StepSizeTime"][0]
+            self.memoFileMode.append("set mode=" + self.OpenDSSConfig["Mode"] + " stepsize=" \
+                                       + str(self.OpenDSSConfig["StepSize"]) + sztime + " number=" + str(self.OpenDSSConfig["Number"]))
         else:
-            self.memoFileFooter.append("set mode = " + self.OpenDSSConfig["Mode"])
+            self.memoFileMode.append("set mode=" + self.OpenDSSConfig["Mode"])
+
 
     def exec_LOADSHAPES(self):
 
@@ -322,32 +407,48 @@ class C_OpenDSS(): # classe OpenDSSDirect
 
         self.memoLoadShapes = []
 
+        sztime = self.OpenDSSConfig["StepSizeTime"][0]
+        if sztime == "h":
+            sztime = ""
+
         for ctd in loadShapes:
             self.memoLoadShapes.append("New LoadShape.{0}".format(ctd) + " npts={0}".format(self.OpenDSSConfig["Number"]) \
-                                       + " interval={0}".format(self.OpenDSSConfig["StepSize"]) \
-                                       + " mult =" + str(loadShapes[ctd]) + " action = normalize")
+                                       + " "+ sztime + "interval={0}".format(self.OpenDSSConfig["StepSize"]) \
+                                       + " mult =" + str(loadShapes[ctd]).replace("[","(").replace("]",")") + " Action=Normalize")
 
     def exec_OpenDSS(self):
 
+        start_time = time.time()
+
+        ######## Define o Engine do OpenDSS
+        try:
+            if self.OpenDSSConfig["openDSSConn"] == "OpenDSSDirect":
+                self.OpenDSSEngine = opendss.class_conn.C_OpenDSSDirect_Conn()
+            elif self.OpenDSSConfig["openDSSConn"] == "COM":
+                self.OpenDSSEngine = opendss.class_conn.C_OpenDSSCOM_Conn()
+        except:
+            raise class_exception.ExecOpenDSS("Erro ao definir o Engine do OpenDSS!")
+
+        #Executa as consultas no Banco de Dados
+        self.loadData()
+        #Pega os Memo
+        self.loadDataResult()
+
+        self.OpenDSSEngine.clear()
 
         for ctd in self.OpenDSSDataResult:
 
             command = self.OpenDSSDataResult[ctd]
 
             for com in command:
-                self.OpenDSSEngine.run(com)
+                self.exec_OpenDSSRun(com)
 
         try:
+
+            #for ctd in self.Monitors:
+            #    self.exec_OpenDSSRun("Export monitor " + ctd["Name"])
+
             self.exec_OpenDSSRun("Solve")
-
-            #### Exportando os Medidores
-
-            for ctd in self.EnergyMeters:
-                self.exec_OpenDSSRun("Export EnergyMeter " + ctd["Name"])
-
-            for ctd in self.Monitors:
-                self.exec_OpenDSSRun("Export Monitor " + ctd["Name"])
-
 
         except:
             class_exception.ExecOpenDSS("Erro ao executar o fluxo de potência resolvido!")
@@ -355,18 +456,21 @@ class C_OpenDSS(): # classe OpenDSSDirect
 #            self.OpenDSSEngine.run("Show Voltage LN Nodes")
         self.getVoltageResults() ## Mostrando o resultado das tensões
         #self.OpenDSSEngine.run("Solve")
-        self.exec_OpenDSSRun("Show Voltage LN Nodes")
+
+
+        ##Status
+        self.StatusSolutionProcessTime =   round(time.time() - start_time)
 
     def exec_OpenDSSRun(self, command):
         self.OpenDSSEngine.run(command)
 
     def getVoltageResults(self):
 
-        busNames = self.OpenDSSEngine.Circuit_AllBusNames() ## Lista com nomes de todos os nós
-        VoltagePhaseAPU = self.OpenDSSEngine.Circuit_AllNodeVmagPUByPhase(1) ## Lista com todas as tensões de LN da fase A em PU
-        VoltagePhaseBPU = self.OpenDSSEngine.Circuit_AllNodeVmagPUByPhase(2) ## Lista com todas as tensões de LN da fase B em PU
-        VoltagePhaseCPU = self.OpenDSSEngine.Circuit_AllNodeVmagPUByPhase(3) ## Lista com todas as tensões de LN da fase C em PU
-        busVoltagesALL = self.OpenDSSEngine.Circuit_AllBusVolts() ## Lista com todas as tensões de LN da fase ABN complexa  em PU
+        busNames = self.OpenDSSEngine.get_Circuit_AllBusNames() ## Lista com nomes de todos os nós
+        VoltagePhaseAPU = self.OpenDSSEngine.get_Circuit_AllNodeVmagPUByPhase(1) ## Lista com todas as tensões de LN da fase A em PU
+        VoltagePhaseBPU = self.OpenDSSEngine.get_Circuit_AllNodeVmagPUByPhase(2) ## Lista com todas as tensões de LN da fase B em PU
+        VoltagePhaseCPU = self.OpenDSSEngine.get_Circuit_AllNodeVmagPUByPhase(3) ## Lista com todas as tensões de LN da fase C em PU
+        busVoltagesALL = self.OpenDSSEngine.get_Circuit_AllBusVolts() ## Lista com todas as tensões de LN da fase ABN complexa  em PU
 
         self.tableVoltageResults.setRowCount(len(busNames))
 
@@ -415,31 +519,6 @@ class C_OpenDSS(): # classe OpenDSSDirect
         except:
             pass
             #class_exception.ExecOpenDSS("Erro ao processar as tensões!", "Fase C")
-
-    ## Gets class_insert_dialog
-
-    def getAllNamesEnergyMeter(self):
-
-        return self.OpenDSSEngine.EnergyMeter_AllNames()
-
-    def getAllNamesMonitor(self):
-        return self.OpenDSSEngine.Monitor_AllNames()
-
-    def getAllNamesElements(self):
-
-        return self.OpenDSSEngine.Circuit_AllElementNames()
-
-    def getAllBusNames(self):
-        return self.OpenDSSEngine.Circuit_AllBusNames()
-
-    def setMonitorActive(self, name):
-        self.OpenDSSEngine.set_MonitorActive(name)
-
-    def getMonitorActive_ChannelNames(self):
-        return self.OpenDSSEngine.get_MonitorActive_ChannelNames()
-
-    def get_MonitorActive_DataChannel(self, idx):
-        return self.OpenDSSEngine.get_MonitorActive_DataChannel(idx)
 
     #######Monitor
 
@@ -506,8 +585,34 @@ class C_OpenDSS(): # classe OpenDSSDirect
 
             if stdSC["FltRepair"] != "" :
                 faultstr += " repair=" + stdSC["FltRepair"]
-        print(faultstr)
+
         self.exec_OpenDSSRun(faultstr)
         self.exec_OpenDSSRun("set mode=dynamic controlmode=time time=(0,0) stepsize=0.01 number=4000")
         self.exec_OpenDSSRun("Solve")
         self.exec_OpenDSSRun("show eventlog")
+
+
+    ## Gets class_insert_dialog
+
+    def getAllNamesEnergyMeter(self):
+
+        return self.OpenDSSEngine.get_EnergyMeter_AllNames()
+
+    def getAllNamesMonitor(self):
+        return self.OpenDSSEngine.get_Monitor_AllNames()
+
+    def getAllNamesElements(self):
+        return self.OpenDSSEngine.get_Circuit_AllElementNames()
+
+    def getAllBusNames(self):
+        return self.OpenDSSEngine.get_Circuit_AllBusNames()
+
+    def setMonitorActive(self, name):
+        self.OpenDSSEngine.set_MonitorActive(name)
+
+
+    def getMonitorActive_ChannelNames(self):
+        return self.OpenDSSEngine.get_MonitorActive_ChannelNames()
+
+    def getMonitorActive_DataChannel(self, idx):
+        return self.OpenDSSEngine.get_MonitorActive_DataChannel(idx)

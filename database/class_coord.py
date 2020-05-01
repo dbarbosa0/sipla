@@ -14,7 +14,8 @@ class dadosTrafoDist(NamedTuple):
 
 class C_DBaseCoord():
     def __init__(self):
-        self._DataBaseConn = database.class_conn.C_DBaseConn()
+        self._DataBaseConn = ""
+        self.DataBaseConn = database.class_conn.C_DBaseConn()
 
     @property
     def DataBaseConn(self):

@@ -279,9 +279,9 @@ class C_Insert_EnergyMeter_Dialog(QDialog): ## Classe Dialog principal
         
     def removeEnergyMeter(self):
         
-        for ctd in self.Monitors:
-            if ctd["Name"] == self.Monitor_GroupBox_MEnergy_ComboBox.currentText():
-                self.Monitors.remove(ctd)
+        for ctd in self.EnergyMeters:
+            if ctd["Name"] == self.EnergyMeter_GroupBox_MEnergy_ComboBox.currentText():
+                self.EnergyMeters.remove(ctd)
                 QMessageBox(QMessageBox.Warning, "Energy Monitor", "Energy Monitor " + ctd["Name"] + " removido com sucesso!",
                             QMessageBox.Ok).exec()
 
