@@ -114,6 +114,7 @@ class C_ConfigDialog(QDialog):
 
         if self.dataInfo["Mode"] == "Daily":
             self.dataInfo["StepSize"] = self.TabLoadFlow.get_Stepsize()
+            self.dataInfo["StepSizeTime"] = self.TabLoadFlow.get_Stepsize_Time()
             self.dataInfo["Number"] = self.TabLoadFlow.get_Number()
             self.dataInfo["Maxiterations"] = self.TabLoadFlow.get_Maxiterations()
             self.dataInfo["Maxcontroliter"] = self.TabLoadFlow.get_Maxcontroliter()
@@ -145,10 +146,11 @@ class C_ConfigDialog(QDialog):
             config['LoadFlow']["UNCMT"] = self.TabLoadFlow.get_UNC(self.TabLoadFlow.LoadFlow_GroupBox_UNCMT_CheckBox)
             config['LoadFlow']["UNCBTTD"] = self.TabLoadFlow.get_UNC(self.TabLoadFlow.LoadFlow_GroupBox_UNCBT_TD_CheckBox)
             config['LoadFlow']['Mode'] = self.TabLoadFlow.get_Mode()
-            config['LoadFlow']['StepSize'] = self.TabLoadFlow.get_Stepsize()
-            config['LoadFlow']['Number'] = self.TabLoadFlow.get_Number()
-            config['LoadFlow']['Maxiterations'] = str( self.TabLoadFlow.get_Maxiterations() )
-            config['LoadFlow']['Maxcontroliter']  = str( self.TabLoadFlow.get_Maxcontroliter() )
+            config['LoadFlow']['StepSize'] = str(self.TabLoadFlow.get_Stepsize())
+            config['LoadFlow']['StepSizeTime'] = self.TabLoadFlow.get_Stepsize_Time()
+            config['LoadFlow']['Number'] = str(self.TabLoadFlow.get_Number())
+            config['LoadFlow']['Maxiterations'] = str(self.TabLoadFlow.get_Maxiterations())
+            config['LoadFlow']['Maxcontroliter']  = str(self.TabLoadFlow.get_Maxcontroliter())
 
             with open('siplaconfig.ini', 'w') as configfile:
                 config.write(configfile)
@@ -186,8 +188,9 @@ class C_ConfigDialog(QDialog):
             ### Tab Load Flow
             self.TabLoadFlow.LoadFlow_GroupBox_VoltageBase_LineEdit.setText(config['LoadFlow']['VoltageBase'])
             self.TabLoadFlow.Mode_GroupBox_ComboBox.setCurrentText(config['LoadFlow']['Mode'] )
-            self.TabLoadFlow.Complements_Daily_GroupBox_Stepsize_LineEdit.setText( config['LoadFlow']['StepSize'])
-            self.TabLoadFlow.Complements_Daily_GroupBox_Number_LineEdit.setText( config['LoadFlow']['Number'] )
+            self.TabLoadFlow.Complements_Daily_GroupBox_Stepsize_SpinBox.setValue( int( config['LoadFlow']['StepSize']))
+            self.TabLoadFlow.Complements_Daily_GroupBox_Stepsize_ComboBox.setCurrentText(config['LoadFlow']['StepSizeTime'])
+            self.TabLoadFlow.Complements_Daily_GroupBox_Number_SpinBox.setValue( int(config['LoadFlow']['Number'] ))
             self.TabLoadFlow.Complements_Daily_GroupBox_Maxiterations_SpinBox.setValue( int(config['LoadFlow']['Maxiterations']))
             self.TabLoadFlow.Complements_Daily_GroupBox_Maxcontroliter_SpinBox.setValue(int(config['LoadFlow']['Maxcontroliter']))
 
@@ -247,14 +250,16 @@ class LoadFlow(QWidget):
         self.Complements_Daily_GroupBox = QGroupBox("Complementos do Daily")
 
         self.Complements_Daily_GroupBox_Stepsize_Label = QLabel("Set Stepsize:")
+        self.Complements_Daily_GroupBox_Stepsize_ComboBox = QComboBox()
+        self.Complements_Daily_GroupBox_Stepsize_ComboBox.addItems(["sec", "min", "hr"])
         self.Complements_Daily_GroupBox_Number_Label = QLabel("Set Number:")
         self.Complements_Daily_GroupBox_Maxiterations_Label = QLabel("Set Maxiterations:")
         self.Complements_Daily_GroupBox_Maxcontroliter_Label = QLabel("Set Maxcontroliter:")
 
         ## LineEdit complementos
 
-        self.Complements_Daily_GroupBox_Stepsize_LineEdit = QLineEdit()
-        self.Complements_Daily_GroupBox_Number_LineEdit = QLineEdit()
+        self.Complements_Daily_GroupBox_Stepsize_SpinBox = QSpinBox()
+        self.Complements_Daily_GroupBox_Number_SpinBox = QSpinBox()
         self.Complements_Daily_GroupBox_Maxiterations_SpinBox = QSpinBox()
         self.Complements_Daily_GroupBox_Maxcontroliter_SpinBox = QSpinBox()
 
@@ -268,13 +273,14 @@ class LoadFlow(QWidget):
         self.Complements_Daily_GroupBox_Layout = QGridLayout()
         self.Complements_Daily_GroupBox_Layout.addWidget(self.Complements_Daily_GroupBox_Stepsize_Label, 0, 0, 1, 1)
         self.Complements_Daily_GroupBox_Layout.addWidget(self.Complements_Daily_GroupBox_Number_Label, 1, 0, 1, 1)
-        self.Complements_Daily_GroupBox_Layout.addWidget(self.Complements_Daily_GroupBox_Stepsize_LineEdit, 0, 1, 1, 1)
-        self.Complements_Daily_GroupBox_Layout.addWidget(self.Complements_Daily_GroupBox_Number_LineEdit, 1, 1, 1, 1)
+        self.Complements_Daily_GroupBox_Layout.addWidget(self.Complements_Daily_GroupBox_Stepsize_SpinBox, 0, 1, 1, 1)
+        self.Complements_Daily_GroupBox_Layout.addWidget(self.Complements_Daily_GroupBox_Stepsize_ComboBox, 0, 2, 1, 1)
+        self.Complements_Daily_GroupBox_Layout.addWidget(self.Complements_Daily_GroupBox_Number_SpinBox, 1, 1, 1, 2)
         self.Complements_Daily_GroupBox_Layout.addWidget(self.Complements_Daily_GroupBox_Maxiterations_Label, 2, 0, 1, 1)
         self.Complements_Daily_GroupBox_Layout.addWidget(self.Complements_Daily_GroupBox_Maxcontroliter_Label, 3, 0, 1, 1)
-        self.Complements_Daily_GroupBox_Layout.addWidget(self.Complements_Daily_GroupBox_Maxiterations_SpinBox, 2, 1, 1, 1)
-        self.Complements_Daily_GroupBox_Layout.addWidget(self.Complements_Daily_GroupBox_Maxcontroliter_SpinBox, 3, 1, 1, 1)
-        self.Complements_Daily_GroupBox_Layout.addWidget(self.Complements_Daily_LoadShape_Btn, 4, 1, 1, 1)
+        self.Complements_Daily_GroupBox_Layout.addWidget(self.Complements_Daily_GroupBox_Maxiterations_SpinBox, 2, 1, 1, 2)
+        self.Complements_Daily_GroupBox_Layout.addWidget(self.Complements_Daily_GroupBox_Maxcontroliter_SpinBox, 3, 1, 1, 2)
+        self.Complements_Daily_GroupBox_Layout.addWidget(self.Complements_Daily_LoadShape_Btn, 4, 1, 1, 2)
 
         # Seta layouts
 
@@ -296,15 +302,17 @@ class LoadFlow(QWidget):
 
         if self.Mode_GroupBox_ComboBox.currentText() == "Daily":
             self.Complements_Daily_GroupBox.setHidden(False)
-            self.Complements_Daily_GroupBox_Stepsize_LineEdit.setEnabled(True)
-            self.Complements_Daily_GroupBox_Number_LineEdit.setEnabled(True)
+            self.Complements_Daily_GroupBox_Stepsize_SpinBox.setEnabled(True)
+            self.Complements_Daily_GroupBox_Stepsize_ComboBox.setEnabled(True)
+            self.Complements_Daily_GroupBox_Number_SpinBox.setEnabled(True)
             self.Complements_Daily_GroupBox_Maxiterations_SpinBox.setEnabled(True)
             self.Complements_Daily_GroupBox_Maxcontroliter_SpinBox.setEnabled(True)
             self.Complements_Daily_LoadShape_Btn.setEnabled(True)
         else:
             self.Complements_Daily_GroupBox.setHidden(True)
-            self.Complements_Daily_GroupBox_Stepsize_LineEdit.setEnabled(False)
-            self.Complements_Daily_GroupBox_Number_LineEdit.setEnabled(False)
+            self.Complements_Daily_GroupBox_Stepsize_SpinBox.setEnabled(False)
+            self.Complements_Daily_GroupBox_Stepsize_ComboBox.setEnabled(False)
+            self.Complements_Daily_GroupBox_Number_SpinBox.setEnabled(False)
             self.Complements_Daily_GroupBox_Maxiterations_SpinBox.setEnabled(False)
             self.Complements_Daily_GroupBox_Maxcontroliter_SpinBox.setEnabled(False)
             self.Complements_Daily_LoadShape_Btn.setEnabled(False)
@@ -315,6 +323,7 @@ class LoadFlow(QWidget):
     def dialogLoadShape(self):
         self.LoadShapesDialog.nPointsLoadDef = self.get_Number()
         self.LoadShapesDialog.nStepSizeDef = self.get_Stepsize()
+        self.LoadShapesDialog.nStepSizeTimeDef = self.get_Stepsize_Time()
         self.LoadShapesDialog.show()
 
 
@@ -331,10 +340,13 @@ class LoadFlow(QWidget):
         return self.Mode_GroupBox_ComboBox.currentText()
 
     def get_Stepsize(self):
-        return self.Complements_Daily_GroupBox_Stepsize_LineEdit.text()
+        return self.Complements_Daily_GroupBox_Stepsize_SpinBox.value()
+
+    def get_Stepsize_Time(self):
+        return self.Complements_Daily_GroupBox_Stepsize_ComboBox.currentText()
 
     def get_Number(self):
-        return self.Complements_Daily_GroupBox_Number_LineEdit.text()
+        return self.Complements_Daily_GroupBox_Number_SpinBox.value()
 
     def get_Maxiterations(self):
         return self.Complements_Daily_GroupBox_Maxiterations_SpinBox.value()

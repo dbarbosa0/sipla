@@ -14,6 +14,7 @@ import class_exception
 import maps.class_view
 import main_panels_dock
 import main_toolbar
+import datetime
 
 class C_MainActions():
     def __init__(self):
@@ -26,6 +27,7 @@ class C_MainActions():
         self.MainResultsPanel = main_panels_dock.C_ResultsPanel(self)
         self.MainMapView = maps.class_view.C_Viewer()
 
+        ###
 
         #############################################
 
@@ -36,11 +38,15 @@ class C_MainActions():
         self.DataBase = database.class_base.C_DBase()
         self.DataBase_DialogSettings = database.class_config_dialog.C_ConfigDialog() # Instânciando a classe dialog Settings
         self.OpenDSS = opendss.class_opendss.C_OpenDSS()
+        self.OpenDSS.DataBaseConn = self.DataBaseConn
 
         # Contribuição Sandy
         self.OpenDSS_DialogSettings = opendss.class_config_dialog.C_ConfigDialog()  # Instânciando a classe dialog Settings
+
+        self.OpenDSS.OpenDSSConfig = self.OpenDSS_DialogSettings.dataInfo
         self.DataBase.DataBaseConn = self.DataBaseConn
         self.MainMapView.DataBaseConn = self.DataBaseConn
+
         ###
         self.OpenDSS_DialogInsertEnergyMeter = opendss.class_insert_energymeter_dialog.C_Insert_EnergyMeter_Dialog() # Instânciando a classe dialog Insert
         self.OpenDSS_DialogInsertEnergyMeter.OpenDSS = self.OpenDSS
@@ -53,33 +59,25 @@ class C_MainActions():
         self.SCAnalyze_DialogSettings.OpenDSS = self.OpenDSS #Apontando o ponteiro de OpenDSS C_MainActions
 
 
-
     #############################################
 
+    def updateStatusBar(self):
 
-    def setStatusBar(self, type, msg):
+        ##Verifica Conexão
+        if (self.DataBase_DialogSettings.databaseInfo["Conn"] == "sqlite") and (
+                self.DataBase_DialogSettings.databaseInfo["DirDataBase"]):
+            self.MainWindowStatusBar.StatusBar_Status.setText("On-Line")
 
-        if type == "Status":
-            self.MainWindowStatusBar.setStatusBar_Status_Text(msg)
-        elif type == "Flow":
-            self.MainWindowStatusBar.setStatusBar_Fluxo_Text(msg)
-        elif type == "FlowStatus":
-            self.MainWindowStatusBar.setStatusBar_Fluxo_Status_Text(msg)
-
-    def getStatusBar(self, type):
-
-        if type == "Status":
-            return self.MainWindowStatusBar.getStatusBar_Status_Text()
-        elif type == "Flow":
-            return self.MainWindowStatusBar.getStatusBar_Fluxo_Text()
-        elif type == "FlowStatus":
-           return self.MainWindowStatusBar.getStatusBar_Fluxo_Status_Text()
+        ##Tipo de Fluxo
+        self.MainWindowStatusBar.StatusBar_Fluxo.setText("Fluxo: " + self.OpenDSS_DialogSettings.dataInfo["Mode"])
+        if self.OpenDSS.StatusSolutionProcessTime > 0:
+            self.MainWindowStatusBar.StatusBar_Fluxo_Status.setText("Solved: "\
+                                + str(datetime.timedelta(minutes=self.OpenDSS.StatusSolutionProcessTime)))
 
     def updateToobarMenu(self):
-
         ##Funções que precisam do Fluxo
 
-        if self.getStatusBar("FlowStatus") == "Solved":
+        if self.OpenDSS.StatusSolutionProcessTime > 0:
             self.MainWindowToolBar.OpenDSS_InsertEnergyMeter_Act.setEnabled(True)
             self.MainWindowToolBar.OpenDSS_InsertMonitor_Act.setEnabled(True)
             self.MainWindowToolBar.OpenDSS_Save_Act.setEnabled(True)
@@ -112,7 +110,7 @@ class C_MainActions():
         self.DataBase_DialogSettings.databaseInfo["DirDataBase"]):
             self.DataBaseConn.DataBaseInfo = self.DataBase_DialogSettings.databaseInfo
             self.getSE_AT_DB()
-            self.setStatusBar("Status", "On-Line")
+            self.updateStatusBar()
         else:
             QMessageBox(QMessageBox.Warning, "DataBase Configuration", \
                         "A Conexão com o Banco de Dados deve ser configurada!", QMessageBox.Ok).exec()
@@ -146,8 +144,6 @@ class C_MainActions():
     ##### Visualizando no Mapa
     def execMapView(self, fieldsOptions = None):
 
-        self.MainMapView.DataBaseConn = self.DataBaseConn
-
         ##### Definindo variáveis
 
         self.MainMapView.ListFields = self.MainNetPanel.getSelectedFieldsNames()
@@ -178,10 +174,10 @@ class C_MainActions():
         else:
             self.execCreateDSS() ## Cria o arquivo que será utilizado pelo OpenDSS
             self.OpenDSS.exec_OpenDSS()
-            self.setStatusBar("Flow", self.OpenDSS_DialogSettings.dataInfo["Mode"])
-            self.setStatusBar("FlowStatus", "Solved")
             ##Atualizando o ToolBar
             self.updateToobarMenu()
+            self.updateStatusBar()
+
 
     def execInsertEnergyMeter(self):
         self.OpenDSS_DialogInsertEnergyMeter.updateDialog()
@@ -192,6 +188,8 @@ class C_MainActions():
         self.OpenDSS_DialogInsertMonitor.show()
 
     def execPlotMonitor(self):
+        self.OpenDSS_DialogPlotMonitor.StepSizeTime = self.OpenDSS_DialogSettings.dataInfo["StepSizeTime"]
+        self.OpenDSS_DialogPlotMonitor.StepSize = self.OpenDSS_DialogSettings.dataInfo["StepSize"]
         self.OpenDSS_DialogPlotMonitor.updateDialog()
         self.OpenDSS_DialogPlotMonitor.show()
 
@@ -200,9 +198,6 @@ class C_MainActions():
         #self.MainResultsPanel.reloadTabs()
 
         ## Passando Parâmetros
-        self.OpenDSS.definedSettings(self.OpenDSS_DialogSettings.dataInfo)
-
-        self.OpenDSS.DataBaseConn = self.DataBaseConn
         self.OpenDSS.nCircuitoAT_MT = self.MainNetPanel.get_CirATMT_Selected()
         self.OpenDSS.nSE_MT_Selecionada = self.MainNetPanel.getSelectedSEMT()
         self.OpenDSS.nFieldsMT = self.MainNetPanel.getSelectedFieldsNames()

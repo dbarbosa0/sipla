@@ -8,7 +8,6 @@ import random
 import pathlib
 import platform
 import pyqtgraph
-import re
 import config as cfg
 import class_exception
 
@@ -24,6 +23,7 @@ class C_Config_LoadShape_Dialog(QDialog):
 
         self._nPointsLoadDef = 0
         self._nStepSizeDef = 0
+        self._nStepSizeTimeDef = ""
 
         self._dataLoadShapes = {}
 
@@ -53,6 +53,14 @@ class C_Config_LoadShape_Dialog(QDialog):
     @nStepSizeDef.setter
     def nStepSizeDef(self, value):
         self._nStepSizeDef = value
+
+    @property
+    def nStepSizeTimeDef(self):
+        return self._nStepSizeTimeDef
+
+    @nStepSizeTimeDef.setter
+    def nStepSizeTimeDef(self, value):
+        self._nStepSizeTimeDef = value
 
     def InitUI(self):
 
@@ -238,7 +246,7 @@ class C_Config_LoadShape_Dialog(QDialog):
             dataCSV = {} #Dicionário para as variáveis
 
             fname = QFileDialog.getOpenFileName(self, 'Open CSV file',
-                                                "", "CSV files (*.csv)")
+                                                "LoadShapes", "CSV files (*.csv)")
                                                 #str(pathlib.Path.home()), "CSV files (*.csv)")
 
             if platform.system() == "Windows":
@@ -347,13 +355,15 @@ class C_Config_LoadShape_Dialog(QDialog):
         #Limpando
         self.graphWidget.clear()
         ##Definindo o X
-        plot_x = [float(re.findall('\d+',self.nStepSizeDef)[0]) * ctd / 60 for ctd in range(0,self.nPointsLoadDef)]
+
+
+        plot_x = [self.nStepSizeDef * ctd for ctd in range(0,self.nPointsLoadDef)]
 
         # Add Background colour to white
         self.graphWidget.setBackground('w')
         #Add Axis Labels
         self.graphWidget.setLabel('left', 'Demanda', color='red', size=20)
-        self.graphWidget.setLabel('bottom', 'Tempo', color='red', size=20)
+        self.graphWidget.setLabel('bottom', 'Tempo (' + self.nStepSizeTimeDef[0] + ")", color='red', size=20)
         # Add legend
         self.graphWidget.addLegend()
         # Add grid

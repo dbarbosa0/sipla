@@ -1,5 +1,7 @@
 import opendssdirect
 import platform
+import unidecode
+
 
 if platform.system() == "Windows":
     import win32com.client
@@ -13,57 +15,68 @@ class C_Conn(): # classe OpenDSS com métodos virtuais
     def run(cls, argFileMsg):
         pass
 
-    def Topology_AllIsolatedBranches(self):
+    def get_Topology_AllIsolatedBranches(self):
         return self.engineTopology.AllIsolatedBranches()
 
-    def Circuit_AllBusVMag(self):
+    def get_Circuit_AllBusVMag(self):
         return self.engineCircuit.AllBusVMag()
 
-    def Circuit_AllNodeVmagPUByPhase(self, phase):
+    def get_Circuit_AllNodeVmagPUByPhase(self, phase):
         return self.engineCircuit.AllNodeVmagPUByPhase(phase)
 
-    def Circuit_AllNodeVmagByPhase(self, phase):
+    def get_Circuit_AllNodeVmagByPhase(self, phase):
         return self.engineCircuit.AllNodeVmagByPhase(phase)
 
-    def Circuit_AllElementNames(self):
-        return self.engineCircuit.AllElementNames()
+    #Testes
 
-    #Acesso a classe EnergyMeter
+    def get_MonitorActive_ChannelNames(self):
+        return self.engineMonitors.Header()
 
-    def EnergyMeter_AllNames(self):
-        return self.engineMeters.AllNames()
+    def get_MonitorActive_DataChannel(self, idx):
+        return self.engineMonitors.Channel(idx)
 
 
 class C_OpenDSSDirect_Conn(C_Conn):  # classe OpenDSSDirect
 
     def __init__(self):
         self.engine = opendssdirect
+        self.engineBasic = self.engine.Basic
         self.engineCircuit = self.engine.Circuit
         self.engineTopoly = self.engine.Topology
         self.engineMeters = self.engine.Meters
         self.engineMonitors = self.engine.Monitors
+        self.engineSolution = self.engine.Solution
+        self.engineLoads = self.engine.Loads
 
     def run(self, msg):
-        self.engine.run_command(msg)
+        self.engine.run_command(unidecode.unidecode(msg))
 
-    def Circuit_AllBusNames(self):
+    def clear(self):
+        self.engineBasic.ClearAll()
+
+    def get_Circuit_AllBusNames(self):
         return self.engineCircuit.AllBusNames()
 
-    def Circuit_AllBusVolts(self):
+    def get_Circuit_AllBusVolts(self):
         return self.engineCircuit.AllBusVolts()
 
-################
-    def Monitor_AllNames(self):
+    def get_Solution_ProcessTime(self):
+        return self.engineSolution.ProcessTime()
+
+
+    def get_Monitor_AllNames(self):
         return self.engineMonitors.AllNames()
+
+    def get_EnergyMeter_AllNames(self):
+        return self.engineMeters.AllNames()
+
+    def get_Circuit_AllElementNames(self):
+        return self.engineCircuit.AllElementNames()
 
     def set_MonitorActive(self, name):
         self.engineMonitors.Name(name)
 
-    def get_MonitorActive_ChannelNames(self):
-        return self.engineMonitors.Header()
-
-    def get_MonitorActive_DataChannel(self,idx):
-        return self.engineMonitors.Channel(idx)
+################
 
 
 class C_OpenDSSCOM_Conn(C_Conn):  # classe OpenDSSCOM
@@ -76,14 +89,33 @@ class C_OpenDSSCOM_Conn(C_Conn):  # classe OpenDSSCOM
         # use the Text interface to OpenDSS
         self.engine.Text.Command = "clear"
         self.engineCircuit = self.engine.ActiveCircuit
+        self.engineSolution = self.engineCircuit.Solution
+        self.engineMeters = self.engineCircuit.Meters
+        self.engineMonitors = self.engineCircuit.Monitors
 
     def run(self, msg):
-        self.engine.Text.Command = msg
+        self.engine.Text.Command = unidecode.unidecode(msg)
 
-    def Circuit_AllBusNames(self):
+    def clear(self):
+        self.run("clear")
+
+    def get_Circuit_AllBusNames(self):
         return self.engineCircuit.AllBusNames
 
-    def Circuit_AllBusVolts(self):
+    def get_Circuit_AllBusVolts(self):
         return self.engineCircuit.AllBusVolts
+
+    def get_Solution_ProcessTime(self):
+        return self.engineSolution.Process_Time
+
+    def get_Monitor_AllNames(self):
+        return self.engineMonitors.AllNames
+
+    def get_EnergyMeter_AllNames(self):
+        return self.engineMeters.AllNames
+
+    def get_Circuit_AllElementNames(self):
+        return self.engineCircuit.AllElementNames
+
 
 
