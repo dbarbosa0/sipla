@@ -114,6 +114,7 @@ class C_NetPanel(QDockWidget):
         self.NetPanel_Options_GroupBox_TreeWidget.header().resizeSection(0,190)
         self.NetPanel_Options_GroupBox_TreeWidget.header().resizeSection(1, 20)
         self.NetPanel_Options_GroupBox_TreeWidget.hideColumn(1)
+        self.NetPanel_Options_GroupBox_TreeWidget.itemClicked.connect(self.execViewOptions)
 
         self.NetPanel_Options_GroupBox_Layout.addWidget(self.NetPanel_Options_GroupBox_TreeWidget, 1, 1, 1, 1)
 
@@ -205,7 +206,7 @@ class C_NetPanel(QDockWidget):
 
             if Item.checkState(0) == Qt.Checked:
                 listFieldsColors.append(Item.getColor())
-        return  listFieldsColors
+        return listFieldsColors
 
     ########################################################################################
 
@@ -261,11 +262,13 @@ class C_NetPanel(QDockWidget):
     def setDisabled_NetPanel_Fields_GroupBox_Select_Btn(self):
 
         self.Deck_GroupBox_MapView_Btn.setEnabled(False)
+        self.NetPanel_Options_GroupBox.setEnabled(False)
 
         for ctd in range(0, self.NetPanel_Fields_GroupBox_Select_TreeWidget.topLevelItemCount()):
             Item = self.NetPanel_Fields_GroupBox_Select_TreeWidget.topLevelItem(ctd)
             if Item.checkState(0) == Qt.Checked:
                 self.Deck_GroupBox_MapView_Btn.setEnabled(True)
+                self.NetPanel_Options_GroupBox.setEnabled(True)
 
             self.mainActions.updateToobarMenu()
 
@@ -283,15 +286,34 @@ class C_NetPanel(QDockWidget):
 
     ### Executa o Mapa e passa os parâmetros
     def execView(self):
+
+        listOptions = self.execViewLoadOptions()
+
+        self.mainActions.execMapView(listOptions)
+
+    def execViewLoadOptions(self):
+
         listOptions = []
+
         for ctd in range(0, self.NetPanel_Options_GroupBox_TreeWidget.topLevelItemCount()):
             Item = self.NetPanel_Options_GroupBox_TreeWidget.topLevelItem(ctd)
 
             if Item.checkState(0) == Qt.Checked:
                 listOptions.append(Item.getOption())
 
+        return listOptions
 
-        self.mainActions.execMapView(listOptions)
+    def execViewOptions(self):
+
+        listOptions = self.execViewLoadOptions()
+
+        if listOptions:
+            self.mainActions.execMapViewOptions(listOptions)
+        else:
+            self.execView()
+
+
+
 
 
 class NetPanel_Fields_GroupBox_Select_TreeWidget_Item(QTreeWidgetItem):
@@ -347,6 +369,7 @@ class NetPanel_Options_GroupBox_TreeWidget_Item(QTreeWidgetItem):
         self.setText(0, name)
         self.setFlags(self.flags() | Qt.ItemIsUserCheckable)
         self.setCheckState(0, Qt.Unchecked)
+
         self.setText(1, option)
 
     @property

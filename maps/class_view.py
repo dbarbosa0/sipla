@@ -87,14 +87,14 @@ class C_Viewer():
         self.webEngView = nameQtWebEngineWidgets
 
         
-    def createMap(self, fieldsOptions = None):
+    def createMap(self):
 
         self.DataBaseCoord.DataBaseConn = self.DataBaseConn
 
         #Varendo todos os alimentadores
         self.mapFields = ''
 
-        self.ListFieldsID = self.DataBaseCoord.getCods_AL_SE_MT_DB(self.ListFields)
+        self.getListFieldsID()
 
         for contadorAL in range(0, len(self.ListFields) ):
             #Pegando as coordenadas do Alimentador
@@ -106,9 +106,8 @@ class C_Viewer():
             
             folium.PolyLine( coordAlimentMT , color = self.ListFieldsColors[contadorAL] , weight=3.0, opacity=1, smooth_factor=0).add_to( self.mapFields )
 
-        if not fieldsOptions is None:
-            self.execOptionsMap(fieldsOptions)
-            
+        self.mapFieldsDefault = self.mapFields ## Salvar só o alimentador
+
     
     def viewMap(self):
         
@@ -125,11 +124,18 @@ class C_Viewer():
 
     def execOptionsMap(self, fieldsOptions):
 
+        self.DataBaseCoord.DataBaseConn = self.DataBaseConn
+
         for ctdOption in fieldsOptions:
+
+            self.getListFieldsID()
 
             if ctdOption == "TrafoDIST":
 
                 dados_db = self.DataBaseCoord.getData_TrafoDIST(self.nameSEMT)
+
+                if not self.mapFields:  # Melhorar essa criação aqui
+                    self.mapFields = folium.Map([dados_db[0].y, dados_db[0].x], zoom_start=13)
 
                 for ctd in range(0, len(dados_db)):
 
@@ -146,7 +152,8 @@ class C_Viewer():
 
 
 
-        
+    def getListFieldsID(self):
+        self.ListFieldsID = self.DataBaseCoord.getCods_AL_SE_MT_DB(self.ListFields)
         
         
         

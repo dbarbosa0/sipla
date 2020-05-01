@@ -5,31 +5,29 @@ import multiprocessing
 import queue
 
 class C_LoadDataProcess(multiprocessing.Process):
-    def __init__(self, ProcessID, queue, dataOpenDSS):
+    def __init__(self, ProcessID, queue, queueLock):
         multiprocessing.Process.__init__(self)
         self.ProcessID = ProcessID
         self.queue = queue
-
-        self.dataOpenDSS = dataOpenDSS #Acesso ao Banco de Dados
-        self.nCircuitoAT_MT = ''
-        self.nSE_MT_Selecionada = ''
-        self.nFieldsMT = ''
+        self.queueLock = queueLock
+        self.dataOpenDSS = '' #Acesso ao Banco de Dados
         self.OpenDSSConfig={}
 
-        #print("Process: " + str(self.ProcessID))
+        print("Process: " + str(self.ProcessID))
 
     def run(self):
         while True:
             try:
+                self.queueLock.acquire()
                 print("Process: " + str(self.ProcessID) + " While")
-                funcData = self.queue.get()
+                funcData = self.queue.get_nowait()
             except queue.Empty:
                 print("Process: " + str(self.ProcessID) + " Error")
                 break
             else:
                 print("Process: " + str(self.ProcessID) + " Queue")
-                funcData = self.queue.get()
-                print(str(self.ProcessID) + " processing a" + str(funcData))
+                print(str(self.ProcessID) + " start " + str(funcData))
                 funcData() #Executando a função
-                print(str(self.ProcessID) + " processing d" + str(funcData))
+                self.queueLock.release()
+                print(str(self.ProcessID) + " finished " + str(funcData))
         return True

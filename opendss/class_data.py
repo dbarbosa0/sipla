@@ -960,8 +960,7 @@ class C_Data():  # classe OpenDSS
                 if (dados_db[ctd].ctmt in lista_de_identificadores_dos_alimentadores):
 
                     for ctd in range(0, len(dados_db)):
-                        [num_de_fases, pac_1, pac_2] = self.getFasesConexao(dados_db[ctd].fas_con, dados_db[ctd].pac_1,
-                                                                            None)
+                        [num_de_fases, pac_1, pac_2] = self.getFasesConexao(dados_db[ctd].fas_con, dados_db[ctd].pac_1,None)
 
                         tmp = "New Capacitor.{0}".format(dados_db[ctd].cod_id) + " Bus1={0}".format(pac_1)
                         tmp += " Phases={0}".format(num_de_fases)
