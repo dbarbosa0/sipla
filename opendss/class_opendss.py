@@ -10,6 +10,12 @@ import opendss.class_data
 import class_exception
 import time
 
+##Thread
+import opendss.class_thread_load
+import queue
+import threading
+import multiprocessing
+
 class C_OpenDSS(): # classe OpenDSSDirect
 
     def __init__(self):
@@ -112,15 +118,6 @@ class C_OpenDSS(): # classe OpenDSSDirect
         self.dataOpenDSS.nCircuitoAT_MT = self.nCircuitoAT_MT
         self.dataOpenDSS.nSE_MT_Selecionada = self.nSE_MT_Selecionada
 
-        ######## Define o Engine do OpenDSS
-        try:
-            if self.OpenDSSConfig["openDSSConn"] == "OpenDSSDirect":
-                self.OpenDSSEngine = opendss.class_conn.C_OpenDSSDirect_Conn()
-            elif self.OpenDSSConfig["openDSSConn"] == "COM":
-                self.OpenDSSEngine = opendss.class_conn.C_OpenDSSCOM_Conn()
-        except:
-            raise class_exception.ExecOpenDSS("Erro ao definir o Engine do OpenDSS!")
-
 
         ##### Executa os Arquitvos que serão executados e inseridos
 
@@ -169,33 +166,94 @@ class C_OpenDSS(): # classe OpenDSSDirect
                       "Mode": ["Modo de Operação ...", self.exec_Mode],
                       }
 
+        ##Thread
+        #https://www.tutorialspoint.com/python/python_multithreading.htm
+        # nCPU = multiprocessing.cpu_count()
+        # queueLock = threading.Lock()
+        # workQueue = queue.Queue(len(self.execOpenDSSFunc)) ## Quantidade de Tarefas para serem realizadas
+        # threads = []
+        #
+        # # Create new threads
+        # for threadID in range(1, nCPU):
+        #     thread = opendss.class_thread_load.C_LoadDataThread(threadID, workQueue, queueLock)
+        #     ##Variávies que as Threads podem utilizar nas funções que irão executar
+        #     thread.DataBaseConn = self.DataBaseConn
+        #     thread.nFieldsMT = self.nFieldsMT
+        #     thread.nCircuitoAT_MT = self.nCircuitoAT_MT
+        #     thread.nSE_MT_Selecionada = self.nSE_MT_Selecionada
+        #     thread.OpenDSSConfig = self.OpenDSSConfig
+        #
+        #     thread.start()
+        #     threads.append(thread)
+        #
+        #
+        # # Fill the queue
+        # queueLock.acquire()
+        #
+        # for ctd in self.execOpenDSSFunc:
+        #     msg = self.execOpenDSSFunc[ctd][-2]
+        #     #Executando a função
+        #     ### Verificando o modo de operação
+        #
+        #     ### Roda com a flag em 1
+        #     if (ctd == "UConMT") and (self.OpenDSSConfig["UNCMT"] == "1"):
+        #         workQueue.put(self.execOpenDSSFunc[ctd][-1])
+        #         #print(msg)
+        #     elif (ctd == "UConBTTD") and (self.OpenDSSConfig["UNCBTTD"] == "1"):
+        #         workQueue.put(self.execOpenDSSFunc[ctd][-1])
+        #         #print(msg)
+        #     elif (ctd == "UConMTLoadShapes") or (ctd == "LoadShapes"):
+        #         if (self.OpenDSSConfig["Mode"] == "Daily") and (self.OpenDSSConfig["UNCMT"] == "1"):
+        #             workQueue.put(self.execOpenDSSFunc[ctd][-1])
+        #             #print(msg)
+        #     elif (ctd == "UConBTTD") or (ctd == "UConBTLoadShapes"):
+        #         if (self.OpenDSSConfig["Mode"] == "Daily") and (self.OpenDSSConfig["UNCBTTD"] == "1"):
+        #             workQueue.put(self.execOpenDSSFunc[ctd][-1])
+        #             #print(msg)
+        #     else:
+        #         workQueue.put(self.execOpenDSSFunc[ctd][-1])
+        #
+        # queueLock.release()
+        #
+        # # Wait for queue to empty
+        # while not workQueue.empty():
+        #     pass
+        #
+        # # Wait for all threads to complete
+        # for t in threads:
+        #     t.exitFlag = 1
+        #     t.join()
+        # print("Exiting Main Thread")
 
-        ctdN = 0
         for ctd in self.execOpenDSSFunc:
             msg = self.execOpenDSSFunc[ctd][-2]
-            #Executando a função
+            # Executando a função
             ### Verificando o modo de operação
 
             ### Roda com a flag em 1
             if (ctd == "UConMT") and (self.OpenDSSConfig["UNCMT"] == "1"):
                 self.execOpenDSSFunc[ctd][-1]()
-                #print(msg)
+                # print(msg)
             elif (ctd == "UConBTTD") and (self.OpenDSSConfig["UNCBTTD"] == "1"):
                 self.execOpenDSSFunc[ctd][-1]()
-                #print(msg)
+                # print(msg)
             elif (ctd == "UConMTLoadShapes") or (ctd == "LoadShapes"):
                 if (self.OpenDSSConfig["Mode"] == "Daily") and (self.OpenDSSConfig["UNCMT"] == "1"):
                     self.execOpenDSSFunc[ctd][-1]()
-                    #print(msg)
+                    # print(msg)
             elif (ctd == "UConBTTD") or (ctd == "UConBTLoadShapes"):
                 if (self.OpenDSSConfig["Mode"] == "Daily") and (self.OpenDSSConfig["UNCBTTD"] == "1"):
                     self.execOpenDSSFunc[ctd][-1]()
-                    #print(msg)
+                    # print(msg)
             else:
                 self.execOpenDSSFunc[ctd][-1]()
 
+            ## Fazendo as Threads
+
             ### Verificando se é necessário os UNCBTTD
 
+
+    def loadDataResult(self):
 
         self.OpenDSSDataResult = {"header": self.dataOpenDSS.memoFileHeader,
                       "EqThAT": self.dataOpenDSS.memoFileEqTh,
@@ -330,9 +388,8 @@ class C_OpenDSS(): # classe OpenDSSDirect
 
         self.memoFileMode = []
 
-        sztime = self.OpenDSSConfig["StepSizeTime"][0]
-
         if self.OpenDSSConfig["Mode"] == "Daily":
+            sztime = self.OpenDSSConfig["StepSizeTime"][0]
             self.memoFileMode.append("set mode=" + self.OpenDSSConfig["Mode"] + " stepsize=" \
                                        + str(self.OpenDSSConfig["StepSize"]) + sztime + " number=" + str(self.OpenDSSConfig["Number"]))
         else:
@@ -357,6 +414,20 @@ class C_OpenDSS(): # classe OpenDSSDirect
     def exec_OpenDSS(self):
 
         start_time = time.time()
+
+        ######## Define o Engine do OpenDSS
+        try:
+            if self.OpenDSSConfig["openDSSConn"] == "OpenDSSDirect":
+                self.OpenDSSEngine = opendss.class_conn.C_OpenDSSDirect_Conn()
+            elif self.OpenDSSConfig["openDSSConn"] == "COM":
+                self.OpenDSSEngine = opendss.class_conn.C_OpenDSSCOM_Conn()
+        except:
+            raise class_exception.ExecOpenDSS("Erro ao definir o Engine do OpenDSS!")
+
+        #Executa as consultas no Banco de Dados
+        self.loadData()
+        #Pega os Memo
+        self.loadDataResult()
 
         self.OpenDSSEngine.clear()
 
@@ -383,7 +454,7 @@ class C_OpenDSS(): # classe OpenDSSDirect
 
 
         ##Status
-        self.StatusSolutionProcessTime =  time.time() - start_time
+        self.StatusSolutionProcessTime =   round(time.time() - start_time)
 
     def exec_OpenDSSRun(self, command):
         self.OpenDSSEngine.run(command)

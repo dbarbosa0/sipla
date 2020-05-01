@@ -71,7 +71,7 @@ class C_MainActions():
         self.MainWindowStatusBar.StatusBar_Fluxo.setText("Fluxo: " + self.OpenDSS_DialogSettings.dataInfo["Mode"])
         if self.OpenDSS.StatusSolutionProcessTime > 0:
             self.MainWindowStatusBar.StatusBar_Fluxo_Status.setText("Solved: "\
-                                + str(datetime.timedelta(minutes=self.OpenDSS.StatusSolutionProcessTime)))
+                                + str(datetime.timedelta(seconds=self.OpenDSS.StatusSolutionProcessTime)))
 
     def updateToobarMenu(self):
         ##Funções que precisam do Fluxo
@@ -203,7 +203,7 @@ class C_MainActions():
         self.OpenDSS.nFieldsMT = self.MainNetPanel.getSelectedFieldsNames()
         self.OpenDSS.tableVoltageResults = self.MainResultsPanel.TableVoltage
 
-        self.OpenDSS.loadData()
+
 
 
     def saveOpenDSS(self):
