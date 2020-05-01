@@ -157,6 +157,7 @@ class C_SCAnalyze_ConfigDialog(QDialog):
         buslist = self.OpenDSS.getAllBusNames()
         for index, item in enumerate(buslist):
             self.TabBasic.FltBus_GroupBox_ComboBox.addItem(item, item)
+        print(f'Tamanho da buslist pelo AllBusNames : {len(buslist)}')
 
 
 

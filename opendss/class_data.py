@@ -7,6 +7,7 @@ import prodist.tlig as tlig #Tipos de Ligações
 import prodist.tpotatr as tpotatr #Potências dos transformadores
 import prodist.tcapelofu as tcapelofu #Elos fusíveis
 
+
 class C_Data():  # classe OpenDSS
 
     def __init__(self):
@@ -17,7 +18,7 @@ class C_Data():  # classe OpenDSS
         self._nCircuitoAT_MT = ''
         self._nSE_MT_Selecionada = ''
         self._nFieldsMT = ''
-
+        self.buslist = []
         self.initUI()
 
     @property
@@ -201,7 +202,7 @@ class C_Data():  # classe OpenDSS
                 tmp = ''
 
                 basekv = tten.TTEN[dados_eqth[ctd].ten_nom]
-
+                self.get_buslist(dados_eqth[ctd].nome)
                 tmp = "New Circuit.{0}".format(dados_eqth[ctd].nome)
                 tmp += "  basekv={0}".format(basekv) + "  pu=1" + "  phase=3" + "  bus1={0}".format(
                     dados_eqth[ctd].nome)
@@ -231,7 +232,7 @@ class C_Data():  # classe OpenDSS
 
             for ctd in range(0, len(dados_eqth)):
                 if dados_eqth[ctd].nome in self.nFieldsMT:
-
+                    self.get_buslist(dados_eqth[ctd].nome)
                     basekv = tten.TTEN[dados_eqth[ctd].ten_nom]
 
                     tmp += "New Circuit.{0}".format(dados_eqth[ctd].nome)
@@ -287,7 +288,8 @@ class C_Data():  # classe OpenDSS
 
                 if ((dados_sec[ctd].pac_1 in tmpPAC) or (dados_sec[ctd].pac_2 in tmpPAC)):
                     # and ((dados_sec[ctd].pac_1.find(self.nCircuitoAT_MT[0:3]) != -1 ) or (dados_sec[ctd].pac_2.find(self.nCircuitoAT_MT[0:3])) != -1):
-
+                    self.get_buslist(dados_sec[ctd].pac_1)
+                    self.get_buslist(dados_sec[ctd].pac_2)
                     [num_de_fases, pac_1, pac_2] = self.getFasesConexao(dados_sec[ctd].fas_con, dados_sec[ctd].pac_1,
                                                                         dados_sec[ctd].pac_2)
 
@@ -354,6 +356,8 @@ class C_Data():  # classe OpenDSS
                 tmp += " conns={0}".format(ligacao) + " tap=1"
 
                 memoFileTrafoATMT.append(tmp)
+                self.get_buslist(dados_trafo[ctd].pac_1)
+                self.get_buslist(dados_trafo[ctd].pac_2)
 
             return memoFileTrafoATMT
 
@@ -440,7 +444,8 @@ class C_Data():  # classe OpenDSS
             memoFileSEC = []
 
             for ctd in range(0, len(dados_sec)):
-
+                self.get_buslist(dados_sec[ctd].pac_1)
+                self.get_buslist(dados_sec[ctd].pac_2)
                 [num_de_fases, pac_1, pac_2] = self.getFasesConexao(dados_sec[ctd].fas_con, dados_sec[ctd].pac_1,
                                                                     dados_sec[ctd].pac_2)
 
@@ -676,7 +681,8 @@ class C_Data():  # classe OpenDSS
             memoFileLinha = []
 
             for ctd in range(0, len(dados_db)):
-
+                self.get_buslist(dados_db[ctd].pac_1)
+                self.get_buslist(dados_db[ctd].pac_2)
                 [num_de_fases, pac_1, pac_2] = self.getFasesConexao(dados_db[ctd].fas_con, dados_db[ctd].pac_1,
                                                                     dados_db[ctd].pac_2)
 
@@ -752,7 +758,7 @@ class C_Data():  # classe OpenDSS
                 if (dados_db[ctd].ctmt in lista_de_identificadores_dos_alimentadores):
 
                     nivel_de_tensao = tten.TTEN[dados_db[ctd].ten_forn]
-
+                    self.get_buslist(dados_db[ctd].pac)
                     [num_de_fases, pac_1, pac_2] = self.getFasesConexao(dados_db[ctd].fas_con, dados_db[ctd].pac, None)
 
                     if dados_db[ctd].fas_con == "ABCN":
@@ -850,7 +856,8 @@ class C_Data():  # classe OpenDSS
             for ctd in range(0, len(dados_db)):
 
                 if (dados_db[ctd].ctmt in lista_de_identificadores_dos_alimentadores):
-
+                    self.get_buslist(dados_db[ctd].pac_1)
+                    self.get_buslist(dados_db[ctd].pac_2)
                     [num_de_fases, pac_1, pac_2] = self.getFasesConexao(dados_db[ctd].fas_con, dados_db[ctd].pac_1,
                                                                         dados_db[ctd].pac_2)
 
@@ -908,7 +915,8 @@ class C_Data():  # classe OpenDSS
             for ctd in range(0, len(dados_db)):
 
                 if (dados_db[ctd].ctmt in lista_de_identificadores_dos_alimentadores):
-
+                    self.get_buslist(dados_db[ctd].pac_1)
+                    self.get_buslist(dados_db[ctd].pac_2)
                     for ctd in range(0, len(dados_db)):
                         [num_de_fases, pac_1, pac_2] = self.getFasesConexao(dados_db[ctd].fas_con, dados_db[ctd].pac_1,
                                                                             dados_db[ctd].pac_2)
@@ -958,7 +966,7 @@ class C_Data():  # classe OpenDSS
             for ctd in range(0, len(dados_db)):
 
                 if (dados_db[ctd].ctmt in lista_de_identificadores_dos_alimentadores):
-
+                    self.get_buslist(dados_db[ctd].pac_1)
                     for ctd in range(0, len(dados_db)):
                         [num_de_fases, pac_1, pac_2] = self.getFasesConexao(dados_db[ctd].fas_con, dados_db[ctd].pac_1,None)
 
@@ -1054,3 +1062,7 @@ class C_Data():  # classe OpenDSS
         resultfase = [num_de_fases, pac_1, pac_2]
 
         return resultfase
+
+    def get_buslist(self, pac):
+        if str(pac) not in self.buslist:
+            self.buslist.append(str(pac))

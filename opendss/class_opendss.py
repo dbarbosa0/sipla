@@ -304,7 +304,8 @@ class C_OpenDSS(): # classe OpenDSSDirect
                       "Monitors": self.memoFileMonitors,
                       "Mode": self.memoFileMode,
                       }
-
+        #print(self.dataOpenDSS.buslist)
+        print(f'Tamanho da buslist pelo class_data : {len(self.dataOpenDSS.buslist)}')
 
     def exec_SaveFileDialogDSS(self):
 
