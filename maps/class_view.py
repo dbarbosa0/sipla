@@ -91,6 +91,8 @@ class C_Viewer():
 
         self.DataBaseCoord.DataBaseConn = self.DataBaseConn
 
+        self.ListFieldsID = self.DataBaseCoord.getCods_AL_SE_MT_DB(self.ListFields)
+
         #Varendo todos os alimentadores
         self.mapFields = ''
 
@@ -100,54 +102,56 @@ class C_Viewer():
             coordAlimentMT = self.DataBaseCoord.getCoord_AL_SE_MT_DB( self.ListFields[contadorAL] ) # Pegando os códigos dos Alimentadores [NomAL CodAL x y]
             
             if not self.mapFields : #Melhorar essa criação aqui
-               self.mapFields = folium.Map(coordAlimentMT [0][0] ,zoom_start=13) 
+               self.mapFields = folium.Map(coordAlimentMT [0][0] ,zoom_start=13, name = "Alimentadores")
             
-            folium.PolyLine( coordAlimentMT , color = self.ListFieldsColors[contadorAL] , weight=3.0, opacity=1, smooth_factor=0).add_to( self.mapFields )
+            folium.PolyLine( coordAlimentMT , color = self.ListFieldsColors[contadorAL] , weight=3.0, opacity=1, smooth_factor=0, control = False).add_to(self.mapFields)
 
-
+        self.execOptionsMap()
     
     def viewMap(self):
+
+        folium.LayerControl(collapsed=False).add_to(self.mapFields)
         
         fileData = io.BytesIO()
         
         #Salvando Arquivo binário
         self.mapFields.save(fileData, close_file = False)
-        
+
         #Mostando Map
        
         self.webEngView.setHtml(fileData.getvalue().decode())
         
         self.webEngView.show()
 
-    def execOptionsMap(self, fieldsOptions):
+    def execOptionsMap(self):
 
-        self.DataBaseCoord.DataBaseConn = self.DataBaseConn
+        #Transformador
+        fieldsOptions = {"TrafoDIST":"Transformador(es) de Distribuição",
+                         }
 
-        if fieldsOptions:
+        for ctdOption in fieldsOptions:
 
-            self.ListFieldsID = self.DataBaseCoord.getCods_AL_SE_MT_DB(self.ListFields)
+            if ctdOption == "TrafoDIST":
 
-            for ctdOption in fieldsOptions:
+                fgTrafoDIST = folium.FeatureGroup(name=fieldsOptions[ctdOption])
 
-                if ctdOption == "TrafoDIST":
+                self.mapFields.add_child(fgTrafoDIST)
 
-                    dados_db = self.DataBaseCoord.getData_TrafoDIST(self.nameSEMT)
+                dados_db = self.DataBaseCoord.getData_TrafoDIST(self.nameSEMT)
 
-                    if not self.mapFields:  # Melhorar essa criação aqui
-                        self.mapFields = folium.Map([dados_db[0].y, dados_db[0].x], zoom_start=13)
+                for ctd in range(0, len(dados_db)):
 
-                    for ctd in range(0, len(dados_db)):
+                    if (dados_db[ctd].ctmt in self.ListFieldsID):
 
-                        if (dados_db[ctd].ctmt in self.ListFieldsID):
-
-                            infoText  = '<b>Trafo de Distribuição</b>'
-                            infoText += '<br> ID: ' + dados_db[ctd].cod_id
-                            infoText += '<br> ' + str(dados_db[ctd].pot_nom)  + ' kVA'
-                            folium.Marker(
-                                    location = [dados_db[ctd].y, dados_db[ctd].x],
-                                    popup = infoText,
-                                    icon=folium.Icon(color='red', icon='info-sign')
-                                ).add_to(self.mapFields)
+                        infoText  = '<b>Trafo de Distribuição</b>'
+                        infoText += '<br> ID: ' + dados_db[ctd].cod_id
+                        infoText += '<br> ' + str(dados_db[ctd].pot_nom)  + ' kVA'
+                        folium.Marker(
+                                location = [dados_db[ctd].y, dados_db[ctd].x],
+                                popup = infoText,
+                                icon=folium.Icon(color='red', icon='info-sign'),
+                                control = True
+                            ).add_to(fgTrafoDIST)
 
         
         

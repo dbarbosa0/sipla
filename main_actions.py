@@ -141,7 +141,7 @@ class C_MainActions():
             self.MainResultsPanel.hide()
 
     ##### Visualizando no Mapa
-    def execMapView(self, fieldsOptions = None):
+    def execMapView(self):
 
         ##### Definindo variáveis
         self.MainMapView.DataBaseConn = self.DataBaseConn
@@ -153,21 +153,8 @@ class C_MainActions():
         ##### Métodos
         self.MainMapView.createMap()
 
-        if fieldsOptions:
-            self.execMapViewOptions(fieldsOptions)
-        else:
-            self.MainMapView.viewMap()
-
-    def execMapViewOptions(self, fieldsOptions):
-        self.MainMapView.DataBaseConn = self.DataBaseConn
-
-        self.MainMapView.ListFields = self.MainNetPanel.getSelectedFieldsNames()
-        self.MainMapView.ListFieldsColors = self.MainNetPanel.getSelectedFieldsColors()
-        self.MainMapView.nameSEMT = self.MainNetPanel.getSelectedSEMT()
-
-        self.MainMapView.execOptionsMap(fieldsOptions)
-
         self.MainMapView.viewMap()
+
 
 
             
