@@ -133,7 +133,7 @@ class C_Viewer():
 
             if ctdOption == "TrafoDIST":
 
-                fgTrafoDIST = folium.FeatureGroup(name=fieldsOptions[ctdOption])
+                fgTrafoDIST = folium.FeatureGroup(name=fieldsOptions[ctdOption], show=False)
 
                 self.mapFields.add_child(fgTrafoDIST)
 
