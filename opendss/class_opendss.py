@@ -127,6 +127,7 @@ class C_OpenDSS(): # classe OpenDSSDirect
             self.dataOpenDSS.nSE_MT_Selecionada = self.nSE_MT_Selecionada
             ##Zerando a lista de barras
             self.dataOpenDSS.busList = []
+            self.dataOpenDSS.elementList = []
 
 
             ##### Executa os Arquitvos que serão executados e inseridos
@@ -268,6 +269,9 @@ class C_OpenDSS(): # classe OpenDSSDirect
 
     def getBusList(self):
         return self.dataOpenDSS.busList
+
+    def getElementList(self):
+        return self.dataOpenDSS.elementList
 
     def loadDataResult(self):
 

@@ -6,6 +6,7 @@ from PyQt5.QtCore import Qt
 
 import opendss.class_opendss
 import config as cfg
+import unidecode
 
 class C_Insert_Monitor_Dialog(QDialog): ## Classe Dialog principal
     def __init__(self):
@@ -249,7 +250,7 @@ class C_Insert_Monitor_Dialog(QDialog): ## Classe Dialog principal
     def AcceptAddEditMonitor(self): ## Dá para otimizar e muito // Somente um teste
         
         Monitor = {}
-        Monitor["Name"] = self.get_Monitor_Name()
+        Monitor["Name"] = unidecode.unidecode(self.get_Monitor_Name().replace(" ","_"))
         Monitor["Element"] = self.get_ElementMonitor()
         Monitor["Terminal"] = self.get_TerminalMonitor()
         Monitor["Mode"] = self.get_ModeMonitor()
@@ -320,6 +321,7 @@ class C_Insert_Monitor_Dialog(QDialog): ## Classe Dialog principal
 
         self.Monitor_Element_ComboBox.clear()
         #self.Monitor_Element_ComboBox.addItems(self.OpenDSS.getAllNamesElements())
-        self.Monitor_Element_ComboBox.addItems(self.OpenDSS.getBusList())
+        self.Monitor_Element_ComboBox.addItems(self.OpenDSS.getElementList())
+
 
 
