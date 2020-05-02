@@ -159,7 +159,7 @@ class C_SCAnalyze_ConfigDialog(QDialog):
             self.TabBasic.FltBus_GroupBox_ComboBox.addItem(item, item)
         print(f'Tamanho da buslist pelo AllBusNames : {len(buslist)}')
 
-        print(f'Tamanho da buslist pelo AllBusNames : {len(buslist)}')
+        #print(f'Tamanho da buslist pelo AllBusNames : {len(buslist)}')
 
 
 
