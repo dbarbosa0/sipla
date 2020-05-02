@@ -370,6 +370,7 @@ class C_Insert_EnergyMeter_Dialog(QDialog): ## Classe Dialog principal
             self.EnergyMeter_GroupBox_MEnergy_ComboBox.addItem(ctd["Name"])
 
         self.EnergyMeter_Element_ComboBox.clear()
-        self.EnergyMeter_Element_ComboBox.addItems(self.OpenDSS.getAllNamesElements())
+        #self.EnergyMeter_Element_ComboBox.addItems(self.OpenDSS.getAllNamesElements())
+        self.EnergyMeter_Element_ComboBox.addItems(self.OpenDSS.getBusList())
 
 
