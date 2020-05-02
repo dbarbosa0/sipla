@@ -727,9 +727,6 @@ class C_Data():  # classe OpenDSS
 
             for ctd in range(0, len(dados_db)):
 
-                self.insertBusList(dados_db[ctd].pac_1)
-                self.insertBusList(dados_db[ctd].pac_2)
-
                 [num_de_fases, pac_1, pac_2] = self.getFasesConexao(dados_db[ctd].fas_con, dados_db[ctd].pac_1,
                                                                     dados_db[ctd].pac_2)
 
@@ -747,6 +744,8 @@ class C_Data():  # classe OpenDSS
 
                         ##Buffer
                         self.insertElementList("Line.{0}".format(dados_db[ctd].cod_id))
+                        self.insertBusList(dados_db[ctd].pac_1)
+                        self.insertBusList(dados_db[ctd].pac_2)
 
                 elif tipoSEG_REG == "REG":  # Regulador de Média
                     if (dados_db[ctd].ctmt in lista_de_identificadores_dos_alimentadores):
@@ -765,6 +764,8 @@ class C_Data():  # classe OpenDSS
                         ##Buffer
                         self.insertElementList("Transformer.{0}".format(dados_db[ctd].cod_id))
                         self.insertElementList("RegControl.{0}".format('c' + dados_db[ctd].cod_id))
+                        self.insertBusList(dados_db[ctd].pac_1)
+                        self.insertBusList(dados_db[ctd].pac_2)
                 else:
                     raise class_exception.ExecOpenDSS(
                         "Erro ao carregar as informações dos Segmentos de Linha ou Regulador, pois o tipo não foi especificado! \n" + tipoSEG_REG)
@@ -813,7 +814,6 @@ class C_Data():  # classe OpenDSS
                 if (dados_db[ctd].ctmt in lista_de_identificadores_dos_alimentadores):
 
                     nivel_de_tensao = tten.TTEN[dados_db[ctd].ten_forn]
-
 
                     [num_de_fases, pac_1, pac_2] = self.getFasesConexao(dados_db[ctd].fas_con, dados_db[ctd].pac, None)
 
@@ -979,9 +979,6 @@ class C_Data():  # classe OpenDSS
 
                 if (dados_db[ctd].ctmt in lista_de_identificadores_dos_alimentadores):
 
-                    self.insertBusList(dados_db[ctd].pac_1)
-                    self.insertBusList(dados_db[ctd].pac_2)
-
                     for ctd in range(0, len(dados_db)):
                         [num_de_fases, pac_1, pac_2] = self.getFasesConexao(dados_db[ctd].fas_con, dados_db[ctd].pac_1,
                                                                             dados_db[ctd].pac_2)
@@ -996,6 +993,8 @@ class C_Data():  # classe OpenDSS
 
                         ##Buffer
                         self.insertElementList("Line.{0}".format(dados_db[ctd].cod_id))
+                        self.insertBusList(dados_db[ctd].pac_1)
+                        self.insertBusList(dados_db[ctd].pac_2)
 
             return memoFileLinha
 
@@ -1035,8 +1034,6 @@ class C_Data():  # classe OpenDSS
 
                 if (dados_db[ctd].ctmt in lista_de_identificadores_dos_alimentadores):
 
-                    self.insertBusList(dados_db[ctd].pac_1)
-
                     for ctd in range(0, len(dados_db)):
                         [num_de_fases, pac_1, pac_2] = self.getFasesConexao(dados_db[ctd].fas_con, dados_db[ctd].pac_1,None)
 
@@ -1048,6 +1045,7 @@ class C_Data():  # classe OpenDSS
 
                         ##Buffer
                         self.insertElementList("Capacitor.{0}".format(dados_db[ctd].cod_id))
+                        self.insertBusList(dados_db[ctd].pac_1)
 
 
 
@@ -1139,8 +1137,8 @@ class C_Data():  # classe OpenDSS
         return resultfase
 
     def insertBusList(self, pac):
-        if str(pac) not in self.busList:
-            self.busList.append(str(pac))
+        if pac.replace('-', "") not in self.busList:
+            self.busList.append(pac.replace('-', ""))
 
     def insertElementList(self, name):
         if str(name) not in self.elementList:

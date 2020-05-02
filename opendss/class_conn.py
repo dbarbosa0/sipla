@@ -11,10 +11,7 @@ class C_Conn(): # classe OpenDSS com métodos virtuais
     def __init__(self):
         self.FileOpenDSS = ''
 
-    @classmethod
-    def run(cls, argFileMsg):
-        pass
-
+    ##Funções Iguais
     def get_Topology_AllIsolatedBranches(self):
         return self.engineTopology.AllIsolatedBranches()
 
@@ -27,13 +24,9 @@ class C_Conn(): # classe OpenDSS com métodos virtuais
     def get_Circuit_AllNodeVmagByPhase(self, phase):
         return self.engineCircuit.AllNodeVmagByPhase(phase)
 
-    #Testes
-
-    def get_MonitorActive_ChannelNames(self):
-        return self.engineMonitors.Header()
-
     def get_MonitorActive_DataChannel(self, idx):
         return self.engineMonitors.Channel(idx)
+    #Testes
 
 
 class C_OpenDSSDirect_Conn(C_Conn):  # classe OpenDSSDirect
@@ -63,7 +56,6 @@ class C_OpenDSSDirect_Conn(C_Conn):  # classe OpenDSSDirect
     def get_Solution_ProcessTime(self):
         return self.engineSolution.ProcessTime()
 
-
     def get_Monitor_AllNames(self):
         return self.engineMonitors.AllNames()
 
@@ -75,6 +67,10 @@ class C_OpenDSSDirect_Conn(C_Conn):  # classe OpenDSSDirect
 
     def set_MonitorActive(self, name):
         self.engineMonitors.Name(name)
+
+    def get_MonitorActive_ChannelNames(self):
+        return self.engineMonitors.Header()
+
 
 ################
 
@@ -116,6 +112,13 @@ class C_OpenDSSCOM_Conn(C_Conn):  # classe OpenDSSCOM
 
     def get_Circuit_AllElementNames(self):
         return self.engineCircuit.AllElementNames
+
+    def set_MonitorActive(self, name):
+        self.engineMonitors.Name = name
+
+    def get_MonitorActive_ChannelNames(self):
+        return self.engineMonitors.Header
+
 
 
 
