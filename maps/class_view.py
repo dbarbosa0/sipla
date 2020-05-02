@@ -1,5 +1,6 @@
 import io
 import folium
+import folium.plugins
 from PyQt5 import QtWebEngineWidgets
 
 import database.class_coord
@@ -137,21 +138,50 @@ class C_Viewer():
 
                 self.mapFields.add_child(fgTrafoDIST)
 
-                dados_db = self.DataBaseCoord.getData_TrafoDIST(self.nameSEMT)
+                for ctdCodAl in self.ListFieldsID:
 
-                for ctd in range(0, len(dados_db)):
+                    dados_db = self.DataBaseCoord.getData_TrafoDIST(self.nameSEMT, ctdCodAl)
 
-                    if (dados_db[ctd].ctmt in self.ListFieldsID):
+                    infoTextTrafo  = '<b>Trafo de Distribuição</b>'
+                    infoTextTrafo  += '<br> ID: ${cod_id.text}'
+                    infoTextTrafo  += '<br> ${pot_nom.text} kVA'
 
-                        infoText  = '<b>Trafo de Distribuição</b>'
-                        infoText += '<br> ID: ' + dados_db[ctd].cod_id
-                        infoText += '<br> ' + str(dados_db[ctd].pot_nom)  + ' kVA'
-                        folium.Marker(
-                                location = [dados_db[ctd].y, dados_db[ctd].x],
-                                popup = infoText,
-                                icon=folium.Icon(color='red', icon='info-sign'),
-                                control = True
-                            ).add_to(fgTrafoDIST)
+                    callbackTrafo = ('function (row) {'
+                                    'var marker = L.marker(new L.LatLng(row[0], row[1]), {color: "red"});'
+                                    'var icon = L.AwesomeMarkers.icon({'
+                                    "icon: 'info-sign',"
+                                    "iconColor: 'white',"
+                                    "markerColor: 'red',"
+                                    "prefix: 'glyphicon',"
+                                    "extraClasses: 'fa-rotate-0'"
+                                    '});'
+                                    'marker.setIcon(icon);'
+                                    "var popup = L.popup({maxWidth: '300'});"
+                                    "const cod_id = {text: row[2]};"
+                                    "const pot_nom = {text: row[3]};"
+                                    "var textpopup = $(`<div id='mytext' class='display_text' style='width: 100.0%; height: 100.0%;'> " + infoTextTrafo  +"</div>`)[0];"
+                                    "popup.setContent(textpopup);"
+                                    "marker.bindPopup(popup);"
+                                    'return marker};')
+
+                    folium.plugins.FastMarkerCluster(
+                            data=dados_db,
+                            callback=callbackTrafo
+                        ).add_to(fgTrafoDIST)
+
+                    #for ctd in range(0, len(dados_db)):
+
+                            # infoText  = '<b>Trafo de Distribuição</b>'
+                            # infoText += '<br> ID: ' + dados_db[ctd].cod_id
+                            # infoText += '<br> ' + str(dados_db[ctd].pot_nom)  + ' kVA'
+                            # folium.Marker(
+                            #         location = [dados_db[ctd].y, dados_db[ctd].x],
+                            #         popup = infoText,
+                            #         icon=folium.Icon(color='red', icon='info-sign'),
+                            #         control = True
+                            #     ).add_to(fgTrafoDIST)
+
+
 
         
         
