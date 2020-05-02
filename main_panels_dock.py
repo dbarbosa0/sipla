@@ -244,6 +244,10 @@ class C_NetPanel(QDockWidget):
 
             self.mainActions.updateToobarMenu()
 
+        ##Alteração dos alimentadores obriga rodar o LoadData
+
+            self.mainActions.fieldsChangedDSS()
+
     def onSelectAllFields(self):
 
         for ctd in range(0, self.NetPanel_Fields_GroupBox_Select_TreeWidget.topLevelItemCount()):
@@ -271,6 +275,10 @@ class C_NetPanel(QDockWidget):
     ### Executa o Mapa e passa os parâmetros
     def execView(self):
         self.mainActions.execMapView()
+
+        ### Executa o LoadData para agilizar
+        self.mainActions.execLoadDataDSS()
+
 
 
 class NetPanel_Fields_GroupBox_Select_TreeWidget_Item(QTreeWidgetItem):

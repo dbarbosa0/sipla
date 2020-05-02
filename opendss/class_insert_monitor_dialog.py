@@ -319,6 +319,7 @@ class C_Insert_Monitor_Dialog(QDialog): ## Classe Dialog principal
             self.Monitor_GroupBox_MEnergy_ComboBox.addItem(ctd["Name"])
 
         self.Monitor_Element_ComboBox.clear()
-        self.Monitor_Element_ComboBox.addItems(self.OpenDSS.getAllNamesElements())
+        #self.Monitor_Element_ComboBox.addItems(self.OpenDSS.getAllNamesElements())
+        self.Monitor_Element_ComboBox.addItems(self.OpenDSS.getBusList())
 
 
