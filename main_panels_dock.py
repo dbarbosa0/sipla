@@ -82,8 +82,7 @@ class C_NetPanel(QDockWidget):
         # self.NetPanel_Fields_GroupBox_TreeWidget.setColumnWidth(250,30)
         self.NetPanel_Fields_GroupBox_Select_TreeWidget.header().resizeSection(0, 190)
         self.NetPanel_Fields_GroupBox_Select_TreeWidget.header().resizeSection(1, 20)
-        self.NetPanel_Fields_GroupBox_Select_TreeWidget.itemClicked.connect(
-            self.setDisabled_NetPanel_Fields_GroupBox_Select_Btn)
+        self.NetPanel_Fields_GroupBox_Select_TreeWidget.itemClicked.connect(self.checkOnSelectAllFields)
 
         self.NetPanel_Fields_GroupBox_Select_Layout.addWidget(self.NetPanel_Fields_GroupBox_Select_TreeWidget)
 
@@ -101,26 +100,6 @@ class C_NetPanel(QDockWidget):
 
         self.Deck_GroupBox_Layout.addRow(self.NetPanel_Fields_GroupBox)  # Adiciona
 
-        ######################################
-
-        ###### Opções #####################
-
-        self.NetPanel_Options_GroupBox = QGroupBox("&Itens para Mostrar")
-        self.NetPanel_Options_GroupBox.setMaximumHeight(100)
-        self.NetPanel_Options_GroupBox_Layout = QGridLayout()
-        self.NetPanel_Options_GroupBox_TreeWidget = QTreeWidget()
-        self.NetPanel_Options_GroupBox_TreeWidget.setHeaderLabels(['Item','Option'])
-        #self.NetPanel_Options_GroupBox_TreeWidget.setColumnWidth(250,30)
-        self.NetPanel_Options_GroupBox_TreeWidget.header().resizeSection(0,190)
-        self.NetPanel_Options_GroupBox_TreeWidget.header().resizeSection(1, 20)
-        self.NetPanel_Options_GroupBox_TreeWidget.hideColumn(1)
-
-        self.NetPanel_Options_GroupBox_Layout.addWidget(self.NetPanel_Options_GroupBox_TreeWidget, 1, 1, 1, 1)
-
-        self.NetPanel_Options_GroupBox.setLayout(self.NetPanel_Options_GroupBox_Layout)
-
-        self.Deck_GroupBox_Layout.addRow(self.NetPanel_Options_GroupBox)  # Adiciona o Grupo de Alimentadores ao Deck
-
         #####################################
 
         self.Deck_GroupBox_MapView_Btn = QPushButton("Visualizar")
@@ -131,8 +110,6 @@ class C_NetPanel(QDockWidget):
         self.Deck_GroupBox_Layout.addRow(self.Deck_GroupBox_MapView_Btn)
         #####################################
 
-
-
         self.Deck_GroupBox.setLayout(self.Deck_GroupBox_Layout)
 
         self.setWidget(self.Deck_GroupBox)
@@ -141,8 +118,6 @@ class C_NetPanel(QDockWidget):
         self.setDisabled_NetPanel_Config_GroupBox_SEAT_Btn()
         self.NetPanel_Config_GroupBox_SEAT_Btn.setEnabled(False)
         ###########################
-        # Carrega as opções
-        self.NetPanel_Options_GroupBox_TreeWidget_LoadOptions()
 
 
     @property
@@ -205,7 +180,7 @@ class C_NetPanel(QDockWidget):
 
             if Item.checkState(0) == Qt.Checked:
                 listFieldsColors.append(Item.getColor())
-        return  listFieldsColors
+        return listFieldsColors
 
     ########################################################################################
 
@@ -269,6 +244,10 @@ class C_NetPanel(QDockWidget):
 
             self.mainActions.updateToobarMenu()
 
+        ##Alteração dos alimentadores obriga rodar o LoadData
+
+            self.mainActions.fieldsChangedDSS()
+
     def onSelectAllFields(self):
 
         for ctd in range(0, self.NetPanel_Fields_GroupBox_Select_TreeWidget.topLevelItemCount()):
@@ -277,21 +256,29 @@ class C_NetPanel(QDockWidget):
 
         self.setDisabled_NetPanel_Fields_GroupBox_Select_Btn()
 
+    def checkOnSelectAllFields(self):
+
+        ctdChecked = True
+        for ctd in range(0, self.NetPanel_Fields_GroupBox_Select_TreeWidget.topLevelItemCount()):
+            Item = self.NetPanel_Fields_GroupBox_Select_TreeWidget.topLevelItem(ctd)
+            if Item.checkState(0) == Qt.Unchecked:
+                self.NetPanel_Fields_GroupBox_Select_Checkbox_SelectAll.setCheckState(Qt.Unchecked)
+                ctdChecked = False
+
+        if ctdChecked:
+            self.NetPanel_Fields_GroupBox_Select_Checkbox_SelectAll.setCheckState(Qt.Checked)
+
+        self.setDisabled_NetPanel_Fields_GroupBox_Select_Btn()
+
     #############################################
-    def NetPanel_Options_GroupBox_TreeWidget_LoadOptions(self):
-        NetPanel_Options_GroupBox_TreeWidget_Item(self.NetPanel_Options_GroupBox_TreeWidget , "Transformador(es) de Distribuição", "TrafoDIST")
 
     ### Executa o Mapa e passa os parâmetros
     def execView(self):
-        listOptions = []
-        for ctd in range(0, self.NetPanel_Options_GroupBox_TreeWidget.topLevelItemCount()):
-            Item = self.NetPanel_Options_GroupBox_TreeWidget.topLevelItem(ctd)
+        self.mainActions.execMapView()
 
-            if Item.checkState(0) == Qt.Checked:
-                listOptions.append(Item.getOption())
+        ### Executa o LoadData para agilizar
+        self.mainActions.execLoadDataDSS()
 
-
-        self.mainActions.execMapView(listOptions)
 
 
 class NetPanel_Fields_GroupBox_Select_TreeWidget_Item(QTreeWidgetItem):
@@ -335,26 +322,6 @@ class NetPanel_Fields_GroupBox_Select_TreeWidget_Item(QTreeWidgetItem):
         if colorSelected.isValid():
             self.color = colorSelected.name()
             self.TreeWidget_Item_Btn.setStyleSheet('QPushButton {background-color:' + colorSelected.name() + '}')
-
-
-class NetPanel_Options_GroupBox_TreeWidget_Item(QTreeWidgetItem):
-    def __init__(self, parent, name, option):
-        ## Init super class ( QtGui.QTreeWidgetItem )
-        super(NetPanel_Options_GroupBox_TreeWidget_Item, self).__init__(parent)
-
-        ## Column 0 - Text:
-        self.option = option
-        self.setText(0, name)
-        self.setFlags(self.flags() | Qt.ItemIsUserCheckable)
-        self.setCheckState(0, Qt.Unchecked)
-        self.setText(1, option)
-
-    @property
-    def name(self):
-        return self.text(0)
-
-    def getOption(self):
-        return self.option
 
 
 class C_ResultsPanel(QDockWidget):

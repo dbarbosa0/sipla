@@ -45,7 +45,6 @@ class C_MainActions():
 
         self.OpenDSS.OpenDSSConfig = self.OpenDSS_DialogSettings.dataInfo
         self.DataBase.DataBaseConn = self.DataBaseConn
-        self.MainMapView.DataBaseConn = self.DataBaseConn
 
         ###
         self.OpenDSS_DialogInsertEnergyMeter = opendss.class_insert_energymeter_dialog.C_Insert_EnergyMeter_Dialog() # Instânciando a classe dialog Insert
@@ -72,12 +71,29 @@ class C_MainActions():
         self.MainWindowStatusBar.StatusBar_Fluxo.setText("Fluxo: " + self.OpenDSS_DialogSettings.dataInfo["Mode"])
         if self.OpenDSS.StatusSolutionProcessTime > 0:
             self.MainWindowStatusBar.StatusBar_Fluxo_Status.setText("Solved: "\
-                                + str(datetime.timedelta(minutes=self.OpenDSS.StatusSolutionProcessTime)))
+                                + str(datetime.timedelta(seconds=self.OpenDSS.StatusSolutionProcessTime)))
+
+        ##Dados Carregados
+        if self.OpenDSS.loadDataFlag:
+            self.MainWindowStatusBar.StatusBar_LoadData.setText("Data Loaded")
+        else:
+            self.MainWindowStatusBar.StatusBar_LoadData.setText("Data Not Loaded")
 
     def updateToobarMenu(self):
         ##Funções que precisam do Fluxo
-
         if self.OpenDSS.StatusSolutionProcessTime > 0:
+            self.MainWindowToolBar.Plot_Monitor_Act.setEnabled(True)
+        else:
+            self.MainWindowToolBar.Plot_Monitor_Act.setEnabled(False)
+
+        ## Habilitar o Solve Apenas se puder visualizar, o que significa que está tudo certo
+        if self.MainNetPanel.Deck_GroupBox_MapView_Btn.isEnabled():
+            self.MainWindowToolBar.OpenDSS_Run_Act.setEnabled(True)
+        else:
+            self.MainWindowToolBar.OpenDSS_Run_Act.setEnabled(False)
+
+        ##Funções que precisam do Load Data inpedentemente do Fluxo
+        if self.OpenDSS.loadDataFlag:
             self.MainWindowToolBar.OpenDSS_InsertEnergyMeter_Act.setEnabled(True)
             self.MainWindowToolBar.OpenDSS_InsertMonitor_Act.setEnabled(True)
             self.MainWindowToolBar.OpenDSS_Save_Act.setEnabled(True)
@@ -85,7 +101,6 @@ class C_MainActions():
             self.MainWindowToolBar.OpenDSS_View_Act.setEnabled(True)
             self.MainWindowToolBar.SCAnalyze_Config_Act.setEnabled(True)
             self.MainWindowToolBar.SCAnalyze_Run_Act.setEnabled(True)
-            self.MainWindowToolBar.Plot_Monitor_Act.setEnabled(True)
         else:
             self.MainWindowToolBar.OpenDSS_InsertEnergyMeter_Act.setEnabled(False)
             self.MainWindowToolBar.OpenDSS_InsertMonitor_Act.setEnabled(False)
@@ -94,13 +109,6 @@ class C_MainActions():
             self.MainWindowToolBar.OpenDSS_View_Act.setEnabled(False)
             self.MainWindowToolBar.SCAnalyze_Config_Act.setEnabled(False)
             self.MainWindowToolBar.SCAnalyze_Run_Act.setEnabled(False)
-            self.MainWindowToolBar.Plot_Monitor_Act.setEnabled(False)
-
-        ## Habilitar o Solve Apenas se puder visualizar, o que significa que está tudo certo
-        if self.MainNetPanel.Deck_GroupBox_MapView_Btn.isEnabled():
-            self.MainWindowToolBar.OpenDSS_Run_Act.setEnabled(True)
-        else:
-            self.MainWindowToolBar.OpenDSS_Run_Act.setEnabled(False)
 
 
     #############################################
@@ -142,20 +150,19 @@ class C_MainActions():
             self.MainResultsPanel.hide()
 
     ##### Visualizando no Mapa
-    def execMapView(self, fieldsOptions = None):
+    def execMapView(self):
 
         ##### Definindo variáveis
+        self.MainMapView.DataBaseConn = self.DataBaseConn
 
         self.MainMapView.ListFields = self.MainNetPanel.getSelectedFieldsNames()
         self.MainMapView.ListFieldsColors = self.MainNetPanel.getSelectedFieldsColors()
         self.MainMapView.nameSEMT = self.MainNetPanel.getSelectedSEMT()
 
         ##### Métodos
-        self.MainMapView.createMap(fieldsOptions)
-
+        self.MainMapView.createMap()
         self.MainMapView.viewMap()
 
-            
     #################################################################################
     ##### VAI SER SUBSTITUIDO PELA INTERFACE DE SANDY
     #################################################################################
@@ -203,8 +210,12 @@ class C_MainActions():
         self.OpenDSS.nFieldsMT = self.MainNetPanel.getSelectedFieldsNames()
         self.OpenDSS.tableVoltageResults = self.MainResultsPanel.TableVoltage
 
+    ##Executa o Load Data
+    def execLoadDataDSS(self):
+        self.execCreateDSS()
         self.OpenDSS.loadData()
-
+        self.updateToobarMenu()
+        self.updateStatusBar()
 
     def saveOpenDSS(self):
         #self.execCreateDSS()
@@ -218,9 +229,14 @@ class C_MainActions():
     def exec_SCAnalyze(self):
         self.OpenDSS.exec_DynamicFlt()
 
-
-
     #################################################################################
+
+    def fieldsChangedDSS(self): # A alteração dos alimnetadores implica em rodar o LoadData novamente
+        self.OpenDSS.loadDataFlag = False
+        self.updateToobarMenu()
+        self.updateStatusBar()
+
+
 
 
 

@@ -112,14 +112,15 @@ class C_ConfigDialog(QDialog):
         self.dataInfo["UNCBTTD"] = self.TabLoadFlow.get_UNC(self.TabLoadFlow.LoadFlow_GroupBox_UNCBT_TD_CheckBox)
         self.dataInfo["Mode"] = self.TabLoadFlow.get_Mode()
 
-        if self.dataInfo["Mode"] == "Daily":
-            self.dataInfo["StepSize"] = self.TabLoadFlow.get_Stepsize()
-            self.dataInfo["StepSizeTime"] = self.TabLoadFlow.get_Stepsize_Time()
-            self.dataInfo["Number"] = self.TabLoadFlow.get_Number()
-            self.dataInfo["Maxiterations"] = self.TabLoadFlow.get_Maxiterations()
-            self.dataInfo["Maxcontroliter"] = self.TabLoadFlow.get_Maxcontroliter()
-            self.dataInfo["LoadShapes"] = self.TabLoadFlow.get_LoadShapes()
+        #if self.dataInfo["Mode"] == "Daily":
+        self.dataInfo["StepSize"] = self.TabLoadFlow.get_Stepsize()
+        self.dataInfo["StepSizeTime"] = self.TabLoadFlow.get_Stepsize_Time()
+        self.dataInfo["Number"] = self.TabLoadFlow.get_Number()
+        self.dataInfo["Maxiterations"] = self.TabLoadFlow.get_Maxiterations()
+        self.dataInfo["Maxcontroliter"] = self.TabLoadFlow.get_Maxcontroliter()
+        self.dataInfo["LoadShapes"] = self.TabLoadFlow.get_LoadShapes()
 
+        if self.dataInfo["Mode"] == "Daily":
             if not self.dataInfo["LoadShapes"]:
                 QMessageBox(QMessageBox.Information, "OpenDSS Configuration", "Curvas de cargas não estão carregadas!",
                             QMessageBox.Ok).exec()

@@ -1,5 +1,6 @@
 import io
 import folium
+import folium.plugins
 from PyQt5 import QtWebEngineWidgets
 
 import database.class_coord
@@ -87,14 +88,14 @@ class C_Viewer():
         self.webEngView = nameQtWebEngineWidgets
 
         
-    def createMap(self, fieldsOptions = None):
+    def createMap(self):
 
         self.DataBaseCoord.DataBaseConn = self.DataBaseConn
 
+        self.ListFieldsID = self.DataBaseCoord.getCods_AL_SE_MT_DB(self.ListFields)
+
         #Varendo todos os alimentadores
         self.mapFields = ''
-
-        self.ListFieldsID = self.DataBaseCoord.getCods_AL_SE_MT_DB(self.ListFields)
 
         for contadorAL in range(0, len(self.ListFields) ):
             #Pegando as coordenadas do Alimentador
@@ -102,51 +103,74 @@ class C_Viewer():
             coordAlimentMT = self.DataBaseCoord.getCoord_AL_SE_MT_DB( self.ListFields[contadorAL] ) # Pegando os códigos dos Alimentadores [NomAL CodAL x y]
             
             if not self.mapFields : #Melhorar essa criação aqui
-               self.mapFields = folium.Map(coordAlimentMT [0][0] ,zoom_start=13) 
+               self.mapFields = folium.Map(coordAlimentMT [0][0] ,zoom_start=13, name = "Alimentadores")
             
-            folium.PolyLine( coordAlimentMT , color = self.ListFieldsColors[contadorAL] , weight=3.0, opacity=1, smooth_factor=0).add_to( self.mapFields )
+            folium.PolyLine( coordAlimentMT , color = self.ListFieldsColors[contadorAL] , weight=3.0, opacity=1, smooth_factor=0, control = False).add_to(self.mapFields)
 
-        if not fieldsOptions is None:
-            self.execOptionsMap(fieldsOptions)
-            
+        self.execOptionsMap()
     
     def viewMap(self):
+
+        folium.LayerControl(collapsed=False).add_to(self.mapFields)
         
         fileData = io.BytesIO()
         
         #Salvando Arquivo binário
         self.mapFields.save(fileData, close_file = False)
-        
+
         #Mostando Map
        
         self.webEngView.setHtml(fileData.getvalue().decode())
         
         self.webEngView.show()
 
-    def execOptionsMap(self, fieldsOptions):
+    def execOptionsMap(self):
+
+        #Transformador
+        fieldsOptions = {"TrafoDIST":"Transformador(es) de Distribuição",
+                         }
 
         for ctdOption in fieldsOptions:
 
             if ctdOption == "TrafoDIST":
 
-                dados_db = self.DataBaseCoord.getData_TrafoDIST(self.nameSEMT)
+                fgTrafoDIST = folium.FeatureGroup(name=fieldsOptions[ctdOption], show=False)
 
-                for ctd in range(0, len(dados_db)):
+                self.mapFields.add_child(fgTrafoDIST)
 
-                    if (dados_db[ctd].ctmt in self.ListFieldsID):
+                for ctdCodAl in self.ListFieldsID:
 
-                        infoText  = '<b>Trafo de Distribuição</b>'
-                        infoText += '<br> ID: ' + dados_db[ctd].cod_id
-                        infoText += '<br> ' + str(dados_db[ctd].pot_nom)  + ' kVA'
-                        folium.Marker(
-                                location = [dados_db[ctd].y, dados_db[ctd].x],
-                                popup = infoText,
-                                icon=folium.Icon(color='red', icon='info-sign')
-                            ).add_to(self.mapFields)
+                    dados_db = self.DataBaseCoord.getData_TrafoDIST(self.nameSEMT, ctdCodAl)
+
+                    infoTextTrafo  = '<b>Trafo de Distribuição</b>'
+                    infoTextTrafo  += '<br> ID: ${cod_id.text}'
+                    infoTextTrafo  += '<br> ${pot_nom.text} kVA'
+
+                    callbackTrafo = ('function (row) {'
+                                    'var marker = L.marker(new L.LatLng(row[0], row[1]), {color: "red"});'
+                                    'var icon = L.AwesomeMarkers.icon({'
+                                    "icon: 'info-sign',"
+                                    "iconColor: 'white',"
+                                    "markerColor: 'red',"
+                                    "prefix: 'glyphicon',"
+                                    "extraClasses: 'fa-rotate-0'"
+                                    '});'
+                                    'marker.setIcon(icon);'
+                                    "var popup = L.popup({maxWidth: '300'});"
+                                    "const cod_id = {text: row[2]};"
+                                    "const pot_nom = {text: row[3]};"
+                                    "var textpopup = $(`<div id='mytext' class='display_text' style='width: 100.0%; height: 100.0%;'> " + infoTextTrafo  +"</div>`)[0];"
+                                    "popup.setContent(textpopup);"
+                                    "marker.bindPopup(popup);"
+                                    'return marker};')
+
+                    folium.plugins.FastMarkerCluster(
+                            data=dados_db,
+                            callback=callbackTrafo
+                        ).add_to(fgTrafoDIST)
 
 
 
-        
         
         
         

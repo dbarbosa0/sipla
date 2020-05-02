@@ -9,14 +9,24 @@ import database.class_conn
 import opendss.class_data
 import class_exception
 import time
+import multiprocessing
+
+##Thread
+#import opendss.class_thread_load
+#import queue
+#import threading
+
+##Process
+#import opendss.class_process_load
+import queue
 
 class C_OpenDSS(): # classe OpenDSSDirect
 
     def __init__(self):
 
         self.dataOpenDSS = opendss.class_data.C_Data() #Acesso ao Banco de Dados
-
         self._DataBaseConn = database.class_conn.C_DBaseConn()  # Criando a instância do Banco de Dados
+
 
         self._nCircuitoAT_MT = ''
         self._nSE_MT_Selecionada = ''
@@ -28,6 +38,9 @@ class C_OpenDSS(): # classe OpenDSSDirect
         self._Monitors = []
         ##SC Carvalho
         self._SCDataInfo = []
+        ## FlagLoadData - Só roda se tiver alguma alteração nos alimentadores
+        self.loadDataFlag = False
+
 
         self.OpenDSSEngine = opendss.class_conn.C_Conn() ## Apenas para o Objeto Existir, depois será sobrecarregado
         self._OpenDSSConfig = {}
@@ -106,96 +119,157 @@ class C_OpenDSS(): # classe OpenDSSDirect
 
     def loadData(self):
 
-        ### Passando as variáveis
-        self.dataOpenDSS.DataBaseConn = self.DataBaseConn
-        self.dataOpenDSS.nFieldsMT = self.nFieldsMT
-        self.dataOpenDSS.nCircuitoAT_MT = self.nCircuitoAT_MT
-        self.dataOpenDSS.nSE_MT_Selecionada = self.nSE_MT_Selecionada
-
-        ######## Define o Engine do OpenDSS
-        try:
-            if self.OpenDSSConfig["openDSSConn"] == "OpenDSSDirect":
-                self.OpenDSSEngine = opendss.class_conn.C_OpenDSSDirect_Conn()
-            elif self.OpenDSSConfig["openDSSConn"] == "COM":
-                self.OpenDSSEngine = opendss.class_conn.C_OpenDSSCOM_Conn()
-        except:
-            raise class_exception.ExecOpenDSS("Erro ao definir o Engine do OpenDSS!")
+        if not self.loadDataFlag:
+            ### Passando as variáveis
+            self.dataOpenDSS.DataBaseConn = self.DataBaseConn
+            self.dataOpenDSS.nFieldsMT = self.nFieldsMT
+            self.dataOpenDSS.nCircuitoAT_MT = self.nCircuitoAT_MT
+            self.dataOpenDSS.nSE_MT_Selecionada = self.nSE_MT_Selecionada
+            ##Zerando a lista de barras
+            self.dataOpenDSS.busList = []
 
 
-        ##### Executa os Arquitvos que serão executados e inseridos
+            ##### Executa os Arquitvos que serão executados e inseridos
 
-        self.execOpenDSSFunc = {"header": ["Cabeçalho ...", self.dataOpenDSS.exec_HeaderFile],
-                      "EqThAT": ["Equivalente de Thevenin ...", self.dataOpenDSS.exec_EQUIVALENTE_DE_THEVENIN],
-                      "LoadShapes": ["Curvas de Carga ...", self.exec_LOADSHAPES],
-                      # "EqThMT":["Equivalente de Thevenin MT...",self.dataOpenDSS.exec_EQUIVALENTE_DE_THEVENIN_MEDIA],
-                      "SecEqThAT_SecAT": ["Chaves entre o Equivalente e a SecAT ...", self.dataOpenDSS.exec_SEC_EQTHAT_SECAT],
-                      "TrafoATMT": ["Trafo AT - MT...", self.dataOpenDSS.exec_TRANSFORMADORES_DE_ALTA_PARA_MEDIA],
-                      "CondMT": ["Condutores MT...", self.dataOpenDSS.exec_CONDUTORES_DE_MEDIA_TENSAO],
-                      # "CondBT":["Condutores de BT...",self.dataOpenDSS.exec_CONDUTORES_DE_BAIXA_TENSAO],
-                      #"CondRamais": ["Condutores de Ramais ...", self.dataOpenDSS.exec_CONDUTORES_DE_RAMAL],
-                      "SecAT": ["Seccionadoras de AT...", self.dataOpenDSS.exec_SEC_DE_ALTA_TENSAO],
-                      "SecATControl": ["Controle Seccionadoras de AT...",self.dataOpenDSS.exec_CONTROLE_SEC_DE_ALTA_TENSAO],
-                      "SecOleoMT": ["Chave a óleo de MT ...", self.dataOpenDSS.exec_SEC_CHAVE_A_OLEO_DE_MEDIA_TENSAO],
-                      "SecOleoMTControl": ["Controle Chave a óleo de MT...",self.dataOpenDSS.exec_CONTROLE_SEC_CHAVE_A_OLEO_DE_MEDIA_TENSAO],
-                      "SecFacaMT": ["Chave Faca de MT ...", self.dataOpenDSS.exec_SEC_CHAVE_FACA_DE_MEDIA_TENSAO],
-                      "SecFacaMTControl": ["Controle Chave Faca de MT ...",self.dataOpenDSS.exec_CONTROLE_SEC_CHAVE_FACA_DE_MEDIA_TENSAO],
-                      "SecTripolarMT": ["Chave Faca Tripolar de MT ...",self.dataOpenDSS.exec_SEC_CHAVE_FACA_TRIPOLAR_DE_MEDIA_TENSAO],
-                      "SecTripolarMTControl": ["Controle Chave Faca Tripolar de MT ...",self.dataOpenDSS.exec_CONTROLE_SEC_CHAVE_FACA_TRIPOLAR_DE_MEDIA_TENSAO],
-                      "ChFusMT": ["Chave Fusível de MT ...", self.dataOpenDSS.exec_SEC_CHAVE_FUSIVEL_DE_MEDIA_TENSAO],
-                      "ChFusMTControl": ["Controle Chave Fusível de MT ...",self.dataOpenDSS.exec_CONTROLE_SEC_CHAVE_FUSIVEL_DE_MEDIA_TENSAO],
-                      "DJMT": ["DJ de MT ...", self.dataOpenDSS.exec_SEC_CHAVE_DJ_RELE_DE_MEDIA_TENSAO],
-                      "DJMTControl": ["Controle DJ de MT ...", self.dataOpenDSS.exec_CONTROLE_SEC_CHAVE_DJ_RELE_DE_MEDIA_TENSAO],
-                      "ReligMT": ["Religador de MT ...", self.dataOpenDSS.exec_SEC_CHAVE_RELIGADOR_DE_MEDIA_TENSAO],
-                      "ReligMTControl": ["Controle do Religador de MT ...",self.dataOpenDSS.exec_CONTROLE_SEC_CHAVE_RELIGADOR_DE_MEDIA_TENSAO],
-                      "ChTripolarSEMT": ["Chave Tripolar da SE MT ...",self.dataOpenDSS.exec_SEC_CHAVE_TRIPOLAR_SUBESTACAO_DE_MEDIA_TENSAO],
-                      "ChTripolarSEMTControl": ["Controle Chave Tripolar da SE MT ...",self.dataOpenDSS.exec_CONTROLE_SEC_CHAVE_TRIPOLAR_SUBESTACAO_DE_MEDIA_TENSAO],
-                      "ChUnipolarSEMT": ["Chave Unipolar da SE MT ...",self.dataOpenDSS.exec_SEC_CHAVE_UNIPOLAR_SUBESTACAO_DE_MEDIA_TENSAO],
-                      "ChUnipolarSEMTControl": ["Controle da Chave Unipolar da SE MT ...",self.dataOpenDSS.exec_CONTROLE_SEC_CHAVE_UNIPOLAR_SUBESTACAO_DE_MEDIA_TENSAO],
-                      #"Reg":["Regulador MT ...",self.dataOpenDSS.exec_REGULADORES_DE_MEDIA_TENSAO],
-                      "SegMT": ["Segmentos de Linhas MT ...", self.dataOpenDSS.exec_SEG_LINHAS_DE_MEDIA_TENSAO],
-                      "UConMT": ["Unidades Consumidoras MT ...", self.dataOpenDSS.exec_UNID_CONSUMIDORAS_MT],
-                      "UConMTLoadShapes": ["Unidades Consumidoras MT - Curvas de Carga ...", self.dataOpenDSS.exec_UNID_CONSUMIDORAS_LOADSHAPES_MT],
-                      "TrafoDist":["Trafos de Distribuição ...",self.dataOpenDSS.exec_TRANSFORMADORES_DE_DISTRIBUICAO],
-                      # "SegBT":["Segmentos de Linhas BT ...",self.dataOpenDSS.exec_SEG_LINHAS_DE_BAIXA_TENSAO],
-                      #"UConBT":["Unidades Consumidoras BT ...",self.dataOpenDSS.exec_UNID_CONSUMIDORAS_BT],
-                      "UConBTTD": ["Unidades Consumidoras BT no Transformador de Distribuição ...", self.dataOpenDSS.exec_UNID_CONSUMIDORAS_BT_TD],
-                      "UConBTLoadShapes": ["Unidades Consumidoras BT - Curvas de Carga ...", self.dataOpenDSS.exec_UNID_CONSUMIDORAS_LOADSHAPES_BT],
-                      # "RamLig":["Ramais de Ligação  ...",self.dataOpenDSS.exec_RAMAL_DE_LIGACAO,self.dataOpenDSS.memoFileRamaisLigBT],
-                      "CompMT": ["Unidades Compensadoras de MT ...",self.dataOpenDSS.exec_UNID_COMPENSADORAS_DE_REATIVO_DE_MEDIA_TENSAO],
-                      # "CompBT":["Unidades Compensadoras de BT ...",self.dataOpenDSS.exec_UNID_COMPENSADORAS_DE_REATIVO_DE_BAIXA_TENSAO],
-                      "VoltageBase": ["Bases de Tensão ...", self.exec_VoltageBase],
-                      "EnergyMeters": ["Inserindo os Energy Meters ...", self.exec_EnergyMeters],
-                      "Monitors": ["Inserindo os Monitors ...", self.exec_Monitors],
-                      "Mode": ["Modo de Operação ...", self.exec_Mode],
-                      }
+            self.execOpenDSSFunc = {"header": ["Cabeçalho ...", self.dataOpenDSS.exec_HeaderFile],
+                          "EqThAT": ["Equivalente de Thevenin ...", self.dataOpenDSS.exec_EQUIVALENTE_DE_THEVENIN],
+                          "LoadShapes": ["Curvas de Carga ...", self.exec_LOADSHAPES],
+                          # "EqThMT":["Equivalente de Thevenin MT...",self.dataOpenDSS.exec_EQUIVALENTE_DE_THEVENIN_MEDIA],
+                          "SecEqThAT_SecAT": ["Chaves entre o Equivalente e a SecAT ...", self.dataOpenDSS.exec_SEC_EQTHAT_SECAT],
+                          "TrafoATMT": ["Trafo AT - MT...", self.dataOpenDSS.exec_TRANSFORMADORES_DE_ALTA_PARA_MEDIA],
+                          "CondMT": ["Condutores MT...", self.dataOpenDSS.exec_CONDUTORES_DE_MEDIA_TENSAO],
+                          # "CondBT":["Condutores de BT...",self.dataOpenDSS.exec_CONDUTORES_DE_BAIXA_TENSAO],
+                          #"CondRamais": ["Condutores de Ramais ...", self.dataOpenDSS.exec_CONDUTORES_DE_RAMAL],
+                          "SecAT": ["Seccionadoras de AT...", self.dataOpenDSS.exec_SEC_DE_ALTA_TENSAO],
+                          "SecATControl": ["Controle Seccionadoras de AT...",self.dataOpenDSS.exec_CONTROLE_SEC_DE_ALTA_TENSAO],
+                          "SecOleoMT": ["Chave a óleo de MT ...", self.dataOpenDSS.exec_SEC_CHAVE_A_OLEO_DE_MEDIA_TENSAO],
+                          "SecOleoMTControl": ["Controle Chave a óleo de MT...",self.dataOpenDSS.exec_CONTROLE_SEC_CHAVE_A_OLEO_DE_MEDIA_TENSAO],
+                          "SecFacaMT": ["Chave Faca de MT ...", self.dataOpenDSS.exec_SEC_CHAVE_FACA_DE_MEDIA_TENSAO],
+                          "SecFacaMTControl": ["Controle Chave Faca de MT ...",self.dataOpenDSS.exec_CONTROLE_SEC_CHAVE_FACA_DE_MEDIA_TENSAO],
+                          "SecTripolarMT": ["Chave Faca Tripolar de MT ...",self.dataOpenDSS.exec_SEC_CHAVE_FACA_TRIPOLAR_DE_MEDIA_TENSAO],
+                          "SecTripolarMTControl": ["Controle Chave Faca Tripolar de MT ...",self.dataOpenDSS.exec_CONTROLE_SEC_CHAVE_FACA_TRIPOLAR_DE_MEDIA_TENSAO],
+                          "ChFusMT": ["Chave Fusível de MT ...", self.dataOpenDSS.exec_SEC_CHAVE_FUSIVEL_DE_MEDIA_TENSAO],
+                          "ChFusMTControl": ["Controle Chave Fusível de MT ...",self.dataOpenDSS.exec_CONTROLE_SEC_CHAVE_FUSIVEL_DE_MEDIA_TENSAO],
+                          "DJMT": ["DJ de MT ...", self.dataOpenDSS.exec_SEC_CHAVE_DJ_RELE_DE_MEDIA_TENSAO],
+                          "DJMTControl": ["Controle DJ de MT ...", self.dataOpenDSS.exec_CONTROLE_SEC_CHAVE_DJ_RELE_DE_MEDIA_TENSAO],
+                          "ReligMT": ["Religador de MT ...", self.dataOpenDSS.exec_SEC_CHAVE_RELIGADOR_DE_MEDIA_TENSAO],
+                          "ReligMTControl": ["Controle do Religador de MT ...",self.dataOpenDSS.exec_CONTROLE_SEC_CHAVE_RELIGADOR_DE_MEDIA_TENSAO],
+                          "ChTripolarSEMT": ["Chave Tripolar da SE MT ...",self.dataOpenDSS.exec_SEC_CHAVE_TRIPOLAR_SUBESTACAO_DE_MEDIA_TENSAO],
+                          "ChTripolarSEMTControl": ["Controle Chave Tripolar da SE MT ...",self.dataOpenDSS.exec_CONTROLE_SEC_CHAVE_TRIPOLAR_SUBESTACAO_DE_MEDIA_TENSAO],
+                          "ChUnipolarSEMT": ["Chave Unipolar da SE MT ...",self.dataOpenDSS.exec_SEC_CHAVE_UNIPOLAR_SUBESTACAO_DE_MEDIA_TENSAO],
+                          "ChUnipolarSEMTControl": ["Controle da Chave Unipolar da SE MT ...",self.dataOpenDSS.exec_CONTROLE_SEC_CHAVE_UNIPOLAR_SUBESTACAO_DE_MEDIA_TENSAO],
+                          #"Reg":["Regulador MT ...",self.dataOpenDSS.exec_REGULADORES_DE_MEDIA_TENSAO],
+                          "SegMT": ["Segmentos de Linhas MT ...", self.dataOpenDSS.exec_SEG_LINHAS_DE_MEDIA_TENSAO],
+                          "UConMT": ["Unidades Consumidoras MT ...", self.dataOpenDSS.exec_UNID_CONSUMIDORAS_MT],
+                          "UConMTLoadShapes": ["Unidades Consumidoras MT - Curvas de Carga ...", self.dataOpenDSS.exec_UNID_CONSUMIDORAS_LOADSHAPES_MT],
+                          "TrafoDist":["Trafos de Distribuição ...",self.dataOpenDSS.exec_TRANSFORMADORES_DE_DISTRIBUICAO],
+                          # "SegBT":["Segmentos de Linhas BT ...",self.dataOpenDSS.exec_SEG_LINHAS_DE_BAIXA_TENSAO],
+                          #"UConBT":["Unidades Consumidoras BT ...",self.dataOpenDSS.exec_UNID_CONSUMIDORAS_BT],
+                          "UConBTTD": ["Unidades Consumidoras BT no Transformador de Distribuição ...", self.dataOpenDSS.exec_UNID_CONSUMIDORAS_BT_TD],
+                          "UConBTLoadShapes": ["Unidades Consumidoras BT - Curvas de Carga ...", self.dataOpenDSS.exec_UNID_CONSUMIDORAS_LOADSHAPES_BT],
+                          # "RamLig":["Ramais de Ligação  ...",self.dataOpenDSS.exec_RAMAL_DE_LIGACAO,self.dataOpenDSS.memoFileRamaisLigBT],
+                          "CompMT": ["Unidades Compensadoras de MT ...",self.dataOpenDSS.exec_UNID_COMPENSADORAS_DE_REATIVO_DE_MEDIA_TENSAO],
+                          # "CompBT":["Unidades Compensadoras de BT ...",self.dataOpenDSS.exec_UNID_COMPENSADORAS_DE_REATIVO_DE_BAIXA_TENSAO],
+                          "VoltageBase": ["Bases de Tensão ...", self.exec_VoltageBase],
+                          "EnergyMeters": ["Inserindo os Energy Meters ...", self.exec_EnergyMeters],
+                          "Monitors": ["Inserindo os Monitors ...", self.exec_Monitors],
+                          "Mode": ["Modo de Operação ...", self.exec_Mode],
+                          }
 
 
-        ctdN = 0
-        for ctd in self.execOpenDSSFunc:
-            msg = self.execOpenDSSFunc[ctd][-2]
-            #Executando a função
-            ### Verificando o modo de operação
+            ##Thread
+            #https://www.tutorialspoint.com/python/python_multithreading.htm
+            # nCPU = multiprocessing.cpu_count()
+            # queueLock = threading.Lock()
+            # workQueue = queue.Queue(len(self.execOpenDSSFunc)) ## Quantidade de Tarefas para serem realizadas
+            # threads = []
+            #
+            # # Create new threads
+            # for threadID in range(1, nCPU):
+            #     thread = opendss.class_thread_load.C_LoadDataThread(threadID, workQueue, queueLock)
+            #     ##Variávies que as Threads podem utilizar nas funções que irão executar
+            #     thread.DataBaseConn = self.DataBaseConn
+            #     thread.nFieldsMT = self.nFieldsMT
+            #     thread.nCircuitoAT_MT = self.nCircuitoAT_MT
+            #     thread.nSE_MT_Selecionada = self.nSE_MT_Selecionada
+            #     thread.OpenDSSConfig = self.OpenDSSConfig
+            #
+            #     thread.start()
+            #     threads.append(thread)
+            #
+            #
+            # # Fill the queue
+            # queueLock.acquire()
+            #
+            # for ctd in self.execOpenDSSFunc:
+            #     msg = self.execOpenDSSFunc[ctd][-2]
+            #     #Executando a função
+            #     ### Verificando o modo de operação
+            #
+            #     ### Roda com a flag em 1
+            #     if (ctd == "UConMT") and (self.OpenDSSConfig["UNCMT"] == "1"):
+            #         workQueue.put(self.execOpenDSSFunc[ctd][-1])
+            #         #print(msg)
+            #     elif (ctd == "UConBTTD") and (self.OpenDSSConfig["UNCBTTD"] == "1"):
+            #         workQueue.put(self.execOpenDSSFunc[ctd][-1])
+            #         #print(msg)
+            #     elif (ctd == "UConMTLoadShapes") or (ctd == "LoadShapes"):
+            #         if (self.OpenDSSConfig["Mode"] == "Daily") and (self.OpenDSSConfig["UNCMT"] == "1"):
+            #             workQueue.put(self.execOpenDSSFunc[ctd][-1])
+            #             #print(msg)
+            #     elif (ctd == "UConBTTD") or (ctd == "UConBTLoadShapes"):
+            #         if (self.OpenDSSConfig["Mode"] == "Daily") and (self.OpenDSSConfig["UNCBTTD"] == "1"):
+            #             workQueue.put(self.execOpenDSSFunc[ctd][-1])
+            #             #print(msg)
+            #     else:
+            #         workQueue.put(self.execOpenDSSFunc[ctd][-1])
+            #
+            # queueLock.release()
+            #
+            # # Wait for queue to empty
+            # while not workQueue.empty():
+            #     pass
+            #
+            # # Wait for all threads to complete
+            # for t in threads:
+            #     t.exitFlag = 1
+            #     t.join()
+            # print("Exiting Main Thread")
 
-            ### Roda com a flag em 1
-            if (ctd == "UConMT") and (self.OpenDSSConfig["UNCMT"] == "1"):
-                self.execOpenDSSFunc[ctd][-1]()
-                #print(msg)
-            elif (ctd == "UConBTTD") and (self.OpenDSSConfig["UNCBTTD"] == "1"):
-                self.execOpenDSSFunc[ctd][-1]()
-                #print(msg)
-            elif (ctd == "UConMTLoadShapes") or (ctd == "LoadShapes"):
-                if (self.OpenDSSConfig["Mode"] == "Daily") and (self.OpenDSSConfig["UNCMT"] == "1"):
+            for ctd in self.execOpenDSSFunc:
+                msg = self.execOpenDSSFunc[ctd][-2]
+                # Executando a função
+                ### Verificando o modo de operação
+
+                ### Roda com a flag em 1
+                if (ctd == "UConMT") and (self.OpenDSSConfig["UNCMT"] == "1"):
                     self.execOpenDSSFunc[ctd][-1]()
                     #print(msg)
-            elif (ctd == "UConBTTD") or (ctd == "UConBTLoadShapes"):
-                if (self.OpenDSSConfig["Mode"] == "Daily") and (self.OpenDSSConfig["UNCBTTD"] == "1"):
+                elif (ctd == "UConBTTD") and (self.OpenDSSConfig["UNCBTTD"] == "1"):
                     self.execOpenDSSFunc[ctd][-1]()
                     #print(msg)
-            else:
-                self.execOpenDSSFunc[ctd][-1]()
+                elif (ctd == "UConMTLoadShapes") or (ctd == "LoadShapes"):
+                    if (self.OpenDSSConfig["Mode"] == "Daily") and (self.OpenDSSConfig["UNCMT"] == "1"):
+                        self.execOpenDSSFunc[ctd][-1]()
+                        #print(msg)
+                elif (ctd == "UConBTTD") or (ctd == "UConBTLoadShapes"):
+                    if (self.OpenDSSConfig["Mode"] == "Daily") and (self.OpenDSSConfig["UNCBTTD"] == "1"):
+                        self.execOpenDSSFunc[ctd][-1]()
+                        #print(msg)
+                else:
+                    self.execOpenDSSFunc[ctd][-1]()
+                    #print(msg)
 
-            ### Verificando se é necessário os UNCBTTD
+                ## Setando a Flag
+        self.loadDataFlag = True
 
+        #print(self.getBusList())
+        #print(f'Tamanho da buslist pelo class_data : {len(self.getBusList())}')
+
+    def getBusList(self):
+        return self.dataOpenDSS.busList
+
+    def loadDataResult(self):
 
         self.OpenDSSDataResult = {"header": self.dataOpenDSS.memoFileHeader,
                       "EqThAT": self.dataOpenDSS.memoFileEqTh,
@@ -241,7 +315,6 @@ class C_OpenDSS(): # classe OpenDSSDirect
                       "Monitors": self.memoFileMonitors,
                       "Mode": self.memoFileMode,
                       }
-
 
     def exec_SaveFileDialogDSS(self):
 
@@ -314,7 +387,6 @@ class C_OpenDSS(): # classe OpenDSSDirect
                     mainFile += "! " + self.execOpenDSSFunc[ctd][-2] + "\n"
                     mainFile += "Redirect " + ctd + ".dss " + '\n'
 
-
         #Falta o final do arquivo
 
         return mainFile
@@ -330,9 +402,8 @@ class C_OpenDSS(): # classe OpenDSSDirect
 
         self.memoFileMode = []
 
-        sztime = self.OpenDSSConfig["StepSizeTime"][0]
-
         if self.OpenDSSConfig["Mode"] == "Daily":
+            sztime = self.OpenDSSConfig["StepSizeTime"][0]
             self.memoFileMode.append("set mode=" + self.OpenDSSConfig["Mode"] + " stepsize=" \
                                        + str(self.OpenDSSConfig["StepSize"]) + sztime + " number=" + str(self.OpenDSSConfig["Number"]))
         else:
@@ -357,6 +428,20 @@ class C_OpenDSS(): # classe OpenDSSDirect
     def exec_OpenDSS(self):
 
         start_time = time.time()
+
+        ######## Define o Engine do OpenDSS
+        try:
+            if self.OpenDSSConfig["openDSSConn"] == "OpenDSSDirect":
+                self.OpenDSSEngine = opendss.class_conn.C_OpenDSSDirect_Conn()
+            elif self.OpenDSSConfig["openDSSConn"] == "COM":
+                self.OpenDSSEngine = opendss.class_conn.C_OpenDSSCOM_Conn()
+        except:
+            raise class_exception.ExecOpenDSS("Erro ao definir o Engine do OpenDSS!")
+
+        #Executa as consultas no Banco de Dados
+        self.loadData()
+        #Pega os Memo
+        self.loadDataResult()
 
         self.OpenDSSEngine.clear()
 
@@ -383,7 +468,7 @@ class C_OpenDSS(): # classe OpenDSSDirect
 
 
         ##Status
-        self.StatusSolutionProcessTime =  time.time() - start_time
+        self.StatusSolutionProcessTime =   round(time.time() - start_time)
 
     def exec_OpenDSSRun(self, command):
         self.OpenDSSEngine.run(command)
@@ -518,6 +603,7 @@ class C_OpenDSS(): # classe OpenDSSDirect
 
     ## Gets class_insert_dialog
 
+
     def getAllNamesEnergyMeter(self):
 
         return self.OpenDSSEngine.get_EnergyMeter_AllNames()
@@ -533,7 +619,6 @@ class C_OpenDSS(): # classe OpenDSSDirect
 
     def setMonitorActive(self, name):
         self.OpenDSSEngine.set_MonitorActive(name)
-
 
     def getMonitorActive_ChannelNames(self):
         return self.OpenDSSEngine.get_MonitorActive_ChannelNames()
