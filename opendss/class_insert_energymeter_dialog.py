@@ -6,6 +6,7 @@ from PyQt5.QtCore import Qt
 
 import opendss.class_opendss
 import config as cfg
+import unidecode
 
 class C_Insert_EnergyMeter_Dialog(QDialog): ## Classe Dialog principal
     def __init__(self):
@@ -290,7 +291,7 @@ class C_Insert_EnergyMeter_Dialog(QDialog): ## Classe Dialog principal
     def AcceptAddEditEnergyMeter(self): ## Dá para otimizar e muito // Somente um teste
         
         energyMeter = {}
-        energyMeter["Name"] = self.get_EnergyMeter_Name()
+        energyMeter["Name"] = unidecode.unidecode(self.get_EnergyMeter_Name().replace(" ","_")) # self.get_EnergyMeter_Name()
         energyMeter["Element"] = self.get_ElementEnergyMeter()
         energyMeter["Terminal"] = self.get_TerminalEnergyMeter()
         energyMeter["3phaseLosses"] = self.get_3phaseLossesEnergyMeter()
@@ -371,6 +372,6 @@ class C_Insert_EnergyMeter_Dialog(QDialog): ## Classe Dialog principal
 
         self.EnergyMeter_Element_ComboBox.clear()
         #self.EnergyMeter_Element_ComboBox.addItems(self.OpenDSS.getAllNamesElements())
-        self.EnergyMeter_Element_ComboBox.addItems(self.OpenDSS.getBusList())
+        self.EnergyMeter_Element_ComboBox.addItems(self.OpenDSS.getElementList())
 
 
