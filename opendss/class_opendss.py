@@ -171,10 +171,6 @@ class C_OpenDSS(): # classe OpenDSSDirect
                           # "RamLig":["Ramais de Ligação  ...",self.dataOpenDSS.exec_RAMAL_DE_LIGACAO,self.dataOpenDSS.memoFileRamaisLigBT],
                           "CompMT": ["Unidades Compensadoras de MT ...",self.dataOpenDSS.exec_UNID_COMPENSADORAS_DE_REATIVO_DE_MEDIA_TENSAO],
                           # "CompBT":["Unidades Compensadoras de BT ...",self.dataOpenDSS.exec_UNID_COMPENSADORAS_DE_REATIVO_DE_BAIXA_TENSAO],
-                          "VoltageBase": ["Bases de Tensão ...", self.exec_VoltageBase],
-                          "EnergyMeters": ["Inserindo os Energy Meters ...", self.exec_EnergyMeters],
-                          "Monitors": ["Inserindo os Monitors ...", self.exec_Monitors],
-                          "Mode": ["Modo de Operação ...", self.exec_Mode],
                           }
 
 
@@ -264,14 +260,19 @@ class C_OpenDSS(): # classe OpenDSSDirect
                 ## Setando a Flag
         self.loadDataFlag = True
 
-        #print(self.getBusList())
-        #print(f'Tamanho da buslist pelo class_data : {len(self.getBusList())}')
 
-    def getBusList(self):
-        return self.dataOpenDSS.busList
+    def loadData_All(self):
+        self.execOpenDSSFuncAll= {
+                "VoltageBase": ["Bases de Tensão ...", self.exec_VoltageBase],
+                "EnergyMeters": ["Inserindo os Energy Meters ...", self.exec_EnergyMeters],
+                "Monitors": ["Inserindo os Monitors ...", self.exec_Monitors],
+                "Mode": ["Modo de Operação ...", self.exec_Mode],
+                }
 
-    def getElementList(self):
-        return self.dataOpenDSS.elementList
+        for ctd in self.execOpenDSSFuncAll:
+            msg = self.execOpenDSSFuncAll[ctd][-2]
+            self.execOpenDSSFuncAll[ctd][-1]()
+
 
     def loadDataResult(self):
 
@@ -319,6 +320,7 @@ class C_OpenDSS(): # classe OpenDSSDirect
                       "Monitors": self.memoFileMonitors,
                       "Mode": self.memoFileMode,
                       }
+
 
     def exec_SaveFileDialogDSS(self):
 
@@ -444,6 +446,8 @@ class C_OpenDSS(): # classe OpenDSSDirect
 
         #Executa as consultas no Banco de Dados
         self.loadData()
+        #Executa os Monitores
+        self.loadData_All()
         #Pega os Memo
         self.loadDataResult()
 
@@ -472,7 +476,7 @@ class C_OpenDSS(): # classe OpenDSSDirect
 
 
         ##Status
-        self.StatusSolutionProcessTime =   round(time.time() - start_time)
+        self.StatusSolutionProcessTime = time.time() - start_time
 
     def exec_OpenDSSRun(self, command):
         self.OpenDSSEngine.run(command)
@@ -604,6 +608,13 @@ class C_OpenDSS(): # classe OpenDSSDirect
         self.exec_OpenDSSRun("Solve")
         self.exec_OpenDSSRun("show eventlog")
 
+
+    ##
+    def getBusList(self):
+        return self.dataOpenDSS.busList
+
+    def getElementList(self):
+        return self.dataOpenDSS.elementList
 
     ## Gets class_insert_dialog
 

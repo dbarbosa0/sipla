@@ -42,7 +42,6 @@ class C_MainActions():
 
         # Contribuição Sandy
         self.OpenDSS_DialogSettings = opendss.class_config_dialog.C_ConfigDialog()  # Instânciando a classe dialog Settings
-
         self.OpenDSS.OpenDSSConfig = self.OpenDSS_DialogSettings.dataInfo
         self.DataBase.DataBaseConn = self.DataBaseConn
 
@@ -81,6 +80,7 @@ class C_MainActions():
 
     def updateToobarMenu(self):
         ##Funções que precisam do Fluxo
+
         if self.OpenDSS.StatusSolutionProcessTime > 0:
             self.MainWindowToolBar.Plot_Monitor_Act.setEnabled(True)
         else:
