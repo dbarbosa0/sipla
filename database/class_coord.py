@@ -1,16 +1,6 @@
-from typing import NamedTuple
-
 import database.class_conn
 import class_exception
 
-
-##Classes de Dados
-class dadosTrafoDist(NamedTuple):
-    cod_id: str
-    pot_nom:str
-    ctmt: str
-    x: str
-    y:str
 
 class C_DBaseCoord():
     def __init__(self):
@@ -90,15 +80,9 @@ class C_DBaseCoord():
 
             for lnhUNTRD in dadosUNTRD.fetchall():  # Pegando o Transformador
 
-                tmp_dados = [lnhUNTRD[4],lnhUNTRD[3],lnhUNTRD[0],lnhUNTRD[1]]
+                ##Verificar a questão do X e do Y
 
-                # tmp_dados = dadosTrafoDist(
-                #     lnhUNTRD[0],  # cod_id
-                #     lnhUNTRD[1],  # pot_nom
-                #     lnhUNTRD[2], #ctmt
-                #     lnhUNTRD[3],  # x
-                #     lnhUNTRD[4],  # y
-                # )
+                tmp_dados = [lnhUNTRD[4],lnhUNTRD[3],lnhUNTRD[0],lnhUNTRD[1]]
 
                 lista_dados.append(tmp_dados)
 

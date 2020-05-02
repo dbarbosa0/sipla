@@ -169,18 +169,6 @@ class C_Viewer():
                             callback=callbackTrafo
                         ).add_to(fgTrafoDIST)
 
-                    #for ctd in range(0, len(dados_db)):
-
-                            # infoText  = '<b>Trafo de Distribuição</b>'
-                            # infoText += '<br> ID: ' + dados_db[ctd].cod_id
-                            # infoText += '<br> ' + str(dados_db[ctd].pot_nom)  + ' kVA'
-                            # folium.Marker(
-                            #         location = [dados_db[ctd].y, dados_db[ctd].x],
-                            #         popup = infoText,
-                            #         icon=folium.Icon(color='red', icon='info-sign'),
-                            #         control = True
-                            #     ).add_to(fgTrafoDIST)
-
 
 
         
