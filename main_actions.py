@@ -8,6 +8,7 @@ import opendss.class_insert_energymeter_dialog
 import opendss.class_insert_monitor_dialog
 import opendss.class_config_plot_monitor_dialog
 import opendss.class_scan_config_dialog
+import protect.class_devices
 import database.class_base
 import database.class_config_dialog
 import class_exception
@@ -55,6 +56,7 @@ class C_MainActions():
         # Contribuição Carvalho
         self.SCAnalyze_DialogSettings = opendss.class_scan_config_dialog.C_SCAnalyze_ConfigDialog()
         self.SCAnalyze_DialogSettings.OpenDSS = self.OpenDSS #Apontando o ponteiro de OpenDSS C_MainActions
+        self.Devices_DialogSettings = protect.class_devices.C_Devices_ConfigDialog()
 
 
     #############################################
@@ -228,6 +230,10 @@ class C_MainActions():
 
     def exec_SCAnalyze(self):
         self.OpenDSS.exec_DynamicFlt()
+
+    def exec_Device_Settings(self):
+        self.Devices_DialogSettings.TabRecloser.updateDialog()
+        self.Devices_DialogSettings.show()
 
     #################################################################################
 
