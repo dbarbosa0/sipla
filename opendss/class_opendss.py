@@ -128,6 +128,7 @@ class C_OpenDSS(): # classe OpenDSSDirect
             ##Zerando a lista de barras
             self.dataOpenDSS.busList = []
             self.dataOpenDSS.elementList = []
+            self.dataOpenDSS.recloserList = []
 
 
             ##### Executa os Arquitvos que serão executados e inseridos
@@ -615,6 +616,11 @@ class C_OpenDSS(): # classe OpenDSSDirect
 
     def getElementList(self):
         return self.dataOpenDSS.elementList
+
+    def getRecloserList(self):
+        return self.dataOpenDSS.recloserList
+
+
 
     ## Gets class_insert_dialog
 

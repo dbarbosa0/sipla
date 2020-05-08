@@ -20,7 +20,7 @@ class C_Data():  # classe OpenDSS
         ##Lista com o nome das Barras
         self.busList = []
         self.elementList = []
-
+        self.recloserList = []
         self.initUI()
 
     @property
@@ -571,7 +571,7 @@ class C_Data():  # classe OpenDSS
                     temp_memoFileSEC_CONTROL += " action={0}".format(operacao_da_chave)
 
                     temp_Element = "Recloser.{0}".format(dados_sec[ctd].cod_id)
-
+                    self.insertRecloserList(temp_memoFileSEC_CONTROL)
                 else:
                     temp_memoFileSEC_CONTROL = "New Swtcontrol.{0}".format(
                         dados_sec[ctd].cod_id) + " SwitchedObj={0}".format("Line." + dados_sec[ctd].cod_id)
@@ -1140,6 +1140,12 @@ class C_Data():  # classe OpenDSS
         if pac.replace('-', "") not in self.busList:
             self.busList.append(pac.replace('-', ""))
 
+
     def insertElementList(self, name):
         if str(name) not in self.elementList:
             self.elementList.append(str(name))
+
+
+    def insertRecloserList(self, name):
+        if str(name) not in self.recloserList:
+            self.recloserList.append(str(name))
