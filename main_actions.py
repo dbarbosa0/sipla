@@ -236,6 +236,15 @@ class C_MainActions():
         self.updateToobarMenu()
         self.updateStatusBar()
 
+        ##Limpando os Monitores
+        self.OpenDSS.Monitors.clear()
+        self.OpenDSS_DialogInsertMonitor.Monitors.clear()
+
+        ##Limpando os Medidores
+        self.OpenDSS.EnergyMeters.clear()
+        self.OpenDSS_DialogInsertEnergyMeter.EnergyMeters.clear()
+
+
 
 
 

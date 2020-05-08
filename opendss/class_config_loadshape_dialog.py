@@ -10,6 +10,7 @@ import platform
 import pyqtgraph
 import config as cfg
 import class_exception
+import unidecode
 
 
 
@@ -287,7 +288,7 @@ class C_Config_LoadShape_Dialog(QDialog):
 
         contChecked = 0
         if retval == QMessageBox.Yes:
-            for ctd in range(self.Shapes_GroupBox_TreeWidget.topLevelItemCount() - 1, 0, -1):
+            for ctd in range(self.Shapes_GroupBox_TreeWidget.topLevelItemCount() -1 , -1, -1):
 
                 Item = self.Shapes_GroupBox_TreeWidget.topLevelItem(ctd)
 
@@ -406,7 +407,7 @@ class Config_LoadShape_Shapes_GroupBox_TreeWidget_Item(QTreeWidgetItem):
         ## Column 0 - Text:
 
 
-        self.setText(0, name)
+        self.setText(0, unidecode.unidecode(name.replace(" ", "_")))
         self.setFlags(self.flags() | Qt.ItemIsUserCheckable | Qt.ItemIsEditable)
         self.setCheckState(0, check)
 
