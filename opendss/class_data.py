@@ -464,8 +464,6 @@ class C_Data():  # classe OpenDSS
 
             for ctd in range(0, len(dados_sec)):
 
-
-
                 [num_de_fases, pac_1, pac_2] = self.getFasesConexao(dados_sec[ctd].fas_con, dados_sec[ctd].pac_1,
                                                                     dados_sec[ctd].pac_2)
 
@@ -481,6 +479,8 @@ class C_Data():  # classe OpenDSS
                 if dados_sec[ctd].sit_ativ == "AT":
                     situacao = "true"
                 if dados_sec[ctd].sit_ativ == "DS":
+                    situacao = "false"
+                if dados_sec[ctd].sit_ativ == "0":
                     situacao = "false"
 
 

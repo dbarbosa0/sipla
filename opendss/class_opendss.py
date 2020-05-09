@@ -620,8 +620,16 @@ class C_OpenDSS(): # classe OpenDSSDirect
 
 
     def getAllNamesEnergyMeter(self):
-
         return self.OpenDSSEngine.get_EnergyMeter_AllNames()
+
+    def setEnergyMeterActive(self,name):
+        return self.OpenDSSEngine.set_EnergyMeterActive(name)
+
+    def getRegisterNames(self):
+        return self.OpenDSSEngine.get_RegisterNames()
+
+    def getRegisterValues(self):
+        return self.OpenDSSEngine.get_RegisterValues()
 
     def getAllNamesMonitor(self):
         return self.OpenDSSEngine.get_Monitor_AllNames()
