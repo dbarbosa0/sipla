@@ -283,6 +283,7 @@ class C_MainActions():
         self.OpenDSS_DialogInsertMonitor.show()
 
     def execResultsEnergyMeter(self):
+        #print(self.OpenDSS.getCktElementVoltages())
         self.OpenDSS_DialogResultsEnergyMeter.updateDialog()
         self.OpenDSS_DialogResultsEnergyMeter.show()
 

@@ -1202,3 +1202,13 @@ class C_OpenDSS():  # classe OpenDSSDirect
 
     def getMonitorActive_DataChannel(self, idx):
         return self.OpenDSSEngine.get_MonitorActive_DataChannel(idx)
+
+
+### Cicuit
+    def SetActiveElement(self, elemento): ## ativa elemento
+        return self.OpenDSSEngine.set_ActiveElement()
+
+#### CktElement
+
+    def getCktElementVoltages(self):
+        return self.OpenDSSEngine.get_CktElementVoltages()

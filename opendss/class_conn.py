@@ -40,6 +40,7 @@ class C_OpenDSSDirect_Conn(C_Conn):  # classe OpenDSSDirect
         self.engineMonitors = self.engine.Monitors
         self.engineSolution = self.engine.Solution
         self.engineLoads = self.engine.Loads
+        self.engineCktElement = self.engine.CktElement
 
     def run(self, msg):
         self.engine.run_command(unidecode.unidecode(msg))
@@ -79,6 +80,15 @@ class C_OpenDSSDirect_Conn(C_Conn):  # classe OpenDSSDirect
     def get_RegisterValues(self):
         return self.engineMeters.RegisterValues()
 
+    def get_CktElementVoltages(self):
+        return self.engineCktElement.Voltages()
+
+        ### Cicuit
+    def set_ActiveElement(self, elemento):
+        return self.engineCircuit.SetActiveElement(elemento)
+
+
+
 ################
 
 
@@ -95,6 +105,7 @@ class C_OpenDSSCOM_Conn(C_Conn):  # classe OpenDSSCOM
         self.engineSolution = self.engineCircuit.Solution
         self.engineMeters = self.engineCircuit.Meters
         self.engineMonitors = self.engineCircuit.Monitors
+        self.engineCktElement = self.engine.CktElement
 
     def run(self, msg):
         self.engine.Text.Command = unidecode.unidecode(msg)
@@ -129,6 +140,8 @@ class C_OpenDSSCOM_Conn(C_Conn):  # classe OpenDSSCOM
     def get_MonitorActive_ChannelNames(self):
         return self.engineMonitors.Header
 
+    def get_CktElementVoltages(self):
+        return self.engineCktElement.Voltages
 
 
 
