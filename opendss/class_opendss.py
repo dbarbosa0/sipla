@@ -38,6 +38,7 @@ class C_OpenDSS(): # classe OpenDSSDirect
         self._Monitors = []
         ##SC Carvalho
         self._SCDataInfo = []
+        self.RECDataInfo = []
         ## FlagLoadData - Só roda se tiver alguma alteração nos alimentadores
         self.loadDataFlag = False
 
@@ -116,6 +117,14 @@ class C_OpenDSS(): # classe OpenDSSDirect
     @SCDataInfo.setter
     def SCDataInfo(self, value):
         self._SCDataInfo = value
+
+    @property
+    def RECDataInfo(self):
+        return self._RECDataInfo
+
+    @RECDataInfo.setter
+    def RECDataInfo(self, value):
+        self._RECDataInfo = value
 
     def loadData(self):
 
@@ -598,16 +607,19 @@ class C_OpenDSS(): # classe OpenDSSDirect
 
             faultstr += " basefreq=" + stdSC["FltBaseFreq"]
 
-            if stdSC["FltRstDev"] != "" :
+            if stdSC["FltRstDev"] != "":
                 faultstr += " %stddev=" + stdSC["FltRstDev"]
 
-            if stdSC["FltRepair"] != "" :
+            if stdSC["FltRepair"] != "":
                 faultstr += " repair=" + stdSC["FltRepair"]
 
         self.exec_OpenDSSRun(faultstr)
         self.exec_OpenDSSRun("set mode=dynamic controlmode=time time=(0,0) stepsize=0.01 number=4000")
         self.exec_OpenDSSRun("Solve")
         self.exec_OpenDSSRun("show eventlog")
+
+    def exec_ProtectEdit(self):
+        pass
 
 
     ##

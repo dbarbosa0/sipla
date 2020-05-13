@@ -6,7 +6,6 @@ from PyQt5.QtCore import Qt
 
 import configparser
 import class_exception
-import random
 import opendss.class_conn
 import opendss.class_opendss
 import config as cfg
