@@ -664,6 +664,20 @@ class C_OpenDSS():  # classe OpenDSSDirect
             pass
             # class_exception.ExecOpenDSS("Erro ao processar as tensões!", "Fase C")
 
+
+    def get_Voltages_TableViewsResults(self):
+        Voltages = self.OpenDSSEngine.get_CktElementVoltagesMagAng()
+        print(Voltages)
+        return Voltages
+    def get_Currents_TableViewsResults(self):
+        Currents = self.OpenDSSEngine.get_CktElementCurrentsMagAng()
+        print(Currents)
+        return Currents
+    def get_Powers_TableViewsResults(self):
+        Powers = self.OpenDSSEngine.get_CktElementPowers()
+        print(Powers)
+        return Powers
+
     #######Monitor
 
     def exec_EnergyMeters(self):
@@ -1206,9 +1220,12 @@ class C_OpenDSS():  # classe OpenDSSDirect
 
 ### Cicuit
     def SetActiveElement(self, elemento): ## ativa elemento
-        return self.OpenDSSEngine.set_ActiveElement()
+        return self.OpenDSSEngine.set_ActiveElement(elemento)
 
 #### CktElement
 
-    def getCktElementVoltages(self):
-        return self.OpenDSSEngine.get_CktElementVoltages()
+    def getCktElementVoltagesMagAng(self):
+        return self.OpenDSSEngine.get_CktElementVoltagesMagAng()
+
+    def get_CktElementName(self):
+        return self.OpenDSSEngine.get_CktElementName()

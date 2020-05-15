@@ -1,3 +1,4 @@
+## potência aparente (kVA)
 TPOTAPRT={}
 TPOTAPRT["0"] = "[0,0]"
 TPOTAPRT["1"] = "[3,3]"

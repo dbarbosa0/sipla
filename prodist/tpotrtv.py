@@ -1,3 +1,4 @@
+##Potência reativa (kVAr)
 TPOTRTV={}
 TPOTRTV["0"] = "0"
 TPOTRTV["1"] = "45"

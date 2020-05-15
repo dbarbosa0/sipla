@@ -1,3 +1,4 @@
+## Corrente (A)
 TCOR = {}
 TCOR["0"] = "0"
 TCOR["1"] = "25"
