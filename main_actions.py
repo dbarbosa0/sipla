@@ -233,8 +233,7 @@ class C_MainActions():
         self.OpenDSS.exec_DynamicFlt()
 
     def exec_Device_Settings(self):
-        self.Devices_DialogSettings.TabRecloser.gen_RecloserNameList()
-        self.Devices_DialogSettings.TabRecloser.updateDialog()
+        self.Devices_DialogSettings.TabRecloser.updateProtectdialog()
         self.Devices_DialogSettings.show()
 
     #################################################################################

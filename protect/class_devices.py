@@ -93,6 +93,8 @@ class Recloser(QWidget):
         self.ElementList = []
         self.Edit_RECDataInfo = []
         self.Add_RECDataInfo = []
+        self.RecloserDataInfo =[]
+        self.loadDatabaseFlag = False
 
 
         #  Btns
@@ -122,47 +124,106 @@ class Recloser(QWidget):
         self.Tab_layout.addLayout(self.Tab_Btns_Layout)
         self.setLayout(self.Tab_layout)
 
-    def updateDialog(self):
-        self.RecloserSelect_Combobox.clear()
-        list = self.OpenDSS.getRecloserList()
-        if len(list) > 0:
-            RecloserList = self.RecloserNameList
-        else:
-            RecloserList = ['None', 'None']
+    def load_RecloserInfoBOM(self):
+        recloserSelected = self.RecloserSelect_Combobox.currentText()
+        for item in self.RecloserDataInfo:
+            if item["Name"] == recloserSelected:
 
-        for index, item in enumerate(RecloserList):
-            self.RecloserSelect_Combobox.addItem(item, item)
+                self.Edit_Recloser.RecloserName_LineEdit.setText(item["Name"])
 
+                if item["Action"] == 'close':
+                    self.Edit_Recloser.Action_ComboBox.setCurrentIndex(1)
+                else:
+                    self.Edit_Recloser.Action_ComboBox.setCurrentIndex(0)
+
+                self.Edit_Recloser.Delay_LineEdit.setText(item["Delay"])
+
+                if item["Enabled"] == 'yes' or item["Enabled"] == '':
+                    self.Edit_Recloser.Enable_ComboBox.setCurrentIndex(0)
+                else:
+                    self.Edit_Recloser.Enable_ComboBox.setCurrentIndex(1)
+
+                self.Edit_Recloser.Shots_LineEdit.setText(item["Shots"])
+                self.Edit_Recloser.NumFast_LineEdit.setText(item["NumFast"])
+                self.Edit_Recloser.RecloserIntervals_LineEdit.setText(item["RecloseIntervals"])
+                self.Edit_Recloser.ResetTime_LineEdit.setText(item["Reset"])
+
+                self.Edit_Recloser.MonitObj_ComboBox.setCurrentText(item["MonitoredObj"])
+                self.Edit_Recloser.SwitchedObj_ComboBox.setCurrentText(item["SwitchedObj"])
+                self.Edit_Recloser.MonitTerm_ComboBox.setCurrentText(item["MonitoredTerm"])
+                self.Edit_Recloser.SwitchedTerm_ComboBox.setCurrentText(item["SwitchedTerm"])
+
+                self.Edit_Recloser.PhaseDelay_ComboBox.setCurrentText(item["PhaseDelayed"])
+                self.Edit_Recloser.PhaseFast_ComboBox.setCurrentText(item["PhaseFast"])
+                self.Edit_Recloser.PhaseTrip_LineEdit.setText(item["PhaseTrip"])
+                self.Edit_Recloser.PhaseDelayTimeDial_LineEdit.setText(item["TDPhDelayed"])
+                self.Edit_Recloser.PhaseFastTimeDial_LineEdit.setText(item["TDPhFast"])
+
+                self.Edit_Recloser.GroundDelay_ComboBox.setCurrentText(item["GroundDelayed"])
+                self.Edit_Recloser.GroundFast_ComboBox.setCurrentText(item["GroundFast"])
+                self.Edit_Recloser.GroundTrip_LineEdit.setText(item["GroundTrip"])
+                self.Edit_Recloser.GroundDelayTimeDial_LineEdit.setText(item["TDGrDelayed"])
+                self.Edit_Recloser.GroundFastTimeDial_LineEdit.setText(item["TDGrFast"])
+                print(item)
+
+
+
+    def load_ReclosersDatabase(self):
+        databaseRecloserdict = {}
+        databaseRecloser = self.OpenDSS.getRecloserList()
+        # Se trocar de subestação
+        try:
+            if self.RecloserDataInfo[0]["Name"] != databaseRecloser[0].split(" MonitoredObj=")[0].split("New Recloser.")[1]:
+                self.loadDatabaseFlag = False
+                self.RecloserDataInfo.clear()
+        except:
+            pass
+        # Se estiver vazio.
+        if not self.RecloserDataInfo:
+            for item in databaseRecloser:
+                databaseRecloserdict["Name"] = item.split(" MonitoredObj=")[0].split("New Recloser.")[1]
+                # Basic
+                if item.split(" action=")[1] == 'c':
+                    databaseRecloserdict["Action"] = 'close'
+                else:
+                    databaseRecloserdict["Action"] = 'open'
+
+                databaseRecloserdict["Delay"] = ''
+                databaseRecloserdict["Enabled"] = ''
+                databaseRecloserdict["Shots"] = ''
+                databaseRecloserdict["NumFast"] = ''
+                databaseRecloserdict["RecloseIntervals"] = ''
+                databaseRecloserdict["Reset"] = ''
+                # Connections
+                databaseRecloserdict["MonitoredObj"] = item.split(" SwitchedObj=")[0].split("MonitoredObj=")[1]
+                databaseRecloserdict["MonitoredTerm"] = ''
+                databaseRecloserdict["SwitchedObj"] = item.split(" SwitchedTerm=")[0].split("SwitchedObj=")[1]
+                databaseRecloserdict["SwitchedTerm"] = item.split(" action=")[0].split("SwitchedTerm=")[1]
+                # TCC Curves
+                databaseRecloserdict["PhaseDelayed"] = ''
+                databaseRecloserdict["PhaseFast"] = ''
+                databaseRecloserdict["PhaseTrip"] = ''
+                databaseRecloserdict["TDPhDelayed"] = ''
+                databaseRecloserdict["TDPhFast"] = ''
+                databaseRecloserdict["GroundDelayed"] = ''
+                databaseRecloserdict["GroundFast"] = ''
+                databaseRecloserdict["GroundTrip"] = ''
+                databaseRecloserdict["TDGrDelayed"] = ''
+                databaseRecloserdict["TDGrFast"] = ''
+
+                if not self.loadDatabaseFlag:
+                    self.RecloserDataInfo.append(databaseRecloserdict.copy())
+
+            self.loadDatabaseFlag = True
+
+    def updateProtectdialog(self):
+        self.load_ReclosersDatabase()
+        # Carregando a ElementList para ser usadaa na Edit Dialog
         self.ElementList = self.OpenDSS.getElementList()
+        self.RecloserSelect_Combobox.clear()
+        for dicio in self.RecloserDataInfo:
+            self.RecloserSelect_Combobox.addItem(dicio["Name"], dicio["Name"])
 
-    def gen_RecloserNameList(self):
-        list = self.OpenDSS.getRecloserList()
-        if len(list) > 0:
-            for item in list:
-                if item not in self.RecloserNameList:
-                    self.RecloserNameList.append(item.split(" MonitoredObj=")[0].split("New Recloser.")[1])
-
-    def load_RecloserInfo(self):
-        self.recloserString = 'New Recloser.F00378 MonitoredObj=Line.F00378 SwitchedObj=Line.F00378 SwitchedTerm=2 action=c'
-        recloserSelected = "Recloser." + self.RecloserSelect_Combobox.currentText()
-        Recloserlist = self.OpenDSS.getRecloserList()
-        for item in Recloserlist:
-            if recloserSelected in item:
-                self.recloserString = item
-
-        print(self.recloserString)
-        if self.recloserString.split(" action=")[1] == 'c':
-            self.Edit_Recloser.Action_ComboBox.setCurrentIndex(1)
-        else:
-            self.Edit_Recloser.Action_ComboBox.setCurrentIndex(0)
-
-        MonitObj = self.recloserString.split(" SwitchedObj=")[0].split("MonitoredObj=")[1]
-        self.Edit_Recloser.MonitObj_ComboBox.setCurrentText(MonitObj)
-        SwitchedObj = self.recloserString.split(" SwitchedTerm=")[0].split("SwitchedObj=")[1]
-        self.Edit_Recloser.SwitchedObj_ComboBox.setCurrentText(SwitchedObj)
-        SwitchedTerm = self.recloserString.split(" SwitchedTerm=")[0].split("SwitchedObj=")[1]
-        self.Edit_Recloser.MonitTerm_ComboBox.setCurrentText(SwitchedTerm)
-        self.Edit_Recloser.SwitchedTerm_ComboBox.setCurrentText(SwitchedTerm)
 
 
 class EditRecloser(QDialog):
@@ -404,8 +465,10 @@ class EditRecloser(QDialog):
             self.setWindowTitle(self.titleWindow)
             self.show()
             self.updateDialog()
+
             self.RecloserName_LineEdit.setText(self.titleWindow.split(" Editar religador ")[1])
-            self.recloser_parent.load_RecloserInfo()
+            self.recloser_parent.load_RecloserInfoBOM()
+            self.recloser_parent.load_ReclosersDatabase()
             self.EditFlag = True
             self.AddFlag = False
         return process
@@ -456,7 +519,6 @@ class EditRecloser(QDialog):
         print(f'Add_RECDataInfo: {self.recloser_parent.Add_RECDataInfo}')
         print(f'Edit_RECDataInfo: {self.recloser_parent.Edit_RECDataInfo}')
         print(f'RecloserNameList: {self.recloser_parent.RecloserNameList}')
-        self.recloser_parent.updateDialog()
 
     def loadParameters(self):
         self.datainfo["Name"] = get_lineedit(self.RecloserName_LineEdit)
@@ -489,16 +551,11 @@ class EditRecloser(QDialog):
         self.datainfo["TDGrDelayed"] = get_lineedit(self.GroundDelayTimeDial_LineEdit)
         self.datainfo["TDGrFast"] = get_lineedit(self.GroundFastTimeDial_LineEdit)
 
-        # print(self.datainfo)
 
     def updateDialog(self):
         self.MonitObj_ComboBox.clear()
         self.SwitchedObj_ComboBox.clear()
-        if len(self.recloser_parent.ElementList) > 0:
-            ElementList = self.recloser_parent.ElementList
-        else:
-            ElementList = ['', 'None']
 
-        for index, item in enumerate(ElementList):
+        for index, item in enumerate(self.recloser_parent.ElementList):
             self.MonitObj_ComboBox.addItem(item, item)
             self.SwitchedObj_ComboBox.addItem(item, item)
