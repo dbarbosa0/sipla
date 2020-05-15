@@ -3,6 +3,7 @@ from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import QStyleFactory, QDialog, QGroupBox, QGridLayout, QHBoxLayout, \
     QPushButton, QVBoxLayout, QTabWidget, QComboBox, QLineEdit, QWidget, QLabel, QMessageBox
 from PyQt5.QtCore import Qt
+import unidecode
 
 import opendss.class_conn
 import opendss.class_opendss
@@ -63,16 +64,6 @@ def get_combobox(combobox):
     return str(combobox.itemData(combobox.currentIndex()))
 
 
-def gen_recloserString(datainfo, device="GenericDevice"):
-    string = "Edit " + device + "." + datainfo.get("Name")
-    keys = list(datainfo.keys())
-    for key in keys:
-        if datainfo.get(key) != '' and key != "Name":
-            string += ' ' + key + '=' + datainfo.get(key)
-
-    print(string)
-
-
 class Recloser(QWidget):
 
     def __init__(self):
@@ -89,13 +80,12 @@ class Recloser(QWidget):
         self.RecloserSelect_Combobox = QComboBox()
         self.RecloserSelect_Combobox.setMaximumWidth(150)
         self.RecloserSettings_GroupBox_Layout.addWidget(self.RecloserSelect_Combobox)
-        self.RecloserNameList = []
-        self.ElementList = []
-        self.Edit_RECDataInfo = []
-        self.Add_RECDataInfo = []
-        self.RecloserDataInfo =[]
-        self.loadDatabaseFlag = False
 
+        self.ElementList = []
+        self.AddRecloserDataInfo = []
+        self.RecloserDataInfo = []
+        self.loadDatabaseFlag = False
+        self.flag = False
 
         #  Btns
         self.Tab_Btns_Layout = QHBoxLayout()
@@ -103,19 +93,19 @@ class Recloser(QWidget):
 
         self.Remover_Btn = QPushButton("Remover")
         # self.Remover_Btn.setIcon(QIcon('img/icon_remove.png'))
-        # self.Remover_Btn.clicked.connect(self.dialog)
+        self.Remover_Btn.clicked.connect(self.Edit_Recloser.removeRecloser)
         self.Tab_Btns_Layout.addWidget(self.Remover_Btn)
 
         self.Edit_Btn = QPushButton("Editar")
         # self.Edit_Btn.setIcon(QIcon('img/icon_edit.png'))
         # self.Edit_Btn.setFixedWidth(80)
-        self.Edit_Btn.clicked.connect(self.Edit_Recloser.edit_exec(self.RecloserSelect_Combobox.currentText))
+        self.Edit_Btn.clicked.connect(self.Edit_Recloser.editRecloser(self.RecloserSelect_Combobox.currentText))
         self.Tab_Btns_Layout.addWidget(self.Edit_Btn)
 
         self.Add_Btn = QPushButton("Adicionar")
         # self.Add_Btn.setIcon(QIcon('img/icon_add.png'))
         # self.Add_Btn.setFixedWidth(80)
-        self.Add_Btn.clicked.connect(self.Edit_Recloser.add_exec())
+        self.Add_Btn.clicked.connect(self.Edit_Recloser.addRecloser())
         self.Tab_Btns_Layout.addWidget(self.Add_Btn)
 
         self.RecloserSettings_GroupBox.setLayout(self.RecloserSettings_GroupBox_Layout)
@@ -164,20 +154,36 @@ class Recloser(QWidget):
                 self.Edit_Recloser.GroundTrip_LineEdit.setText(item["GroundTrip"])
                 self.Edit_Recloser.GroundDelayTimeDial_LineEdit.setText(item["TDGrDelayed"])
                 self.Edit_Recloser.GroundFastTimeDial_LineEdit.setText(item["TDGrFast"])
-                print(item)
-
-
+                #print(item)
 
     def load_ReclosersDatabase(self):
         databaseRecloserdict = {}
         databaseRecloser = self.OpenDSS.getRecloserList()
         # Se trocar de subestação
         try:
-            if self.RecloserDataInfo[0]["Name"] != databaseRecloser[0].split(" MonitoredObj=")[0].split("New Recloser.")[1]:
-                self.loadDatabaseFlag = False
-                self.RecloserDataInfo.clear()
+            for item in databaseRecloser:
+                for item2 in self.RecloserDataInfo:
+                    if item.split(" MonitoredObj=")[0].split("New Recloser.")[1] == item2["Name"]:
+                        self.flag = True
+                        print(f' Flag 1 : {self.flag}')
+                        return
+                    else:
+                        self.flag = False
+                        print(f' Flag 2 : {self.flag}')
         except:
             pass
+
+        if self.AddRecloserDataInfo:
+            self.flag = True
+            print(f' Flag 3 : {self.flag}')
+
+        if not self.flag:
+            self.loadDatabaseFlag = False
+            self.RecloserDataInfo.clear()
+            self.AddRecloserDataInfo.clear()
+            print(f' Flag 4 : {self.flag}')
+
+
         # Se estiver vazio.
         if not self.RecloserDataInfo:
             for item in databaseRecloser:
@@ -213,17 +219,18 @@ class Recloser(QWidget):
 
                 if not self.loadDatabaseFlag:
                     self.RecloserDataInfo.append(databaseRecloserdict.copy())
+                    print(f' Flag 5 : {self.flag}')
 
+            print(f' Flag 6 : {self.flag}')
             self.loadDatabaseFlag = True
 
-    def updateProtectdialog(self):
+    def updateProtectDialog(self):
         self.load_ReclosersDatabase()
-        # Carregando a ElementList para ser usadaa na Edit Dialog
+        # Carregando a ElementList para ser usada na Edit Dialog
         self.ElementList = self.OpenDSS.getElementList()
         self.RecloserSelect_Combobox.clear()
         for dicio in self.RecloserDataInfo:
             self.RecloserSelect_Combobox.addItem(dicio["Name"], dicio["Name"])
-
 
 
 class EditRecloser(QDialog):
@@ -235,8 +242,6 @@ class EditRecloser(QDialog):
         self.stylesheet = cfg.sipla_stylesheet
         self.recloser_parent = recloser_parent
         self.OpenDSS = opendss.class_opendss.C_OpenDSS()
-        self.EditFlag = False
-        self.AddFlag = False
 
         self.setWindowTitle(self.titleWindow)
         self.setWindowIcon(QIcon(self.iconWindow))  # ícone da janela
@@ -446,7 +451,7 @@ class EditRecloser(QDialog):
         self.btngroupbox_layout = QHBoxLayout()
         self.Ok_Btn = QPushButton("Ok")
         self.Ok_Btn.setMaximumWidth(150)
-        self.Ok_Btn.clicked.connect(self.exec_okBtn)
+        self.Ok_Btn.clicked.connect(self.AcceptAddEditRecloser)
 
         self.AddTCC_Btn = QPushButton("Add TCC Curve")
         self.AddTCC_Btn.setMaximumWidth(150)
@@ -457,68 +462,44 @@ class EditRecloser(QDialog):
 
         self.Dialog_Layout.addLayout(self.btngroupbox_layout)
 
-    def edit_exec(self, get_name):
+    def editRecloser(self, get_name):
         ## Pro gamer movement pra poder usar argumentos dentro do " .connect "
         def process():
             self.titleWindow = f' Editar religador {get_name()}'
-            self.RecloserName_LineEdit.setEnabled(False)
             self.setWindowTitle(self.titleWindow)
-            self.show()
-            self.updateDialog()
 
-            self.RecloserName_LineEdit.setText(self.titleWindow.split(" Editar religador ")[1])
+            self.RecloserName_LineEdit.setEnabled(False)
+            self.show()
+            self.updateEditDialog()
             self.recloser_parent.load_RecloserInfoBOM()
             self.recloser_parent.load_ReclosersDatabase()
-            self.EditFlag = True
-            self.AddFlag = False
+
         return process
 
-    def add_exec(self):
+    def addRecloser(self):
         ## Pro gamer movement pra poder usar argumentos dentro do " .connect "
         def process():
             self.titleWindow = f' Adicionar religador'
-            self.RecloserName_LineEdit.setEnabled(True)
             self.setWindowTitle(self.titleWindow)
+
+            self.RecloserName_LineEdit.setEnabled(True)
             self.show()
-            self.updateDialog()
-            self.RecloserName_LineEdit.clear()
-            self.EditFlag = False
-            self.AddFlag = True
+            self.clearRecloserParameters()
+            self.updateEditDialog()
 
         return process
 
-    def exec_okBtn(self):
-        if self.AddFlag:
-            if get_lineedit(self.RecloserName_LineEdit) in self.recloser_parent.RecloserNameList:
-                QMessageBox(QMessageBox.Warning, "Energy Meter", "Religador já existe",
+    def removeRecloser(self):
+        for ctd in self.recloser_parent.RecloserDataInfo:
+            if ctd["Name"] == self.recloser_parent.RecloserSelect_Combobox.currentText():
+                self.recloser_parent.RecloserDataInfo.remove(ctd)
+                QMessageBox(QMessageBox.Warning, "Religador",
+                            "Religador " + ctd["Name"] + " removido com sucesso!",
                             QMessageBox.Ok).exec()
-                return
-            elif self.AddFlag and get_lineedit(self.RecloserName_LineEdit) == '':
-                QMessageBox(QMessageBox.Warning, "Energy Meter", "Escolha um nome para o religador",
-                            QMessageBox.Ok).exec()
-                return
-            # Armazena os parametros em datainfo
-            self.loadParameters()
-            # Gera a string Edit do recloser
-            gen_recloserString(self.datainfo, "Recloser")
-            # Adiciona na lista de religadores editados
-            self.recloser_parent.Add_RECDataInfo.append(self.datainfo)
-            self.recloser_parent.RecloserNameList.append(self.datainfo["Name"])
 
-        if self.EditFlag:
-            # Armazena os parametros em datainfo
-            self.loadParameters()
-            # Gera a string Edit do recloser
-            gen_recloserString(self.datainfo, "Recloser")
-            # Adiciona na lista de religadores editados
-            self.recloser_parent.Edit_RECDataInfo.append(self.datainfo)
-
-        self.close()
-        self.EditFlag = False
-        self.AddFlag = False
-        print(f'Add_RECDataInfo: {self.recloser_parent.Add_RECDataInfo}')
-        print(f'Edit_RECDataInfo: {self.recloser_parent.Edit_RECDataInfo}')
-        print(f'RecloserNameList: {self.recloser_parent.RecloserNameList}')
+        self.recloser_parent.RecloserSelect_Combobox.clear()
+        for dicio in self.recloser_parent.RecloserDataInfo:
+            self.recloser_parent.RecloserSelect_Combobox.addItem(dicio["Name"], dicio["Name"])
 
     def loadParameters(self):
         self.datainfo["Name"] = get_lineedit(self.RecloserName_LineEdit)
@@ -551,8 +532,121 @@ class EditRecloser(QDialog):
         self.datainfo["TDGrDelayed"] = get_lineedit(self.GroundDelayTimeDial_LineEdit)
         self.datainfo["TDGrFast"] = get_lineedit(self.GroundFastTimeDial_LineEdit)
 
+    def AcceptAddEditRecloser(self):  ## Dá para otimizar e muito // Somente um teste
 
-    def updateDialog(self):
+        datainfo = {}
+        datainfo["Name"] = unidecode.unidecode(get_lineedit(self.RecloserName_LineEdit).replace(" ", "_"))
+        ## Basic
+        datainfo["Action"] = get_combobox(self.Action_ComboBox)
+        datainfo["Delay"] = get_lineedit(self.Delay_LineEdit)
+        datainfo["Enabled"] = get_combobox(self.Enable_ComboBox)
+        datainfo["Shots"] = get_lineedit(self.Shots_LineEdit)
+        datainfo["NumFast"] = get_lineedit(self.NumFast_LineEdit)
+        datainfo["RecloseIntervals"] = get_lineedit(self.RecloserIntervals_LineEdit)
+        datainfo["Reset"] = get_lineedit(self.ResetTime_LineEdit)
+
+        #  Connections
+        datainfo["MonitoredObj"] = get_combobox(self.MonitObj_ComboBox)
+        datainfo["MonitoredTerm"] = get_combobox(self.MonitTerm_ComboBox)
+        datainfo["SwitchedObj"] = get_combobox(self.SwitchedObj_ComboBox)
+        datainfo["SwitchedTerm"] = get_combobox(self.SwitchedTerm_ComboBox)
+
+        #  TCC Curves
+        #  Phase
+        datainfo["PhaseDelayed"] = get_combobox(self.PhaseDelay_ComboBox)
+        datainfo["PhaseFast"] = get_combobox(self.PhaseFast_ComboBox)
+        datainfo["PhaseTrip"] = get_lineedit(self.PhaseTrip_LineEdit)
+        datainfo["TDPhDelayed"] = get_lineedit(self.PhaseDelayTimeDial_LineEdit)
+        datainfo["TDPhFast"] = get_lineedit(self.PhaseFastTimeDial_LineEdit)
+        #  Ground
+        datainfo["GroundDelayed"] = get_combobox(self.GroundDelay_ComboBox)
+        datainfo["GroundFast"] = get_combobox(self.GroundFast_ComboBox)
+        datainfo["GroundTrip"] = get_lineedit(self.GroundTrip_LineEdit)
+        datainfo["TDGrDelayed"] = get_lineedit(self.GroundDelayTimeDial_LineEdit)
+        datainfo["TDGrFast"] = get_lineedit(self.GroundFastTimeDial_LineEdit)
+
+        if self.RecloserName_LineEdit.isEnabled():
+            ctdExist = False
+            for ctd in self.recloser_parent.RecloserDataInfo:
+                if ctd["Name"] == datainfo["Name"]:
+                    ctdExist = True
+            if not ctdExist:
+                self.recloser_parent.RecloserDataInfo.append(datainfo)
+                self.recloser_parent.AddRecloserDataInfo.append(datainfo)
+                QMessageBox(QMessageBox.Information, "Religador",
+                            "Religador " + datainfo["Name"] + " inserido com sucesso!",
+                            QMessageBox.Ok).exec()
+            else:
+                QMessageBox(QMessageBox.Warning, "Religador",
+                            "Religador " + datainfo["Name"] + " já existe! \nFavor verificar!",
+                            QMessageBox.Ok).exec()
+        else:
+            for ctd in self.recloser_parent.RecloserDataInfo:
+                if ctd["Name"] == datainfo["Name"]:
+                    ## Basic
+                    ctd["Action"] = datainfo["Action"]
+                    ctd["Delay"] = datainfo["Delay"]
+                    ctd["Enabled"] = datainfo["Enabled"]
+                    ctd["Shots"] = datainfo["Shots"]
+                    ctd["NumFast"] = datainfo["NumFast"]
+                    ctd["RecloseIntervals"] = datainfo["RecloseIntervals"]
+                    ctd["Reset"] = datainfo["Reset"]
+                    #  Connections
+                    ctd["MonitoredObj"] = datainfo["MonitoredObj"]
+                    ctd["MonitoredTerm"] = datainfo["MonitoredTerm"]
+                    ctd["SwitchedObj"] = datainfo["SwitchedObj"]
+                    ctd["SwitchedTerm"] = datainfo["SwitchedTerm"]
+                    #  TCC Curves
+                    #  Phase
+                    ctd["PhaseDelayed"] = datainfo["PhaseDelayed"]
+                    ctd["PhaseFast"] = datainfo["PhaseFast"]
+                    ctd["PhaseTrip"] = datainfo["PhaseTrip"]
+                    ctd["TDPhDelayed"] = datainfo["TDPhDelayed"]
+                    ctd["TDPhFast"] = datainfo["TDPhFast"]
+                    #  Ground
+                    ctd["GroundDelayed"] = datainfo["GroundDelayed"]
+                    ctd["GroundFast"] = datainfo["GroundFast"]
+                    ctd["GroundTrip"] = datainfo["GroundTrip"]
+                    ctd["TDGrDelayed"] = datainfo["TDGrDelayed"]
+                    ctd["TDGrFast"] = datainfo["TDGrFast"]
+
+                    QMessageBox(QMessageBox.Information, "Religador",
+                                "Religador " + ctd["Name"] + " atualizado com sucesso!",
+                                QMessageBox.Ok).exec()
+
+        self.recloser_parent.updateProtectDialog()
+        self.adjustSize()
+        self.close()
+
+    def clearRecloserParameters(self):
+        self.RecloserName_LineEdit.setText("")
+        ## Basic
+        self.Action_ComboBox.setCurrentIndex(0)
+        self.Delay_LineEdit.setText("")
+        self.Enable_ComboBox.setCurrentIndex(0)
+        self.Shots_LineEdit.setText("")
+        self.NumFast_LineEdit.setText("")
+        self.RecloserIntervals_LineEdit.setText("")
+        self.ResetTime_LineEdit.setText("")
+
+        self.MonitObj_ComboBox.setCurrentIndex(0)
+        self.MonitTerm_ComboBox.setCurrentIndex(0)
+        self.SwitchedObj_ComboBox.setCurrentIndex(0)
+        self.SwitchedTerm_ComboBox.setCurrentIndex(0)
+
+        self.PhaseDelay_ComboBox.setCurrentIndex(0)
+        self.PhaseFast_ComboBox.setCurrentIndex(0)
+        self.PhaseTrip_LineEdit.setText("")
+        self.PhaseDelayTimeDial_LineEdit.setText("")
+        self.PhaseFastTimeDial_LineEdit.setText("")
+
+        self.GroundDelay_ComboBox.setCurrentIndex(0)
+        self.GroundFast_ComboBox.setCurrentIndex(0)
+        self.GroundTrip_LineEdit.setText("")
+        self.GroundDelayTimeDial_LineEdit.setText("")
+        self.GroundFastTimeDial_LineEdit.setText("")
+
+    def updateEditDialog(self):
         self.MonitObj_ComboBox.clear()
         self.SwitchedObj_ComboBox.clear()
 
