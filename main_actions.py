@@ -6,6 +6,7 @@ import opendss.class_opendss
 import opendss.class_config_dialog
 import opendss.class_insert_energymeter_dialog
 import opendss.class_insert_monitor_dialog
+import opendss.class_insert_storage_dialog
 import opendss.class_config_plot_monitor_dialog
 import opendss.class_scan_config_dialog
 import database.class_base
@@ -55,6 +56,9 @@ class C_MainActions():
         # Contribuição Carvalho
         self.SCAnalyze_DialogSettings = opendss.class_scan_config_dialog.C_SCAnalyze_ConfigDialog()
         self.SCAnalyze_DialogSettings.OpenDSS = self.OpenDSS #Apontando o ponteiro de OpenDSS C_MainActions
+        # Contribuição Jonas
+        self.OpenDSS_DialogInsertStorage = opendss.class_insert_storage_dialog.C_Insert_Storage_Dialog()
+        self.OpenDSS_DialogInsertStorage.OpenDSS = self.OpenDSS
 
 
     #############################################
@@ -96,6 +100,7 @@ class C_MainActions():
         if self.OpenDSS.loadDataFlag:
             self.MainWindowToolBar.OpenDSS_InsertEnergyMeter_Act.setEnabled(True)
             self.MainWindowToolBar.OpenDSS_InsertMonitor_Act.setEnabled(True)
+            self.MainWindowToolBar.OpenDSS_InsertStorage_Act.setEnabled(True)
             self.MainWindowToolBar.OpenDSS_Save_Act.setEnabled(True)
             self.MainWindowToolBar.OpenDSS_Create_Act.setEnabled(True)
             self.MainWindowToolBar.OpenDSS_View_Act.setEnabled(True)
@@ -104,6 +109,7 @@ class C_MainActions():
         else:
             self.MainWindowToolBar.OpenDSS_InsertEnergyMeter_Act.setEnabled(False)
             self.MainWindowToolBar.OpenDSS_InsertMonitor_Act.setEnabled(False)
+            self.MainWindowToolBar.OpenDSS_InsertStorage_Act.setEnabled(True)
             self.MainWindowToolBar.OpenDSS_Save_Act.setEnabled(False)
             self.MainWindowToolBar.OpenDSS_Create_Act.setEnabled(False)
             self.MainWindowToolBar.OpenDSS_View_Act.setEnabled(False)
@@ -235,6 +241,11 @@ class C_MainActions():
         self.OpenDSS.loadDataFlag = False
         self.updateToobarMenu()
         self.updateStatusBar()
+
+    #Contribuição Jonas
+    def execInsertStorage(self):
+        #self.OpenDSS_DialogInsertStorage.updateDialog()
+        self.OpenDSS_DialogInsertStorage.show()
 
 
 
