@@ -4,8 +4,7 @@ from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QIcon, QPixmap
 from PyQt5.QtWidgets import QApplication, QMainWindow, QStyleFactory, QSplashScreen
 
-#eu comentei
-###
+
 #import opendss.class_insert_dialog
 ###
 import config
