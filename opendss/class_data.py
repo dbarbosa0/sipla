@@ -21,6 +21,7 @@ class C_Data():  # classe OpenDSS
         self.busList = []
         self.elementList = []
         self.recloserList = []
+        self.fuseList = []
         self.initUI()
 
     @property
@@ -550,7 +551,7 @@ class C_Data():  # classe OpenDSS
                         "Line." + dados_sec[ctd].cod_id) + " SwitchedTerm={0}".format("1")
                     temp_memoFileSEC_CONTROL += " FuseCurve={0}".format(curva_do_fusivel) + " RatedCurrent={0}".format(
                         RatedCurrent)
-
+                    self.insertFuseList(temp_memoFileSEC_CONTROL)
                     ##Originalmente o OpenDSS não retorna esse elemento
                     temp_Element = "" #"Fuse.{0}".format(dados_sec[ctd].cod_id)
 
@@ -1149,3 +1150,7 @@ class C_Data():  # classe OpenDSS
     def insertRecloserList(self, name):
         if str(name) not in self.recloserList:
             self.recloserList.append(str(name))
+
+    def insertFuseList(self, name):
+        if str(name) not in self.fuseList:
+            self.fuseList.append(str(name))

@@ -23,7 +23,6 @@ import queue
 class C_OpenDSS(): # classe OpenDSSDirect
 
     def __init__(self):
-
         self.dataOpenDSS = opendss.class_data.C_Data() #Acesso ao Banco de Dados
         self._DataBaseConn = database.class_conn.C_DBaseConn()  # Criando a instância do Banco de Dados
 
@@ -138,6 +137,7 @@ class C_OpenDSS(): # classe OpenDSSDirect
             self.dataOpenDSS.busList = []
             self.dataOpenDSS.elementList = []
             self.dataOpenDSS.recloserList = []
+            self.dataOpenDSS.fuseList = []
 
 
             ##### Executa os Arquitvos que serão executados e inseridos
@@ -631,6 +631,10 @@ class C_OpenDSS(): # classe OpenDSSDirect
 
     def getRecloserList(self):
         return self.dataOpenDSS.recloserList
+
+    def getFuseList(self):
+        return self.dataOpenDSS.fuseList
+
 
 
 

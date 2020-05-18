@@ -58,6 +58,7 @@ class C_MainActions():
         self.SCAnalyze_DialogSettings.OpenDSS = self.OpenDSS #Apontando o ponteiro de OpenDSS C_MainActions
         self.Devices_DialogSettings = protect.class_devices.C_Devices_ConfigDialog()
         self.Devices_DialogSettings.TabRecloser.OpenDSS = self.OpenDSS
+        self.Devices_DialogSettings.TabFuse.OpenDSS = self.OpenDSS
 
 
     #############################################
@@ -234,6 +235,7 @@ class C_MainActions():
 
     def exec_Device_Settings(self):
         self.Devices_DialogSettings.TabRecloser.updateProtectDialog()
+        self.Devices_DialogSettings.TabFuse.updateProtectDialog()
         self.Devices_DialogSettings.show()
 
     #################################################################################
