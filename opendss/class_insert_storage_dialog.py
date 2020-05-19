@@ -26,7 +26,8 @@ class C_Insert_Storage_Dialog(QDialog): ## Classe Dialog principal
 
         self.InitUI()
 
-        # self.OpenDSS = opendss.class_opendss.C_OpenDSS()
+        self.OpenDSS = opendss.class_opendss.C_OpenDSS()
+       # self.StorageName = StorageConfig_GroupBox_Nome_LineEdit
 
 
     def InitUI(self):
@@ -89,7 +90,7 @@ class C_Insert_Storage_Dialog(QDialog): ## Classe Dialog principal
         self.ModoDespacho_GroupBox_Layout.addWidget(self.ModoDespacho_GroupBox_PotAtiv_Btn, 0, 0, 1, 1)
         # Botão Modo de Despacho da Potencia Reativa
         self.ModoDespacho_GroupBox_PotReat_Btn = QPushButton("Modo de Despacho da Pot. Reativa")
-        self.ModoDespacho_GroupBox_PotReat_Btn.clicked.connect(self.DispModeActPow)
+        self.ModoDespacho_GroupBox_PotReat_Btn.clicked.connect(self.DispModeReactPow)
         self.ModoDespacho_GroupBox_Layout.addWidget(self.ModoDespacho_GroupBox_PotReat_Btn, 0, 1, 1, 1)
 
         self.Storages_GroupBox.setLayout(self.Storages_GroupBox_Layout)  # define o Layout do GroupBox Storages
@@ -109,17 +110,21 @@ class C_Insert_Storage_Dialog(QDialog): ## Classe Dialog principal
         self.Config_Btns_Layout.setAlignment(Qt.AlignRight)
         # Botao Restaurar Default
         self.Config_Btns_Default_Btn = QPushButton("Restaurar Default")  # Botão Default dentro do GroupBox
+        self.Config_Btns_Default_Btn.setFixedHeight(30)
+        self.Config_Btns_Default_Btn.setFixedWidth(200)
         self.Config_Btns_Default_Btn.clicked.connect(self.DefaultConfigParameters)
         self.Config_Btns_Layout.addWidget(self.Config_Btns_Default_Btn)
         # Botão OK
         self.Config_Btns_OK_Btn = QPushButton("OK")
         self.Config_Btns_OK_Btn.setIcon(QIcon('img/icon_ok.png'))
+        self.Config_Btns_OK_Btn.setFixedHeight(30)
         self.Config_Btns_OK_Btn.clicked.connect(self.AcceptAddEditStorage)
         self.Config_Btns_OK_Btn.setFixedWidth(125)
         self.Config_Btns_Layout.addWidget(self.Config_Btns_OK_Btn)
         # Botao Cancelar
         self.Config_Btns_Cancel_Btn = QPushButton("Cancelar")  # Botão Cancelar dentro do GroupBox
         self.Config_Btns_Cancel_Btn.setIcon(QIcon('img/icon_cancel.png'))
+        self.Config_Btns_Cancel_Btn.setFixedHeight(30)
         self.Config_Btns_Cancel_Btn.clicked.connect(self.CancelAddEditStorage)
         self.Config_Btns_Cancel_Btn.setFixedWidth(125)
         self.Config_Btns_Layout.addWidget(self.Config_Btns_Cancel_Btn)
@@ -143,7 +148,7 @@ class C_Insert_Storage_Dialog(QDialog): ## Classe Dialog principal
 
 #tenho que escrever o codigo desses botoes ainda
     def excluirStorages(self):
-        pass
+        self.updateDialog()
 
     def addStorages(self):
         self.EnableConfig(True)
@@ -160,8 +165,28 @@ class C_Insert_Storage_Dialog(QDialog): ## Classe Dialog principal
         self.DispModeReactPowDialog.show()
 
     def AcceptAddEditStorage(self):
+        countName = 0
+
+        for ctd in range(0, self.Storages_GroupBox_TreeWidget.topLevelItemCount()):
+
+            Item = self.Storages_GroupBox_TreeWidget.topLevelItem(ctd)
+
+            if Item.text(0) == str(self.TabConfig.StorageConfig_GroupBox_Nome_LineEdit.text()):
+                print(Item.text(0) == str(self.TabConfig.StorageConfig_GroupBox_Nome_LineEdit.text()))
+                countName += 1
+        if countName == 0:
+            Storage_TreeWidget_Item(self.Storages_GroupBox_TreeWidget,
+                                    self.TabConfig.StorageConfig_GroupBox_Nome_LineEdit.text(),
+                                    self.TabConfig.StorageConfig_GroupBox_Bus_ComboBox.currentText())
+        else:
+                msg = QMessageBox()
+                msg.information(self, 'Curvas de Carga',
+                                "Não foi possível adicionar o Storage!\nJá existe um Storage com esse nome!")
+
+        self.updateDialog()
         self.EnableConfig(False)
         self.adjustSize()
+
 
     def CancelAddEditStorage(self):
         self.EnableConfig(False)
@@ -176,10 +201,16 @@ class C_Insert_Storage_Dialog(QDialog): ## Classe Dialog principal
             self.StorageEInvConfig_GroupBox.setVisible(False)
             self.Storages_GroupBox.setVisible(True)
 
+    def updateDialog(self):
+        # segundo o class_insert_monitor, ainda falta coisa aqui, mas preciso ver se vou precisar mesmo
+        self.TabConfig.StorageConfig_GroupBox_Bus_ComboBox.clear()
+        self.TabConfig.StorageConfig_GroupBox_Bus_ComboBox.addItems(self.OpenDSS.getBusList())
+
+
     def DefaultConfigParameters(self):
         self.TabConfig.StorageConfig_GroupBox_Nome_LineEdit.setText("")
         self.TabConfig.StorageConfig_GroupBox_conn_ComboBox.setCurrentText("Y")
-        # self.TabConfig.StorageConfig_GroupBox_Bus_ComboBox
+        self.TabConfig.StorageConfig_GroupBox_Bus_ComboBox.setCurrentIndex(0)
         self.TabConfig.StorageConfig_GroupBox_kW_LineEdit.setText("")
         self.TabConfig.StorageConfig_GroupBox_kv_LineEdit.setText("")
         self.TabConfig.StorageConfig_GroupBox_pf_LineEdit.setText("")
@@ -442,4 +473,22 @@ a prioridade\nda potência é negligenciada. Só funciona se estiver operando no
 
     def EffCurve(self):
         pass
+
+
+class Storage_TreeWidget_Item(QTreeWidgetItem):
+    def __init__(self, parent, name, bus):
+        ## Init super class ( QtGui.QTreeWidgetItem )
+        super(Storage_TreeWidget_Item, self).__init__(parent)
+
+        ## Column 0 - Text:
+        self.setText(0, name)
+        self.setFlags(self.flags() | Qt.ItemIsUserCheckable | Qt.ItemIsEditable)
+        self.setCheckState(0, Qt.Unchecked)
+        ## Column 1 - Bus:
+        self.setText(1, bus)
+        ## Column 2 - Modo Despacho:
+        # self.setText(2, points)
+
+
+
 

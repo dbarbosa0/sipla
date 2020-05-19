@@ -244,7 +244,7 @@ class C_MainActions():
 
     #Contribuição Jonas
     def execInsertStorage(self):
-        #self.OpenDSS_DialogInsertStorage.updateDialog()
+        self.OpenDSS_DialogInsertStorage.updateDialog()
         self.OpenDSS_DialogInsertStorage.show()
 
 
