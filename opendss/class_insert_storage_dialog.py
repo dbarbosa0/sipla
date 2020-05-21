@@ -14,9 +14,11 @@ import class_exception
 import opendss.class_opendss
 import opendss.class_active_pow_dispmode_dialog
 import opendss.class_reactive_pow_dispmode_dialog
+import opendss.class_config_eff_curve
 import config as cfg
 
-class C_Insert_Storage_Dialog(QDialog): ## Classe Dialog principal
+
+class C_Insert_Storage_Dialog(QDialog):  ## Classe Dialog principal
     def __init__(self):
         super().__init__()
 
@@ -27,15 +29,16 @@ class C_Insert_Storage_Dialog(QDialog): ## Classe Dialog principal
         self.InitUI()
 
         self.OpenDSS = opendss.class_opendss.C_OpenDSS()
-       # self.StorageName = StorageConfig_GroupBox_Nome_LineEdit
+        self.EffCurve = opendss.class_config_eff_curve.C_Config_EffCurve_Dialog()
 
+    # self.StorageName = StorageConfig_GroupBox_Nome_LineEdit
 
     def InitUI(self):
-        self.setWindowTitle(self.titleWindow) # titulo janela
+        self.setWindowTitle(self.titleWindow)  # titulo janela
         self.setWindowIcon(QIcon(self.iconWindow))  # ícone da janela
         self.setWindowModality(Qt.ApplicationModal)
         self.setStyle(QStyleFactory.create('Cleanlooks'))  # Estilo da Interface
-        #self.resize(900, 600)
+        # self.resize(900, 600)
 
         # self.setWindowFlags(self.windowFlags() | Qt.WindowMinMaxButtonsHint)
 
@@ -72,12 +75,12 @@ class C_Insert_Storage_Dialog(QDialog): ## Classe Dialog principal
         # Botao OK
         self.Storages_GroupBox_OK_Btn = QPushButton("OK")  # Botão OK dentro do GroupBox
         self.Storages_GroupBox_OK_Btn.setIcon(QIcon('img/icon_ok.png'))
-        #self.Storages_GroupBox_OK_Btn.clicked.connect()
+        # self.Storages_GroupBox_OK_Btn.clicked.connect()
         self.Storages_GroupBox_Layout.addWidget(self.Storages_GroupBox_OK_Btn, 4, 1, 1, 2)
         # Botao Cancelar
         self.Storages_GroupBox_Cancel_Btn = QPushButton("Cancelar")  # Botão Cancelar dentro do GroupBox
         self.Storages_GroupBox_Cancel_Btn.setIcon(QIcon('img/icon_cancel.png'))
-        #self.Storages_GroupBox_Cancel_Btn.clicked.connect()
+        # self.Storages_GroupBox_Cancel_Btn.clicked.connect()
         self.Storages_GroupBox_Layout.addWidget(self.Storages_GroupBox_Cancel_Btn, 4, 3, 1, 1)
 
         ############################ GroupBox Modos de Despacho ########################################################
@@ -94,14 +97,15 @@ class C_Insert_Storage_Dialog(QDialog): ## Classe Dialog principal
         self.ModoDespacho_GroupBox_Layout.addWidget(self.ModoDespacho_GroupBox_PotReat_Btn, 0, 1, 1, 1)
 
         self.Storages_GroupBox.setLayout(self.Storages_GroupBox_Layout)  # define o Layout do GroupBox Storages
-        self.ModoDespacho_GroupBox.setLayout(self.ModoDespacho_GroupBox_Layout)  # define o Layout do GroupBox ModoDespacho
+        self.ModoDespacho_GroupBox.setLayout(
+            self.ModoDespacho_GroupBox_Layout)  # define o Layout do GroupBox ModoDespacho
 
         self.Dialog_Layout.addWidget(self.Storages_GroupBox)  # adiciona o GroupBox Storages ao Dialog
 
         ##################################### Tabs #####################################################################
         self.TabWidget = QTabWidget()
-        self.TabConfig = StorageConfig() # Tab das configurações gerais
-        self.TabInversorConfig = InversorConfig() # Tab das configurações do inversor
+        self.TabConfig = StorageConfig()  # Tab das configurações gerais
+        self.TabInversorConfig = InversorConfig()  # Tab das configurações do inversor
         self.TabWidget.addTab(self.TabConfig, "Configurações Gerais")
         self.TabWidget.addTab(self.TabInversorConfig, "Configurações do Inversor")
 
@@ -130,23 +134,23 @@ class C_Insert_Storage_Dialog(QDialog): ## Classe Dialog principal
         self.Config_Btns_Layout.addWidget(self.Config_Btns_Cancel_Btn)
 
         ################################### GroupBox das Configurações #################################################
-        self.StorageEInvConfig_GroupBox = QGroupBox() # GroupBox que engloba as Tabs e Modo de Despacho
+        self.StorageEInvConfig_GroupBox = QGroupBox()  # GroupBox que engloba as Tabs e Modo de Despacho
         self.StorageEInvConfig_GroupBox_Layout = QVBoxLayout()
         self.StorageEInvConfig_GroupBox.setVisible(False)
 
         self.StorageEInvConfig_GroupBox_Layout.addWidget(self.TabWidget)
-        self.StorageEInvConfig_GroupBox_Layout.addWidget(self.ModoDespacho_GroupBox)  # adiciona o GroupBox ModoDespacho ao GroupBox superior
-        self.StorageEInvConfig_GroupBox_Layout.addItem(self.Config_Btns_Layout) # adiciona o Layout dos Botões das Configurações ao GroupBox superior
+        self.StorageEInvConfig_GroupBox_Layout.addWidget(
+            self.ModoDespacho_GroupBox)  # adiciona o GroupBox ModoDespacho ao GroupBox superior
+        self.StorageEInvConfig_GroupBox_Layout.addItem(
+            self.Config_Btns_Layout)  # adiciona o Layout dos Botões das Configurações ao GroupBox superior
 
         self.StorageEInvConfig_GroupBox.setLayout(self.StorageEInvConfig_GroupBox_Layout)
 
-        self.Dialog_Layout.addWidget(self.StorageEInvConfig_GroupBox) #adiciona a GroupBox das Configurações ao Dialog
+        self.Dialog_Layout.addWidget(self.StorageEInvConfig_GroupBox)  # adiciona a GroupBox das Configurações ao Dialog
 
         self.setLayout(self.Dialog_Layout)
 
-
-
-#tenho que escrever o codigo desses botoes ainda
+    # tenho que escrever o codigo desses botoes ainda
     def excluirStorages(self):
         self.updateDialog()
 
@@ -179,14 +183,13 @@ class C_Insert_Storage_Dialog(QDialog): ## Classe Dialog principal
                                     self.TabConfig.StorageConfig_GroupBox_Nome_LineEdit.text(),
                                     self.TabConfig.StorageConfig_GroupBox_Bus_ComboBox.currentText())
         else:
-                msg = QMessageBox()
-                msg.information(self, 'Curvas de Carga',
-                                "Não foi possível adicionar o Storage!\nJá existe um Storage com esse nome!")
+            msg = QMessageBox()
+            msg.information(self, 'Curvas de Carga',
+                            "Não foi possível adicionar o Storage!\nJá existe um Storage com esse nome!")
 
         self.updateDialog()
         self.EnableConfig(False)
         self.adjustSize()
-
 
     def CancelAddEditStorage(self):
         self.EnableConfig(False)
@@ -205,7 +208,6 @@ class C_Insert_Storage_Dialog(QDialog): ## Classe Dialog principal
         # segundo o class_insert_monitor, ainda falta coisa aqui, mas preciso ver se vou precisar mesmo
         self.TabConfig.StorageConfig_GroupBox_Bus_ComboBox.clear()
         self.TabConfig.StorageConfig_GroupBox_Bus_ComboBox.addItems(self.OpenDSS.getBusList())
-
 
     def DefaultConfigParameters(self):
         self.TabConfig.StorageConfig_GroupBox_Nome_LineEdit.setText("")
@@ -231,7 +233,8 @@ class C_Insert_Storage_Dialog(QDialog): ## Classe Dialog principal
 
         self.TabInversorConfig.InversorConfig_GroupBox_kVA_LineEdit.setText("")
         self.TabInversorConfig.InversorConfig_GroupBox_kWrated_LineEdit.setText("25")
-        self.TabInversorConfig.InversorConfig_GroupBox_varFollowInverter_ComboBox.setCurrentText("Desativa CutIn/CutOut")
+        self.TabInversorConfig.InversorConfig_GroupBox_varFollowInverter_ComboBox.setCurrentText(
+            "Desativa CutIn/CutOut")
         self.TabInversorConfig.InversorConfig_GroupBox_CutIn_LineEdit.setText("0")
         self.TabInversorConfig.InversorConfig_GroupBox_CutOut_LineEdit.setText("0")
         self.TabInversorConfig.InversorConfig_GroupBox_kvarMax_LineEdit.setText("0")
@@ -242,7 +245,6 @@ class C_Insert_Storage_Dialog(QDialog): ## Classe Dialog principal
         self.TabInversorConfig.InversorConfig_GroupBox_WattPriority_ComboBox.setCurrentText("Pot. Reativa")
 
 
-
 class StorageConfig(QWidget):
     def __init__(self):
         super().__init__()
@@ -250,7 +252,6 @@ class StorageConfig(QWidget):
         self.InitUIStorageConfig()
 
     def InitUIStorageConfig(self):
-
         ###################### GroupBox StorageConfig #######################################################
         self.StorageConfig_GroupBox = QGroupBox()  # Criando a GroupBox StorageConfig
         self.StorageConfig_GroupBox_Layout = QGridLayout()  # Layout da GroupBox do StorageConfig é em Grid
@@ -298,25 +299,29 @@ class StorageConfig(QWidget):
         self.StorageConfig_GroupBox_Layout.addWidget(self.StorageConfig_GroupBox_kWhstored_LineEdit, 3, 3, 1, 1)
         # Configurar propriedade "%reserve" (quantidade de energia para ser deixada como reserva em %)
         self.StorageConfig_GroupBox_PercentageReserve_Label = QLabel("Energia reserva (%)")
-        self.StorageConfig_GroupBox_PercentageReserve_Label.setToolTip("Percentual da capacidade de armazenamento nominal (kWh)\npara ser mantida em reserva. É tratado como nível mínimo de\ndescarregamento, em situações normais")
+        self.StorageConfig_GroupBox_PercentageReserve_Label.setToolTip(
+            "Percentual da capacidade de armazenamento nominal (kWh)\npara ser mantida em reserva. É tratado como nível mínimo de\ndescarregamento, em situações normais")
         self.StorageConfig_GroupBox_PercentageReserve_LineEdit = QLineEdit()
         self.StorageConfig_GroupBox_Layout.addWidget(self.StorageConfig_GroupBox_PercentageReserve_Label, 4, 0, 1, 1)
         self.StorageConfig_GroupBox_Layout.addWidget(self.StorageConfig_GroupBox_PercentageReserve_LineEdit, 4, 1, 1, 1)
         # Configurar propriedade "%IdlingkW" (kW consumida por perdas por inatividade)
         self.StorageConfig_GroupBox_IdlingkW_Label = QLabel("Perdas por inatividade (%)")
-        self.StorageConfig_GroupBox_IdlingkW_Label.setToolTip("Percentual de potência ativa nominal (kW)\nconsumida por perdas por inatividade.")
+        self.StorageConfig_GroupBox_IdlingkW_Label.setToolTip(
+            "Percentual de potência ativa nominal (kW)\nconsumida por perdas por inatividade.")
         self.StorageConfig_GroupBox_IdlingkW_LineEdit = QLineEdit()
         self.StorageConfig_GroupBox_Layout.addWidget(self.StorageConfig_GroupBox_IdlingkW_Label, 4, 2, 1, 1)
         self.StorageConfig_GroupBox_Layout.addWidget(self.StorageConfig_GroupBox_IdlingkW_LineEdit, 4, 3, 1, 1)
         # Configurar propriedade "%Charge" (Taxa de carregamento em % da potencia nominal)
         self.StorageConfig_GroupBox_Per100Charge_Label = QLabel("Taxa de carregamento (%)")
-        self.StorageConfig_GroupBox_Per100Charge_Label.setToolTip("Taxa de carregamento em percentual da\npotência ativa nominal (kW).")
+        self.StorageConfig_GroupBox_Per100Charge_Label.setToolTip(
+            "Taxa de carregamento em percentual da\npotência ativa nominal (kW).")
         self.StorageConfig_GroupBox_Per100Charge_LineEdit = QLineEdit()
         self.StorageConfig_GroupBox_Layout.addWidget(self.StorageConfig_GroupBox_Per100Charge_Label, 5, 0, 1, 1)
         self.StorageConfig_GroupBox_Layout.addWidget(self.StorageConfig_GroupBox_Per100Charge_LineEdit, 5, 1, 1, 1)
         # Configurar propriedade "%Discharge" (Taxa de descarregamento em % da potencia nominal)
         self.StorageConfig_GroupBox_Per100Discharge_Label = QLabel("Taxa de descarregamento (%)")
-        self.StorageConfig_GroupBox_Per100Discharge_Label.setToolTip("Taxa de descarregamento em percentual da\npotência ativa nominal (kW).")
+        self.StorageConfig_GroupBox_Per100Discharge_Label.setToolTip(
+            "Taxa de descarregamento em percentual da\npotência ativa nominal (kW).")
         self.StorageConfig_GroupBox_Per100Discharge_LineEdit = QLineEdit()
         self.StorageConfig_GroupBox_Layout.addWidget(self.StorageConfig_GroupBox_Per100Discharge_Label, 5, 2, 1, 1)
         self.StorageConfig_GroupBox_Layout.addWidget(self.StorageConfig_GroupBox_Per100Discharge_LineEdit, 5, 3, 1, 1)
@@ -346,13 +351,15 @@ class StorageConfig(QWidget):
         self.StorageConfig_GroupBox_Layout.addWidget(self.StorageConfig_GroupBox_model_ComboBox, 7, 3, 1, 1)
         # Configurar propriedade "vminpu" (tensão minima, em pu, para a qual o modelo se aplica)
         self.StorageConfig_GroupBox_vMinPu_Label = QLabel("Tensão mínima (p.u.)")
-        self.StorageConfig_GroupBox_vMinPu_Label.setToolTip("Tensão mínima em p.u. para a qual o modelo se aplica. Abaixo\ndesse valor,o modelo da carga se torna um modelo de impedância constante.")
+        self.StorageConfig_GroupBox_vMinPu_Label.setToolTip(
+            "Tensão mínima em p.u. para a qual o modelo se aplica. Abaixo\ndesse valor,o modelo da carga se torna um modelo de impedância constante.")
         self.StorageConfig_GroupBox_vMinPu_LineEdit = QLineEdit()
         self.StorageConfig_GroupBox_Layout.addWidget(self.StorageConfig_GroupBox_vMinPu_Label, 8, 0, 1, 1)
         self.StorageConfig_GroupBox_Layout.addWidget(self.StorageConfig_GroupBox_vMinPu_LineEdit, 8, 1, 1, 1)
         # Configurar propriedade "vmaxpu" (tensão maxima, em pu, para a qual o modelo se aplica)
         self.StorageConfig_GroupBox_vMaxPu_Label = QLabel("Tensão máxima (p.u.)")
-        self.StorageConfig_GroupBox_vMaxPu_Label.setToolTip("Tensão máxima em p.u. para a qual o modelo se aplica. Abaixo\ndesse valor,o modelo da carga se torna um modelo de impedância constante.")
+        self.StorageConfig_GroupBox_vMaxPu_Label.setToolTip(
+            "Tensão máxima em p.u. para a qual o modelo se aplica. Abaixo\ndesse valor,o modelo da carga se torna um modelo de impedância constante.")
         self.StorageConfig_GroupBox_vMaxPu_LineEdit = QLineEdit()
         self.StorageConfig_GroupBox_Layout.addWidget(self.StorageConfig_GroupBox_vMaxPu_Label, 8, 2, 1, 1)
         self.StorageConfig_GroupBox_Layout.addWidget(self.StorageConfig_GroupBox_vMaxPu_LineEdit, 8, 3, 1, 1)
@@ -369,7 +376,8 @@ class StorageConfig(QWidget):
         self.StorageConfig_GroupBox_Layout.addWidget(self.StorageConfig_GroupBox_X_Label, 9, 2, 1, 1)
         self.StorageConfig_GroupBox_Layout.addWidget(self.StorageConfig_GroupBox_X_LineEdit, 9, 3, 1, 1)
 
-        self.StorageConfig_GroupBox.setLayout(self.StorageConfig_GroupBox_Layout)  # define o Layout do GroupBox StoragesConfig
+        self.StorageConfig_GroupBox.setLayout(
+            self.StorageConfig_GroupBox_Layout)  # define o Layout do GroupBox StoragesConfig
 
         self.Tab_layout = QGridLayout()
         self.Tab_layout.addWidget(self.StorageConfig_GroupBox, 1, 1, 1, 1)
@@ -383,9 +391,12 @@ class InversorConfig(QWidget):
 
         self.InitUIInversorConfig()
 
+        self.EffCurve = opendss.class_config_eff_curve.C_Config_EffCurve_Dialog()
+
     def InitUIInversorConfig(self):
         ############################ GroupBox Configuracoes do Inversor ################################################
-        self.InversorConfig_GroupBox = QGroupBox("Configurações do Inversor")  # Criando a GroupBox Configurações do Inversor
+        self.InversorConfig_GroupBox = QGroupBox(
+            "Configurações do Inversor")  # Criando a GroupBox Configurações do Inversor
         self.InversorConfig_GroupBox_Layout = QGridLayout()  # Layout da GroupBox do InversorConfig é em Grid
         # Configurar propriedade "kVA"
         self.InversorConfig_GroupBox_kVA_Label = QLabel("Pot. aparente máxima (kVA)")
@@ -404,12 +415,14 @@ potência reativa independentemente\ndo status do inversor. Quando ativado, a ge
 cessar quando o inversor estiver desligado devido a queda da potência DC\nabaixo do CutOut. A geração/absorção vai \
 começar novamente quando a potência\nDC estiver acima de CutIn")
         self.InversorConfig_GroupBox_varFollowInverter_ComboBox = QComboBox()
-        self.InversorConfig_GroupBox_varFollowInverter_ComboBox.addItems(["Ativa CutIn/CutOut", "Desativa CutIn/CutOut"])
+        self.InversorConfig_GroupBox_varFollowInverter_ComboBox.addItems(
+            ["Ativa CutIn/CutOut", "Desativa CutIn/CutOut"])
         self.InversorConfig_GroupBox_Layout.addWidget(self.InversorConfig_GroupBox_varFollowInverter_Label, 1, 0, 1, 1)
-        self.InversorConfig_GroupBox_Layout.addWidget(self.InversorConfig_GroupBox_varFollowInverter_ComboBox, 1, 1, 1, 1)
+        self.InversorConfig_GroupBox_Layout.addWidget(self.InversorConfig_GroupBox_varFollowInverter_ComboBox, 1, 1, 1,
+                                                      1)
         # Configurar propriedade "EffCurve" (True ativa %CutIn %CutOut False desativa %CutIn %CutOut)
         self.InversorConfig_GroupBox_EffCurve_Btn = QPushButton("Selecionar curva de Eficiência")
-        self.InversorConfig_GroupBox_EffCurve_Btn.clicked.connect(self.EffCurve)
+        self.InversorConfig_GroupBox_EffCurve_Btn.clicked.connect(self.EffCurveConfig)
         self.InversorConfig_GroupBox_Layout.addWidget(self.InversorConfig_GroupBox_EffCurve_Btn, 1, 2, 1, 2)
         # Configurar propriedade "%CutIn"
         self.InversorConfig_GroupBox_CutIn_Label = QLabel("CutIn (%)")
@@ -464,15 +477,16 @@ a prioridade\nda potência é negligenciada. Só funciona se estiver operando no
         self.InversorConfig_GroupBox_Layout.addWidget(self.InversorConfig_GroupBox_WattPriority_Label, 5, 2, 1, 1)
         self.InversorConfig_GroupBox_Layout.addWidget(self.InversorConfig_GroupBox_WattPriority_ComboBox, 5, 3, 1, 1)
 
-        self.InversorConfig_GroupBox.setLayout(self.InversorConfig_GroupBox_Layout)  # define o Layout do GroupBox InversorConfig
+        self.InversorConfig_GroupBox.setLayout(
+            self.InversorConfig_GroupBox_Layout)  # define o Layout do GroupBox InversorConfig
 
         self.Tab_layout = QGridLayout()
-        self.Tab_layout.addWidget(self.InversorConfig_GroupBox,1, 1, 1, 1) # adiciona o GroupBox InversorConfig ao Tab
+        self.Tab_layout.addWidget(self.InversorConfig_GroupBox, 1, 1, 1, 1)  # adiciona o GroupBox InversorConfig ao Tab
 
         self.setLayout(self.Tab_layout)
 
-    def EffCurve(self):
-        pass
+    def EffCurveConfig(self):
+        self.EffCurve.show()
 
 
 class Storage_TreeWidget_Item(QTreeWidgetItem):
@@ -488,7 +502,3 @@ class Storage_TreeWidget_Item(QTreeWidgetItem):
         self.setText(1, bus)
         ## Column 2 - Modo Despacho:
         # self.setText(2, points)
-
-
-
-
