@@ -59,6 +59,7 @@ class C_MainActions():
         self.Devices_DialogSettings = protect.class_devices.C_Devices_ConfigDialog()
         self.Devices_DialogSettings.TabRecloser.OpenDSS = self.OpenDSS
         self.Devices_DialogSettings.TabFuse.OpenDSS = self.OpenDSS
+        self.Devices_DialogSettings.TabRelay.OpenDSS = self.OpenDSS
 
 
     #############################################
@@ -126,6 +127,18 @@ class C_MainActions():
         else:
             QMessageBox(QMessageBox.Warning, "DataBase Configuration", \
                         "A Conexão com o Banco de Dados deve ser configurada!", QMessageBox.Ok).exec()
+
+
+
+        #### PREGUIÇA DE CARVALHO. N LEVAR EM CONSIDERAÇÃO
+        self.MainNetPanel.NetPanel_Config_GroupBox_SEAT_ComboBox.setCurrentText("PTU")
+        self.MainNetPanel.NetPanel_Config_GroupBox_SEAT_Btn.click()
+        self.MainNetPanel.NetPanel_Config_GroupBox_CirATMT_ComboBox.setCurrentText("PTUPIT")
+        self.MainNetPanel.NetPanel_Config_GroupBox_CirATMT_Btn.click()
+        self.MainNetPanel.NetPanel_Config_GroupBox_SEMT_Btn.click()
+        self.MainNetPanel.NetPanel_Fields_GroupBox_Select_Checkbox_SelectAll.click()
+        #### PREGUIÇA DE CARVALHO. N LEVAR EM CONSIDERAÇÃO
+
 
 
     def configDataBase(self):
@@ -236,6 +249,7 @@ class C_MainActions():
     def exec_Device_Settings(self):
         self.Devices_DialogSettings.TabRecloser.updateProtectDialog()
         self.Devices_DialogSettings.TabFuse.updateProtectDialog()
+        self.Devices_DialogSettings.TabRelay.updateProtectDialog()
         self.Devices_DialogSettings.show()
 
     #################################################################################

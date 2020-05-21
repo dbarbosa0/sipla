@@ -22,6 +22,7 @@ class C_Data():  # classe OpenDSS
         self.elementList = []
         self.recloserList = []
         self.fuseList = []
+        self.relayList = []
         self.initUI()
 
     @property
@@ -561,7 +562,7 @@ class C_Data():  # classe OpenDSS
                     temp_memoFileSEC_CONTROL += " SwitchedObj={0}".format(
                         "Line." + dados_sec[ctd].cod_id) + " SwitchedTerm={0}".format("1")
                     temp_memoFileSEC_CONTROL += " type=current"
-
+                    self.insertRelayList(temp_memoFileSEC_CONTROL)
                     temp_Element = "Relay.{0}".format(dados_sec[ctd].cod_id)
 
                 if tipoSEC == "32":  # Religador
@@ -1146,7 +1147,6 @@ class C_Data():  # classe OpenDSS
         if str(name) not in self.elementList:
             self.elementList.append(str(name))
 
-
     def insertRecloserList(self, name):
         if str(name) not in self.recloserList:
             self.recloserList.append(str(name))
@@ -1154,3 +1154,7 @@ class C_Data():  # classe OpenDSS
     def insertFuseList(self, name):
         if str(name) not in self.fuseList:
             self.fuseList.append(str(name))
+
+    def insertRelayList(self, name):
+        if str(name) not in self.relayList:
+            self.relayList.append(str(name))

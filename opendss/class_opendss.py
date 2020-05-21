@@ -138,6 +138,7 @@ class C_OpenDSS(): # classe OpenDSSDirect
             self.dataOpenDSS.elementList = []
             self.dataOpenDSS.recloserList = []
             self.dataOpenDSS.fuseList = []
+            self.dataOpenDSS.relayList = []
 
 
             ##### Executa os Arquitvos que serão executados e inseridos
@@ -634,6 +635,9 @@ class C_OpenDSS(): # classe OpenDSSDirect
 
     def getFuseList(self):
         return self.dataOpenDSS.fuseList
+
+    def getRelayList(self):
+        return self.dataOpenDSS.relayList
 
 
 
