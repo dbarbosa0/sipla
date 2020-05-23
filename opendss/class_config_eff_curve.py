@@ -30,7 +30,6 @@ class C_Config_EffCurve_Dialog(QDialog):
 
         self.InitUI()
 
-        self.addDialog = C_Add_EffCurve_Dialog()
     def InitUI(self):
 
 
@@ -38,7 +37,7 @@ class C_Config_EffCurve_Dialog(QDialog):
         self.setWindowIcon(QIcon(self.iconWindow))  # ícone da janela
         self.setWindowModality(Qt.ApplicationModal)
         self.setStyle(QStyleFactory.create('Cleanlooks'))  # Estilo da Interface
-        self.resize(800, 500)
+        self.resize(850, 475)
 
         self.setWindowFlags(self.windowFlags() | Qt.WindowMinMaxButtonsHint)
 
@@ -47,13 +46,20 @@ class C_Config_EffCurve_Dialog(QDialog):
 
         ### Curvas de Eficiências - TreeWidget
         self.EffCurve_GroupBox = QGroupBox("Curvas de Eficiência")
-        self.EffCurve_GroupBox.setFixedWidth(400)
+        self.EffCurve_GroupBox.setFixedWidth(450)
 
         self.EffCurve_GroupBox_Layout = QGridLayout()
         self.EffCurve_GroupBox_TreeWidget = QTreeWidget()
-        self.EffCurve_GroupBox_TreeWidget.setHeaderLabels(['Nome', 'Cor', 'Pontos Y', 'Pontos X'])
+        self.EffCurve_GroupBox_TreeWidget.setHeaderLabels(['Nome', 'Cor', 'Pontos X', 'Pontos Y'])
         self.EffCurve_GroupBox_TreeWidget.setColumnWidth(1, 20)
         self.EffCurve_GroupBox_Layout.addWidget(self.EffCurve_GroupBox_TreeWidget, 1, 1, 1, 2)
+
+        ### Label
+        self.EffCurve_GroupBox_Label = QLabel(
+            "Pontos X: Eficiência do inversor em p.u.\n\
+Pontos Y: Potência aparente (kVA) em p.u.")
+        self.EffCurve_GroupBox_Layout.addWidget(self.EffCurve_GroupBox_Label, 2, 1, 1, 2)
+
 
         ### Botões adicionar/remover curvas
         self.EffCurve_GroupBox_Remover_Btn = QPushButton("Remover")
@@ -87,7 +93,7 @@ class C_Config_EffCurve_Dialog(QDialog):
         self.EffCurve_GroupBox_Show_Btn = QPushButton("Visualizar")
         self.EffCurve_GroupBox_Show_Btn.setIcon(QIcon('img/icon_line.png'))
         # self.Shapes_GroupBox_Show_Btn.setFixedWidth(100)
-        #self.EffCurve_GroupBox_Show_Btn.clicked.connect(self.viewEffCurve)
+        self.EffCurve_GroupBox_Show_Btn.clicked.connect(self.viewEffCurve)
         self.EffCurve_GroupBox_Layout.addWidget(self.EffCurve_GroupBox_Show_Btn, 5, 1, 1, 2)
 
         self.Dialog_Layout.addWidget(self.EffCurve_GroupBox, 1, 1, 1, 1)
@@ -128,146 +134,128 @@ class C_Config_EffCurve_Dialog(QDialog):
         self.setLayout(self.Dialog_Layout)
 
     def addEffCurve(self):
-        self.addDialog.show()
+
+        inputLoadName, inputOk = QInputDialog.getText(self, 'Curvas de Eficiência','Entre com o nome da nova Curva de\nEficiência do Inversor:')
+
+        if inputOk:
+            countName = 0
+            for ctd in range(0, self.EffCurve_GroupBox_TreeWidget.topLevelItemCount()):
+
+                Item = self.EffCurve_GroupBox_TreeWidget.topLevelItem(ctd)
+
+                if Item.name == str(inputLoadName):
+                    countName += 1
+
+            if countName == 0:
+                ptsX = [0.1, 0.2, 0.4, 1.0]
+                ptsX = str(ptsX).strip('[]').replace("'", "")
+
+                ptsY = [0.86, 0.9, 0.93, 0.97]
+                ptsY = str(ptsY).strip('[]').replace("'", "")
+
+                Config_EffCurve_GroupBox_TreeWidget_Item(self.EffCurve_GroupBox_TreeWidget,
+                                                         inputLoadName,
+                                                         ptsX,
+                                                         ptsY,
+                                                         cfg.colorsList[random.randint(0, len(cfg.colorsList) - 1)])
+            else:
+                msg = QMessageBox()
+                msg.information(self, 'Curvas de Eficiência',
+                                "Não foi possível adicionar a curva de eficiência!\nCurva já existente!")
+
+    def viewEffCurve(self):
+
+        #Limpando
+        self.graphWidget.clear()
+
+        # Add Background colour to white
+        self.graphWidget.setBackground('w')
+        #Add Axis Labels
+        self.graphWidget.setLabel('left', 'Pot. aparente (p.u.)', color='red', size=20)
+        self.graphWidget.setLabel('bottom', 'Eficiência (p.u.)', color='red', size=20)
+        # Add legend
+        self.graphWidget.addLegend()
+        # Add grid
+        self.graphWidget.showGrid(x=True, y=True)
+
+        countSelected = 0
+        for ctd in range(0, self.EffCurve_GroupBox_TreeWidget.topLevelItemCount()):
+
+            Item = self.EffCurve_GroupBox_TreeWidget.topLevelItem(ctd)
+
+            if Item.checkState(0) == Qt.Checked:
+
+                pen = pyqtgraph.mkPen(color = Item.getColorRGB())
+
+                pointsXList = Item.getPointsXList()
+                pointsYList = Item.getPointsYList()
+
+                self.graphWidget.plot(pointsXList, pointsYList, name=Item.name, pen=pen, symbol='o', symbolSize=10, symbolBrush=Item.getColorRGB())
+
+                countSelected += 1
+
+        if countSelected == 0:
+            msg = QMessageBox()
+            msg.information(self, 'Curvas de Eficiência', "Nenhuma curva selecionada para visualização!")
 
 
-
-
-class C_Add_EffCurve_Dialog(QDialog):
-    def __init__(self):
-        super().__init__()
-
-        self.titleWindow = "OpenDSS Adicionar Curva de Eficiência"
-        self.iconWindow = cfg.sipla_icon
-        self.stylesheet = cfg.sipla_stylesheet
-
-        self.InitUI()
-
+class Config_EffCurve_GroupBox_TreeWidget_Item(QTreeWidgetItem):
+    def __init__(self, parent,  name, pointsX, pointsY, color):
+        ## Init super class ( QtGui.QTreeWidgetItem )
+        super(Config_EffCurve_GroupBox_TreeWidget_Item, self).__init__(parent)
         self.Config_EffCurve = C_Config_EffCurve_Dialog()
+        ## Column 0 - Text:
 
-    def InitUI(self):
 
-        self.setWindowTitle(self.titleWindow)
-        self.setWindowIcon(QIcon(self.iconWindow))  # ícone da janela
-        self.setWindowModality(Qt.ApplicationModal)
-        self.setStyle(QStyleFactory.create('Cleanlooks'))  # Estilo da Interface
+        self.setText(0, name)
+        self.setFlags(self.flags() | Qt.ItemIsUserCheckable | Qt.ItemIsEditable)
+        self.setCheckState(0, Qt.Unchecked)
 
-        self.Dialog_Layout = QGridLayout()
+        self.color = color
 
-        self.Label = QLabel("Escreva os pontos separados por vírgula")
-        self.Dialog_Layout.addWidget(self.Label, 1, 1, 1, 2)
-        self.Label_Nome = QLabel("Nome")
-        self.Dialog_Layout.addWidget(self.Label_Nome, 2, 1, 1, 1)
-        self.Label_PontosX = QLabel("Pontos do eixo X")
-        self.Dialog_Layout.addWidget(self.Label_PontosX, 3, 1, 1, 1)
-        self.Label_PontosY = QLabel("Pontos do eixo Y")
-        self.Dialog_Layout.addWidget(self.Label_PontosY, 4, 1, 1, 1)
+        ## Column 1 - Button:
+        self.TreeWidget_Item_Btn = QPushButton()
+        self.TreeWidget_Item_Btn.setFixedSize(20, 20)
+        self.TreeWidget_Item_Btn.setStyleSheet('QPushButton {background-color:' + QColor(self.color).name() + '}')
+        self.TreeWidget_Item_Btn.clicked.connect(self.setColor)
+        self.treeWidget().setItemWidget(self, 1, self.TreeWidget_Item_Btn)
 
-        self.LineEdit_Nome = QLineEdit()
-        self.Dialog_Layout.addWidget(self.LineEdit_Nome, 2, 2, 1, 1)
-        self.LineEdit_PontosX = QLineEdit()
-        self.Dialog_Layout.addWidget(self.LineEdit_PontosX, 3, 2, 1, 1)
-        self.LineEdit_PontosY = QLineEdit()
-        self.Dialog_Layout.addWidget(self.LineEdit_PontosY, 4, 2, 1, 1)
-        # Botão OK
-        self.OK_Btn = QPushButton("OK")
-        self.OK_Btn.setIcon(QIcon('img/icon_ok.png'))
-        #self.OK_Btn.clicked.connect(self.ConfirmAddEffCurve)
-        self.Dialog_Layout.addWidget(self.OK_Btn, 5, 1, 1, 1)
-        # Botao Cancelar
-        self.Cancel_Btn = QPushButton("Cancelar")  # Botão Cancelar dentro do GroupBox
-        self.Cancel_Btn.setIcon(QIcon('img/icon_cancel.png'))
-        #self.Cancel_Btn.clicked.connect(self.CancelAddEffCurve)
-        self.Dialog_Layout.addWidget(self.Cancel_Btn, 5, 2, 1, 1)
+        ## Column 2 - PontosX:
+        self.setText(2, pointsX)
 
-        self.setLayout(self.Dialog_Layout)
+        ## Column 3 - PontosY:
+        self.setText(3, pointsY)
 
-    def ConfirmAddEffCurve(self):
-        ptsX = self.LineEdit_PontosX.text()
-        ptsX = [float(ctd) for ctd in ptsX.split(',')]
+    @property
+    def name(self):
+        return self.text(0)
 
-        ptsY = self.LineEdit_PontosY.text()
-        ptsY = [float(ctd) for ctd in ptsY.split(',')]
-    #
-    #     countName = 0
-    #     for ctd in range(0, self.Config_EffCurve.EffCurve_GroupBox_TreeWidget.topLevelItemCount()):
-    #
-    #         Item = self.Config_EffCurve.EffCurve_GroupBox_TreeWidget.topLevelItem(ctd)
-    #
-    #         if Item.name == str(self.LineEdit_Nome):
-    #             countName += 1
-    #
-    #     if countName == 0:
-    #         pts = [0 for ctd in range(0, self.nPointsLoadDef)]
-    #         pts = str(pts).strip('[]').replace("'", "")
-    #         Config_LoadShape_Shapes_GroupBox_TreeWidget_Item(self.Shapes_GroupBox_TreeWidget,
-    #                                                          self.Shapes_GroupBox_Checkbox_SelectAll.checkState(),
-    #                                                          inputLoadName, pts,
-    #                                                          cfg.colorsList[
-    #                                                              random.randint(0, len(cfg.colorsList) - 1)])
-    #     else:
-    #         msg = QMessageBox()
-    #         msg.information(self, 'Curvas de Carga',
-    #                         "Não foi possível adicionar a curva de carga!\nCurva de carga já existente!")
-#
-#     def CancelAddEffCurve(self):
-#         pass
-#
-#
-# class Config_EffCurve_GroupBox_TreeWidget_Item(QTreeWidgetItem):
-#     def __init__(self, parent,  name, pointsX, pointsY, color):
-#         ## Init super class ( QtGui.QTreeWidgetItem )
-#         super(Config_EffCurve_GroupBox_TreeWidget_Item, self).__init__(parent)
-#
-#         ## Column 0 - Text:
-#
-#
-#         self.setText(0, name)
-#         self.setFlags(self.flags() | Qt.ItemIsUserCheckable | Qt.ItemIsEditable)
-#         self.setCheckState(0, Qt.Unchecked)
-#
-#         self.color = color
-#
-#         ## Column 1 - Button:
-#         self.TreeWidget_Item_Btn = QPushButton()
-#         self.TreeWidget_Item_Btn.setFixedSize(20, 20)
-#         self.TreeWidget_Item_Btn.setStyleSheet('QPushButton {background-color:' + QColor(self.color).name() + '}')
-#         self.TreeWidget_Item_Btn.clicked.connect(self.setColor)
-#         self.treeWidget().setItemWidget(self, 1, self.TreeWidget_Item_Btn)
-#
-#         ## Column 2 - PontosX:
-#         self.setText(2, pointsX)
-#
-#         ## Column 3 - PontosX:
-#         self.setText(2, pointsY)
-#
-#     @property
-#     def name(self):
-#         return self.text(0)
-#
-#     def getPoints(self):
-#         return self.text(2)
-#
-#     def getPointsList(self):
-#         points = [float(x) for x in self.text(2).split(',')]
-#         return points
-#
-#     def getColor(self):
-#         return self.color
-#
-#     def getColorRGB(self):
-#         return QColor(self.getColor()).getRgb()
-#
-#     def setColor(self):
-#         self.openColorDialog()
-#
-#     def openColorDialog(self):
-#
-#         colorSelectDialog = QColorDialog()
-#
-#         colorSelected = colorSelectDialog.getColor()
-#
-#         if colorSelected.isValid():
-#             self.color = colorSelected.name()
-#             self.TreeWidget_Item_Btn.setStyleSheet('QPushButton {background-color:' + colorSelected.name() + '}')
+    def getPoints(self):
+        return self.text(2)
 
+    def getPointsXList(self):
+        pointsX = [float(x) for x in self.text(2).split(',')]
+        return pointsX
+
+    def getPointsYList(self):
+        pointsY = [float(y) for y in self.text(3).split(',')]
+        return pointsY
+
+    def getColor(self):
+        return self.color
+
+    def getColorRGB(self):
+        return QColor(self.getColor()).getRgb()
+
+    def setColor(self):
+        self.openColorDialog()
+
+    def openColorDialog(self):
+
+        colorSelectDialog = QColorDialog()
+
+        colorSelected = colorSelectDialog.getColor()
+
+        if colorSelected.isValid():
+            self.color = colorSelected.name()
+            self.TreeWidget_Item_Btn.setStyleSheet('QPushButton {background-color:' + colorSelected.name() + '}')
