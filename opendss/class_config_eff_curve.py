@@ -65,7 +65,7 @@ Pontos Y: Potência aparente (kVA) em p.u.")
         self.EffCurve_GroupBox_Remover_Btn = QPushButton("Remover")
         self.EffCurve_GroupBox_Remover_Btn.setIcon(QIcon('img/icon_remove.png'))
         # self.Shapes_GroupBox_Remover_Btn.setFixedWidth(80)
-        #self.EffCurve_GroupBox_Remover_Btn.clicked.connect(self.removeEffCurve)
+        self.EffCurve_GroupBox_Remover_Btn.clicked.connect(self.removeEffCurve)
         self.EffCurve_GroupBox_Layout.addWidget(self.EffCurve_GroupBox_Remover_Btn, 3, 1, 1, 1)
 
         self.EffCurve_GroupBox_Adicionar_Btn = QPushButton("Adicionar")
@@ -73,18 +73,6 @@ Pontos Y: Potência aparente (kVA) em p.u.")
         # self.EffCurve_GroupBox_Adicionar_Btn.setFixedWidth(80)
         self.EffCurve_GroupBox_Adicionar_Btn.clicked.connect(self.addEffCurve)
         self.EffCurve_GroupBox_Layout.addWidget(self.EffCurve_GroupBox_Adicionar_Btn, 3, 2, 1, 1)
-
-        self.EffCurve_GroupBox_Import_Btn = QPushButton("Importar")
-        self.EffCurve_GroupBox_Import_Btn.setIcon(QIcon('img/icon_import_csv.png'))
-        # self.EffCurve_GroupBox_Import_Btn.setFixedWidth(80)
-        #self.EffCurve_GroupBox_Import_Btn.clicked.connect(self.csvImport)
-        self.EffCurve_GroupBox_Layout.addWidget(self.EffCurve_GroupBox_Import_Btn, 4, 1, 1, 1)
-
-        self.EffCurve_GroupBox_Export_Btn = QPushButton("Exportar")
-        self.EffCurve_GroupBox_Export_Btn.setIcon(QIcon('img/icon_export_csv.png'))
-        # self.EffCurve_GroupBox_Export_Btn.setFixedWidth(80)
-        #self.EffCurve_GroupBox_Export_Btn.clicked.connect(self.csvExport)
-        self.EffCurve_GroupBox_Layout.addWidget(self.EffCurve_GroupBox_Export_Btn, 4, 2, 1, 1)
 
         self.EffCurve_GroupBox.setLayout(self.EffCurve_GroupBox_Layout)
 
@@ -94,7 +82,7 @@ Pontos Y: Potência aparente (kVA) em p.u.")
         self.EffCurve_GroupBox_Show_Btn.setIcon(QIcon('img/icon_line.png'))
         # self.Shapes_GroupBox_Show_Btn.setFixedWidth(100)
         self.EffCurve_GroupBox_Show_Btn.clicked.connect(self.viewEffCurve)
-        self.EffCurve_GroupBox_Layout.addWidget(self.EffCurve_GroupBox_Show_Btn, 5, 1, 1, 2)
+        self.EffCurve_GroupBox_Layout.addWidget(self.EffCurve_GroupBox_Show_Btn, 4, 1, 1, 2)
 
         self.Dialog_Layout.addWidget(self.EffCurve_GroupBox, 1, 1, 1, 1)
 
@@ -120,18 +108,19 @@ Pontos Y: Potência aparente (kVA) em p.u.")
         self.Dialog_Btns_Cancel_Btn = QPushButton("Cancelar")
         self.Dialog_Btns_Cancel_Btn.setIcon(QIcon('img/icon_cancel.png'))
         self.Dialog_Btns_Cancel_Btn.setFixedWidth(100)
-        #self.Dialog_Btns_Cancel_Btn.clicked.connect(self.Cancel)
+        self.Dialog_Btns_Cancel_Btn.clicked.connect(self.Cancel)
         self.Dialog_Btns_Layout.addWidget(self.Dialog_Btns_Cancel_Btn)
 
         self.Dialog_Btns_Ok_Btn = QPushButton("OK")
         self.Dialog_Btns_Ok_Btn.setIcon(QIcon('img/icon_ok.png'))
         self.Dialog_Btns_Ok_Btn.setFixedWidth(100)
-        #self.Dialog_Btns_Ok_Btn.clicked.connect(self.Accept)
+        self.Dialog_Btns_Ok_Btn.clicked.connect(self.Accept)
         self.Dialog_Btns_Layout.addWidget(self.Dialog_Btns_Ok_Btn)
 
         self.Dialog_Layout.addLayout(self.Dialog_Btns_Layout, 2, 3, 1, 1)
 
         self.setLayout(self.Dialog_Layout)
+
 
     def addEffCurve(self):
 
@@ -163,6 +152,32 @@ Pontos Y: Potência aparente (kVA) em p.u.")
                 msg.information(self, 'Curvas de Eficiência',
                                 "Não foi possível adicionar a curva de eficiência!\nCurva já existente!")
 
+    def removeEffCurve(self):
+        msg = QMessageBox()
+        msg.setIcon(QMessageBox.Question)
+        msg.setText("Você deseja remover a(s) curva(s) selecionada(s)?")
+        msg.setWindowTitle('Curvas de Carga')
+        msg.setStandardButtons(QMessageBox.Yes | QMessageBox.No)
+        retval = msg.exec_()
+
+        contChecked = 0
+        if retval == QMessageBox.Yes:
+
+            for ctd in range(self.EffCurve_GroupBox_TreeWidget.topLevelItemCount(), 0, -1):
+                Item = self.EffCurve_GroupBox_TreeWidget.topLevelItem(ctd-1)
+
+                if Item.checkState(0) == Qt.Checked:
+                    self.EffCurve_GroupBox_TreeWidget.takeTopLevelItem(ctd-1)
+                    contChecked += 1
+
+            if contChecked > 0:
+                msg.information(self, 'Curvas de Eficiência', str(contChecked) + " curva(s) de eficiência removida(s)!")
+            else:
+                msg.information(self, 'Curvas de Eficiência', "Nenhuma curva de carga selecionada!")
+
+        else:
+            msg.information(self, 'Curvas de Eficiência', "Nenhuma curva de eficiência foi removida!")
+
     def viewEffCurve(self):
 
         #Limpando
@@ -184,19 +199,81 @@ Pontos Y: Potência aparente (kVA) em p.u.")
             Item = self.EffCurve_GroupBox_TreeWidget.topLevelItem(ctd)
 
             if Item.checkState(0) == Qt.Checked:
+                if self.checkEffCurve(Item.name, Item.getPointsX(), Item.getPointsY()):
+                    pen = pyqtgraph.mkPen(color = Item.getColorRGB())
 
-                pen = pyqtgraph.mkPen(color = Item.getColorRGB())
+                    pointsXList = Item.getPointsXList()
+                    pointsYList = Item.getPointsYList()
 
-                pointsXList = Item.getPointsXList()
-                pointsYList = Item.getPointsYList()
+                    self.graphWidget.plot(pointsXList, pointsYList, name=Item.name, pen=pen, symbol='o', symbolSize=10, symbolBrush=Item.getColorRGB())
 
-                self.graphWidget.plot(pointsXList, pointsYList, name=Item.name, pen=pen, symbol='o', symbolSize=10, symbolBrush=Item.getColorRGB())
-
-                countSelected += 1
+                    countSelected += 1
 
         if countSelected == 0:
             msg = QMessageBox()
             msg.information(self, 'Curvas de Eficiência', "Nenhuma curva selecionada para visualização!")
+
+    def Cancel(self):
+        self.EffCurve_GroupBox_TreeWidget.clear()
+        self.graphWidget.clear()
+        self.close()
+
+    def Accept(self):
+        self.setDataEffCurve()
+        self.close()
+
+    def checkEffCurve(self, nameEffCurve, pointsXEffCurve, pointsYEffCurve):
+
+        msgText = ''
+        pointsXEffCurve = pointsXEffCurve.split(',')
+        pointsYEffCurve = pointsYEffCurve.split(',')
+
+        if len(pointsXEffCurve) != len(pointsYEffCurve):
+            msgText += "Erro na curva " + nameEffCurve + ". O número de pontos do eixo das coordenadas está diferente do eixo das abcissas! \n"
+        else:
+            for ctd in pointsXEffCurve:
+                try:
+                    float(ctd)
+                except:
+                    msgText += "O item: " + ctd + " não é float! Verifique a curva de eficiência!"
+            for ctd in pointsYEffCurve:
+                try:
+                    float(ctd)
+                except:
+                    msgText += "O item: " + ctd + " não é float! Verifique a curva de eficiência!"
+
+        if msgText != "":
+            msg = QMessageBox()
+            msg.information(self, 'Curvas de Eficiência',
+                            "Não foi possível adicionar a curva de Eficiência:\n" + msgText)
+            return False
+        else:
+            return True
+
+    def setDataEffCurve(self):
+
+        self.EffCurveXarray = []
+        self.EffCurveYarray = []
+
+        checkCont = 0
+        try:
+            for ctd in range(0, self.EffCurve_GroupBox_TreeWidget.topLevelItemCount()):
+
+                Item = self.EffCurve_GroupBox_TreeWidget.topLevelItem(ctd)
+                if Item.checkState(0) == Qt.Checked:
+                    checkCont += 1
+                    if checkCont > 1:
+                        raise class_exception.ExecConfigOpenDSS("Erro na seleção da Curva de Eficiência ",
+                                                                "Selecione somente uma curva!")
+                    else:
+                        if self.checkEffCurve(Item.name, Item.getPointsX(), Item.getPointsY()):
+                            self.EffCurveXarray = Item.getPointsXList()
+                            self.EffCurveYarray = Item.getPointsYList()
+                        else:
+                            raise class_exception.ExecConfigOpenDSS("Erro na verificação da Curva de Eficiência " \
+                                             + Item.name + " !","Verifique se todos os pontos estão presentes!")
+        except:
+            pass
 
 
 class Config_EffCurve_GroupBox_TreeWidget_Item(QTreeWidgetItem):
@@ -230,8 +307,11 @@ class Config_EffCurve_GroupBox_TreeWidget_Item(QTreeWidgetItem):
     def name(self):
         return self.text(0)
 
-    def getPoints(self):
+    def getPointsX(self):
         return self.text(2)
+
+    def getPointsY(self):
+        return self.text(3)
 
     def getPointsXList(self):
         pointsX = [float(x) for x in self.text(2).split(',')]
