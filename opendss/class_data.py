@@ -23,6 +23,7 @@ class C_Data():  # classe OpenDSS
         self.recloserList = []
         self.fuseList = []
         self.relayList = []
+        self.swtcontrolList = []
         self.initUI()
 
     @property
@@ -580,7 +581,7 @@ class C_Data():  # classe OpenDSS
                     temp_memoFileSEC_CONTROL += " SwitchedTerm={0}".format("1") + " Action={0}".format(
                         operacao_da_chave)
                     temp_memoFileSEC_CONTROL += " lock=yes"
-
+                    self.insertSwtControlList(temp_memoFileSEC_CONTROL)
                     temp_Element = "Swtcontrol.{0}".format(dados_sec[ctd].cod_id)
 
                 # Chaves de Média
@@ -1158,3 +1159,7 @@ class C_Data():  # classe OpenDSS
     def insertRelayList(self, name):
         if str(name) not in self.relayList:
             self.relayList.append(str(name))
+
+    def insertSwtControlList(self, name):
+        if str(name) not in self.swtcontrolList:
+            self.swtcontrolList.append(str(name))

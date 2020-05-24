@@ -60,6 +60,7 @@ class C_MainActions():
         self.Devices_DialogSettings.TabRecloser.OpenDSS = self.OpenDSS
         self.Devices_DialogSettings.TabFuse.OpenDSS = self.OpenDSS
         self.Devices_DialogSettings.TabRelay.OpenDSS = self.OpenDSS
+        self.Devices_DialogSettings.TabSwtControl.OpenDSS = self.OpenDSS
 
 
     #############################################
@@ -247,9 +248,7 @@ class C_MainActions():
         self.OpenDSS.exec_DynamicFlt()
 
     def exec_Device_Settings(self):
-        self.Devices_DialogSettings.TabRecloser.updateProtectDialog()
-        self.Devices_DialogSettings.TabFuse.updateProtectDialog()
-        self.Devices_DialogSettings.TabRelay.updateProtectDialog()
+        self.Devices_DialogSettings.updateMainProtectDialog()
         self.Devices_DialogSettings.show()
 
     #################################################################################
