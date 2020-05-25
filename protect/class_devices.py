@@ -27,7 +27,7 @@ class C_Devices_ConfigDialog(QDialog):
         self.setWindowIcon(QIcon(self.iconWindow))  # ícone da janela
         self.setWindowModality(Qt.ApplicationModal)
         self.setStyle(QStyleFactory.create('Cleanlooks'))  # Estilo da Interface
-        self.resize(200, 200)
+        self.resize(300, 200)
 
         self.Dialog_Layout = QVBoxLayout()  # Layout da Dialog
 
@@ -36,9 +36,11 @@ class C_Devices_ConfigDialog(QDialog):
         self.TabFuse = Fuse()
         self.TabRelay = Relay()
         self.TabSwtControl = SwtControl()
+        self.editedDevices = []
+        self.addedDevices= []
 
-        self.TabWidget.addTab(self.TabRecloser, "Religador")
         self.TabWidget.addTab(self.TabFuse, "Fusível")
+        self.TabWidget.addTab(self.TabRecloser, "Religador")
         self.TabWidget.addTab(self.TabRelay, "Relé")
         self.TabWidget.addTab(self.TabSwtControl, "Switch Control")
         self.Dialog_Layout.addWidget(self.TabWidget)
@@ -58,15 +60,70 @@ class C_Devices_ConfigDialog(QDialog):
         self.setLayout(self.Dialog_Layout)
 
     def Accept(self):
+        self.gen_devices()
+        self.exec_Devices()
         self.close()
 
     def updateMainProtectDialog(self):
-        self.TabRecloser.updateProtectDialog()
         self.TabFuse.updateProtectDialog()
+        self.TabRecloser.updateProtectDialog()
         self.TabRelay.updateProtectDialog()
         self.TabSwtControl.updateProtectDialog()
 
+    def gen_devices(self):
+        self.addedDevices = []
+        self.editedDevices = []
+        for item in self.TabRecloser.RecloserDataInfo:
+            if item in self.TabRecloser.AddRecloserDataInfo:
+                self.addedDevices.append(item)
+            else:
+                self.editedDevices.append(item)
+        
+        for item in self.TabFuse.FuseDataInfo:
+            if item in self.TabFuse.AddFuseDataInfo:
+                self.addedDevices.append(item)
+            else:
+                self.editedDevices.append(item)
+        
+        for item in self.TabRelay.RelayDataInfo:
+            if item in self.TabRelay.AddRelayDataInfo:
+                self.addedDevices.append(item)
+            else:
+                self.editedDevices.append(item)
+        
+        for item in self.TabSwtControl.SwtControlDataInfo:
+            if item in self.TabSwtControl.AddSwtControlDataInfo:
+                self.addedDevices.append(item)
+            else:
+                self.editedDevices.append(item)
 
+        # print(f'Added : {self.addedDevices}')
+        # print(f'Edited : {self.editedDevices}')
+
+
+    def exec_Devices(self):
+
+        self.memoFileDevices = []
+
+        for ctd in self.addedDevices:
+            tmp = "New " + ctd["Device"] + "." + ctd["Name"] + " "
+            for key, value in ctd.items():
+                if value != '' and value != 'None'and value is not None and key != 'Device' and key != 'Name':
+                    tmp += key + "=" + value + " "
+            # print(tmp)
+
+            self.memoFileDevices.append(tmp)
+
+        for ctd in self.editedDevices:
+            tmp = "Edit " + ctd["Device"] + "." + ctd["Name"] + " "
+            for key, value in ctd.items():
+                if value != '' and value != 'None'and value is not None and key != 'Device' and key != 'Name':
+                    tmp += key + "=" + value + " "
+            # print(tmp)
+
+            self.memoFileDevices.append(tmp)
+
+        print(self.memoFileDevices)
 class Recloser(QWidget):
 
     def __init__(self):
@@ -92,18 +149,18 @@ class Recloser(QWidget):
         self.Tab_Btns_Layout.setAlignment(Qt.AlignCenter)
 
         self.Remover_Btn = QPushButton("Remover")
-        # self.Remover_Btn.setIcon(QIcon('img/icon_remove.png'))
+        self.Remover_Btn.setIcon(QIcon('img/icon_remove.png'))
         self.Remover_Btn.clicked.connect(self.Edit_Recloser.removeRecloser)
         self.Tab_Btns_Layout.addWidget(self.Remover_Btn)
 
         self.Edit_Btn = QPushButton("Editar")
-        # self.Edit_Btn.setIcon(QIcon('img/icon_edit.png'))
+        self.Edit_Btn.setIcon(QIcon('img/icon_edit.png'))
         # self.Edit_Btn.setFixedWidth(80)
         self.Edit_Btn.clicked.connect(self.Edit_Recloser.editRecloser(self.RecloserSelect_Combobox.currentText))
         self.Tab_Btns_Layout.addWidget(self.Edit_Btn)
 
         self.Add_Btn = QPushButton("Adicionar")
-        # self.Add_Btn.setIcon(QIcon('img/icon_add.png'))
+        self.Add_Btn.setIcon(QIcon('img/icon_add.png'))
         # self.Add_Btn.setFixedWidth(80)
         self.Add_Btn.clicked.connect(self.Edit_Recloser.addRecloser())
         self.Tab_Btns_Layout.addWidget(self.Add_Btn)
@@ -114,7 +171,7 @@ class Recloser(QWidget):
         self.Tab_layout.addLayout(self.Tab_Btns_Layout)
         self.setLayout(self.Tab_layout)
 
-    def load_RecloserInfoBOM(self):
+    def load_RecloserInfo(self):
         recloserSelected = self.RecloserSelect_Combobox.currentText()
         for item in self.RecloserDataInfo:
             if item["Name"] == recloserSelected:
@@ -170,7 +227,7 @@ class Recloser(QWidget):
                         return
                     else:
                         self.flag = False
-        except:
+        except IndexError:
             pass
 
         # Caso algum religador tenha sido adicionado
@@ -186,6 +243,7 @@ class Recloser(QWidget):
         # Caso a lista de religadores esteja vazia:
         if not self.RecloserDataInfo:
             for item in databaseRecloser:
+                databaseRecloserdict["Device"] = 'Recloser'
                 databaseRecloserdict["Name"] = item.split(" MonitoredObj=")[0].split("New Recloser.")[1]
                 # Basic
                 if item.split(" action=")[1] == 'c':
@@ -468,7 +526,7 @@ class EditRecloser(QDialog):
             self.RecloserName_LineEdit.setEnabled(False)
             self.show()
             self.updateEditDialog()
-            self.recloser_parent.load_RecloserInfoBOM()
+            self.recloser_parent.load_RecloserInfo()
             self.recloser_parent.load_ReclosersDatabase()
 
         return process
@@ -500,6 +558,7 @@ class EditRecloser(QDialog):
         self.clearRecloserParameters()
 
     def loadParameters(self):
+        self.datainfo["Device"] = 'Recloser'
         self.datainfo["Name"] = get_lineedit(self.RecloserName_LineEdit)
         ## Basic
         self.datainfo["Action"] = get_combobox(self.Action_ComboBox)
@@ -532,36 +591,34 @@ class EditRecloser(QDialog):
 
     def AcceptAddEditRecloser(self):  ## Dá para otimizar e muito // Somente um teste
 
-        datainfo = {}
-        datainfo["Name"] = unidecode.unidecode(get_lineedit(self.RecloserName_LineEdit).replace(" ", "_"))
+        datainfo = {"Device": 'Recloser',
+                    "Name": unidecode.unidecode(get_lineedit(self.RecloserName_LineEdit).replace(" ", "_")),
+                    "Action": get_combobox(self.Action_ComboBox), "Delay": get_lineedit(self.Delay_LineEdit),
+                    "Enabled": get_combobox(self.Enable_ComboBox), "Shots": get_lineedit(self.Shots_LineEdit),
+                    "NumFast": get_lineedit(self.NumFast_LineEdit),
+                    "RecloseIntervals": get_lineedit(self.RecloserIntervals_LineEdit),
+                    "Reset": get_lineedit(self.ResetTime_LineEdit),
+                    "MonitoredObj": get_combobox(self.MonitObj_ComboBox),
+                    "MonitoredTerm": get_combobox(self.MonitTerm_ComboBox),
+                    "SwitchedObj": get_combobox(self.SwitchedObj_ComboBox),
+                    "SwitchedTerm": get_combobox(self.SwitchedTerm_ComboBox),
+                    "PhaseDelayed": get_combobox(self.PhaseDelay_ComboBox),
+                    "PhaseFast": get_combobox(self.PhaseFast_ComboBox),
+                    "PhaseTrip": get_lineedit(self.PhaseTrip_LineEdit),
+                    "TDPhDelayed": get_lineedit(self.PhaseDelayTimeDial_LineEdit),
+                    "TDPhFast": get_lineedit(self.PhaseFastTimeDial_LineEdit),
+                    "GroundDelayed": get_combobox(self.GroundDelay_ComboBox),
+                    "GroundFast": get_combobox(self.GroundFast_ComboBox),
+                    "GroundTrip": get_lineedit(self.GroundTrip_LineEdit),
+                    "TDGrDelayed": get_lineedit(self.GroundDelayTimeDial_LineEdit),
+                    "TDGrFast": get_lineedit(self.GroundFastTimeDial_LineEdit)}
         ## Basic
-        datainfo["Action"] = get_combobox(self.Action_ComboBox)
-        datainfo["Delay"] = get_lineedit(self.Delay_LineEdit)
-        datainfo["Enabled"] = get_combobox(self.Enable_ComboBox)
-        datainfo["Shots"] = get_lineedit(self.Shots_LineEdit)
-        datainfo["NumFast"] = get_lineedit(self.NumFast_LineEdit)
-        datainfo["RecloseIntervals"] = get_lineedit(self.RecloserIntervals_LineEdit)
-        datainfo["Reset"] = get_lineedit(self.ResetTime_LineEdit)
 
         #  Connections
-        datainfo["MonitoredObj"] = get_combobox(self.MonitObj_ComboBox)
-        datainfo["MonitoredTerm"] = get_combobox(self.MonitTerm_ComboBox)
-        datainfo["SwitchedObj"] = get_combobox(self.SwitchedObj_ComboBox)
-        datainfo["SwitchedTerm"] = get_combobox(self.SwitchedTerm_ComboBox)
 
         #  TCC Curves
         #  Phase
-        datainfo["PhaseDelayed"] = get_combobox(self.PhaseDelay_ComboBox)
-        datainfo["PhaseFast"] = get_combobox(self.PhaseFast_ComboBox)
-        datainfo["PhaseTrip"] = get_lineedit(self.PhaseTrip_LineEdit)
-        datainfo["TDPhDelayed"] = get_lineedit(self.PhaseDelayTimeDial_LineEdit)
-        datainfo["TDPhFast"] = get_lineedit(self.PhaseFastTimeDial_LineEdit)
         #  Ground
-        datainfo["GroundDelayed"] = get_combobox(self.GroundDelay_ComboBox)
-        datainfo["GroundFast"] = get_combobox(self.GroundFast_ComboBox)
-        datainfo["GroundTrip"] = get_lineedit(self.GroundTrip_LineEdit)
-        datainfo["TDGrDelayed"] = get_lineedit(self.GroundDelayTimeDial_LineEdit)
-        datainfo["TDGrFast"] = get_lineedit(self.GroundFastTimeDial_LineEdit)
 
         if self.RecloserName_LineEdit.isEnabled():
             ctdExist = False
@@ -699,7 +756,7 @@ class Fuse(QWidget):
         self.Tab_layout.addLayout(self.Tab_Btns_Layout)
         self.setLayout(self.Tab_layout)
 
-    def load_FuseInfoBOM(self):
+    def load_FuseInfo(self):
         FuseSelected = self.FuseSelect_Combobox.currentText()
         for item in self.FuseDataInfo:
             if item["Name"] == FuseSelected:
@@ -736,7 +793,7 @@ class Fuse(QWidget):
                         return
                     else:
                         self.flag = False
-        except:
+        except IndexError:
             pass
 
         # Caso algum Fusível tenha sido adicionado
@@ -749,9 +806,10 @@ class Fuse(QWidget):
             self.FuseDataInfo.clear()
             self.AddFuseDataInfo.clear()
 
-        # Caso a lista de Fusíveles esteja vazia:
+        # Caso a lista de Fusíveis esteja vazia:
         if not self.FuseDataInfo and not self.loadDatabaseFlag:
             for item in databaseFuse:
+                databaseFusedict["Device"] = 'Fuse'
                 databaseFusedict["Name"] = item.split(" MonitoredObj=")[0].split("New Fuse.")[1]
                 # Basic
                 databaseFusedict["Action"] = ''
@@ -943,7 +1001,7 @@ class EditFuse(QDialog):
             self.FuseName_LineEdit.setEnabled(False)
             self.show()
             self.updateEditDialog()
-            self.Fuse_parent.load_FuseInfoBOM()
+            self.Fuse_parent.load_FuseInfo()
             self.Fuse_parent.load_FusesDatabase()
 
         return process
@@ -975,6 +1033,7 @@ class EditFuse(QDialog):
             self.Fuse_parent.FuseSelect_Combobox.addItem(dicio["Name"], dicio["Name"])
 
     def loadParameters(self):
+        self.datainfo["Device"] = 'Fuse'
         self.datainfo["Name"] = get_lineedit(self.FuseName_LineEdit)
         ## Basic
         self.datainfo["Action"] = get_combobox(self.Action_ComboBox)
@@ -993,21 +1052,19 @@ class EditFuse(QDialog):
 
     def AcceptAddEditFuse(self):  # Dá para otimizar e muito // Somente um teste
 
-        datainfo = {}
-        datainfo["Name"] = unidecode.unidecode(get_lineedit(self.FuseName_LineEdit).replace(" ", "_"))
+        datainfo = {"Device": 'Fuse',
+                    "Name": unidecode.unidecode(get_lineedit(self.FuseName_LineEdit).replace(" ", "_")),
+                    "Action": get_combobox(self.Action_ComboBox), "Delay": get_lineedit(self.Delay_LineEdit),
+                    "Enabled": get_combobox(self.Enable_ComboBox), "MonitoredObj": get_combobox(self.MonitObj_ComboBox),
+                    "MonitoredTerm": get_combobox(self.MonitTerm_ComboBox),
+                    "SwitchedObj": get_combobox(self.SwitchedObj_ComboBox),
+                    "SwitchedTerm": get_combobox(self.SwitchedTerm_ComboBox),
+                    "FuseCurve": get_combobox(self.FuseCurve_ComboBox),
+                    "RatedCurrent": get_lineedit(self.RatedCurrent_LineEdit)}
         ## Basic
-        datainfo["Action"] = get_combobox(self.Action_ComboBox)
-        datainfo["Delay"] = get_lineedit(self.Delay_LineEdit)
-        datainfo["Enabled"] = get_combobox(self.Enable_ComboBox)
         #  Connections
-        datainfo["MonitoredObj"] = get_combobox(self.MonitObj_ComboBox)
-        datainfo["MonitoredTerm"] = get_combobox(self.MonitTerm_ComboBox)
-        datainfo["SwitchedObj"] = get_combobox(self.SwitchedObj_ComboBox)
-        datainfo["SwitchedTerm"] = get_combobox(self.SwitchedTerm_ComboBox)
 
         #  TCC Curves
-        datainfo["FuseCurve"] = get_combobox(self.FuseCurve_ComboBox)
-        datainfo["RatedCurrent"] = get_lineedit(self.RatedCurrent_LineEdit)
 
         if self.FuseName_LineEdit.isEnabled():
             ctdExist = False
@@ -1080,7 +1137,7 @@ class Relay(QWidget):
         super().__init__()
         self.OpenDSS = opendss.class_opendss.C_OpenDSS()
         self.Edit_Relay = EditRelay(self)
-        self.RelaySettings_GroupBox = QGroupBox('Selecionar Relay')
+        self.RelaySettings_GroupBox = QGroupBox('Selecionar Relé')
         self.RelaySettings_GroupBox_Layout = QVBoxLayout()
         self.RelaySettings_GroupBox_Layout.setAlignment(Qt.AlignCenter)
 
@@ -1099,18 +1156,18 @@ class Relay(QWidget):
         self.Tab_Btns_Layout.setAlignment(Qt.AlignCenter)
 
         self.Remover_Btn = QPushButton("Remover")
-        # self.Remover_Btn.setIcon(QIcon('img/icon_remove.png'))
+        self.Remover_Btn.setIcon(QIcon('img/icon_remove.png'))
         self.Remover_Btn.clicked.connect(self.Edit_Relay.removeRelay)
         self.Tab_Btns_Layout.addWidget(self.Remover_Btn)
 
         self.Edit_Btn = QPushButton("Editar")
-        # self.Edit_Btn.setIcon(QIcon('img/icon_edit.png'))
+        self.Edit_Btn.setIcon(QIcon('img/icon_edit.png'))
         # self.Edit_Btn.setFixedWidth(80)
         self.Edit_Btn.clicked.connect(self.Edit_Relay.editRelay(self.RelaySelect_Combobox.currentText))
         self.Tab_Btns_Layout.addWidget(self.Edit_Btn)
 
         self.Add_Btn = QPushButton("Adicionar")
-        # self.Add_Btn.setIcon(QIcon('img/icon_add.png'))
+        self.Add_Btn.setIcon(QIcon('img/icon_add.png'))
         # self.Add_Btn.setFixedWidth(80)
         self.Add_Btn.clicked.connect(self.Edit_Relay.addRelay())
         self.Tab_Btns_Layout.addWidget(self.Add_Btn)
@@ -1121,7 +1178,7 @@ class Relay(QWidget):
         self.Tab_layout.addLayout(self.Tab_Btns_Layout)
         self.setLayout(self.Tab_layout)
 
-    def load_RelayInfoBOM(self):
+    def load_RelayInfo(self):
         RelaySelected = self.RelaySelect_Combobox.currentText()
         for item in self.RelayDataInfo:
             if item["Name"] == RelaySelected:
@@ -1178,7 +1235,7 @@ class Relay(QWidget):
                         return
                     else:
                         self.flag = False
-        except:
+        except IndexError:
             pass
 
         # Caso algum Relay tenha sido adicionado
@@ -1191,9 +1248,10 @@ class Relay(QWidget):
             self.RelayDataInfo.clear()
             self.AddRelayDataInfo.clear()
 
-        # Caso a lista de Relayes esteja vazia:
+        # Caso a lista de Relays esteja vazia:
         if not self.RelayDataInfo:
             for item in databaseRelay:
+                databaseRelaydict["Device"] = 'Relay'
                 databaseRelaydict["Name"] = item.split(" MonitoredObj=")[0].split("New Relay.")[1]
                 # Basic
 
@@ -1569,7 +1627,7 @@ class EditRelay(QDialog):
             self.show()
             self.updateEditDialog()
             self.adjustSize()
-            self.Relay_parent.load_RelayInfoBOM()
+            self.Relay_parent.load_RelayInfo()
             self.Relay_parent.load_RelaysDatabase()
             self.HideNegSeqPar()
 
@@ -1606,6 +1664,8 @@ class EditRelay(QDialog):
 
     def loadParameters(self):
 
+        self.datainfo["Device"] = 'Relay'
+        self.datainfo["Name"] = get_lineedit(self.RelayName_LineEdit)
         self.datainfo["Enabled"] = get_combobox(self.Enable_ComboBox)
         self.datainfo["Type"] = get_combobox(self.type_ComboBox)
         self.datainfo["Action"] = get_combobox(self.Action_ComboBox)
@@ -1641,7 +1701,8 @@ class EditRelay(QDialog):
 
     def AcceptAddEditRelay(self):  # Dá para otimizar e muito // Somente um teste
 
-        datainfo = {"Name": unidecode.unidecode(get_lineedit(self.RelayName_LineEdit).replace(" ", "_")),
+        datainfo = {"Device": 'Relay',
+                    "Name": unidecode.unidecode(get_lineedit(self.RelayName_LineEdit).replace(" ", "_")),
                     "Enabled": get_combobox(self.Enable_ComboBox), "Type": get_combobox(self.type_ComboBox),
                     "Action": get_combobox(self.Action_ComboBox), "Delay": get_lineedit(self.Delay_LineEdit),
                     "Shots": get_lineedit(self.Shots_LineEdit),
@@ -1814,7 +1875,7 @@ class SwtControl(QWidget):
         self.Tab_layout.addLayout(self.Tab_Btns_Layout)
         self.setLayout(self.Tab_layout)
 
-    def load_SwtControlInfoBOM(self):
+    def load_SwtControlInfo(self):
         SwtControlSelected = self.SwtControlSelect_Combobox.currentText()
         for item in self.SwtControlDataInfo:
             if item["Name"] == SwtControlSelected:
@@ -1860,8 +1921,9 @@ class SwtControl(QWidget):
                         return
                     else:
                         self.flag = False
-        except:
+        except IndexError:
             pass
+
 
         # Caso algum Switch tenha sido adicionado
         if self.AddSwtControlDataInfo:
@@ -1876,6 +1938,7 @@ class SwtControl(QWidget):
         # Caso a lista de Switches esteja vazia:
         if not self.SwtControlDataInfo and not self.loadDatabaseFlag:
             for item in databaseSwtControl:
+                databaseSwtControldict["Device"] = 'SwtControl'
                 databaseSwtControldict["Name"] = item.split(" SwitchedObj=")[0].split("New Swtcontrol.")[1]
                 # Basic
                 if item.split(" lock=")[0].split("Action=")[1] == 'c':
@@ -2059,7 +2122,7 @@ class EditSwtControl(QDialog):
             self.SwtControlName_LineEdit.setEnabled(False)
             self.show()
             self.updateEditDialog()
-            self.SwtControl_parent.load_SwtControlInfoBOM()
+            self.SwtControl_parent.load_SwtControlInfo()
             self.SwtControl_parent.load_SwtControlsDatabase()
 
         return process
@@ -2091,6 +2154,7 @@ class EditSwtControl(QDialog):
             self.SwtControl_parent.SwtControlSelect_Combobox.addItem(dicio["Name"], dicio["Name"])
 
     def loadParameters(self):
+        self.datainfo["Device"] = 'SwtControl'
         self.datainfo["Name"] = get_lineedit(self.SwtControlName_LineEdit)
         ## Basic
         self.datainfo["Action"] = get_combobox(self.Action_ComboBox)
@@ -2108,20 +2172,15 @@ class EditSwtControl(QDialog):
 
     def AcceptAddEditSwtControl(self):  # Dá para otimizar e muito // Somente um teste
 
-        datainfo = {}
-        datainfo["Name"] = unidecode.unidecode(get_lineedit(self.SwtControlName_LineEdit).replace(" ", "_"))
+        datainfo = {"Device": 'SwtControl',
+                    "Name": unidecode.unidecode(get_lineedit(self.SwtControlName_LineEdit).replace(" ", "_")),
+                    "Action": get_combobox(self.Action_ComboBox), "Delay": get_lineedit(self.Delay_LineEdit),
+                    "Enabled": get_combobox(self.Enable_ComboBox), "Lock": get_combobox(self.Lock_ComboBox),
+                    "Normal": get_combobox(self.Normal_ComboBox), "Reset": get_combobox(self.Reset_ComboBox),
+                    "State": get_combobox(self.State_ComboBox), "SwitchedObj": get_combobox(self.SwitchedObj_ComboBox),
+                    "SwitchedTerm": get_combobox(self.SwitchedTerm_ComboBox)}
         ## Basic
-        datainfo["Action"] = get_combobox(self.Action_ComboBox)
-        datainfo["Delay"] = get_lineedit(self.Delay_LineEdit)
-        datainfo["Enabled"] = get_combobox(self.Enable_ComboBox)
-        datainfo["Lock"] = get_combobox(self.Lock_ComboBox)
-        datainfo["Normal"] = get_combobox(self.Normal_ComboBox)
-        datainfo["Reset"] = get_combobox(self.Reset_ComboBox)
-        datainfo["State"] = get_combobox(self.State_ComboBox)
         #  Connections
-
-        datainfo["SwitchedObj"] = get_combobox(self.SwitchedObj_ComboBox)
-        datainfo["SwitchedTerm"] = get_combobox(self.SwitchedTerm_ComboBox)
 
         if self.SwtControlName_LineEdit.isEnabled():
             ctdExist = False
