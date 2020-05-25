@@ -464,8 +464,6 @@ class C_Data():  # classe OpenDSS
 
             for ctd in range(0, len(dados_sec)):
 
-
-
                 [num_de_fases, pac_1, pac_2] = self.getFasesConexao(dados_sec[ctd].fas_con, dados_sec[ctd].pac_1,
                                                                     dados_sec[ctd].pac_2)
 
@@ -481,6 +479,8 @@ class C_Data():  # classe OpenDSS
                 if dados_sec[ctd].sit_ativ == "AT":
                     situacao = "true"
                 if dados_sec[ctd].sit_ativ == "DS":
+                    situacao = "false"
+                if dados_sec[ctd].sit_ativ == "0":
                     situacao = "false"
 
 
@@ -817,6 +817,8 @@ class C_Data():  # classe OpenDSS
 
                     [num_de_fases, pac_1, pac_2] = self.getFasesConexao(dados_db[ctd].fas_con, dados_db[ctd].pac, None)
 
+                    if dados_db[ctd].fas_con == "ABC":
+                        conexao = "wye"
                     if dados_db[ctd].fas_con == "ABCN":
                         conexao = "wye"
                     if dados_db[ctd].fas_con == "ABN":
@@ -831,6 +833,7 @@ class C_Data():  # classe OpenDSS
                         conexao = "wye"
                     if dados_db[ctd].fas_con == "CN":
                         conexao = "wye"
+
 
                     ######
                     if conBTTD == True:
@@ -1077,8 +1080,8 @@ class C_Data():  # classe OpenDSS
 
         if fas_con == "ABC":
             num_de_fases = "3"
-            pac_1 = pac_1.replace('-', "") + ".1.2.3.0"
-            pac_2 = pac_2.replace('-', "") + ".1.2.3.0"
+            pac_1 = pac_1.replace('-', "") + ".1.2.3"
+            pac_2 = pac_2.replace('-', "") + ".1.2.3"
         if fas_con == ("AB"):
             num_de_fases = "2"
             pac_1 = pac_1.replace('-', "") + ".1.2.0"

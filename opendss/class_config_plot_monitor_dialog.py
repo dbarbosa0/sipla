@@ -156,13 +156,18 @@ class C_Config_Plot_Dialog(QDialog):
         #Limpando
         self.graphWidget.clear()
 
+        try:
+            self.graphWidget.removeItem(self.legend)
+        except:
+            pass
+
         # Add Background colour to white
         self.graphWidget.setBackground('w')
         #Add Axis Labels
         self.graphWidget.setLabel('left', 'Demanda', color='red', size=20)
         self.graphWidget.setLabel('bottom', 'Tempo', color='red', size=20)
         # Add legend
-        self.graphWidget.addLegend()
+        self.legend = self.graphWidget.addLegend()
         # Add grid
         self.graphWidget.showGrid(x=True, y=True)
         # Set Range

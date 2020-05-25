@@ -7,6 +7,7 @@ import opendss.class_config_dialog
 import opendss.class_insert_energymeter_dialog
 import opendss.class_insert_monitor_dialog
 import opendss.class_insert_storage_dialog
+import opendss.class_energymeter_results_dialog
 import opendss.class_config_plot_monitor_dialog
 import opendss.class_scan_config_dialog
 import database.class_base
@@ -53,6 +54,8 @@ class C_MainActions():
         self.OpenDSS_DialogInsertMonitor.OpenDSS = self.OpenDSS
         self.OpenDSS_DialogPlotMonitor = opendss.class_config_plot_monitor_dialog.C_Config_Plot_Dialog()
         self.OpenDSS_DialogPlotMonitor.OpenDSS = self.OpenDSS
+        self.OpenDSS_DialogResultsEnergyMeter = opendss.class_energymeter_results_dialog.C_ResultsEnergyMeter_Dialog()
+        self.OpenDSS_DialogResultsEnergyMeter.OpenDSS = self.OpenDSS
         # Contribuição Carvalho
         self.SCAnalyze_DialogSettings = opendss.class_scan_config_dialog.C_SCAnalyze_ConfigDialog()
         self.SCAnalyze_DialogSettings.OpenDSS = self.OpenDSS #Apontando o ponteiro de OpenDSS C_MainActions
@@ -87,8 +90,10 @@ class C_MainActions():
 
         if self.OpenDSS.StatusSolutionProcessTime > 0:
             self.MainWindowToolBar.Plot_Monitor_Act.setEnabled(True)
+            self.MainWindowToolBar.OpenDSS_Results_EnergyMeter_Act.setEnabled(True)
         else:
             self.MainWindowToolBar.Plot_Monitor_Act.setEnabled(False)
+            self.MainWindowToolBar.OpenDSS_Results_EnergyMeter_Act.setEnabled(False)
 
         ## Habilitar o Solve Apenas se puder visualizar, o que significa que está tudo certo
         if self.MainNetPanel.Deck_GroupBox_MapView_Btn.isEnabled():
@@ -200,6 +205,10 @@ class C_MainActions():
         self.OpenDSS_DialogInsertMonitor.updateDialog()
         self.OpenDSS_DialogInsertMonitor.show()
 
+    def execResultsEnergyMeter(self):
+        self.OpenDSS_DialogResultsEnergyMeter.updateDialog()
+        self.OpenDSS_DialogResultsEnergyMeter.show()
+
     def execPlotMonitor(self):
         self.OpenDSS_DialogPlotMonitor.StepSizeTime = self.OpenDSS_DialogSettings.dataInfo["StepSizeTime"]
         self.OpenDSS_DialogPlotMonitor.StepSize = self.OpenDSS_DialogSettings.dataInfo["StepSize"]
@@ -241,6 +250,15 @@ class C_MainActions():
         self.OpenDSS.loadDataFlag = False
         self.updateToobarMenu()
         self.updateStatusBar()
+
+        ##Limpando os Monitores
+        self.OpenDSS.Monitors.clear()
+        self.OpenDSS_DialogInsertMonitor.Monitors.clear()
+
+        ##Limpando os Medidores
+        self.OpenDSS.EnergyMeters.clear()
+        self.OpenDSS_DialogInsertEnergyMeter.EnergyMeters.clear()
+
 
     #Contribuição Jonas
     def execInsertStorage(self):
