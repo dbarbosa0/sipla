@@ -6,8 +6,9 @@ import unidecode
 
 import opendss.class_conn
 import opendss.class_opendss
+import prodist.tcapelofu
 import config as cfg
-
+import pyqtgraph
 
 class Fuse(QWidget):
 
@@ -151,11 +152,13 @@ class EditFuse(QDialog):
         self.setWindowModality(Qt.ApplicationModal)
         self.setStyle(QStyleFactory.create('Cleanlooks'))  # Estilo da Interface
         self.resize(200, 200)
-        self.move(825, 170)
+        self.move(860, 170)
         self.Dialog_Layout = QVBoxLayout()
+        self.TesteDialog_Layout = QHBoxLayout()
         self.FuseInfo()
         self.Btns()
-        self.setLayout(self.Dialog_Layout)
+        self.setLayout(self.TesteDialog_Layout)
+        self.PlotState = True
 
     def FuseInfo(self):
         # Parâmetros Intrínsecos do Fusível
@@ -241,17 +244,7 @@ class EditFuse(QDialog):
         self.TCCCurves_Fuse_GroupBox_Layout.setAlignment(Qt.AlignCenter)
 
         # Tipo de Capacidade de Elo Fusível (TCAPELFU)
-        self.TCAPELFU = {"0": "Não", "1H": "1H", "2H": "2H", "3H": "3H", "5H": "5H", "6K": "6K", "8K": "8K",
-                         "10K": "10K",
-                         "12K": "12K", "15K": "15K", "20K": "20K", "25K": "25K", "30K": "30K", "40K": "40K",
-                         "50K": "50K",
-                         "60K": "60K", "65K": "65K", "75K": "75K", "80K": "80K", "100K": "100K", "140K": "140K",
-                         "200K": "200K", "LAM": "LAMINA", "DIR": "ELO", "SC": "S/C", "08H": "0,8H", "04H": "0,4H",
-                         "05H": "0,5H", "100EF": "100EF", "10F": "10F", "1EF": "1EF", "30T": "30T", "3K": "3K",
-                         "40EF": "40EF", "5K": "5K", "65EF": "65EF", "65T": "65T", "6T": "6T", "80EF": "80EF",
-                         "80T": "80T",
-                         "8T": "8T", "10T": "10T", "12T": "12T", "15T": "15T", "20T": "20T", "25T": "25T", "40T": "40T",
-                         "50T": "50T", "100T": "100T"}
+        self.TCAPELFU = prodist.tcapelofu.TCAPELFU
 
         self.FuseCurveList = self.TCAPELFU.values()
         self.FuseCurve_ComboBox = QComboBox()
@@ -272,9 +265,37 @@ class EditFuse(QDialog):
 
         self.TCCCurves_Fuse_GroupBox.setLayout(self.TCCCurves_Fuse_GroupBox_Layout)
 
+        self.graphWidget = pyqtgraph.PlotWidget()
+        self.graphWidget.setHidden(True)
+
         self.Dialog_Layout.addWidget(self.Edit_Fuse_GroupBox)
         self.Dialog_Layout.addWidget(self.Conn_Fuse_GroupBox)
         self.Dialog_Layout.addWidget(self.TCCCurves_Fuse_GroupBox)
+
+        self.TesteDialog_Layout.addLayout(self.Dialog_Layout)
+        self.TesteDialog_Layout.addWidget(self.graphWidget)
+
+    def viewCurve(self):
+        # Limpando
+        self.graphWidget.clear()
+        self.graphWidget.setBackground('w')
+        # Add Axis Labels
+        self.graphWidget.setLabel('left', 'Tempo (s)', color='blue', size=20)
+        self.graphWidget.setLabel('bottom', 'Corrente (A)', color='blue', size=20)
+        # Add legend
+        self.graphWidget.addLegend()
+        # Add grid
+        self.graphWidget.showGrid(x=True, y=True)
+        self.graphWidget.setLogMode(x=True, y=True)
+        self.PlotState = not self.PlotState
+        if not self.PlotState:
+             self.resize(900,150)
+             self.move(325,170)
+        else:
+            self.resize(200, 200)
+            self.move(860, 170)
+        self.graphWidget.setHidden(self.PlotState)
+
 
     def Btns(self):
         self.btngroupbox_layout = QHBoxLayout()
@@ -282,9 +303,9 @@ class EditFuse(QDialog):
         self.Ok_Btn.setMaximumWidth(150)
         self.Ok_Btn.clicked.connect(self.AcceptAddEditFuse)
 
-        self.AddTCC_Btn = QPushButton("Add TCC Curve")
+        self.AddTCC_Btn = QPushButton("View TCC")
         self.AddTCC_Btn.setMaximumWidth(150)
-        # self.AddTCC_Btn.clicked.connect(self.Fuse_parent.FuseList)
+        self.AddTCC_Btn.clicked.connect(self.viewCurve)
 
         self.btngroupbox_layout.addWidget(self.AddTCC_Btn)
         self.btngroupbox_layout.addWidget(self.Ok_Btn)

@@ -18,6 +18,8 @@ class C_Devices_ConfigDialog(QDialog):
         self.iconWindow = cfg.sipla_icon
         self.stylesheet = cfg.sipla_stylesheet
 
+        self.editedDevices = []
+        self.addedDevices = []
         # self.OpenDSS = opendss.class_opendss.C_OpenDSS()
 
         self.InitUI()
@@ -36,11 +38,9 @@ class C_Devices_ConfigDialog(QDialog):
         self.TabFuse = protect.class_fuse.Fuse()
         self.TabRelay = protect.class_relay.Relay()
         self.TabSwtControl = protect.class_swtcontrol.SwtControl()
-        self.editedDevices = []
-        self.addedDevices= []
 
-        self.TabWidget.addTab(self.TabFuse, "Fusível")
         self.TabWidget.addTab(self.TabRecloser, "Religador")
+        self.TabWidget.addTab(self.TabFuse, "Fusível")
         self.TabWidget.addTab(self.TabRelay, "Relé")
         self.TabWidget.addTab(self.TabSwtControl, "Switch Control")
         self.Dialog_Layout.addWidget(self.TabWidget)
@@ -96,9 +96,6 @@ class C_Devices_ConfigDialog(QDialog):
                 self.addedDevices.append(item)
             else:
                 self.editedDevices.append(item)
-
-        # print(f'Added : {self.addedDevices}')
-        # print(f'Edited : {self.editedDevices}')
 
     # SERÁ MOVIDA PARA A "class_opendss"
     def exec_Devices(self):
