@@ -204,7 +204,6 @@ Pontos Y: Potência aparente (kVA) em p.u.")
 
                     pointsXList = Item.getPointsXList()
                     pointsYList = Item.getPointsYList()
-
                     self.graphWidget.plot(pointsXList, pointsYList, name=Item.name, pen=pen, symbol='o', symbolSize=10, symbolBrush=Item.getColorRGB())
 
                     countSelected += 1
