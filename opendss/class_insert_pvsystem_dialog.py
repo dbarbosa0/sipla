@@ -1,9 +1,13 @@
 from PyQt5.QtGui import QIcon
-from PyQt5.QtWidgets import QStyleFactory, QDialog
+from PyQt5.QtWidgets import QStyleFactory, QDialog, QGridLayout, QGroupBox, \
+   QVBoxLayout, QTabWidget, QLabel, QComboBox, QWidget, QLineEdit, QPushButton, QHBoxLayout, QMessageBox
 
+from PyQt5.QtCore import Qt
+
+import opendss.class_opendss
 import config as cfg
 
-class C_PVSystem_ConfigDialog(QDialog):
+class C_Insert_PVSystem_Dialog(QDialog):
     def __init__(self):
         super().__init__()
 
