@@ -12,9 +12,10 @@ import pyqtgraph
 import class_exception
 
 import opendss.class_opendss
-import opendss.class_active_pow_dispmode_dialog
-import opendss.class_reactive_pow_dispmode_dialog
-import opendss.class_config_eff_curve
+import opendss.storage.class_active_pow_dispmode_dialog
+import opendss.storage.class_reactive_pow_dispmode_dialog
+import opendss.storage.class_config_eff_curve
+import opendss.storage.class_config_storagecontroller
 import config as cfg
 
 
@@ -26,12 +27,24 @@ class C_Insert_Storage_Dialog(QDialog):  ## Classe Dialog principal
         self.iconWindow = cfg.sipla_icon
         self.stylesheet = cfg.sipla_stylesheet
 
+        self.Storages = []
+
+        self._StorageControllers = []
+
         self.InitUI()
 
         self.OpenDSS = opendss.class_opendss.C_OpenDSS()
-        self.EffCurve = opendss.class_config_eff_curve.C_Config_EffCurve_Dialog()
+        self.EffCurve = opendss.storage.class_config_eff_curve.C_Config_EffCurve_Dialog()
+        self.DispModeActPowDialog = opendss.storage.class_active_pow_dispmode_dialog.C_Active_Pow_DispMode_Dialog()
+        self.DispModeReactPowDialog = opendss.storage.class_reactive_pow_dispmode_dialog.C_Reactive_Pow_DispMode_Dialog()
 
-    # self.StorageName = StorageConfig_GroupBox_Nome_LineEdit
+    @property
+    def StorageControllers(self):
+        return self._StorageControllers
+
+    @StorageControllers.setter
+    def StorageControllers(self, value):
+        self._StorageControllers = value
 
     def InitUI(self):
         self.setWindowTitle(self.titleWindow)  # titulo janela
@@ -41,9 +54,6 @@ class C_Insert_Storage_Dialog(QDialog):  ## Classe Dialog principal
         # self.resize(900, 600)
 
         # self.setWindowFlags(self.windowFlags() | Qt.WindowMinMaxButtonsHint)
-
-        self.DispModeActPowDialog = opendss.class_active_pow_dispmode_dialog.C_Active_Pow_DispMode_Dialog()
-        self.DispModeReactPowDialog = opendss.class_reactive_pow_dispmode_dialog.C_Reactive_Pow_DispMode_Dialog()
 
         self.Dialog_Layout = QHBoxLayout()  # Layout da Dialog
 
@@ -153,6 +163,8 @@ class C_Insert_Storage_Dialog(QDialog):  ## Classe Dialog principal
     # tenho que escrever o codigo desses botoes ainda
     def excluirStorages(self):
         self.updateDialog()
+        self.DispModeActPowDialog.ConfigStorageController.updateDialog()
+
 
     def addStorages(self):
         self.EnableConfig(True)
@@ -164,6 +176,7 @@ class C_Insert_Storage_Dialog(QDialog):  ## Classe Dialog principal
 
     def DispModeActPow(self):
         self.DispModeActPowDialog.show()
+
 
     def DispModeReactPow(self):
         self.DispModeReactPowDialog.show()
@@ -196,7 +209,6 @@ class C_Insert_Storage_Dialog(QDialog):  ## Classe Dialog principal
         self.adjustSize()
 
     def EnableConfig(self, bool):
-
         if bool:
             self.StorageEInvConfig_GroupBox.setVisible(True)
             self.Storages_GroupBox.setVisible(False)
@@ -251,7 +263,11 @@ class StorageConfig(QWidget):
 
         self.InitUIStorageConfig()
 
+
     def InitUIStorageConfig(self):
+
+        self.ConfigStorageController = opendss.storage.class_config_storagecontroller.C_ActPow_Config_StorageController_Dialog()
+
         ###################### GroupBox StorageConfig #######################################################
         self.StorageConfig_GroupBox = QGroupBox()  # Criando a GroupBox StorageConfig
         self.StorageConfig_GroupBox_Layout = QGridLayout()  # Layout da GroupBox do StorageConfig é em Grid
@@ -383,6 +399,12 @@ class StorageConfig(QWidget):
         self.Tab_layout.addWidget(self.StorageConfig_GroupBox, 1, 1, 1, 1)
 
         self.setLayout(self.Tab_layout)
+        self.Storage_Name = self.StorageConfig_GroupBox_Nome_LineEdit.text()
+        self.Storage_PercentageReserve = self.StorageConfig_GroupBox_PercentageReserve_LineEdit.text()
+
+        self.ConfigStorageController.Storage_Name = self.Storage_Name
+        self.ConfigStorageController.Storage_PercentageReserve = self.Storage_PercentageReserve
+
 
 
 class InversorConfig(QWidget):
@@ -391,7 +413,7 @@ class InversorConfig(QWidget):
 
         self.InitUIInversorConfig()
 
-        self.EffCurve = opendss.class_config_eff_curve.C_Config_EffCurve_Dialog()
+        self.EffCurve = opendss.storage.class_config_eff_curve.C_Config_EffCurve_Dialog()
 
     def InitUIInversorConfig(self):
         ############################ GroupBox Configuracoes do Inversor ################################################

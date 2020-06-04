@@ -1,6 +1,6 @@
 from PyQt5.QtGui import QColor, QIcon
 from PyQt5.QtWidgets import QStyleFactory, QDialog, QGridLayout, QGroupBox, QHBoxLayout, QTreeWidgetItem, \
-    QPushButton, QTreeWidget, QFileDialog, QColorDialog, QMessageBox, QInputDialog, QCheckBox
+    QPushButton, QTreeWidget, QFileDialog, QColorDialog, QMessageBox, QInputDialog, QCheckBox, QLabel, QComboBox, QSpinBox
 from PyQt5.QtCore import Qt
 
 import csv
@@ -25,14 +25,9 @@ class C_Config_DispCurve_Dialog(QDialog):
 
         self.ConfigDialog = opendss.class_config_dialog.C_ConfigDialog()
 
-        self.nPointsLoadDef = self.ConfigDialog.dataInfo["Number"]
-        self.nStepSizeDef = self.ConfigDialog.dataInfo["StepSize"]
-        self.nStepSizeTimeDef = self.ConfigDialog.dataInfo["StepSizeTime"]
-
         self.dataDispCurve = []
 
         self.InitUI()
-
 
     def InitUI(self):
 
@@ -40,23 +35,62 @@ class C_Config_DispCurve_Dialog(QDialog):
         self.setWindowIcon(QIcon(self.iconWindow))  # ícone da janela
         self.setWindowModality(Qt.ApplicationModal)
         self.setStyle(QStyleFactory.create('Cleanlooks'))  # Estilo da Interface
-        self.resize(800, 500)
+        #self.resize(800, 500)
 
         self.setWindowFlags(self.windowFlags() | Qt.WindowMinMaxButtonsHint)
 
         self.Dialog_Layout = QGridLayout()  # Layout da Dialog
 
+        ##### Config parametros iniciais
+        self.Daily_GroupBox = QGroupBox("Parâmetros para a curva")
+        self.Daily_GroupBox_Layout = QGridLayout()
 
+        self.Daily_GroupBox_Stepsize_Label = QLabel("Set Stepsize:")
+        self.Daily_GroupBox_Layout.addWidget(self.Daily_GroupBox_Stepsize_Label, 1, 1, 1, 1)
+        self.Daily_GroupBox_Stepsize_SpinBox = QSpinBox()
+        self.Daily_GroupBox_Stepsize_SpinBox.setValue(1)
+        self.Daily_GroupBox_Layout.addWidget(self.Daily_GroupBox_Stepsize_SpinBox, 1, 2, 1, 1)
+
+        self.Daily_GroupBox_Number_Label = QLabel("Set Number:")
+        self.Daily_GroupBox_Layout.addWidget(self.Daily_GroupBox_Number_Label, 2, 1, 1, 1)
+        self.Daily_GroupBox_Number_SpinBox = QSpinBox()
+        self.Daily_GroupBox_Number_SpinBox.setValue(24)
+        self.Daily_GroupBox_Layout.addWidget(self.Daily_GroupBox_Number_SpinBox, 2, 2, 1, 2)
+
+        self.Daily_GroupBox_Stepsize_ComboBox = QComboBox()
+        self.Daily_GroupBox_Stepsize_ComboBox.addItems(["sec", "min", "hr"])
+        self.Daily_GroupBox_Stepsize_ComboBox.setCurrentText("hr")
+        self.Daily_GroupBox_Layout.addWidget(self.Daily_GroupBox_Stepsize_ComboBox, 1, 3, 1, 1)
+
+        self.Dialog_Btns_Layout = QHBoxLayout()
+        self.Dialog_Btns_Layout.setAlignment(Qt.AlignRight)
+
+        self.Dialog_Btns_Cancel_Btn = QPushButton("Cancelar")
+        self.Dialog_Btns_Cancel_Btn.setIcon(QIcon('img/icon_cancel.png'))
+        self.Dialog_Btns_Cancel_Btn.clicked.connect(self.CancelParameters)
+        self.Dialog_Btns_Layout.addWidget(self.Dialog_Btns_Cancel_Btn)
+
+        self.Dialog_Btns_Ok_Btn = QPushButton("OK")
+        self.Dialog_Btns_Ok_Btn.setIcon(QIcon('img/icon_ok.png'))
+        self.Dialog_Btns_Ok_Btn.clicked.connect(self.AcceptParameters)
+        self.Dialog_Btns_Layout.addWidget(self.Dialog_Btns_Ok_Btn)
+
+        self.Daily_GroupBox_Layout.addLayout(self.Dialog_Btns_Layout, 3, 1, 1, 3)
+
+        self.Daily_GroupBox.setLayout(self.Daily_GroupBox_Layout)
+
+        self.Dialog_Layout.addWidget(self.Daily_GroupBox, 1, 0, 1, 1)
+        ######################################################################
         ##### DispatchCurve
         self.DispCurve_GroupBox = QGroupBox("Curvas de Despacho")
         self.DispCurve_GroupBox.setFixedWidth(400)
+        self.DispCurve_GroupBox.setVisible(False)
 
         self.DispCurve_GroupBox_Layout = QGridLayout()
         self.DispCurve_GroupBox_TreeWidget = QTreeWidget()
         self.DispCurve_GroupBox_TreeWidget.setHeaderLabels(['Nome', 'Cor', 'Pontos'])
         self.DispCurve_GroupBox_TreeWidget.setColumnWidth(1, 20)
         self.DispCurve_GroupBox_Layout.addWidget(self.DispCurve_GroupBox_TreeWidget, 1, 1, 1, 2)
-
 
         self.DispCurve_GroupBox_Remover_Btn = QPushButton("Remover")
         self.DispCurve_GroupBox_Remover_Btn.setIcon(QIcon('img/icon_remove.png'))
@@ -101,6 +135,7 @@ class C_Config_DispCurve_Dialog(QDialog):
 
         ##### DispatchCurve
         self.View_GroupBox = QGroupBox("Visualizar a(s) Curva(s) de Despacho")
+        self.View_GroupBox.setVisible(False)
         self.View_GroupBox_Layout = QHBoxLayout()
 
         self.graphWidget = pyqtgraph.PlotWidget()
@@ -121,32 +156,55 @@ class C_Config_DispCurve_Dialog(QDialog):
         self.Dialog_Btns_Cancel_Btn.setIcon(QIcon('img/icon_cancel.png'))
         self.Dialog_Btns_Cancel_Btn.setFixedWidth(100)
         self.Dialog_Btns_Cancel_Btn.clicked.connect(self.Cancel)
+        self.Dialog_Btns_Cancel_Btn.setVisible(False)
         self.Dialog_Btns_Layout.addWidget(self.Dialog_Btns_Cancel_Btn)
 
         self.Dialog_Btns_Ok_Btn = QPushButton("OK")
         self.Dialog_Btns_Ok_Btn.setIcon(QIcon('img/icon_ok.png'))
         self.Dialog_Btns_Ok_Btn.setFixedWidth(100)
         self.Dialog_Btns_Ok_Btn.clicked.connect(self.Accept)
+        self.Dialog_Btns_Ok_Btn.setVisible(False)
         self.Dialog_Btns_Layout.addWidget(self.Dialog_Btns_Ok_Btn)
 
-        self.Dialog_Layout.addLayout(self.Dialog_Btns_Layout,2,3,1,1)
+        self.Dialog_Layout.addLayout(self.Dialog_Btns_Layout, 2, 3, 1, 1)
 
         self.setLayout(self.Dialog_Layout)
 
-    def Cancel(self):
+    def AcceptParameters(self):
+        self.DispCurve_GroupBox.setVisible(True)
+        self.View_GroupBox.setVisible(True)
+        self.Dialog_Btns_Cancel_Btn.setVisible(True)
+        self.Dialog_Btns_Ok_Btn.setVisible(True)
+        self.Daily_GroupBox.setVisible(False)
+        self.adjustSize()
 
-        self.DispCurve_GroupBox_TreeWidget.clear()
-        self.graphWidget.clear()
+    def CancelParameters(self):
         self.close()
 
-    def Accept(self):
+    def nPointsLoadDef(self):
+        return self.Daily_GroupBox_Number_SpinBox.value()
 
+    def nStepSizeDef(self):
+        return self.Daily_GroupBox_Stepsize_SpinBox.value()
+
+    def nStepSizeTimeDef(self):
+        return self.Daily_GroupBox_Stepsize_ComboBox.currentText()
+
+    def Cancel(self):
+        self.DispCurve_GroupBox_TreeWidget.clear()
+        self.graphWidget.clear()
+        self.DispCurve_GroupBox.setVisible(False)
+        self.View_GroupBox.setVisible(False)
+        self.Dialog_Btns_Cancel_Btn.setVisible(False)
+        self.Dialog_Btns_Ok_Btn.setVisible(False)
+        self.Daily_GroupBox.setVisible(True)
+        self.adjustSize()
+
+    def Accept(self):
         self.setDataDispCurve()
         self.close()
 
-
     def setDataDispCurve(self):
-
         self.dataDispCurve = []
 
         checkCont = 0
@@ -161,15 +219,14 @@ class C_Config_DispCurve_Dialog(QDialog):
                                                                 "Selecione somente uma curva!")
                     else:
                         if self.checkDispCurve(Item.name, Item.getPoints()):
-                            self.dataDispCurve[Item.name] = Item.getPointsList()
+                            self.dataDispCurve = Item.getPointsList()
                         else:
                             raise class_exception.ExecConfigOpenDSS("Erro na verificação da Curva de Despacho " \
-                                             + Item.name + " !","Verifique se todos os " + self.nPointsLoadDef + " pontos estão presentes!")
+                                             + Item.name + " !","Verifique se todos os " + self.nPointsLoadDef() + " pontos estão presentes!")
         except:
             pass
 
     def csvExport(self):
-
         fname = QFileDialog.getSaveFileName(self, 'Open CSV file',
                                             str(pathlib.Path.home()), "CSV files (*.csv)")
 
@@ -190,7 +247,7 @@ class C_Config_DispCurve_Dialog(QDialog):
 
             writer.writerow(rowText)
 
-            for ctdPoints in range(0, self.nPointsLoadDef):
+            for ctdPoints in range(0, self.nPointsLoadDef()):
                 rowText.clear()
                 for dataShape in self.dataDispCurve:
                     rowText.append(self.dataDispCurve[dataShape][ctdPoints])
@@ -273,7 +330,7 @@ class C_Config_DispCurve_Dialog(QDialog):
                     countName += 1
 
             if countName == 0:
-                pts = [0 for ctd in range(0,self.nPointsLoadDef)]
+                pts = [0 for ctd in range(0,self.nPointsLoadDef())]
                 pts = str(pts).strip('[]').replace("'","")
                 Config_DispCurve_GroupBox_TreeWidget_Item(self.DispCurve_GroupBox_TreeWidget,
                                                                  inputDispCurveName, pts,
@@ -287,7 +344,7 @@ class C_Config_DispCurve_Dialog(QDialog):
         msgText = ''
         pointsDispCurve = pointsDispCurve.split(',')
 
-        if len(pointsDispCurve) != self.nPointsLoadDef:
+        if len(pointsDispCurve) != self.nPointsLoadDef():
             msgText += "Número de pontos da curva " + nameDispCurve + " está diferente do definido na configuração! \n"
         else:
             for ctd in pointsDispCurve:
@@ -311,13 +368,13 @@ class C_Config_DispCurve_Dialog(QDialog):
         ##Definindo o X
 
 
-        plot_x = [self.nStepSizeDef * ctd for ctd in range(0,self.nPointsLoadDef)]
+        plot_x = [self.nStepSizeDef() * ctd for ctd in range(0,self.nPointsLoadDef())]
 
         # Add Background colour to white
         self.graphWidget.setBackground('w')
         #Add Axis Labels
         self.graphWidget.setLabel('left', 'Demanda', color='red', size=20)
-        self.graphWidget.setLabel('bottom', 'Tempo (' + self.nStepSizeTimeDef[0] + ")", color='red', size=20)
+        self.graphWidget.setLabel('bottom', 'Tempo (' + self.nStepSizeTimeDef()[0] + ")", color='red', size=20)
         # Add legend
         self.graphWidget.addLegend()
         # Add grid
