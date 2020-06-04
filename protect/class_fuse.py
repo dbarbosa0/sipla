@@ -1,9 +1,13 @@
+import csv
+
 from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import QStyleFactory, QDialog, QGroupBox, QGridLayout, QHBoxLayout, \
-    QPushButton, QVBoxLayout, QComboBox, QLineEdit, QWidget, QLabel, QMessageBox
+    QPushButton, QVBoxLayout, QComboBox, QLineEdit, QWidget, QLabel, QMessageBox, QFileDialog
 from PyQt5.QtCore import Qt
 import unidecode
+import platform
 
+import class_exception
 import opendss.class_conn
 import opendss.class_opendss
 import prodist.tcapelofu
@@ -276,6 +280,9 @@ class EditFuse(QDialog):
         self.TesteDialog_Layout.addWidget(self.graphWidget)
 
     def viewCurve(self):
+        dataCSV = {}
+        pointsXList = []
+        pointsYList = []
         # Limpando
         self.graphWidget.clear()
         self.graphWidget.setBackground('w')
@@ -287,6 +294,7 @@ class EditFuse(QDialog):
         # Add grid
         self.graphWidget.showGrid(x=True, y=True)
         self.graphWidget.setLogMode(x=True, y=True)
+        pen = pyqtgraph.mkPen(color = 'b')
         self.PlotState = not self.PlotState
         if not self.PlotState:
              self.resize(900,150)
@@ -296,6 +304,33 @@ class EditFuse(QDialog):
             self.move(860, 170)
         self.graphWidget.setHidden(self.PlotState)
 
+        fname = "./prodist/tcapelofu.csv".replace("/","\\")
+
+        with open(fname, 'r', newline='') as file:
+            csv_reader_object = csv.reader(file)
+            # if csv.Sniffer().has_header:
+            name_col = next(csv_reader_object)
+
+            for row in name_col:
+                dataCSV[row] = []
+
+            for row in csv_reader_object:  ##Varendo todas as linhas
+                for ndata in range(0, len(name_col)):  ## Varendo todas as colunas
+                    dataCSV[name_col[ndata]].append(row[ndata])
+
+            for key, values in dataCSV.items():
+                if key == get_combobox(self.FuseCurve_ComboBox):
+                    for value in values:
+                        if value:
+                            pointsXList.append(float(value.split(';')[0]))
+                            pointsYList.append(float(value.split(';')[1]))
+
+                    name = 'Curva' + key
+
+            print(pointsXList,pointsYList)
+            self.graphWidget.plot(pointsXList, pointsYList, name=name, pen=pen, symbol='o', symbolSize=10, symbolBrush=(0, 0, 139, 255))
+            print(type(pointsXList[0]))
+            print(type(pointsYList[0]))
 
     def Btns(self):
         self.btngroupbox_layout = QHBoxLayout()

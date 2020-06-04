@@ -148,7 +148,7 @@ class C_SCAnalyze_ConfigDialog(QDialog):
 
     def Accept(self):
         self.loadParameters()
-        self.OpenDSS.SCDataInfo = self.SCDataInfo
+        self.OpenDSS.SCDataInfo = self.SCDataInfo # ponteiro
         self.close()
 
     def updateDialog(self):

@@ -389,6 +389,16 @@ class C_Config_LoadShape_Dialog(QDialog):
                     pointsList = Item.getPointsList()
 
                 self.graphWidget.plot(plot_x, pointsList, name=Item.name, pen=pen, symbol='o', symbolSize=10, symbolBrush=Item.getColorRGB())
+                print(type(plot_x[0]))
+                print(plot_x)
+                print(type(pointsList[0]))
+                print(pointsList)
+                print(type(Item.name))
+                print(Item.name)
+                print(type(pen))
+                print(pen)
+                print(type(Item.getColorRGB()))
+                print(Item.getColorRGB())
 
                 countSelected += 1
 
