@@ -28,8 +28,9 @@ class C_Insert_Storage_Dialog(QDialog):  ## Classe Dialog principal
         self.stylesheet = cfg.sipla_stylesheet
 
         self.Storages = []
+        self.StorageControllers = []
 
-        self._StorageControllers = []
+        # self._StorageControllers = []
 
         self.InitUI()
 
@@ -38,13 +39,13 @@ class C_Insert_Storage_Dialog(QDialog):  ## Classe Dialog principal
         self.DispModeActPowDialog = opendss.storage.class_active_pow_dispmode_dialog.C_Active_Pow_DispMode_Dialog()
         self.DispModeReactPowDialog = opendss.storage.class_reactive_pow_dispmode_dialog.C_Reactive_Pow_DispMode_Dialog()
 
-    @property
-    def StorageControllers(self):
-        return self._StorageControllers
-
-    @StorageControllers.setter
-    def StorageControllers(self, value):
-        self._StorageControllers = value
+    # @property
+    # def StorageControllers(self):
+    #     return self._StorageControllers
+    #
+    # @StorageControllers.setter
+    # def StorageControllers(self, value):
+    #     self._StorageControllers = value
 
     def InitUI(self):
         self.setWindowTitle(self.titleWindow)  # titulo janela
@@ -164,7 +165,7 @@ class C_Insert_Storage_Dialog(QDialog):  ## Classe Dialog principal
     def excluirStorages(self):
         self.updateDialog()
         self.DispModeActPowDialog.ConfigStorageController.updateDialog()
-
+        self.DispModeActPowDialog.DialogActPowLoadShape.updateDialog()
 
     def addStorages(self):
         self.EnableConfig(True)
@@ -175,19 +176,33 @@ class C_Insert_Storage_Dialog(QDialog):  ## Classe Dialog principal
         pass
 
     def DispModeActPow(self):
-        self.DispModeActPowDialog.show()
+        if self.TabConfig.StorageConfig_GroupBox_Nome_LineEdit.text() == "":
+            QMessageBox(QMessageBox.Information, "Storage",
+                        "Antes de configurar o Despacho da Potência Ativa, escolha\num nome para o Storage!",
+                        QMessageBox.Ok).exec()
+        else:
+            self.DispModeActPowDialog.ConfigStorageController.StorageConfig_GroupBox_Nome_LineEdit = self.TabConfig.StorageConfig_GroupBox_Nome_LineEdit
+            self.DispModeActPowDialog.DialogActPowLoadShape.StorageConfig_GroupBox_Nome_LineEdit = self.TabConfig.StorageConfig_GroupBox_Nome_LineEdit
+            self.DispModeActPowDialog.ConfigStorageController.StorageConfig_GroupBox_PercentageReserve_LineEdit = self.TabConfig.StorageConfig_GroupBox_PercentageReserve_LineEdit
+            self.DispModeActPowDialog.DialogActPowLoadShape.StorageConfig_GroupBox_PercentageReserve_LineEdit = self.TabConfig.StorageConfig_GroupBox_PercentageReserve_LineEdit
 
+            # self.TabConfig.ConfigStorageController.StorageControllers = self.StorageControllers
+            self.TabConfig.ConfigStorageController.StorageControllersTemporario = self.StorageControllers
+            self.DispModeActPowDialog.show()
 
     def DispModeReactPow(self):
-        self.DispModeReactPowDialog.show()
+        if self.TabConfig.StorageConfig_GroupBox_Nome_LineEdit.text() == "":
+            QMessageBox(QMessageBox.Information, "Storage",
+                        "Antes de configurar o Despacho da Potência Reativa, escolha\num nome para o Storage!",
+                        QMessageBox.Ok).exec()
+        else:
+            self.DispModeReactPowDialog.show()
 
     def AcceptAddEditStorage(self):
         countName = 0
 
         for ctd in range(0, self.Storages_GroupBox_TreeWidget.topLevelItemCount()):
-
             Item = self.Storages_GroupBox_TreeWidget.topLevelItem(ctd)
-
             if Item.text(0) == str(self.TabConfig.StorageConfig_GroupBox_Nome_LineEdit.text()):
                 print(Item.text(0) == str(self.TabConfig.StorageConfig_GroupBox_Nome_LineEdit.text()))
                 countName += 1
@@ -197,12 +212,24 @@ class C_Insert_Storage_Dialog(QDialog):  ## Classe Dialog principal
                                     self.TabConfig.StorageConfig_GroupBox_Bus_ComboBox.currentText())
         else:
             msg = QMessageBox()
-            msg.information(self, 'Curvas de Carga',
+            msg.information(self, 'Storage',
                             "Não foi possível adicionar o Storage!\nJá existe um Storage com esse nome!")
+
+        # if self.DispSinc_Radio_Btn.isChecked():
+        #     for i in [[self.DispSinc_GroupBox_AutoDespacho_GroupBox_Layout_Default_RadioBtn, self.DialogActPowDefault],
+        #               [self.DispSinc_GroupBox_AutoDespacho_GroupBox_Layout_Follow_RadioBtn, self.DialogActPowFollow],
+        #               [self.DispSinc_GroupBox_AutoDespacho_GroupBox_Layout_LoadLevel_RadioBtn, self.DialogActPowLoadLevel],
+        #               [self.DispSinc_GroupBox_AutoDespacho_GroupBox_Layout_Price_RadioBtn, self.DialogActPowPrice],
+        #               [self.DispSinc_GroupBox_StorageCont_GroupBox_Layout_LoadShape_RadioBtn, self.DialogActPowLoadShape]]:
+        if self.DispModeActPowDialog.DispIndep_Radio_Btn.isChecked():
+            for ctd in self.TabConfig.ConfigStorageController.StorageControllersTemporario:
+                if ctd["StorageName"] == self.TabConfig.StorageConfig_GroupBox_Nome_LineEdit.text():
+                    self.StorageControllers = self.StorageControllers.append(ctd)
 
         self.updateDialog()
         self.EnableConfig(False)
         self.adjustSize()
+        print(self.StorageControllers)
 
     def CancelAddEditStorage(self):
         self.EnableConfig(False)
@@ -227,7 +254,6 @@ class C_Insert_Storage_Dialog(QDialog):  ## Classe Dialog principal
         self.TabConfig.StorageConfig_GroupBox_Bus_ComboBox.setCurrentIndex(0)
         self.TabConfig.StorageConfig_GroupBox_kW_LineEdit.setText("")
         self.TabConfig.StorageConfig_GroupBox_kv_LineEdit.setText("")
-        self.TabConfig.StorageConfig_GroupBox_pf_LineEdit.setText("")
         self.TabConfig.StorageConfig_GroupBox_kWhrated_LineEdit.setText("50")
         self.TabConfig.StorageConfig_GroupBox_kWhstored_LineEdit.setText("50")
         self.TabConfig.StorageConfig_GroupBox_PercentageReserve_LineEdit.setText("20")
@@ -237,7 +263,6 @@ class C_Insert_Storage_Dialog(QDialog):  ## Classe Dialog principal
         self.TabConfig.StorageConfig_GroupBox_EffCharge_LineEdit.setText("90")
         self.TabConfig.StorageConfig_GroupBox_EffDischarge_LineEdit.setText("90")
         self.TabConfig.StorageConfig_GroupBox_state_ComboBox.setCurrentText("Ocioso")
-        self.TabConfig.StorageConfig_GroupBox_model_ComboBox.setCurrentText("Pot. constante")
         self.TabConfig.StorageConfig_GroupBox_vMinPu_LineEdit.setText("0.9")
         self.TabConfig.StorageConfig_GroupBox_vMaxPu_LineEdit.setText("1.1")
         self.TabConfig.StorageConfig_GroupBox_R_LineEdit.setText("0")
@@ -297,16 +322,11 @@ class StorageConfig(QWidget):
         self.StorageConfig_GroupBox_kv_LineEdit = QLineEdit()
         self.StorageConfig_GroupBox_Layout.addWidget(self.StorageConfig_GroupBox_kv_Label, 1, 2, 1, 1)
         self.StorageConfig_GroupBox_Layout.addWidget(self.StorageConfig_GroupBox_kv_LineEdit, 1, 3, 1, 1)
-        # Configurar propriedade "pf"
-        self.StorageConfig_GroupBox_pf_Label = QLabel("Fator de Potência")
-        self.StorageConfig_GroupBox_pf_LineEdit = QLineEdit()
-        self.StorageConfig_GroupBox_Layout.addWidget(self.StorageConfig_GroupBox_pf_Label, 2, 2, 1, 1)
-        self.StorageConfig_GroupBox_Layout.addWidget(self.StorageConfig_GroupBox_pf_LineEdit, 2, 3, 1, 1)
-        # Configurar propriedade "kWhrated" (capacidade nominal do Storage em kWh)
+         # Configurar propriedade "kWhrated" (capacidade nominal do Storage em kWh)
         self.StorageConfig_GroupBox_kWhrated_Label = QLabel("Capacidade Nominal (kWh)")
         self.StorageConfig_GroupBox_kWhrated_LineEdit = QLineEdit()
-        self.StorageConfig_GroupBox_Layout.addWidget(self.StorageConfig_GroupBox_kWhrated_Label, 3, 0, 1, 1)
-        self.StorageConfig_GroupBox_Layout.addWidget(self.StorageConfig_GroupBox_kWhrated_LineEdit, 3, 1, 1, 1)
+        self.StorageConfig_GroupBox_Layout.addWidget(self.StorageConfig_GroupBox_kWhrated_Label, 2, 2, 1, 1)
+        self.StorageConfig_GroupBox_Layout.addWidget(self.StorageConfig_GroupBox_kWhrated_LineEdit, 2, 3, 1, 1)
         # Configurar propriedade "kWhstored" (quantidade atual de energia armazenada em kWh)
         self.StorageConfig_GroupBox_kWhstored_Label = QLabel("Energia armazenada atual (kWh)")
         self.StorageConfig_GroupBox_kWhstored_Label.setToolTip("Energia Armazenada atual em kWh")
@@ -318,8 +338,8 @@ class StorageConfig(QWidget):
         self.StorageConfig_GroupBox_PercentageReserve_Label.setToolTip(
             "Percentual da capacidade de armazenamento nominal (kWh)\npara ser mantida em reserva. É tratado como nível mínimo de\ndescarregamento, em situações normais")
         self.StorageConfig_GroupBox_PercentageReserve_LineEdit = QLineEdit()
-        self.StorageConfig_GroupBox_Layout.addWidget(self.StorageConfig_GroupBox_PercentageReserve_Label, 4, 0, 1, 1)
-        self.StorageConfig_GroupBox_Layout.addWidget(self.StorageConfig_GroupBox_PercentageReserve_LineEdit, 4, 1, 1, 1)
+        self.StorageConfig_GroupBox_Layout.addWidget(self.StorageConfig_GroupBox_PercentageReserve_Label, 3, 0, 1, 1)
+        self.StorageConfig_GroupBox_Layout.addWidget(self.StorageConfig_GroupBox_PercentageReserve_LineEdit, 3, 1, 1, 1)
         # Configurar propriedade "%IdlingkW" (kW consumida por perdas por inatividade)
         self.StorageConfig_GroupBox_IdlingkW_Label = QLabel("Perdas por inatividade (%)")
         self.StorageConfig_GroupBox_IdlingkW_Label.setToolTip(
@@ -332,8 +352,8 @@ class StorageConfig(QWidget):
         self.StorageConfig_GroupBox_Per100Charge_Label.setToolTip(
             "Taxa de carregamento em percentual da\npotência ativa nominal (kW).")
         self.StorageConfig_GroupBox_Per100Charge_LineEdit = QLineEdit()
-        self.StorageConfig_GroupBox_Layout.addWidget(self.StorageConfig_GroupBox_Per100Charge_Label, 5, 0, 1, 1)
-        self.StorageConfig_GroupBox_Layout.addWidget(self.StorageConfig_GroupBox_Per100Charge_LineEdit, 5, 1, 1, 1)
+        self.StorageConfig_GroupBox_Layout.addWidget(self.StorageConfig_GroupBox_Per100Charge_Label, 4, 0, 1, 1)
+        self.StorageConfig_GroupBox_Layout.addWidget(self.StorageConfig_GroupBox_Per100Charge_LineEdit, 4, 1, 1, 1)
         # Configurar propriedade "%Discharge" (Taxa de descarregamento em % da potencia nominal)
         self.StorageConfig_GroupBox_Per100Discharge_Label = QLabel("Taxa de descarregamento (%)")
         self.StorageConfig_GroupBox_Per100Discharge_Label.setToolTip(
@@ -345,8 +365,8 @@ class StorageConfig(QWidget):
         self.StorageConfig_GroupBox_EffCharge_Label = QLabel("Eficiência do carregamento (%) ")
         self.StorageConfig_GroupBox_EffCharge_Label.setToolTip("Percentual de eficiência para o carregamento")
         self.StorageConfig_GroupBox_EffCharge_LineEdit = QLineEdit()
-        self.StorageConfig_GroupBox_Layout.addWidget(self.StorageConfig_GroupBox_EffCharge_Label, 6, 0, 1, 1)
-        self.StorageConfig_GroupBox_Layout.addWidget(self.StorageConfig_GroupBox_EffCharge_LineEdit, 6, 1, 1, 1)
+        self.StorageConfig_GroupBox_Layout.addWidget(self.StorageConfig_GroupBox_EffCharge_Label, 5, 0, 1, 1)
+        self.StorageConfig_GroupBox_Layout.addWidget(self.StorageConfig_GroupBox_EffCharge_LineEdit, 5, 1, 1, 1)
         # Configurar propriedade "%EffDischarge" (% de eficiencia ao descarregar o Storage)
         self.StorageConfig_GroupBox_EffDischarge_Label = QLabel("Eficiência do descarregamento (%)")
         self.StorageConfig_GroupBox_EffDischarge_Label.setToolTip("Percentual de eficiência para o carregamento")
@@ -357,40 +377,34 @@ class StorageConfig(QWidget):
         self.StorageConfig_GroupBox_state_Label = QLabel("Estado de operação")
         self.StorageConfig_GroupBox_state_ComboBox = QComboBox()
         self.StorageConfig_GroupBox_state_ComboBox.addItems(["Ocioso", "Carregando", "Descarregando"])
-        self.StorageConfig_GroupBox_Layout.addWidget(self.StorageConfig_GroupBox_state_Label, 7, 0, 1, 1)
-        self.StorageConfig_GroupBox_Layout.addWidget(self.StorageConfig_GroupBox_state_ComboBox, 7, 1, 1, 1)
-        # Configarar propriedade "model" (modelo para variação da saida de Pot. ativa pela tensão)
-        self.StorageConfig_GroupBox_model_Label = QLabel("Modelo do Storage")
-        self.StorageConfig_GroupBox_model_ComboBox = QComboBox()
-        self.StorageConfig_GroupBox_model_ComboBox.addItems(["Pot. constante", "Z Constante"])
-        self.StorageConfig_GroupBox_Layout.addWidget(self.StorageConfig_GroupBox_model_Label, 7, 2, 1, 1)
-        self.StorageConfig_GroupBox_Layout.addWidget(self.StorageConfig_GroupBox_model_ComboBox, 7, 3, 1, 1)
+        self.StorageConfig_GroupBox_Layout.addWidget(self.StorageConfig_GroupBox_state_Label, 6, 0, 1, 1)
+        self.StorageConfig_GroupBox_Layout.addWidget(self.StorageConfig_GroupBox_state_ComboBox, 6, 1, 1, 1)
         # Configurar propriedade "vminpu" (tensão minima, em pu, para a qual o modelo se aplica)
         self.StorageConfig_GroupBox_vMinPu_Label = QLabel("Tensão mínima (p.u.)")
         self.StorageConfig_GroupBox_vMinPu_Label.setToolTip(
             "Tensão mínima em p.u. para a qual o modelo se aplica. Abaixo\ndesse valor,o modelo da carga se torna um modelo de impedância constante.")
         self.StorageConfig_GroupBox_vMinPu_LineEdit = QLineEdit()
-        self.StorageConfig_GroupBox_Layout.addWidget(self.StorageConfig_GroupBox_vMinPu_Label, 8, 0, 1, 1)
-        self.StorageConfig_GroupBox_Layout.addWidget(self.StorageConfig_GroupBox_vMinPu_LineEdit, 8, 1, 1, 1)
+        self.StorageConfig_GroupBox_Layout.addWidget(self.StorageConfig_GroupBox_vMinPu_Label, 7, 0, 1, 1)
+        self.StorageConfig_GroupBox_Layout.addWidget(self.StorageConfig_GroupBox_vMinPu_LineEdit, 7, 1, 1, 1)
         # Configurar propriedade "vmaxpu" (tensão maxima, em pu, para a qual o modelo se aplica)
         self.StorageConfig_GroupBox_vMaxPu_Label = QLabel("Tensão máxima (p.u.)")
         self.StorageConfig_GroupBox_vMaxPu_Label.setToolTip(
             "Tensão máxima em p.u. para a qual o modelo se aplica. Abaixo\ndesse valor,o modelo da carga se torna um modelo de impedância constante.")
         self.StorageConfig_GroupBox_vMaxPu_LineEdit = QLineEdit()
-        self.StorageConfig_GroupBox_Layout.addWidget(self.StorageConfig_GroupBox_vMaxPu_Label, 8, 2, 1, 1)
-        self.StorageConfig_GroupBox_Layout.addWidget(self.StorageConfig_GroupBox_vMaxPu_LineEdit, 8, 3, 1, 1)
+        self.StorageConfig_GroupBox_Layout.addWidget(self.StorageConfig_GroupBox_vMaxPu_Label, 7, 2, 1, 1)
+        self.StorageConfig_GroupBox_Layout.addWidget(self.StorageConfig_GroupBox_vMaxPu_LineEdit, 7, 3, 1, 1)
         # Configurar propriedade "%R" (resistência interna equivalente percentual)
         self.StorageConfig_GroupBox_R_Label = QLabel("Resistência interna (%)")
         self.StorageConfig_GroupBox_R_Label.setToolTip("Percentual da resistência interna equivalente")
         self.StorageConfig_GroupBox_R_LineEdit = QLineEdit()
-        self.StorageConfig_GroupBox_Layout.addWidget(self.StorageConfig_GroupBox_R_Label, 9, 0, 1, 1)
-        self.StorageConfig_GroupBox_Layout.addWidget(self.StorageConfig_GroupBox_R_LineEdit, 9, 1, 1, 1)
+        self.StorageConfig_GroupBox_Layout.addWidget(self.StorageConfig_GroupBox_R_Label, 8, 0, 1, 1)
+        self.StorageConfig_GroupBox_Layout.addWidget(self.StorageConfig_GroupBox_R_LineEdit, 8, 1, 1, 1)
         # Configurar propriedade "%X" (reatância interna equivalente percentual)
         self.StorageConfig_GroupBox_X_Label = QLabel("Reatância interna (%)")
         self.StorageConfig_GroupBox_X_Label.setToolTip("Percentual da reatância interna equivalente")
         self.StorageConfig_GroupBox_X_LineEdit = QLineEdit()
-        self.StorageConfig_GroupBox_Layout.addWidget(self.StorageConfig_GroupBox_X_Label, 9, 2, 1, 1)
-        self.StorageConfig_GroupBox_Layout.addWidget(self.StorageConfig_GroupBox_X_LineEdit, 9, 3, 1, 1)
+        self.StorageConfig_GroupBox_Layout.addWidget(self.StorageConfig_GroupBox_X_Label, 8, 2, 1, 1)
+        self.StorageConfig_GroupBox_Layout.addWidget(self.StorageConfig_GroupBox_X_LineEdit, 8, 3, 1, 1)
 
         self.StorageConfig_GroupBox.setLayout(
             self.StorageConfig_GroupBox_Layout)  # define o Layout do GroupBox StoragesConfig
@@ -399,11 +413,6 @@ class StorageConfig(QWidget):
         self.Tab_layout.addWidget(self.StorageConfig_GroupBox, 1, 1, 1, 1)
 
         self.setLayout(self.Tab_layout)
-        self.Storage_Name = self.StorageConfig_GroupBox_Nome_LineEdit.text()
-        self.Storage_PercentageReserve = self.StorageConfig_GroupBox_PercentageReserve_LineEdit.text()
-
-        self.ConfigStorageController.Storage_Name = self.Storage_Name
-        self.ConfigStorageController.Storage_PercentageReserve = self.Storage_PercentageReserve
 
 
 

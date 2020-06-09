@@ -50,10 +50,14 @@ class C_ActPow_Config_StorageController_Dialog(QDialog): ## Classe Dialog config
         self._ModoDescarga_GroupBox_StorageCont_GroupBox_Layout_Schedule_RadioBtn = 0
         self._ModoDescarga_GroupBox_StorageCont_GroupBox_Layout_Time_RadioBtn = 0
 
-        self._Storage_Name = " "
-        self._Storage_PercentageReserve = " "
+        self._StorageConfig_GroupBox_Nome_LineEdit = 0
+        self._StorageConfig_GroupBox_PercentageReserve_LineEdit = 0
 
-        self.StorageControllers = []
+        self._NumComboBox = 0
+
+        # self._StorageControllers = []
+
+        self.StorageControllersTemporario = []
 
         self.InitUI()
 
@@ -130,20 +134,36 @@ class C_ActPow_Config_StorageController_Dialog(QDialog): ## Classe Dialog config
         self._ModoDescarga_GroupBox_StorageCont_GroupBox_Layout_Time_RadioBtn = value
 
     @property
-    def Storage_Name(self):
-        return self._Storage_Name
+    def StorageConfig_GroupBox_Nome_LineEdit(self):
+        return self._StorageConfig_GroupBox_Nome_LineEdit
 
-    @Storage_Name.setter
-    def Storage_Name(self, value):
-        self._Storage_Name = value
+    @StorageConfig_GroupBox_Nome_LineEdit.setter
+    def StorageConfig_GroupBox_Nome_LineEdit(self, value):
+        self._StorageConfig_GroupBox_Nome_LineEdit = value
 
     @property
-    def Storage_PercentageReserve(self):
-        return self._Storage_PercentageReserve
+    def StorageConfig_GroupBox_PercentageReserve_LineEdit(self):
+        return self._StorageConfig_GroupBox_PercentageReserve_LineEdit
 
-    @Storage_PercentageReserve.setter
-    def Storage_PercentageReserve(self, value):
-        self._Storage_PercentageReserve = value
+    @StorageConfig_GroupBox_PercentageReserve_LineEdit.setter
+    def StorageConfig_GroupBox_PercentageReserve_LineEdit(self, value):
+        self._StorageConfig_GroupBox_PercentageReserve_LineEdit = value
+
+    @property
+    def NumComboBox(self):
+        return self._NumComboBox
+
+    @NumComboBox.setter
+    def NumComboBox(self, value):
+        self._NumComboBox = value
+
+    # @property ######## Getter/ Setter para criacao do StorageController Temporario. Nao foi necessario
+    # def StorageControllers(self):
+    #     return self._StorageControllers
+    #
+    # @StorageControllers.setter
+    # def StorageControllers(self, value):
+    #     self._StorageControllers = value
 
 
     def InitUI(self):
@@ -183,8 +203,6 @@ class C_ActPow_Config_StorageController_Dialog(QDialog): ## Classe Dialog config
         self.StorControl_GroupBox_Selection_Adicionar_Btn.setIcon(QIcon('img/icon_add.png'))
         self.StorControl_GroupBox_Selection_Adicionar_Btn.clicked.connect(self.addStorControl)
         self.StorControl_GroupBox_Selection_Layout.addWidget(self.StorControl_GroupBox_Selection_Adicionar_Btn, 2, 2, 1, 1)
-
-        #### Energy Meter
 
         self.StorControl_GroupBox = QGroupBox("Configurações Gerais do Storage Controller")
         self.StorControl_GroupBox.setVisible(False)
@@ -296,17 +314,28 @@ class C_ActPow_Config_StorageController_Dialog(QDialog): ## Classe Dialog config
     def get_WeightStorControl(self):
         return self.StorControl_Weight.text()
 
+    def getStorage_Name(self):
+        return self.StorageConfig_GroupBox_Nome_LineEdit.text()
+
+    def getStorage_PercentageReserve(self):
+        return self.StorageConfig_GroupBox_PercentageReserve_LineEdit.text()
+
     def clearStorControlParameters(self):
         self.StorControl_Name.setText("")
         self.StorControl_Element_ComboBox.setCurrentIndex(0)
         self.StorControl_Terminal_ComboBox.setCurrentIndex(0)
-        self.StorControl_Reserve.setText(self.Storage_PercentageReserve)
+        self.StorControl_Reserve.setText(self.getStorage_PercentageReserve())
         self.StorControl_Weight.setText("1.0")
 
     def addStorControl(self):
-        self.clearStorControlParameters()
-        self.StorControl_Name.setEnabled(True)
-        self.EnableDisableParameters(True)
+        if self.StorControl_GroupBox_Selection_ComboBox.count() + 1 - self.NumComboBox <= 1: # Para garantir que só adicione um controlador por Storage
+            self.clearStorControlParameters()
+            self.StorControl_Name.setEnabled(True)
+            self.EnableDisableParameters(True)
+        else:
+            QMessageBox(QMessageBox.Warning, "Storage Controller",
+                        "Só é possível adicionar um Storage Controller por Storage.\nEdite ou remova algum dos existentes!",
+                        QMessageBox.Ok).exec()
 
     def editStorControl(self):
         if self.StorControl_GroupBox_Selection_ComboBox.currentText() == "":
@@ -315,13 +344,13 @@ class C_ActPow_Config_StorageController_Dialog(QDialog): ## Classe Dialog config
         else:
             self.clearStorControlParameters()
 
-            for ctd in self.StorageControllers:
-                if ctd["Name"] == self.StorControl_GroupBox_Selection_ComboBox.currentText():
-                    self.StorControl_Name.setText(ctd["Name"])
+            for ctd in self.StorageControllersTemporario:
+                if ctd["StorageControllerName"] == self.StorControl_GroupBox_Selection_ComboBox.currentText():
+                    self.StorControl_Name.setText(ctd["StorageControllerName"])
                     self.StorControl_Element_ComboBox.setCurrentText(ctd["Element"])
                     self.StorControl_Terminal_ComboBox.setCurrentText(ctd["Terminal"])
                     self.StorControl_Reserve.setText(ctd["Reserve"])
-                    self.StorControl_Weight.setText(ctd["Weight"][1])
+                    self.StorControl_Weight.setText(ctd["Weight"])
             self.StorControl_Name.setEnabled(False)
             self.EnableDisableParameters(True)
 
@@ -347,48 +376,50 @@ class C_ActPow_Config_StorageController_Dialog(QDialog): ## Classe Dialog config
             self.Dialog_Btns_Discharge_Btn.setEnabled(True)
 
     def removeStorControl(self):
-
-        for ctd in self.StorageControllers:
-            if ctd["Name"] == self.StorControl_GroupBox_Selection_ComboBox.currentText():
-                self.StorageControllers.remove(ctd)
+        for ctd in self.StorageControllersTemporario:
+            if ctd["StorageControllerName"] == self.StorControl_GroupBox_Selection_ComboBox.currentText():
+                self.StorageControllersTemporario.remove(ctd)
                 QMessageBox(QMessageBox.Warning, "Storage Controller",
-                            "Storage Controller " + ctd["Name"] + " removido com sucesso!",
+                            "Storage Controller " + ctd["StorageControllerName"] + " removido com sucesso!",
                             QMessageBox.Ok).exec()
-
         self.updateDialog()
 
     def AcceptAddEditStorControl(self):
         StorageController = {}
-        StorageController["Name"] = unidecode.unidecode(self.get_StorControl_Name().replace(" ", "_"))
+        StorageController["StorageControllerName"] = unidecode.unidecode(self.get_StorControl_Name().replace(" ", "_"))
+        StorageController["StorageName"] = self.getStorage_Name()
         StorageController["Element"] = self.get_ElementStorControl()
         StorageController["Terminal"] = self.get_TerminalStorControl()
         StorageController["Reserve"] = self.get_ReserveStorControl()
-        StorageController["Weight"] = [self.Storage_Name, self.get_WeightStorControl()]
-
+        StorageController["Weight"] = self.get_WeightStorControl()
+        StorageController["ChargeMode"] = self.ChargeMode()
+        StorageController["DischargeMode"] = self.DischargeMode()
 
         if self.StorControl_Name.isEnabled():
             ctdExist = False
-            for ctd in self.StorageControllers:
-                if ctd["Name"] == StorageController["Name"]:
+            for ctd in self.StorageControllersTemporario:
+                if ctd["StorageControllerName"] == StorageController["StorageControllerName"]:
                     ctdExist = True
             if not ctdExist:
-                self.StorageControllers.append(StorageController)
+                self.StorageControllersTemporario.append(StorageController)
                 QMessageBox(QMessageBox.Information, "Storage Controller",
-                            "Storage Controller " + StorageController["Name"] + " inserido com sucesso!",
+                            "Storage Controller " + StorageController["StorageControllerName"] + " inserido com sucesso!",
                             QMessageBox.Ok).exec()
             else:
                 QMessageBox(QMessageBox.Warning, "Storage Controller",
-                            "Storage Controller" + StorageController["Name"] + " já existe! \nFavor verificar!",
+                            "Storage Controller" + StorageController["StorageControllerName"] + " já existe! \nFavor verificar!",
                             QMessageBox.Ok).exec()
         else:
-            for ctd in self.StorageControllers:
-                if ctd["Name"] == StorageController["Name"]:
+            for ctd in self.StorageControllersTemporario:
+                if ctd["StorageControllerName"] == StorageController["StorageControllerName"]:
                     ctd["Element"] = StorageController["Element"]
                     ctd["Terminal"] = StorageController["Terminal"]
                     ctd["Reserve"] = StorageController["Reserve"]
                     ctd["Weight"] = StorageController["Weight"]
+                    ctd["ChargeMode"] = StorageController["ChargeMode"]
+                    ctd["DischargeMode"] = StorageController["DischargeMode"]
                     QMessageBox(QMessageBox.Information, "Storage Controller",
-                                "Storage Controller" + ctd["Name"] + " atualizado com sucesso!",
+                                "Storage Controller" + ctd["StorageControllerName"] + " atualizado com sucesso!",
                                 QMessageBox.Ok).exec()
         self.updateDialog()
         self.EnableDisableParameters(False)
@@ -403,6 +434,9 @@ class C_ActPow_Config_StorageController_Dialog(QDialog): ## Classe Dialog config
                       [self.ModoCarga_GroupBox_StorageCont_GroupBox_Layout_IPeakShaveLow_RadioBtn, self.DialogActPowIPeakShaveLow],
                       [self.ModoCarga_GroupBox_StorageCont_GroupBox_Layout_Time_RadioBtn, self.DialogActPowChargeTime]]:
                 if i[0].isChecked():
+                    i[1].StorageControllersTemporario = self.StorageControllersTemporario
+                    i[1].StorControl_GroupBox_Selection_ComboBox = self.StorControl_GroupBox_Selection_ComboBox
+                    i[1].updateDialog()
                     i[1].show()
 
     def configDischargeDialog(self):
@@ -417,7 +451,11 @@ class C_ActPow_Config_StorageController_Dialog(QDialog): ## Classe Dialog config
                       [self.ModoDescarga_GroupBox_StorageCont_GroupBox_Layout_Schedule_RadioBtn, self.DialogActPowSchedule],
                       [self.ModoDescarga_GroupBox_StorageCont_GroupBox_Layout_Time_RadioBtn, self.DialogActPowDischargeTime]]:
                 if i[0].isChecked():
+                    i[1].StorageControllersTemporario = self.StorageControllersTemporario
+                    i[1].StorControl_GroupBox_Selection_ComboBox = self.StorControl_GroupBox_Selection_ComboBox
+                    i[1].updateDialog()
                     i[1].show()
+        print(self.StorageControllersTemporario)
 
     def acceptStorageControlSelection(self):
         ChargeModeOK = False
@@ -436,8 +474,8 @@ class C_ActPow_Config_StorageController_Dialog(QDialog): ## Classe Dialog config
                                     QMessageBox.Ok).exec()
                     else:
                         ChargeModeOK = True
-                        for ctd in self.StorageControllers:
-                            if ctd["Name"] == unidecode.unidecode(self.get_StorControl_Name().replace(" ", "_")):
+                        for ctd in self.StorageControllersTemporario:
+                            if ctd["StorageControllerName"] == self.StorControl_GroupBox_Selection_ComboBox.currentText():
                                 ctd.update(i[1].ChargeMode)
             for i in [[self.ModoDescarga_GroupBox_StorageCont_GroupBox_Layout_PeakShave_RadioBtn, self.DialogActPowPeakShave],
                       [self.ModoDescarga_GroupBox_StorageCont_GroupBox_Layout_IPeakShave_RadioBtn, self.DialogActPowIPeakShave],
@@ -452,8 +490,8 @@ class C_ActPow_Config_StorageController_Dialog(QDialog): ## Classe Dialog config
                                     QMessageBox.Ok).exec()
                     else:
                         DischargeModeOK = True
-                        for ctd in self.StorageControllers:
-                            if ctd["Name"] == unidecode.unidecode(self.get_StorControl_Name().replace(" ", "_")):
+                        for ctd in self.StorageControllersTemporario:
+                            if ctd["StorageControllerName"] == self.StorControl_GroupBox_Selection_ComboBox.currentText():
                                 ctd.update(i[1].DischargeMode)
             if ChargeModeOK and DischargeModeOK:
                 self.close()
@@ -461,11 +499,32 @@ class C_ActPow_Config_StorageController_Dialog(QDialog): ## Classe Dialog config
     def cancelStorageControlSelection(self):
         self.close()
 
+    def ChargeMode(self):
+        for i in [[self.ModoCarga_GroupBox_StorageCont_GroupBox_Layout_PeakShaveLow_RadioBtn, "PeakShaveLow"],
+                  [self.ModoCarga_GroupBox_StorageCont_GroupBox_Layout_IPeakShaveLow_RadioBtn, "I-PeakShaveLow"],
+                  [self.ModoCarga_GroupBox_StorageCont_GroupBox_Layout_Time_RadioBtn, "Time"]]:
+            if i[0].isChecked():
+                ChargeMode = i[1]
+        return ChargeMode
+
+    def DischargeMode(self):
+         for i in [[self.ModoDescarga_GroupBox_StorageCont_GroupBox_Layout_PeakShave_RadioBtn, "PeakShave"],
+                      [self.ModoDescarga_GroupBox_StorageCont_GroupBox_Layout_IPeakShave_RadioBtn, "I-PeakShave"],
+                      [self.ModoDescarga_GroupBox_StorageCont_GroupBox_Layout_Follow_RadioBtn, "Follow"],
+                      [self.ModoDescarga_GroupBox_StorageCont_GroupBox_Layout_Support_RadioBtn, "Support"],
+                      [self.ModoDescarga_GroupBox_StorageCont_GroupBox_Layout_Schedule_RadioBtn, "Schedule"],
+                      [self.ModoDescarga_GroupBox_StorageCont_GroupBox_Layout_Time_RadioBtn, "Time"]]:
+            if i[0].isChecked():
+                DischargeMode = i[1]
+         return DischargeMode
+
     def updateDialog(self):
         self.StorControl_GroupBox_Selection_ComboBox.clear()
-
-        for ctd in self.StorageControllers:
-            self.StorControl_GroupBox_Selection_ComboBox.addItem(ctd["Name"])
+        if not self.StorageControllersTemporario == {}:
+            for ctd in self.StorageControllersTemporario:
+                if "ChargeMode" in ctd and "DischargeMode" in ctd:
+                    if ctd["ChargeMode"] == self.ChargeMode() and ctd["DischargeMode"] == self.DischargeMode():
+                        self.StorControl_GroupBox_Selection_ComboBox.addItem(ctd["StorageControllerName"])
 
         self.StorControl_Element_ComboBox.clear()
         self.StorControl_Element_ComboBox.addItems(self.OpenDSS.getElementList())
@@ -478,9 +537,28 @@ class C_ActPow_Charge_PeakShaveLow_DispMode_Dialog(QDialog): ## Classe Dialog De
         self.iconWindow = cfg.sipla_icon
         self.stylesheet = cfg.sipla_stylesheet
 
+        self._StorageControllersTemporario = []
+        self._StorControl_GroupBox_Selection_ComboBox = 0
+
         self.InitUI()
 
         self.ChargeMode = {}
+
+    @property
+    def StorageControllersTemporario(self):
+        return self._StorageControllersTemporario
+
+    @StorageControllersTemporario.setter
+    def StorageControllersTemporario(self, value):
+        self._StorageControllersTemporario = value
+
+    @property
+    def StorControl_GroupBox_Selection_ComboBox(self):
+        return self._StorControl_GroupBox_Selection_ComboBox
+
+    @StorControl_GroupBox_Selection_ComboBox.setter
+    def StorControl_GroupBox_Selection_ComboBox(self, value):
+        self._StorControl_GroupBox_Selection_ComboBox = value
 
     def InitUI(self):
         self.setWindowTitle(self.titleWindow)  # titulo janela
@@ -555,6 +633,24 @@ class C_ActPow_Charge_PeakShaveLow_DispMode_Dialog(QDialog): ## Classe Dialog De
     def cancelPeakShaveLow(self):
         self.close()
 
+    def clearParameters(self):
+        self.kWTargetLow_LineEdit.setText("")
+        self.BandLow_LineEdit.setText("")
+        self.BandLow_Unit_ComboBox.setCurrentIndex(0)
+
+    def updateDialog(self):
+        self.clearParameters()
+        for ctd in self.StorageControllersTemporario:
+            if ctd["StorageControllerName"] == self.StorControl_GroupBox_Selection_ComboBox.currentText():
+                if "kWTargetLow" in ctd:
+                    self.kWTargetLow_LineEdit.setText(ctd["kWTargetLow"])
+                if "kWBandLow" in ctd:
+                    self.BandLow_LineEdit.setText(ctd["kWBandLow"])
+                    self.BandLow_Unit_ComboBox.setCurrentIndex(0)
+                elif "%kWBandLow" in ctd:
+                    self.BandLow_LineEdit.setText(ctd["%kWBandLow"])
+                    self.BandLow_Unit_ComboBox.setCurrentIndex(1)
+
 class C_ActPow_Charge_IPeakShaveLow_DispMode_Dialog(QDialog): ## Classe Dialog Despacho Charge IPeakShaveLow da Potencia Ativa
     def __init__(self):
         super().__init__()
@@ -563,8 +659,27 @@ class C_ActPow_Charge_IPeakShaveLow_DispMode_Dialog(QDialog): ## Classe Dialog D
         self.iconWindow = cfg.sipla_icon
         self.stylesheet = cfg.sipla_stylesheet
 
+        self._StorageControllersTemporario = []
+        self._StorControl_GroupBox_Selection_ComboBox = 0
+
         self.InitUI()
         self.ChargeMode = {}
+
+    @property
+    def StorageControllersTemporario(self):
+        return self._StorageControllersTemporario
+
+    @StorageControllersTemporario.setter
+    def StorageControllersTemporario(self, value):
+        self._StorageControllersTemporario = value
+
+    @property
+    def StorControl_GroupBox_Selection_ComboBox(self):
+        return self._StorControl_GroupBox_Selection_ComboBox
+
+    @StorControl_GroupBox_Selection_ComboBox.setter
+    def StorControl_GroupBox_Selection_ComboBox(self, value):
+        self._StorControl_GroupBox_Selection_ComboBox = value
 
     def InitUI(self):
         self.setWindowTitle(self.titleWindow)  # titulo janela
@@ -638,6 +753,24 @@ class C_ActPow_Charge_IPeakShaveLow_DispMode_Dialog(QDialog): ## Classe Dialog D
     def cancelIPeakShaveLow(self):
         self.close()
 
+    def clearParameters(self):
+        self.kampsTargetLow_LineEdit.setText("")
+        self.BandLow_LineEdit.setText("")
+        self.BandLow_Unit_ComboBox.setCurrentIndex(0)
+
+    def updateDialog(self):
+        self.clearParameters()
+        for ctd in self.StorageControllersTemporario:
+            if ctd["StorageControllerName"] == self.StorControl_GroupBox_Selection_ComboBox.currentText():
+                if "kWTargetLow" in ctd:
+                    self.kampsTargetLow_LineEdit.setText(ctd["kWTargetLow"])
+                if "kWBandLow" in ctd:
+                    self.BandLow_LineEdit.setText(ctd["kWBandLow"])
+                    self.BandLow_Unit_ComboBox.setCurrentIndex(0)
+                elif "%kWBandLow" in ctd:
+                    self.BandLow_LineEdit.setText(ctd["%kWBandLow"])
+                    self.BandLow_Unit_ComboBox.setCurrentIndex(1)
+
 class C_ActPow_Charge_Time_DispMode_Dialog(QDialog): ## Classe Dialog Despacho Charge Time da Potencia Ativa
     def __init__(self):
         super().__init__()
@@ -646,9 +779,28 @@ class C_ActPow_Charge_Time_DispMode_Dialog(QDialog): ## Classe Dialog Despacho C
         self.iconWindow = cfg.sipla_icon
         self.stylesheet = cfg.sipla_stylesheet
 
+        self._StorageControllersTemporario = []
+        self._StorControl_GroupBox_Selection_ComboBox = 0
+
         self.InitUI()
 
         self.ChargeMode = {}
+
+    @property
+    def StorageControllersTemporario(self):
+        return self._StorageControllersTemporario
+
+    @StorageControllersTemporario.setter
+    def StorageControllersTemporario(self, value):
+        self._StorageControllersTemporario = value
+
+    @property
+    def StorControl_GroupBox_Selection_ComboBox(self):
+        return self._StorControl_GroupBox_Selection_ComboBox
+
+    @StorControl_GroupBox_Selection_ComboBox.setter
+    def StorControl_GroupBox_Selection_ComboBox(self, value):
+        self._StorControl_GroupBox_Selection_ComboBox = value
 
     def InitUI(self):
         self.setWindowTitle(self.titleWindow)  # titulo janela
@@ -716,6 +868,18 @@ class C_ActPow_Charge_Time_DispMode_Dialog(QDialog): ## Classe Dialog Despacho C
     def cancelTime(self):
         self.close()
 
+    def clearParameters(self):
+        self.timeChargeTrigger_LineEdit.setText("")
+        self.RateCharge_LineEdit.setText("")
+
+    def updateDialog(self):
+        self.clearParameters()
+        for ctd in self.StorageControllersTemporario:
+            if ctd["StorageControllerName"] == self.StorControl_GroupBox_Selection_ComboBox.currentText():
+                if "timeChargeTrigger" in ctd:
+                    self.timeChargeTrigger_LineEdit.setText(ctd["timeChargeTrigger"])
+                    self.RateCharge_LineEdit.setText(ctd["%RateCharge"])
+
 class C_ActPow_Discharge_PeakShave_DispMode_Dialog(QDialog):# Classe Dialog Despacho Discharge PeakShave da Potencia Ativa
     def __init__(self):
         super().__init__()
@@ -724,9 +888,28 @@ class C_ActPow_Discharge_PeakShave_DispMode_Dialog(QDialog):# Classe Dialog Desp
         self.iconWindow = cfg.sipla_icon
         self.stylesheet = cfg.sipla_stylesheet
 
+        self._StorageControllersTemporario = []
+        self._StorControl_GroupBox_Selection_ComboBox = 0
+
         self.InitUI()
 
         self.DischargeMode = {}
+
+    @property
+    def StorageControllersTemporario(self):
+        return self._StorageControllersTemporario
+
+    @StorageControllersTemporario.setter
+    def StorageControllersTemporario(self, value):
+        self._StorageControllersTemporario = value
+
+    @property
+    def StorControl_GroupBox_Selection_ComboBox(self):
+        return self._StorControl_GroupBox_Selection_ComboBox
+
+    @StorControl_GroupBox_Selection_ComboBox.setter
+    def StorControl_GroupBox_Selection_ComboBox(self, value):
+        self._StorControl_GroupBox_Selection_ComboBox = value
 
     def InitUI(self):
         self.setWindowTitle(self.titleWindow)  # titulo janela
@@ -790,7 +973,7 @@ class C_ActPow_Discharge_PeakShave_DispMode_Dialog(QDialog):# Classe Dialog Desp
 
     def acceptPeakShave(self):
         if self.verificaLineEdits():
-            self.DischargeMode["Discharge_Mode"] = "PeakShave"
+            self.DischargeMode["DischargeMode"] = "PeakShave"
             self.DischargeMode["kWTarget"] = self.getkWTarget()
             if self.getBandUnit() == "kW":
                 self.DischargeMode["kWBand"] = self.getBandWidth()
@@ -800,6 +983,24 @@ class C_ActPow_Discharge_PeakShave_DispMode_Dialog(QDialog):# Classe Dialog Desp
     def cancelPeakShave(self):
         self.close()
 
+    def clearParameters(self):
+        self.kWTarget_LineEdit.setText("")
+        self.Band_LineEdit.setText("")
+        self.Band_Unit_ComboBox.setCurrentIndex(0)
+
+    def updateDialog(self):
+        self.clearParameters()
+        for ctd in self.StorageControllersTemporario:
+            if ctd["StorageControllerName"] == self.StorControl_GroupBox_Selection_ComboBox.currentText():
+                if "kWTarget" in ctd:
+                    self.kWTarget_LineEdit.setText(ctd["kWTarget"])
+                if "kWBand" in ctd:
+                    self.Band_LineEdit.setText(ctd["kWBand"])
+                    self.Band_Unit_ComboBox.setCurrentIndex(0)
+                elif "%kWBand" in ctd:
+                    self.Band_LineEdit.setText(ctd["%kWBand"])
+                    self.Band_Unit_ComboBox.setCurrentIndex(1)
+
 class C_ActPow_Discharge_IPeakShave_DispMode_Dialog(QDialog): ## Classe Dialog Despacho Discharge IPeakShave da Potencia Ativa
     def __init__(self):
         super().__init__()
@@ -808,9 +1009,27 @@ class C_ActPow_Discharge_IPeakShave_DispMode_Dialog(QDialog): ## Classe Dialog D
         self.iconWindow = cfg.sipla_icon
         self.stylesheet = cfg.sipla_stylesheet
 
-        self.Select_DispCurve = opendss.storage.class_select_dispatch_curve.C_Config_DispCurve_Dialog()
+        self._StorageControllersTemporario = []
+        self._StorControl_GroupBox_Selection_ComboBox = 0
+
         self.InitUI()
         self.DischargeMode = {}
+
+    @property
+    def StorageControllersTemporario(self):
+        return self._StorageControllersTemporario
+
+    @StorageControllersTemporario.setter
+    def StorageControllersTemporario(self, value):
+        self._StorageControllersTemporario = value
+
+    @property
+    def StorControl_GroupBox_Selection_ComboBox(self):
+        return self._StorControl_GroupBox_Selection_ComboBox
+
+    @StorControl_GroupBox_Selection_ComboBox.setter
+    def StorControl_GroupBox_Selection_ComboBox(self, value):
+        self._StorControl_GroupBox_Selection_ComboBox = value
 
     def InitUI(self):
         self.setWindowTitle(self.titleWindow)  # titulo janela
@@ -884,6 +1103,24 @@ class C_ActPow_Discharge_IPeakShave_DispMode_Dialog(QDialog): ## Classe Dialog D
     def cancelIPeakShave(self):
         self.close()
 
+    def clearParameters(self):
+        self.kampsTarget_LineEdit.setText("")
+        self.Band_LineEdit.setText("")
+        self.Band_Unit_ComboBox.setCurrentIndex(0)
+
+    def updateDialog(self):
+        self.clearParameters()
+        for ctd in self.StorageControllersTemporario:
+            if ctd["StorageControllerName"] == self.StorControl_GroupBox_Selection_ComboBox.currentText():
+                if "kWTarget" in ctd:
+                    self.kampsTarget_LineEdit.setText(ctd["kWTarget"])
+                if "kWBandLow" in ctd:
+                    self.Band_LineEdit.setText(ctd["kWBand"])
+                    self.Band_Unit_ComboBox.setCurrentIndex(0)
+                elif "%kWBandLow" in ctd:
+                    self.Band_LineEdit.setText(ctd["%kWBand"])
+                    self.Band_Unit_ComboBox.setCurrentIndex(1)
+
 class C_ActPow_Discharge_Follow_DispMode_Dialog(QDialog): ## Classe Dialog Despacho Discharge Follow da Potencia Ativa
     def __init__(self):
         super().__init__()
@@ -892,9 +1129,28 @@ class C_ActPow_Discharge_Follow_DispMode_Dialog(QDialog): ## Classe Dialog Despa
         self.iconWindow = cfg.sipla_icon
         self.stylesheet = cfg.sipla_stylesheet
 
+        self._StorageControllersTemporario = []
+        self._StorControl_GroupBox_Selection_ComboBox = 0
+
         self.InitUI()
 
         self.DischargeMode = {}
+
+    @property
+    def StorageControllersTemporario(self):
+        return self._StorageControllersTemporario
+
+    @StorageControllersTemporario.setter
+    def StorageControllersTemporario(self, value):
+        self._StorageControllersTemporario = value
+
+    @property
+    def StorControl_GroupBox_Selection_ComboBox(self):
+        return self._StorControl_GroupBox_Selection_ComboBox
+
+    @StorControl_GroupBox_Selection_ComboBox.setter
+    def StorControl_GroupBox_Selection_ComboBox(self, value):
+        self._StorControl_GroupBox_Selection_ComboBox = value
 
     def InitUI(self):
         self.setWindowTitle(self.titleWindow)  # titulo janela
@@ -978,7 +1234,7 @@ class C_ActPow_Discharge_Follow_DispMode_Dialog(QDialog): ## Classe Dialog Despa
 
     def acceptFollow(self):
         if self.verificaLineEdits():
-            self.DischargeMode["Discharge_Mode"] = "Follow"
+            self.DischargeMode["DischargeMode"] = "Follow"
             self.DischargeMode["timeDischargeTrigger"] = self.gettimeDischargeTrigger()
             if self.getBandUnit() == "kW":
                 self.DischargeMode["kWBand"] = self.getBandWidth()
@@ -990,6 +1246,28 @@ class C_ActPow_Discharge_Follow_DispMode_Dialog(QDialog): ## Classe Dialog Despa
     def cancelFollow(self):
         self.close()
 
+    def clearParameters(self):
+        self.timeDischargeTrigger_LineEdit.setText("")
+        self.kWThreshold_LineEdit.setText("")
+        self.kWThreshold_CheckBox.setChecked(False)
+        self.Band_LineEdit.setText("")
+        self.Band_Unit_ComboBox.setCurrentIndex(0)
+
+    def updateDialog(self):
+        self.clearParameters()
+        for ctd in self.StorageControllersTemporario:
+            if ctd["StorageControllerName"] == self.StorControl_GroupBox_Selection_ComboBox.currentText():
+                if "timeDischargeTrigger" in ctd:
+                    self.timeDischargeTrigger_LineEdit.setText(ctd["timeDischargeTrigger"])
+                if "kWThreshold" in ctd:
+                    self.kWThreshold_LineEdit.setText(ctd["kWThreshold"])
+                if "kWBand" in ctd:
+                    self.Band_LineEdit.setText(ctd["kWBandLow"])
+                    self.Band_Unit_ComboBox.setCurrentIndex(0)
+                elif "%kWBandLow" in ctd:
+                    self.Band_LineEdit.setText(ctd["%kWBandLow"])
+                    self.Band_Unit_ComboBox.setCurrentIndex(1)
+
 class C_ActPow_Discharge_Support_DispMode_Dialog(QDialog):# Classe Dialog Despacho Discharge Support da Potencia Ativa
     def __init__(self):
         super().__init__()
@@ -998,9 +1276,29 @@ class C_ActPow_Discharge_Support_DispMode_Dialog(QDialog):# Classe Dialog Despac
         self.iconWindow = cfg.sipla_icon
         self.stylesheet = cfg.sipla_stylesheet
 
+        self._StorageControllersTemporario = []
+        self._StorControl_GroupBox_Selection_ComboBox = 0
+
         self.InitUI()
 
         self.DischargeMode = {}
+
+    @property
+    def StorageControllersTemporario(self):
+        return self._StorageControllersTemporario
+
+    @StorageControllersTemporario.setter
+    def StorageControllersTemporario(self, value):
+        self._StorageControllersTemporario = value
+
+    @property
+    def StorControl_GroupBox_Selection_ComboBox(self):
+        return self._StorControl_GroupBox_Selection_ComboBox
+
+    @StorControl_GroupBox_Selection_ComboBox.setter
+    def StorControl_GroupBox_Selection_ComboBox(self, value):
+        self._StorControl_GroupBox_Selection_ComboBox = value
+
     def InitUI(self):
         self.setWindowTitle(self.titleWindow)  # titulo janela
         self.setWindowIcon(QIcon(self.iconWindow))  # ícone da janela
@@ -1063,7 +1361,7 @@ class C_ActPow_Discharge_Support_DispMode_Dialog(QDialog):# Classe Dialog Despac
 
     def acceptSupport(self):
         if self.verificaLineEdits():
-            self.DischargeMode["Discharge_Mode"] = "Support"
+            self.DischargeMode["DischargeMode"] = "Support"
             self.DischargeMode["kWTarget"] = self.getkWTarget()
             if self.getBandUnit() == "kW":
                 self.DischargeMode["kWBand"] = self.getBandWidth()
@@ -1073,6 +1371,24 @@ class C_ActPow_Discharge_Support_DispMode_Dialog(QDialog):# Classe Dialog Despac
     def cancelSupport(self):
         self.close()
 
+    def clearParameters(self):
+        self.kWTarget_LineEdit.setText("")
+        self.Band_LineEdit.setText("")
+        self.Band_Unit_ComboBox.setCurrentIndex(0)
+
+    def updateDialog(self):
+        self.clearParameters()
+        for ctd in self.StorageControllersTemporario:
+            if ctd["StorageControllerName"] == self.StorControl_GroupBox_Selection_ComboBox.currentText():
+                if "kWTarget" in ctd:
+                    self.kWTarget_LineEdit.setText(ctd["kWTarget"])
+                if "kWBand" in ctd:
+                    self.Band_LineEdit.setText(ctd["kWBand"])
+                    self.Band_Unit_ComboBox.setCurrentIndex(0)
+                elif "%kWBand" in ctd:
+                    self.Band_LineEdit.setText(ctd["%kWBand"])
+                    self.Band_Unit_ComboBox.setCurrentIndex(1)
+
 class C_ActPow_Discharge_Schedule_DispMode_Dialog(QDialog): ## Classe Dialog Despacho Discharge Schedule da Potencia Ativa
     def __init__(self):
         super().__init__()
@@ -1081,8 +1397,27 @@ class C_ActPow_Discharge_Schedule_DispMode_Dialog(QDialog): ## Classe Dialog Des
         self.iconWindow = cfg.sipla_icon
         self.stylesheet = cfg.sipla_stylesheet
 
+        self._StorageControllersTemporario = []
+        self._StorControl_GroupBox_Selection_ComboBox = 0
+
         self.InitUI()
         self.DischargeMode = {}
+
+    @property
+    def StorageControllersTemporario(self):
+        return self._StorageControllersTemporario
+
+    @StorageControllersTemporario.setter
+    def StorageControllersTemporario(self, value):
+        self._StorageControllersTemporario = value
+
+    @property
+    def StorControl_GroupBox_Selection_ComboBox(self):
+        return self._StorControl_GroupBox_Selection_ComboBox
+
+    @StorControl_GroupBox_Selection_ComboBox.setter
+    def StorControl_GroupBox_Selection_ComboBox(self, value):
+        self._StorControl_GroupBox_Selection_ComboBox = value
 
     def InitUI(self):
         self.setWindowTitle(self.titleWindow)  # titulo janela
@@ -1189,6 +1524,24 @@ class C_ActPow_Discharge_Schedule_DispMode_Dialog(QDialog): ## Classe Dialog Des
     def cancelSchedule(self):
         self.close()
 
+    def clearParameters(self):
+        self.timeDischargeTrigger_LineEdit.setText("")
+        self.Tup_LineEdit.setText("")
+        self.Tflat_LineEdit.setText("")
+        self.Tdn_LineEdit.setText("")
+        self.RateDischarge_LineEdit.setText("")
+
+    def updateDialog(self):
+        self.clearParameters()
+        for ctd in self.StorageControllersTemporario:
+            if ctd["StorageControllerName"] == self.StorControl_GroupBox_Selection_ComboBox.currentText():
+                if "timeDischargeTrigger" in ctd:
+                    self.timeDischargeTrigger_LineEdit.setText(ctd["timeDischargeTrigger"])
+                    self.Tup_LineEdit.setText(ctd["Tup"])
+                    self.Tflat_LineEdit.setText(ctd["Tflat"])
+                    self.Tdn_LineEdit.setText(ctd["Tdn"])
+                    self.RateDischarge_LineEdit.setText(ctd["%RatekW"])
+
 class C_ActPow_Discharge_Time_DispMode_Dialog(QDialog): ## Classe Dialog Despacho Discharge Time da Potencia Ativa
     def __init__(self):
         super().__init__()
@@ -1197,8 +1550,27 @@ class C_ActPow_Discharge_Time_DispMode_Dialog(QDialog): ## Classe Dialog Despach
         self.iconWindow = cfg.sipla_icon
         self.stylesheet = cfg.sipla_stylesheet
 
+        self._StorageControllersTemporario = []
+        self._StorControl_GroupBox_Selection_ComboBox = 0
+
         self.InitUI()
         self.DischargeMode = {}
+
+    @property
+    def StorageControllersTemporario(self):
+        return self._StorageControllersTemporario
+
+    @StorageControllersTemporario.setter
+    def StorageControllersTemporario(self, value):
+        self._StorageControllersTemporario = value
+
+    @property
+    def StorControl_GroupBox_Selection_ComboBox(self):
+        return self._StorControl_GroupBox_Selection_ComboBox
+
+    @StorControl_GroupBox_Selection_ComboBox.setter
+    def StorControl_GroupBox_Selection_ComboBox(self, value):
+        self._StorControl_GroupBox_Selection_ComboBox = value
 
     def InitUI(self):
         self.setWindowTitle(self.titleWindow)  # titulo janela
@@ -1265,3 +1637,15 @@ class C_ActPow_Discharge_Time_DispMode_Dialog(QDialog): ## Classe Dialog Despach
             self.close()
     def cancelTime(self):
         self.close()
+
+    def clearParameters(self):
+        self.timeDischargeTrigger_LineEdit.setText("")
+        self.RateDischarge_LineEdit.setText("")
+
+    def updateDialog(self):
+        self.clearParameters()
+        for ctd in self.StorageControllersTemporario:
+            if ctd["StorageControllerName"] == self.StorControl_GroupBox_Selection_ComboBox.currentText():
+                if "timeDischargeTrigger" in ctd:
+                    self.timeDischargeTrigger_LineEdit.setText(ctd["timeDischargeTrigger"])
+                    self.RateDischarge_LineEdit.setText(ctd["%RatekW"])

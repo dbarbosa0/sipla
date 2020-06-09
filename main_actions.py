@@ -64,6 +64,7 @@ class C_MainActions():
         self.OpenDSS_DialogInsertStorage = opendss.storage.class_insert_storage_dialog.C_Insert_Storage_Dialog()
         self.OpenDSS_DialogInsertStorage.OpenDSS = self.OpenDSS
         self.OpenDSS_DialogInsertStorage.DispModeActPowDialog.ConfigStorageController.OpenDSS = self.OpenDSS
+        self.OpenDSS_DialogInsertStorage.DispModeActPowDialog.DialogActPowLoadShape.OpenDSS = self.OpenDSS
 
 
     #############################################
