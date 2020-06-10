@@ -212,6 +212,9 @@ class C_NetPanel(QDockWidget):
 
 
     ############# Configuração para aparecer ou não os botões ################
+    def setDisabled_NetPanel_Config_GroupBox_SEAT(self):
+        self.NetPanel_Config_GroupBox_SEAT_ComboBox.clear()
+        self.NetPanel_Config_GroupBox_SEAT_Btn.setEnabled(False)
 
     def setDisabled_NetPanel_Config_GroupBox_SEAT_Btn(self):
         self.NetPanel_Config_GroupBox_SEAT_Btn.setEnabled(True)

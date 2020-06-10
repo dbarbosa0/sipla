@@ -127,13 +127,13 @@ class C_OpenDSS(): # classe OpenDSSDirect
             self.dataOpenDSS.nSE_MT_Selecionada = self.nSE_MT_Selecionada
             ##Zerando a lista de barras
             self.dataOpenDSS.busList = []
+            self.dataOpenDSS.elementList = []
 
 
             ##### Executa os Arquitvos que serão executados e inseridos
 
             self.execOpenDSSFunc = {"header": ["Cabeçalho ...", self.dataOpenDSS.exec_HeaderFile],
                           "EqThAT": ["Equivalente de Thevenin ...", self.dataOpenDSS.exec_EQUIVALENTE_DE_THEVENIN],
-                          "LoadShapes": ["Curvas de Carga ...", self.exec_LOADSHAPES],
                           # "EqThMT":["Equivalente de Thevenin MT...",self.dataOpenDSS.exec_EQUIVALENTE_DE_THEVENIN_MEDIA],
                           "SecEqThAT_SecAT": ["Chaves entre o Equivalente e a SecAT ...", self.dataOpenDSS.exec_SEC_EQTHAT_SECAT],
                           "TrafoATMT": ["Trafo AT - MT...", self.dataOpenDSS.exec_TRANSFORMADORES_DE_ALTA_PARA_MEDIA],
@@ -160,20 +160,12 @@ class C_OpenDSS(): # classe OpenDSSDirect
                           "ChUnipolarSEMTControl": ["Controle da Chave Unipolar da SE MT ...",self.dataOpenDSS.exec_CONTROLE_SEC_CHAVE_UNIPOLAR_SUBESTACAO_DE_MEDIA_TENSAO],
                           #"Reg":["Regulador MT ...",self.dataOpenDSS.exec_REGULADORES_DE_MEDIA_TENSAO],
                           "SegMT": ["Segmentos de Linhas MT ...", self.dataOpenDSS.exec_SEG_LINHAS_DE_MEDIA_TENSAO],
-                          "UConMT": ["Unidades Consumidoras MT ...", self.dataOpenDSS.exec_UNID_CONSUMIDORAS_MT],
-                          "UConMTLoadShapes": ["Unidades Consumidoras MT - Curvas de Carga ...", self.dataOpenDSS.exec_UNID_CONSUMIDORAS_LOADSHAPES_MT],
                           "TrafoDist":["Trafos de Distribuição ...",self.dataOpenDSS.exec_TRANSFORMADORES_DE_DISTRIBUICAO],
                           # "SegBT":["Segmentos de Linhas BT ...",self.dataOpenDSS.exec_SEG_LINHAS_DE_BAIXA_TENSAO],
                           #"UConBT":["Unidades Consumidoras BT ...",self.dataOpenDSS.exec_UNID_CONSUMIDORAS_BT],
-                          "UConBTTD": ["Unidades Consumidoras BT no Transformador de Distribuição ...", self.dataOpenDSS.exec_UNID_CONSUMIDORAS_BT_TD],
-                          "UConBTLoadShapes": ["Unidades Consumidoras BT - Curvas de Carga ...", self.dataOpenDSS.exec_UNID_CONSUMIDORAS_LOADSHAPES_BT],
                           # "RamLig":["Ramais de Ligação  ...",self.dataOpenDSS.exec_RAMAL_DE_LIGACAO,self.dataOpenDSS.memoFileRamaisLigBT],
                           "CompMT": ["Unidades Compensadoras de MT ...",self.dataOpenDSS.exec_UNID_COMPENSADORAS_DE_REATIVO_DE_MEDIA_TENSAO],
                           # "CompBT":["Unidades Compensadoras de BT ...",self.dataOpenDSS.exec_UNID_COMPENSADORAS_DE_REATIVO_DE_BAIXA_TENSAO],
-                          "VoltageBase": ["Bases de Tensão ...", self.exec_VoltageBase],
-                          "EnergyMeters": ["Inserindo os Energy Meters ...", self.exec_EnergyMeters],
-                          "Monitors": ["Inserindo os Monitors ...", self.exec_Monitors],
-                          "Mode": ["Modo de Operação ...", self.exec_Mode],
                           }
 
 
@@ -240,34 +232,47 @@ class C_OpenDSS(): # classe OpenDSSDirect
                 msg = self.execOpenDSSFunc[ctd][-2]
                 # Executando a função
                 ### Verificando o modo de operação
-
-                ### Roda com a flag em 1
-                if (ctd == "UConMT") and (self.OpenDSSConfig["UNCMT"] == "1"):
-                    self.execOpenDSSFunc[ctd][-1]()
-                    #print(msg)
-                elif (ctd == "UConBTTD") and (self.OpenDSSConfig["UNCBTTD"] == "1"):
-                    self.execOpenDSSFunc[ctd][-1]()
-                    #print(msg)
-                elif (ctd == "UConMTLoadShapes") or (ctd == "LoadShapes"):
-                    if (self.OpenDSSConfig["Mode"] == "Daily") and (self.OpenDSSConfig["UNCMT"] == "1"):
-                        self.execOpenDSSFunc[ctd][-1]()
-                        #print(msg)
-                elif (ctd == "UConBTTD") or (ctd == "UConBTLoadShapes"):
-                    if (self.OpenDSSConfig["Mode"] == "Daily") and (self.OpenDSSConfig["UNCBTTD"] == "1"):
-                        self.execOpenDSSFunc[ctd][-1]()
-                        #print(msg)
-                else:
-                    self.execOpenDSSFunc[ctd][-1]()
+                self.execOpenDSSFunc[ctd][-1]()
                     #print(msg)
 
                 ## Setando a Flag
         self.loadDataFlag = True
 
-        #print(self.getBusList())
-        #print(f'Tamanho da buslist pelo class_data : {len(self.getBusList())}')
 
-    def getBusList(self):
-        return self.dataOpenDSS.busList
+    def loadData_All(self): #Sempre que o fluxo rodar
+        self.execOpenDSSFuncAll= {
+                "UConMT": ["Unidades Consumidoras MT ...", self.dataOpenDSS.exec_UNID_CONSUMIDORAS_MT], # Cargas
+                "UConBTTD": ["Unidades Consumidoras BT no Transformador de Distribuição ...",self.dataOpenDSS.exec_UNID_CONSUMIDORAS_BT_TD],
+                "LoadShapes": ["Curvas de Carga ...", self.exec_LOADSHAPES],
+                "UConMTLoadShapes": ["Unidades Consumidoras MT - Curvas de Carga ...",self.dataOpenDSS.exec_UNID_CONSUMIDORAS_LOADSHAPES_MT],
+                "UConBTLoadShapes": ["Unidades Consumidoras BT - Curvas de Carga ...",self.dataOpenDSS.exec_UNID_CONSUMIDORAS_LOADSHAPES_BT],
+                #
+                "VoltageBase": ["Bases de Tensão ...", self.exec_VoltageBase],
+                "EnergyMeters": ["Inserindo os Energy Meters ...", self.exec_EnergyMeters],
+                "Monitors": ["Inserindo os Monitors ...", self.exec_Monitors],
+                "Mode": ["Modo de Operação ...", self.exec_Mode],
+                }
+
+        for ctd in self.execOpenDSSFuncAll:
+            msg = self.execOpenDSSFuncAll[ctd][-2]
+            ### Roda com a flag em 1
+            if (ctd == "UConMT") and (self.OpenDSSConfig["UNCMT"] == "1"):
+                self.execOpenDSSFuncAll[ctd][-1]()
+                # print(msg)
+            elif (ctd == "UConBTTD") and (self.OpenDSSConfig["UNCBTTD"] == "1"):
+                self.execOpenDSSFuncAll[ctd][-1]()
+                # print(msg)
+            elif (ctd == "UConMTLoadShapes") or (ctd == "LoadShapes"):
+                if (self.OpenDSSConfig["Mode"] == "Daily") and (self.OpenDSSConfig["UNCMT"] == "1"):
+                    self.execOpenDSSFuncAll[ctd][-1]()
+                    # print(msg)
+            elif (ctd == "UConBTTD") or (ctd == "UConBTLoadShapes"):
+                if (self.OpenDSSConfig["Mode"] == "Daily") and (self.OpenDSSConfig["UNCBTTD"] == "1"):
+                    self.execOpenDSSFuncAll[ctd][-1]()
+                    # print(msg)
+            else:
+                self.execOpenDSSFuncAll[ctd][-1]()
+
 
     def loadDataResult(self):
 
@@ -315,6 +320,7 @@ class C_OpenDSS(): # classe OpenDSSDirect
                       "Monitors": self.memoFileMonitors,
                       "Mode": self.memoFileMode,
                       }
+
 
     def exec_SaveFileDialogDSS(self):
 
@@ -440,6 +446,8 @@ class C_OpenDSS(): # classe OpenDSSDirect
 
         #Executa as consultas no Banco de Dados
         self.loadData()
+        #Executa os Monitores e cargas a depender das Flags
+        self.loadData_All()
         #Pega os Memo
         self.loadDataResult()
 
@@ -468,7 +476,7 @@ class C_OpenDSS(): # classe OpenDSSDirect
 
 
         ##Status
-        self.StatusSolutionProcessTime =   round(time.time() - start_time)
+        self.StatusSolutionProcessTime = time.time() - start_time
 
     def exec_OpenDSSRun(self, command):
         self.OpenDSSEngine.run(command)
@@ -601,12 +609,27 @@ class C_OpenDSS(): # classe OpenDSSDirect
         self.exec_OpenDSSRun("show eventlog")
 
 
+    ##
+    def getBusList(self):
+        return self.dataOpenDSS.busList
+
+    def getElementList(self):
+        return self.dataOpenDSS.elementList
+
     ## Gets class_insert_dialog
 
 
     def getAllNamesEnergyMeter(self):
-
         return self.OpenDSSEngine.get_EnergyMeter_AllNames()
+
+    def setEnergyMeterActive(self,name):
+        return self.OpenDSSEngine.set_EnergyMeterActive(name)
+
+    def getRegisterNames(self):
+        return self.OpenDSSEngine.get_RegisterNames()
+
+    def getRegisterValues(self):
+        return self.OpenDSSEngine.get_RegisterValues()
 
     def getAllNamesMonitor(self):
         return self.OpenDSSEngine.get_Monitor_AllNames()

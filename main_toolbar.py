@@ -53,6 +53,7 @@ class C_MenuToolBar(QDockWidget):
         # ******* Actions the OpenDSS Menu  *******
         self.OpenDSSActRef = {'OpenDSS_Config_Act': 0, # Configurar o OpenDSS
                               'OpenDSS_Run_Act': 0,  # Configurar o OpenDSS
+                              'OpenDSS_Results_EnergyMeter_Act':0,
                               'OpenDSS_InsertEnergyMeter_Act': 0, # Inserir o Energy Meter
                               'OpenDSS_InsertMonitor_Act': 0,  # Inserir o Energy Meter
                               'OpenDSS_Create_Act': 0, # Criar Arquivo .DSS
@@ -92,6 +93,13 @@ class C_MenuToolBar(QDockWidget):
         self.OpenDSS_InsertMonitor_Act.triggered.connect(self.exec_InsertMonitor)
         self.OpenDSS_InsertMonitor_Act.setObjectName('OpenDSS_InsertMonitor_Act')
         self.OpenDSSActRef['OpenDSS_InsertMonitor_Act'] = self.OpenDSS_InsertMonitor_Act
+
+        self.OpenDSS_Results_EnergyMeter_Act = QAction(QIcon('img/icon_opendss_energymeter.png'), 'R&esultados', self)
+        self.OpenDSS_Results_EnergyMeter_Act.setShortcut("Ctrl+Alt+M")
+        self.OpenDSS_Results_EnergyMeter_Act.setStatusTip('Visualizar resultados do medidores')
+        self.OpenDSS_Results_EnergyMeter_Act.triggered.connect(self.exec_ResultsEnergyMeter)
+        self.OpenDSS_Results_EnergyMeter_Act.setObjectName('OpenDSS_Results_EnergyMeter_Act')
+        self.OpenDSSActRef['OpenDSS_Results_EnergyMeter_Act'] = self.OpenDSS_Results_EnergyMeter_Act
 
 
         self.OpenDSS_Create_Act = QAction(QIcon('img/icon_opendss.png'), '&Gerar Arquivo .DSS', self)
@@ -139,8 +147,14 @@ class C_MenuToolBar(QDockWidget):
                                                               'Insert ')
         self.OpenDSSMenuSubInsert.addAction(self.OpenDSS_InsertEnergyMeter_Act)
         self.OpenDSSMenuSubInsert.addAction(self.OpenDSS_InsertMonitor_Act)
+
+        self.OpenDSSMenu.addSeparator()
+        self.OpenDSSMenu.addAction(self.OpenDSS_Results_EnergyMeter_Act)
+        self.OpenDSSMenu.addSeparator()
+
         self.OpenDSSMenuSubProcess = self.OpenDSSMenu.addMenu(QIcon('img/icon_opendss_subprocess.png'),
                                                               'Sub-processos ')
+
         self.OpenDSSMenuSubProcess.addAction(self.OpenDSS_Create_Act)
         self.OpenDSSMenuSubProcess.addAction(self.OpenDSS_Save_Act)
         self.OpenDSSMenuSubSCAnalyze = self.OpenDSSMenu.addMenu(QIcon('img/icon_opendss_sc.png'),
@@ -352,6 +366,9 @@ class C_MenuToolBar(QDockWidget):
 
     def exec_PlotMonitor(self):
         self.Actions.execPlotMonitor()
+
+    def exec_ResultsEnergyMeter(self):
+        self.Actions.execResultsEnergyMeter()
 
     ####################################################################
 
