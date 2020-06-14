@@ -22,17 +22,11 @@ class C_Config_EffCurve_Dialog(QDialog):
         self.iconWindow = cfg.sipla_icon
         self.stylesheet = cfg.sipla_stylesheet
 
-        self._nPointsLoadDef = 0
-        self._nStepSizeDef = 0
-        self._nStepSizeTimeDef = ""
-
-        self._dataLoadShapes = {}
+        self.dataEffCurve = {}
 
         self.InitUI()
 
     def InitUI(self):
-
-
         self.setWindowTitle(self.titleWindow)
         self.setWindowIcon(QIcon(self.iconWindow))  # ícone da janela
         self.setWindowModality(Qt.ApplicationModal)
@@ -59,7 +53,6 @@ class C_Config_EffCurve_Dialog(QDialog):
             "Pontos X: Eficiência do inversor em p.u.\n\
 Pontos Y: Potência aparente (kVA) em p.u.")
         self.EffCurve_GroupBox_Layout.addWidget(self.EffCurve_GroupBox_Label, 2, 1, 1, 2)
-
 
         ### Botões adicionar/remover curvas
         self.EffCurve_GroupBox_Remover_Btn = QPushButton("Remover")
@@ -250,10 +243,9 @@ Pontos Y: Potência aparente (kVA) em p.u.")
             return True
 
     def setDataEffCurve(self):
-
         self.EffCurveXarray = []
         self.EffCurveYarray = []
-
+        self.dataEffCurve = {}
         checkCont = 0
         try:
             for ctd in range(0, self.EffCurve_GroupBox_TreeWidget.topLevelItemCount()):
@@ -261,16 +253,23 @@ Pontos Y: Potência aparente (kVA) em p.u.")
                 Item = self.EffCurve_GroupBox_TreeWidget.topLevelItem(ctd)
                 if Item.checkState(0) == Qt.Checked:
                     checkCont += 1
-                    if checkCont > 1:
-                        raise class_exception.ExecConfigOpenDSS("Erro na seleção da Curva de Eficiência ",
-                                                                "Selecione somente uma curva!")
+                if checkCont > 1:
+                    raise class_exception.ExecConfigOpenDSS("Erro na seleção da Curva de Eficiência ",
+                                                            "Selecione somente uma curva!")
+                elif checkCont == 0:
+                    raise class_exception.ExecConfigOpenDSS("Erro na seleção da Curva de Eficiência ",
+                                                            "Selecione ao menos uma curva!")
+                else:
+                    if self.checkEffCurve(Item.name, Item.getPointsX(), Item.getPointsY()):
+                        self.EffCurveXarray = Item.getPointsXList()
+                        self.EffCurveYarray = Item.getPointsYList()
+                        self.dataEffCurve["EffCurveName"] = Item.name
+                        self.dataEffCurve["Xarray"] = self.EffCurveXarray
+                        self.dataEffCurve["Yarray"] = self.EffCurveYarray
                     else:
-                        if self.checkEffCurve(Item.name, Item.getPointsX(), Item.getPointsY()):
-                            self.EffCurveXarray = Item.getPointsXList()
-                            self.EffCurveYarray = Item.getPointsYList()
-                        else:
-                            raise class_exception.ExecConfigOpenDSS("Erro na verificação da Curva de Eficiência " \
-                                             + Item.name + " !","Verifique se todos os pontos estão presentes!")
+                        raise class_exception.ExecConfigOpenDSS("Erro na verificação da Curva de Eficiência " \
+                                         + Item.name + " !","Verifique se todos os pontos estão presentes!")
+
         except:
             pass
 

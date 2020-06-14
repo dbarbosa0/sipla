@@ -45,13 +45,17 @@ class C_Active_Pow_DispMode_Dialog(QDialog): ## Classe Dialog Despacho da Potenc
 
         self.Dialog_Layout = QGridLayout()
 
+        self.Disp_BtnGroup = QButtonGroup() # Button Group para os RadioBtn Sincronizado/Independentes
+
         self.DispSinc_Radio_Btn = QRadioButton("Carga e Descarga Sincronizados")
-        self.DispSinc_Radio_Btn.setChecked(True)
+        self.DispSinc_Radio_Btn.setChecked(False)
         self.DispSinc_Radio_Btn.clicked.connect(self.disableDispIndep)
+        self.Disp_BtnGroup.addButton(self.DispSinc_Radio_Btn)
         self.Dialog_Layout.addWidget(self.DispSinc_Radio_Btn, 1, 1, 1, 2)
 
         ### GroupBox Despacho Sincroninzado
         self.DispSinc_GroupBox = QGroupBox()
+        self.DispSinc_GroupBox.setEnabled(False)
         self.DispSinc_GroupBox_Layout = QVBoxLayout()
 
         self.DispSinc_BtnGroup = QButtonGroup()
@@ -108,6 +112,7 @@ class C_Active_Pow_DispMode_Dialog(QDialog): ## Classe Dialog Despacho da Potenc
         self.DispIndep_Radio_Btn = QRadioButton("Carga e Descarga Independentes")
         self.DispIndep_Radio_Btn.setChecked(False)
         self.DispIndep_Radio_Btn.clicked.connect(self.disableDispSinc)
+        self.Disp_BtnGroup.addButton(self.DispIndep_Radio_Btn)
         self.Dialog_Layout.addWidget(self.DispIndep_Radio_Btn, 3, 1, 1, 2)
 
         ### GroupBox Despacho Independente
@@ -265,9 +270,40 @@ class C_Active_Pow_DispMode_Dialog(QDialog): ## Classe Dialog Despacho da Potenc
             self.ConfigStorageController.ModoDescarga_GroupBox_StorageCont_GroupBox_Layout_Schedule_RadioBtn = self.ModoDescarga_GroupBox_StorageCont_GroupBox_Layout_Schedule_RadioBtn
             self.ConfigStorageController.ModoDescarga_GroupBox_StorageCont_GroupBox_Layout_Time_RadioBtn = self.ModoDescarga_GroupBox_StorageCont_GroupBox_Layout_Time_RadioBtn
 
-
     def cancelDespachoPotAtiva(self):
+        self.clearRadioBtns()
         self.close()
+
+    def clearRadioBtns(self):
+        self.Disp_BtnGroup.setExclusive(False)
+        self.DispSinc_BtnGroup.setExclusive(False)
+        self.ModoCarga_BtnGroup.setExclusive(False)
+        self.ModoDescarga_BtnGroup.setExclusive(False)
+
+        self.DispIndep_Radio_Btn.setChecked(False)
+        self.DispSinc_GroupBox_AutoDespacho_GroupBox_Layout_Default_RadioBtn.setChecked(False)
+        self.DispSinc_GroupBox_AutoDespacho_GroupBox_Layout_Follow_RadioBtn.setChecked(False)
+        self.DispSinc_GroupBox_AutoDespacho_GroupBox_Layout_LoadLevel_RadioBtn.setChecked(False)
+        self.DispSinc_GroupBox_AutoDespacho_GroupBox_Layout_Price_RadioBtn.setChecked(False)
+        self.DispSinc_GroupBox_StorageCont_GroupBox_Layout_LoadShape_RadioBtn.setChecked(False)
+        self.DispSinc_GroupBox.setEnabled(False)
+
+        self.DispIndep_Radio_Btn.setChecked(False)
+        self.ModoCarga_GroupBox_StorageCont_GroupBox_Layout_PeakShaveLow_RadioBtn.setChecked(False)
+        self.ModoCarga_GroupBox_StorageCont_GroupBox_Layout_IPeakShaveLow_RadioBtn.setChecked(False)
+        self.ModoCarga_GroupBox_StorageCont_GroupBox_Layout_Time_RadioBtn.setChecked(False)
+        self.ModoDescarga_GroupBox_StorageCont_GroupBox_Layout_PeakShave_RadioBtn.setChecked(False)
+        self.ModoDescarga_GroupBox_StorageCont_GroupBox_Layout_IPeakShave_RadioBtn.setChecked(False)
+        self.ModoDescarga_GroupBox_StorageCont_GroupBox_Layout_Follow_RadioBtn.setChecked(False)
+        self.ModoDescarga_GroupBox_StorageCont_GroupBox_Layout_Support_RadioBtn.setChecked(False)
+        self.ModoDescarga_GroupBox_StorageCont_GroupBox_Layout_Schedule_RadioBtn.setChecked(False)
+        self.ModoDescarga_GroupBox_StorageCont_GroupBox_Layout_Time_RadioBtn.setChecked(False)
+        self.DispIndep_GroupBox.setEnabled(False)
+
+        self.Disp_BtnGroup.setExclusive(True)
+        self.DispSinc_BtnGroup.setExclusive(True)
+        self.ModoCarga_BtnGroup.setExclusive(True)
+        self.ModoDescarga_BtnGroup.setExclusive(True)
 
     def disableDispIndep(self):
         self.DispIndep_GroupBox.setEnabled(False)
@@ -284,6 +320,8 @@ class C_ActPow_Default_DispMode_Dialog(QDialog): ## Classe Dialog Despacho Deafu
         self.titleWindow = "Despacho Default da Potência Ativa"
         self.iconWindow = cfg.sipla_icon
         self.stylesheet = cfg.sipla_stylesheet
+
+        self.DefaultParameters = {}
 
         self.Select_DispCurve = opendss.storage.class_select_dispatch_curve.C_Config_DispCurve_Dialog()
         self.InitUI()
@@ -337,6 +375,12 @@ class C_ActPow_Default_DispMode_Dialog(QDialog): ## Classe Dialog Despacho Deafu
     def selectDispCurve(self):
         self.Select_DispCurve.show()
     def acceptDefault(self):
+        self.DefaultParameters = {}
+        self.DefaultParameters["ChargeTrigger"] = self.ChargeTrigger_LineEdit.text()
+        self.DefaultParameters["DischargeTrigger"] = self.DischargeTrigger_LineEdit.text()
+        if self.TimeTrigger_LineEdit.isEnabled():
+            self.DefaultParameters["TimeChargeTrigger"] = self.TimeTrigger_LineEdit.text()
+        self.DefaultParameters.update(self.Select_DispCurve.dataDispCurve)
         self.close()
     def cancelDefault(self):
         self.close()
@@ -348,6 +392,8 @@ class C_ActPow_Follow_DispMode_Dialog(QDialog): ## Classe Dialog Despacho Follow
         self.titleWindow = "Despacho Follow da Potência Ativa"
         self.iconWindow = cfg.sipla_icon
         self.stylesheet = cfg.sipla_stylesheet
+
+        self.FollowParameters = {}
 
         self.InitUI()
 
@@ -395,6 +441,10 @@ class C_ActPow_Follow_DispMode_Dialog(QDialog): ## Classe Dialog Despacho Follow
         self.Select_DispCurve.show()
 
     def acceptFollow(self):
+        self.FollowParameters = {}
+        self.FollowParameters.update(self.Select_DispCurve.dataDispCurve)
+        if self.TimeTrigger_LineEdit.isEnabled():
+            self.FollowParameters["TimeChargeTrigger"] = self.TimeTrigger_LineEdit.text()
         self.close()
 
     def cancelFollow(self):
@@ -407,6 +457,8 @@ class C_ActPow_LoadLevel_DispMode_Dialog(QDialog): ## Classe Dialog Despacho Loa
         self.titleWindow = "Despacho LoadLevel da Potência Ativa"
         self.iconWindow = cfg.sipla_icon
         self.stylesheet = cfg.sipla_stylesheet
+
+        self.LoadLevelParameters = {}
 
         self.InitUI()
 
@@ -463,6 +515,12 @@ class C_ActPow_LoadLevel_DispMode_Dialog(QDialog): ## Classe Dialog Despacho Loa
         self.Select_PriceCurve.show()
 
     def acceptLoadLevel(self):
+        self.LoadLevelParameters = {}
+        self.LoadLevelParameters["ChargeTrigger"] = self.ChargeTrigger_LineEdit.text()
+        self.LoadLevelParameters["DischargeTrigger"] = self.DischargeTrigger_LineEdit.text()
+        if self.TimeTrigger_LineEdit.isEnabled():
+            self.LoadLevelParameters["TimeChargeTrigger"] = self.TimeTrigger_LineEdit.text()
+        self.LoadLevelParameters.update(self.Select_PriceCurve.dataPriceCurve)
         self.close()
 
     def cancelLoadLevel(self):
@@ -475,6 +533,8 @@ class C_ActPow_Price_DispMode_Dialog(QDialog): ## Classe Dialog Despacho Price d
         self.titleWindow = "Despacho Price da Potência Ativa"
         self.iconWindow = cfg.sipla_icon
         self.stylesheet = cfg.sipla_stylesheet
+
+        self.PriceParameters = {}
 
         self.InitUI()
 
@@ -531,6 +591,12 @@ class C_ActPow_Price_DispMode_Dialog(QDialog): ## Classe Dialog Despacho Price d
         self.Select_PriceCurve.show()
 
     def acceptPrice(self):
+        self.PriceParameters = {}
+        self.PriceParameters["ChargeTrigger"] = self.ChargeTrigger_LineEdit.text()
+        self.PriceParameters["DischargeTrigger"] = self.DischargeTrigger_LineEdit.text()
+        if self.TimeTrigger_LineEdit.isEnabled():
+            self.PriceParameters["TimeChargeTrigger"] = self.TimeTrigger_LineEdit.text()
+        self.PriceParameters.update(self.Select_PriceCurve.dataPriceCurve)
         self.close()
 
     def cancelPrice(self):
@@ -788,7 +854,7 @@ class C_ActPow_LoadShape_DispMode_Dialog(QDialog): ## Classe Dialog Despacho Loa
     def AcceptAddEditStorControl(self):
         StorageController = {}
         StorageController["StorageControllerName"] = unidecode.unidecode(self.get_StorControl_Name().replace(" ", "_"))
-        StorageController["StorageName"] = self.getStorage_Name()
+        StorageController["ElementList"] = []
         StorageController["Element"] = self.get_ElementStorControl()
         StorageController["Terminal"] = self.get_TerminalStorControl()
         StorageController["Reserve"] = self.get_ReserveStorControl()
@@ -829,23 +895,23 @@ class C_ActPow_LoadShape_DispMode_Dialog(QDialog): ## Classe Dialog Despacho Loa
             QMessageBox(QMessageBox.Warning, "Storage Controller", "Pelo menos um Storage Controller deve ser selecionado!",
                         QMessageBox.Ok).exec()
         else:
-            if self.Select_DispCurve.dataDispCurve == []:
-                QMessageBox(QMessageBox.Warning, "Storage Controller", "Selecione um Modo de Carga!", QMessageBox.Ok).exec()
+            if self.Select_DispCurve.dataDispCurve == {}:
+                QMessageBox(QMessageBox.Warning, "Storage Controller", "Selecione uma curva de despacho!", QMessageBox.Ok).exec()
             else:
                 DispatchCurveOK = True
                 for ctd in self.StorageControllersTemporario:
                     if ctd["StorageControllerName"] == self.StorControl_GroupBox_Selection_ComboBox.currentText():
-                        ctd.update({"dayli":self.Select_DispCurve.dataDispCurve})
+                        ctd.update(self.Select_DispCurve.dataDispCurve)
+                        ctd["ElementList"].append(self.getStorage_Name())
         if DispatchCurveOK:
             self.close()
-        print(self.StorageControllersTemporario)
 
     def cancelStorageControlSelection(self):
         self.close()
 
     def updateDialog(self):
         self.StorControl_GroupBox_Selection_ComboBox.clear()
-        if not self.StorageControllersTemporario == {}:
+        if not self.StorageControllersTemporario == []:
             for ctd in self.StorageControllersTemporario:
                 if "DispatchMode" in ctd:
                     self.StorControl_GroupBox_Selection_ComboBox.addItem(ctd["StorageControllerName"])

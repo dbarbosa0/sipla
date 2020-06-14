@@ -25,7 +25,7 @@ class C_Config_DispCurve_Dialog(QDialog):
 
         self.ConfigDialog = opendss.class_config_dialog.C_ConfigDialog()
 
-        self.dataDispCurve = []
+        self.dataDispCurve = {}
 
         self.InitUI()
 
@@ -218,7 +218,14 @@ class C_Config_DispCurve_Dialog(QDialog):
         self.close()
 
     def setDataDispCurve(self):
-        self.dataDispCurve = []
+        self.dataDispCurve = {}
+        self.dataDispCurve["npts"] = self.nPointsLoadDef()
+        if self.nStepSizeTimeDef() == "sec":
+            self.dataDispCurve["sinterval"] = self.nStepSizeDef()
+        elif self.nStepSizeTimeDef() == "min":
+            self.dataDispCurve["minterval"] = self.nStepSizeDef()
+        elif self.nStepSizeTimeDef() == "hr":
+            self.dataDispCurve["interval"] = self.nStepSizeDef()
 
         checkCont = 0
         try:
@@ -230,9 +237,13 @@ class C_Config_DispCurve_Dialog(QDialog):
                     if checkCont > 1:
                         raise class_exception.ExecConfigOpenDSS("Erro na seleção da Curva de Despacho ",
                                                                 "Selecione somente uma curva!")
+                    elif checkCont == 0:
+                        raise class_exception.ExecConfigOpenDSS("Erro na seleção da Curva de Despacho ",
+                                                                "Selecione ao menos uma curva!")
                     else:
                         if self.checkDispCurve(Item.name, Item.getPoints()):
-                            self.dataDispCurve = Item.getPointsList()
+                            self.dataDispCurve["DispCurveName"] = Item.name
+                            self.dataDispCurve["dayli"] = Item.getPointsList()
                         else:
                             raise class_exception.ExecConfigOpenDSS("Erro na verificação da Curva de Despacho " \
                                              + Item.name + " !","Verifique se todos os " + self.nPointsLoadDef() + " pontos estão presentes!")
@@ -311,7 +322,7 @@ class C_Config_DispCurve_Dialog(QDialog):
 
         contChecked = 0
         if retval == QMessageBox.Yes:
-            for ctd in range(self.DispCurve_GroupBox_TreeWidget.topLevelItemCount() -1 , -1, -1):
+            for ctd in range(self.DispCurve_GroupBox_TreeWidget.topLevelItemCount() - 1, -1, -1):
 
                 Item = self.DispCurve_GroupBox_TreeWidget.topLevelItem(ctd)
 

@@ -25,7 +25,7 @@ class C_Config_PriceCurve_Dialog(QDialog):
 
         self.ConfigDialog = opendss.class_config_dialog.C_ConfigDialog()
 
-        self.dataPriceCurve = []
+        self.dataPriceCurve = {}
 
         self.InitUI()
 
@@ -205,7 +205,14 @@ class C_Config_PriceCurve_Dialog(QDialog):
         self.close()
 
     def setDataPriceCurve(self):
-        self.dataPriceCurve = []
+        self.dataPriceCurve = {}
+        self.dataPriceCurve["npts"] = self.nPointsLoadDef()
+        if self.nStepSizeTimeDef() == "sec":
+            self.dataPriceCurve["sinterval"] = self.nStepSizeDef()
+        elif self.nStepSizeTimeDef() == "min":
+            self.dataPriceCurve["minterval"] = self.nStepSizeDef()
+        elif self.nStepSizeTimeDef() == "hr":
+            self.dataPriceCurve["interval"] = self.nStepSizeDef()
 
         checkCont = 0
         try:
@@ -217,9 +224,13 @@ class C_Config_PriceCurve_Dialog(QDialog):
                     if checkCont > 1:
                         raise class_exception.ExecConfigOpenDSS("Erro na seleção da Curva de Preço ",
                                                                 "Selecione somente uma curva!")
+                    elif checkCont == 0:
+                        raise class_exception.ExecConfigOpenDSS("Erro na seleção da Curva de Preço ",
+                                                                "Selecione ao menos uma curva!")
                     else:
                         if self.checkPriceCurve(Item.name, Item.getPoints()):
-                            self.dataPriceCurve = Item.getPointsList()
+                            self.dataPriceCurve["PriceCurveName"] = Item.name
+                            self.dataPriceCurve["dayli"] = Item.getPointsList()
                         else:
                             raise class_exception.ExecConfigOpenDSS("Erro na verificação da Curva de Preço " \
                                              + Item.name + " !","Verifique se todos os " + self.nPointsLoadDef() + " pontos estão presentes!")

@@ -387,7 +387,7 @@ class C_ActPow_Config_StorageController_Dialog(QDialog): ## Classe Dialog config
     def AcceptAddEditStorControl(self):
         StorageController = {}
         StorageController["StorageControllerName"] = unidecode.unidecode(self.get_StorControl_Name().replace(" ", "_"))
-        StorageController["StorageName"] = self.getStorage_Name()
+        StorageController["ElementList"] = []
         StorageController["Element"] = self.get_ElementStorControl()
         StorageController["Terminal"] = self.get_TerminalStorControl()
         StorageController["Reserve"] = self.get_ReserveStorControl()
@@ -455,7 +455,6 @@ class C_ActPow_Config_StorageController_Dialog(QDialog): ## Classe Dialog config
                     i[1].StorControl_GroupBox_Selection_ComboBox = self.StorControl_GroupBox_Selection_ComboBox
                     i[1].updateDialog()
                     i[1].show()
-        print(self.StorageControllersTemporario)
 
     def acceptStorageControlSelection(self):
         ChargeModeOK = False
@@ -493,10 +492,12 @@ class C_ActPow_Config_StorageController_Dialog(QDialog): ## Classe Dialog config
                         for ctd in self.StorageControllersTemporario:
                             if ctd["StorageControllerName"] == self.StorControl_GroupBox_Selection_ComboBox.currentText():
                                 ctd.update(i[1].DischargeMode)
+                                ctd["ElementList"].append(self.getStorage_Name())
             if ChargeModeOK and DischargeModeOK:
                 self.close()
 
     def cancelStorageControlSelection(self):
+        self.clearStorControlParameters()
         self.close()
 
     def ChargeMode(self):
@@ -520,7 +521,7 @@ class C_ActPow_Config_StorageController_Dialog(QDialog): ## Classe Dialog config
 
     def updateDialog(self):
         self.StorControl_GroupBox_Selection_ComboBox.clear()
-        if not self.StorageControllersTemporario == {}:
+        if not self.StorageControllersTemporario == []:
             for ctd in self.StorageControllersTemporario:
                 if "ChargeMode" in ctd and "DischargeMode" in ctd:
                     if ctd["ChargeMode"] == self.ChargeMode() and ctd["DischargeMode"] == self.DischargeMode():
