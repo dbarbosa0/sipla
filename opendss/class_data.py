@@ -21,6 +21,9 @@ class C_Data():  # classe OpenDSS
         self.busList = []
         self.elementList = []
 
+        ##Curvas de Carga
+        self.loadShapeUniCons = {}
+
         self.initUI()
 
     @property
@@ -793,7 +796,7 @@ class C_Data():  # classe OpenDSS
 
         try:
             # Curvas de Carga para se for Daily não precisar fazer nova consulta
-            self.loadShapeUniCons = {}
+
             self.loadShapeUniCons[tipoUniCons] = []
             ################################################################
 
@@ -850,7 +853,6 @@ class C_Data():  # classe OpenDSS
                     memoFileUC.append(tmp)
 
                     self.loadShapeUniCons[tipoUniCons].append([dados_db[ctd].objectid, str(dados_db[ctd].tip_cc.replace(' ', ""))])
-
                     ##Buffer
                     self.insertBusList(dados_db[ctd].pac)
                     self.insertElementList("Load.{0}".format(dados_db[ctd].objectid))
@@ -864,6 +866,7 @@ class C_Data():  # classe OpenDSS
     def exec_UNID_CONSUMIDORAS_MT(self):
 
         self.memoFileUniConsumidoraMT = self.getUNIDADE_CONSUMIDORA(self.nSE_MT_Selecionada, "MT", None)
+
 
         self.memoFileUniConsumidoraMT.insert(0, "! UNIDADES CONSUMIDORAS DE MEDIA TENSAO ")
 
