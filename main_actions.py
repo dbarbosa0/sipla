@@ -11,10 +11,11 @@ import opendss.class_config_plot_monitor_dialog
 import opendss.class_scan_config_dialog
 import database.class_base
 import database.class_config_dialog
-import class_exception
+# import class_exception
 import maps.class_view
 import main_panels_dock
 import main_toolbar
+import class_about_dialog
 import datetime
 
 class C_MainActions():
@@ -27,6 +28,7 @@ class C_MainActions():
         self.MainNetPanel = main_panels_dock.C_NetPanel(self)
         self.MainResultsPanel = main_panels_dock.C_ResultsPanel(self)
         self.MainMapView = maps.class_view.C_Viewer()
+        self.About = class_about_dialog.C_AboutDialog()
 
         ###
 
@@ -156,6 +158,10 @@ class C_MainActions():
         else:
             self.MainResultsPanel.hide()
 
+    def execAbout(self):
+        self.About.show()
+
+
     ##### Visualizando no Mapa
     def execMapView(self):
 
@@ -169,6 +175,8 @@ class C_MainActions():
         ##### Métodos
         self.MainMapView.createMap()
         self.MainMapView.viewMap()
+
+
 
     #################################################################################
     ##### VAI SER SUBSTITUIDO PELA INTERFACE DE SANDY

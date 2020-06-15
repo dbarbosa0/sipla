@@ -373,7 +373,7 @@ class C_MenuToolBar(QDockWidget):
     ####################################################################
 
     def exec_aboutSIPLA(self):
-        print("Sobre o SIPLA")
+        self.Actions.execAbout()
 
 
 
