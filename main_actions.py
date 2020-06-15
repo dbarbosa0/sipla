@@ -13,10 +13,11 @@ import opendss.class_config_plot_monitor_dialog
 import opendss.class_scan_config_dialog
 import database.class_base
 import database.class_config_dialog
-import class_exception
+# import class_exception
 import maps.class_view
 import main_panels_dock
 import main_toolbar
+import class_about_dialog
 import datetime
 
 class C_MainActions():
@@ -29,6 +30,7 @@ class C_MainActions():
         self.MainNetPanel = main_panels_dock.C_NetPanel(self)
         self.MainResultsPanel = main_panels_dock.C_ResultsPanel(self)
         self.MainMapView = maps.class_view.C_Viewer()
+        self.About = class_about_dialog.C_AboutDialog()
 
         ###
 
@@ -72,9 +74,10 @@ class C_MainActions():
     def updateStatusBar(self):
 
         ##Verifica Conexão
-        if (self.DataBase_DialogSettings.databaseInfo["Conn"] == "sqlite") and (
-                self.DataBase_DialogSettings.databaseInfo["DirDataBase"]):
+        if self.OpenDSS.DataBaseConn.testConn():
             self.MainWindowStatusBar.StatusBar_Status.setText("On-Line")
+        else:
+            self.MainWindowStatusBar.StatusBar_Status.setText("Off-Line")
 
         ##Tipo de Fluxo
         self.MainWindowStatusBar.StatusBar_Fluxo.setText("Fluxo: " + self.OpenDSS_DialogSettings.dataInfo["Mode"])
@@ -128,18 +131,19 @@ class C_MainActions():
     #############################################
 
     def connectDataBase(self):
-        if (self.DataBase_DialogSettings.databaseInfo["Conn"] == "sqlite") and (
-        self.DataBase_DialogSettings.databaseInfo["DirDataBase"]):
-            self.DataBaseConn.DataBaseInfo = self.DataBase_DialogSettings.databaseInfo
+        self.DataBaseConn.DataBaseInfo = self.DataBase_DialogSettings.databaseInfo
+
+        if self.OpenDSS.DataBaseConn.testConn():
             self.getSE_AT_DB()
             self.updateStatusBar()
         else:
             QMessageBox(QMessageBox.Warning, "DataBase Configuration", \
                         "A Conexão com o Banco de Dados deve ser configurada!", QMessageBox.Ok).exec()
 
-
     def configDataBase(self):
-        self.DataBase_DialogSettings.show()
+        self.DataBase_DialogSettings.exec()
+        self.updateStatusBar()
+        self.MainNetPanel.setDisabled_NetPanel_Config_GroupBox_SEAT()
 
     def getSE_AT_DB(self): ## Carregando as subestações de Alta tensão
         self.MainNetPanel.set_SEAT(self.DataBase.getSE_AT_DB())
@@ -163,6 +167,10 @@ class C_MainActions():
         else:
             self.MainResultsPanel.hide()
 
+    def execAbout(self):
+        self.About.show()
+
+
     ##### Visualizando no Mapa
     def execMapView(self):
 
@@ -177,6 +185,8 @@ class C_MainActions():
         self.MainMapView.createMap()
         self.MainMapView.viewMap()
 
+
+
     #################################################################################
     ##### VAI SER SUBSTITUIDO PELA INTERFACE DE SANDY
     #################################################################################
@@ -184,7 +194,7 @@ class C_MainActions():
     # Contribuição Sandy
     def exec_configOpenDSS_Settings(self):
         self.updateToobarMenu()
-        self.OpenDSS_DialogSettings.show()
+        self.OpenDSS_DialogSettings.exec()
 
     def execOpenDSS(self):
 
