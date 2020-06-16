@@ -229,8 +229,9 @@ class C_Config_PriceCurve_Dialog(QDialog):
                                                                 "Selecione ao menos uma curva!")
                     else:
                         if self.checkPriceCurve(Item.name, Item.getPoints()):
+                            price = Item.getPointsList()
                             self.dataPriceCurve["PriceCurveName"] = Item.name
-                            self.dataPriceCurve["dayli"] = Item.getPointsList()
+                            self.dataPriceCurve["price"] = price
                         else:
                             raise class_exception.ExecConfigOpenDSS("Erro na verificação da Curva de Preço " \
                                              + Item.name + " !","Verifique se todos os " + self.nPointsLoadDef() + " pontos estão presentes!")
@@ -271,7 +272,7 @@ class C_Config_PriceCurve_Dialog(QDialog):
             dataCSV = {} #Dicionário para as variáveis
 
             fname = QFileDialog.getOpenFileName(self, 'Open CSV file',
-                                                "PriceCurve", "CSV files (*.csv)")
+                                                "StorageCurves", "CSV files (*.csv)")
                                                 #str(pathlib.Path.home()), "CSV files (*.csv)")
 
             if platform.system() == "Windows":

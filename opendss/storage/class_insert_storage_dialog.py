@@ -398,7 +398,7 @@ class C_Insert_Storage_Dialog(QDialog):  ## Classe Dialog principal
                     Storage["WattPriority"] = "True"
                 else:
                     Storage["WattPriority"] = "False"
-                Storage.update(self.TabInversorConfig.EffCurve.dataEffCurve)
+                Storage.update({"EffCurve": self.TabInversorConfig.EffCurve.dataEffCurve})
                 Storage.update({"ReactPow": self.DispModeReactPowDialog.ReactPow})
 
                 if self.DispModeActPowDialog.DispSinc_Radio_Btn.isChecked():
@@ -559,6 +559,7 @@ class C_Insert_Storage_Dialog(QDialog):  ## Classe Dialog principal
     def acceptInsertStorage(self):
         for ctd in self.StorageControllers:
             ctd['ElementList'] = set(ctd['ElementList'])
+        self.OpenDSS.Storages = self.Storages
         self.clearStorageParameters()
         self.DefaultConfigParameters()
         self.close()

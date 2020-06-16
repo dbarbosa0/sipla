@@ -264,6 +264,7 @@ Pontos Y: Potência aparente (kVA) em p.u.")
                         self.EffCurveXarray = Item.getPointsXList()
                         self.EffCurveYarray = Item.getPointsYList()
                         self.dataEffCurve["EffCurveName"] = Item.name
+                        self.dataEffCurve["npts"] = str(len(self.EffCurveXarray))
                         self.dataEffCurve["Xarray"] = self.EffCurveXarray
                         self.dataEffCurve["Yarray"] = self.EffCurveYarray
                     else:

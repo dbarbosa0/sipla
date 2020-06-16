@@ -218,6 +218,7 @@ class C_Config_DispCurve_Dialog(QDialog):
         self.close()
 
     def setDataDispCurve(self):
+        self.mult = []
         self.dataDispCurve = {}
         self.dataDispCurve["npts"] = self.nPointsLoadDef()
         if self.nStepSizeTimeDef() == "sec":
@@ -242,8 +243,9 @@ class C_Config_DispCurve_Dialog(QDialog):
                                                                 "Selecione ao menos uma curva!")
                     else:
                         if self.checkDispCurve(Item.name, Item.getPoints()):
+                            self.mult = Item.getPointsList()
                             self.dataDispCurve["DispCurveName"] = Item.name
-                            self.dataDispCurve["dayli"] = Item.getPointsList()
+                            self.dataDispCurve["mult"] = self.mult
                         else:
                             raise class_exception.ExecConfigOpenDSS("Erro na verificação da Curva de Despacho " \
                                              + Item.name + " !","Verifique se todos os " + self.nPointsLoadDef() + " pontos estão presentes!")
@@ -282,7 +284,7 @@ class C_Config_DispCurve_Dialog(QDialog):
             dataCSV = {} #Dicionário para as variáveis
 
             fname = QFileDialog.getOpenFileName(self, 'Open CSV file',
-                                                "DispatchCurve", "CSV files (*.csv)")
+                                                "StorageCurves", "CSV files (*.csv)")
                                                 #str(pathlib.Path.home()), "CSV files (*.csv)")
 
             if platform.system() == "Windows":
