@@ -301,6 +301,9 @@ class C_Config_LoadShape_Dialog(QDialog):
             else:
                 msg.information(self, 'Curvas de Carga', "Nenhuma curva de carga selecionada!")
 
+            if self.Shapes_GroupBox_TreeWidget.topLevelItemCount() == 0:
+                self.graphWidget.clear()
+
         else:
             msg.information(self, 'Curvas de Carga', "Nenhuma curva de carga foi removida!")
 
@@ -328,6 +331,14 @@ class C_Config_LoadShape_Dialog(QDialog):
             else:
                 msg = QMessageBox()
                 msg.information(self, 'Curvas de Carga', "Não foi possível adicionar a curva de carga!\nCurva de carga já existente!")
+
+    def addLoadShapeTreeWidget(self, loadName, pts):
+
+        pts = str(pts).strip('[]').replace("'", "")
+        Config_LoadShape_Shapes_GroupBox_TreeWidget_Item(self.Shapes_GroupBox_TreeWidget,
+                                                             self.Shapes_GroupBox_Checkbox_SelectAll.checkState(),
+                                                             loadName, pts,
+                                                             cfg.colorsList[random.randint(0, len(cfg.colorsList) - 1)])
 
     def checkLoadShape(self, nameLoadShape, pointsLoadShape):
 
