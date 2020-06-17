@@ -17,6 +17,7 @@ import opendss.storage.class_reactive_pow_dispmode_dialog
 import opendss.storage.class_config_eff_curve
 import opendss.storage.class_config_storagecontroller
 import config as cfg
+import unidecode
 
 
 class C_Insert_Storage_Dialog(QDialog):  ## Classe Dialog principal
@@ -146,7 +147,9 @@ class C_Insert_Storage_Dialog(QDialog):  ## Classe Dialog principal
 
         self.setLayout(self.Dialog_Layout)
 
-    # tenho que escrever o codigo desses botoes ainda
+    def get_StorageName(self):
+        return unidecode.unidecode(self.TabConfig.StorageConfig_GroupBox_Nome_LineEdit.text().replace(" ", "_"))
+
     def excluirStorages(self):
         for ctd in range(self.Storages_GroupBox_TreeWidget.topLevelItemCount() - 1, -1, -1):
             Item = self.Storages_GroupBox_TreeWidget.topLevelItem(ctd)
@@ -314,7 +317,7 @@ class C_Insert_Storage_Dialog(QDialog):  ## Classe Dialog principal
             pass
 
     def DispModeActPow(self):
-        if self.TabConfig.StorageConfig_GroupBox_Nome_LineEdit.text() == "":
+        if self.get_StorageName() == "":
             QMessageBox(QMessageBox.Information, "Storage",
                         "Antes de configurar o Despacho da Potência Ativa, escolha\num nome para o Storage!",
                         QMessageBox.Ok).exec()
@@ -329,7 +332,7 @@ class C_Insert_Storage_Dialog(QDialog):  ## Classe Dialog principal
             self.DispModeActPowDialog.show()
 
     def DispModeReactPow(self):
-        if self.TabConfig.StorageConfig_GroupBox_Nome_LineEdit.text() == "":
+        if self.get_StorageName() == "":
             QMessageBox(QMessageBox.Information, "Storage",
                         "Antes de configurar o Despacho da Potência Reativa, escolha\num nome para o Storage!",
                         QMessageBox.Ok).exec()
@@ -354,7 +357,7 @@ class C_Insert_Storage_Dialog(QDialog):  ## Classe Dialog principal
                 Storage = {}
 
                 ############# seta data das configurações gerais
-                Storage["StorageName"] = self.TabConfig.StorageConfig_GroupBox_Nome_LineEdit.text()
+                Storage["StorageName"] = self.get_StorageName()
                 Storage["Conn"] = self.TabConfig.StorageConfig_GroupBox_conn_ComboBox.currentText()
                 Storage["Bus"] = self.TabConfig.StorageConfig_GroupBox_Bus_ComboBox.currentText()
                 Storage["kW"] = self.TabConfig.StorageConfig_GroupBox_kW_LineEdit.text()
@@ -420,14 +423,14 @@ class C_Insert_Storage_Dialog(QDialog):  ## Classe Dialog principal
                     for ctd in range(0, self.Storages_GroupBox_TreeWidget.topLevelItemCount()):
                         Item = self.Storages_GroupBox_TreeWidget.topLevelItem(ctd)
 
-                        if Item.text(0) == self.TabConfig.StorageConfig_GroupBox_Nome_LineEdit.text():
+                        if Item.text(0) == self.get_StorageName():
                             countName += 1
 
                     if countName == 0:
                         if Storage["Carga/Descarga"] == "Sincronizados":
 
                             Storage_TreeWidget_Item(self.Storages_GroupBox_TreeWidget,
-                                                    self.TabConfig.StorageConfig_GroupBox_Nome_LineEdit.text(),
+                                                    self.get_StorageName(),
                                                     self.TabConfig.StorageConfig_GroupBox_Bus_ComboBox.currentText(),
                                                     Storage["ModoCarga/Descarga"])
 
@@ -442,17 +445,18 @@ class C_Insert_Storage_Dialog(QDialog):  ## Classe Dialog principal
                             elif Storage["ModoCarga/Descarga"] == "LoadShape":
                                 Storage.update({"ActPow": None})
                                 for ctd in self.DispModeActPowDialog.DialogActPowLoadShape.StorageControllersTemporario:
-                                    if self.DispModeActPowDialog.DialogActPowLoadShape.StorageConfig_GroupBox_Nome_LineEdit.text() in ctd["ElementList"]:
+                                    if self.get_StorageName() in ctd["ElementList"]:
+                                        print("Storage name in elementlist")
                                         self.StorageControllers.append(ctd)
 
                         if Storage["Carga/Descarga"] == "Independentes":
                             Storage.update({"ActPow": None})
                             for ctd in self.DispModeActPowDialog.ConfigStorageController.StorageControllersTemporario:
-                                if self.DispModeActPowDialog.DialogActPowLoadShape.StorageConfig_GroupBox_Nome_LineEdit.text() in ctd["ElementList"]:
+                                if self.get_StorageName() in ctd["ElementList"]:
                                     self.StorageControllers.append(ctd)
 
                             Storage_TreeWidget_Item(self.Storages_GroupBox_TreeWidget,
-                                                    self.TabConfig.StorageConfig_GroupBox_Nome_LineEdit.text(),
+                                                    self.get_StorageName(),
                                                     self.TabConfig.StorageConfig_GroupBox_Bus_ComboBox.currentText(),
                                                     Storage["ModoCarga"] + "/" + Storage["ModoDescarga"])
 
@@ -509,18 +513,18 @@ class C_Insert_Storage_Dialog(QDialog):  ## Classe Dialog principal
                                     ctd["ModoCarga/Descarga"] = Storage["ModoCarga/Descarga"]
                                     if not self.DispModeActPowDialog.DialogActPowLoadShape.StorageControllersTemporario == []:
                                         for i in self.StorageControllers:
-                                            if self.DispModeActPowDialog.DialogActPowLoadShape.StorageConfig_GroupBox_Nome_LineEdit.text() in i["ElementList"]:
+                                            if self.get_StorageName() in i["ElementList"]:
                                                 self.StorageControllers.remove(i)
                                         for i in self.DispModeActPowDialog.DialogActPowLoadShape.StorageControllersTemporario:
-                                            if self.DispModeActPowDialog.DialogActPowLoadShape.StorageConfig_GroupBox_Nome_LineEdit.text() in i["ElementList"]:
+                                            if self.get_StorageName() in i["ElementList"]:
                                                 self.StorageControllers.append(i)
 
                                 for ctd in range(self.Storages_GroupBox_TreeWidget.topLevelItemCount() - 1, -1, -1):
                                     Item = self.Storages_GroupBox_TreeWidget.topLevelItem(ctd)
-                                    if Item.text(0) == self.TabConfig.StorageConfig_GroupBox_Nome_LineEdit.text():
+                                    if Item.text(0) == self.get_StorageName():
                                         self.Storages_GroupBox_TreeWidget.takeTopLevelItem(ctd)
                                         Storage_TreeWidget_Item(self.Storages_GroupBox_TreeWidget,
-                                                        self.TabConfig.StorageConfig_GroupBox_Nome_LineEdit.text(),
+                                                        self.get_StorageName(),
                                                         self.TabConfig.StorageConfig_GroupBox_Bus_ComboBox.currentText(),
                                                         Storage["ModoCarga/Descarga"])
 
@@ -530,18 +534,18 @@ class C_Insert_Storage_Dialog(QDialog):  ## Classe Dialog principal
                                 ctd['ModoDescarga'] = Storage['ModoDescarga']
                                 if not self.DispModeActPowDialog.DialogActPowLoadShape.StorageControllersTemporario == []:
                                     for i in self.StorageControllers:
-                                        if self.DispModeActPowDialog.DialogActPowLoadShape.StorageConfig_GroupBox_Nome_LineEdit.text() in i["ElementList"]:
+                                        if self.get_StorageName() in i["ElementList"]:
                                             self.StorageControllers.remove(i)
                                     for i in self.DispModeActPowDialog.DialogActPowLoadShape.StorageControllersTemporario:
-                                        if self.DispModeActPowDialog.DialogActPowLoadShape.StorageConfig_GroupBox_Nome_LineEdit.text() in i["ElementList"]:
+                                        if self.get_StorageName() in i["ElementList"]:
                                             self.StorageControllers.append(i)
 
                                 for ctd in range(0, self.Storages_GroupBox_TreeWidget.topLevelItemCount()):
                                     Item = self.Storages_GroupBox_TreeWidget.topLevelItem(ctd)
-                                    if Item.text(0) == self.TabConfig.StorageConfig_GroupBox_Nome_LineEdit.text():
+                                    if Item.text(0) == self.get_StorageName():
                                         self.Storages_GroupBox_TreeWidget.takeTopLevelItem(ctd)
                                         Storage_TreeWidget_Item(self.Storages_GroupBox_TreeWidget,
-                                                                self.TabConfig.StorageConfig_GroupBox_Nome_LineEdit.text(),
+                                                                self.get_StorageName(),
                                                                 self.TabConfig.StorageConfig_GroupBox_Bus_ComboBox.currentText(),
                                                                 Storage["ModoCarga"] + "/" + Storage["ModoDescarga"])
 
@@ -557,9 +561,13 @@ class C_Insert_Storage_Dialog(QDialog):  ## Classe Dialog principal
         self.adjustSize()
 
     def acceptInsertStorage(self):
+        print("StorageControllers")
         for ctd in self.StorageControllers:
-            ctd['ElementList'] = set(ctd['ElementList'])
+            ctd['ElementList'] = list(set(ctd['ElementList']))
+            print(ctd)
+        print("XXXXXXXXXXXXXXXX")
         self.OpenDSS.Storages = self.Storages
+        self.OpenDSS.StorageControllers = self.StorageControllers
         self.clearStorageParameters()
         self.DefaultConfigParameters()
         self.close()

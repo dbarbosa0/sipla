@@ -157,15 +157,6 @@ class C_ActPow_Config_StorageController_Dialog(QDialog): ## Classe Dialog config
     def NumComboBox(self, value):
         self._NumComboBox = value
 
-    # @property ######## Getter/ Setter para criacao do StorageController Temporario. Nao foi necessario
-    # def StorageControllers(self):
-    #     return self._StorageControllers
-    #
-    # @StorageControllers.setter
-    # def StorageControllers(self, value):
-    #     self._StorageControllers = value
-
-
     def InitUI(self):
         self.setWindowTitle(self.titleWindow)  # titulo janela
         self.setWindowIcon(QIcon(self.iconWindow))  # ícone da janela
@@ -350,7 +341,7 @@ class C_ActPow_Config_StorageController_Dialog(QDialog): ## Classe Dialog config
                     self.StorControl_Element_ComboBox.setCurrentText(ctd["Element"])
                     self.StorControl_Terminal_ComboBox.setCurrentText(ctd["Terminal"])
                     self.StorControl_Reserve.setText(ctd["Reserve"])
-                    self.StorControl_Weight.setText(ctd["Weight"])
+                    self.StorControl_Weight.setText(ctd["Weight"][self.getStorage_Name()])
             self.StorControl_Name.setEnabled(False)
             self.EnableDisableParameters(True)
 
@@ -391,7 +382,7 @@ class C_ActPow_Config_StorageController_Dialog(QDialog): ## Classe Dialog config
         StorageController["Element"] = self.get_ElementStorControl()
         StorageController["Terminal"] = self.get_TerminalStorControl()
         StorageController["Reserve"] = self.get_ReserveStorControl()
-        StorageController["Weight"] = self.get_WeightStorControl()
+        StorageController["Weight"] = {self.getStorage_Name(): self.get_WeightStorControl()}
         StorageController["ChargeMode"] = self.ChargeMode()
         StorageController["DischargeMode"] = self.DischargeMode()
 
@@ -415,7 +406,7 @@ class C_ActPow_Config_StorageController_Dialog(QDialog): ## Classe Dialog config
                     ctd["Element"] = StorageController["Element"]
                     ctd["Terminal"] = StorageController["Terminal"]
                     ctd["Reserve"] = StorageController["Reserve"]
-                    ctd["Weight"] = StorageController["Weight"]
+                    ctd["Weight"][self.getStorage_Name()] = self.get_WeightStorControl()
                     ctd["ChargeMode"] = StorageController["ChargeMode"]
                     ctd["DischargeMode"] = StorageController["DischargeMode"]
                     QMessageBox(QMessageBox.Information, "Storage Controller",
@@ -520,6 +511,7 @@ class C_ActPow_Config_StorageController_Dialog(QDialog): ## Classe Dialog config
          return DischargeMode
 
     def updateDialog(self):
+        print("lloadshape")
         self.StorControl_GroupBox_Selection_ComboBox.clear()
         if not self.StorageControllersTemporario == []:
             for ctd in self.StorageControllersTemporario:

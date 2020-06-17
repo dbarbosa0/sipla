@@ -38,6 +38,7 @@ class C_OpenDSS(): # classe OpenDSSDirect
         self._Monitors = []
         #### Storages
         self._Storages = []
+        self._StorageControllers = []
         ##SC Carvalho
         self._SCDataInfo = []
         ## FlagLoadData - Só roda se tiver alguma alteração nos alimentadores
@@ -118,6 +119,14 @@ class C_OpenDSS(): # classe OpenDSSDirect
     @Storages.setter
     def Storages(self, value):
         self._Storages = value
+
+    @property
+    def StorageControllers(self):
+        return self._StorageControllers
+
+    @StorageControllers.setter
+    def StorageControllers(self, value):
+        self._StorageControllers = value
 
     @property
     def SCDataInfo(self):
@@ -623,6 +632,27 @@ class C_OpenDSS(): # classe OpenDSSDirect
 
                     self.memoFileStorages.append(tmp)
 
+        for ctd in self.StorageControllers:
+            if ctd['DispatchMode'] == 'LoadShape':
+                if "interval" in ctd:
+                    tmp = "New LoadShape." + ctd['DispCurveName'] + \
+                          " interval=" + str(ctd["interval"]) + \
+                          " npts=" + str(ctd["npts"]) + \
+                          " mult=" + str(ctd["mult"])
+                elif "sinterval" in ctd:
+                    tmp = "New LoadShape." + ctd['DispCurveName'] + \
+                          " interval=" + str(ctd["sinterval"]) + \
+                          " npts=" + str(ctd["npts"]) + \
+                          " mult=" + str(ctd["mult"])
+                elif "minterval" in ctd:
+                    tmp = "New LoadShape." + ctd['DispCurveName'] + \
+                          " interval=" + str(ctd["minterval"]) + \
+                          " npts=" + str(ctd["npts"]) + \
+                          " mult=" + str(ctd["mult"])
+
+                self.memoFileStorages.append(tmp)
+
+
     def exec_PriceCurves(self):
         for ctd in self.Storages:
             if ctd['Carga/Descarga'] == 'Sincronizados':
@@ -644,6 +674,96 @@ class C_OpenDSS(): # classe OpenDSSDirect
                               " price=" + str(ctd['ActPow']["price"])
 
                     self.memoFileStorages.append(tmp)
+
+    def exec_StorageControllers(self):
+        for ctd in self.StorageControllers:
+            Weights = []
+            tmp = "New StorageController2." + ctd["StorageControllerName"] + \
+                  " ElementList=" + str(ctd["ElementList"]).replace("'","") + \
+                  " Element=" + ctd["Element"] + \
+                  " Terminal=" + ctd["Terminal"] + \
+                  " %reserve=" + ctd["Reserve"]
+            for i in ctd["ElementList"]:
+                if i in ctd["Weight"]:
+                    Weights.append(ctd["Weight"][i])
+            tmp = tmp + " Weights=" + str(Weights).replace("'","")
+
+            if 'DispatchMode' in ctd:
+                if ctd['DispatchMode'] == 'LoadShape':
+                    tmp = tmp + " DispMode=LoadShape" + \
+                          " daily=" + ctd["DispCurveName"]
+
+            else:
+                if ctd['ChargeMode'] == 'PeakShaveLow':
+                    tmp = tmp + " ChargeMode=PeakShaveLow" + \
+                          " kWTargetLow=" + ctd["kWTargetLow"]
+                    if "kWBandLow" in ctd:
+                        tmp = tmp + " kWBandLow=" + ctd["kWBandLow"]
+                    else:
+                        tmp = tmp + " %kWBandLow=" + ctd["%kWBandLow"]
+
+                elif ctd['ChargeMode'] == 'I-PeakShaveLow':
+                    tmp = tmp + " ChargeMode=I-PeakShaveLow" + \
+                          " kWTargetLow=" + ctd["kWTargetLow"]
+                    if "kWBandLow" in ctd:
+                        tmp = tmp + " kWBandLow=" + ctd["kWBandLow"]
+                    else:
+                        tmp = tmp + " %kWBandLow=" + ctd["%kWBandLow"]
+
+                elif ctd['ChargeMode'] == 'Time':
+                    tmp = tmp + " ChargeMode=Time" + \
+                          " timeChargeTrigger=" + ctd["timeChargeTrigger"] + \
+                          " %RateCharge=" + ctd["%RateCharge"]
+
+
+                if ctd['DischargeMode'] == 'PeakShave':
+                    tmp = tmp + " DischargeMode=PeakShave" + \
+                          " kWTarget=" + ctd["kWTarget"]
+                    if "kWBand" in ctd:
+                        tmp = tmp + " kWBand=" + ctd["kWBand"]
+                    else:
+                        tmp = tmp + " %kWBand=" + ctd["%kWBand"]
+
+                elif ctd['DischargeMode'] == 'I-PeakShave':
+                    tmp = tmp + " DischargeMode=I-PeakShave" + \
+                          " kWTarget=" + ctd["kWTarget"]
+                    if "kWBand" in ctd:
+                        tmp = tmp + " kWBand=" + ctd["kWBand"]
+                    else:
+                        tmp = tmp + " %kWBand=" + ctd["%kWBand"]
+
+                elif ctd['DischargeMode'] == 'Follow':
+                    tmp = tmp + " DischargeMode=Follow" + \
+                          " timeDischargeTrigger=" + ctd["timeDischargeTrigger"]
+                    if "kWBand" in ctd:
+                        tmp = tmp + " kWBand=" + ctd["kWBand"]
+                    else:
+                        tmp = tmp + " %kWBand=" + ctd["%kWBand"]
+                    if "kWThreshold" in ctd:
+                        tmp = tmp + " kWThreshold=" + ctd["kWThreshold"]
+
+                elif ctd['DischargeMode'] == 'Support':
+                    tmp = tmp + " DischargeMode=Support" + \
+                          " kWTarget=" + ctd["kWTarget"]
+                    if "kWBand" in ctd:
+                        tmp = tmp + " kWBand=" + ctd["kWBand"]
+                    else:
+                        tmp = tmp + " %kWBand=" + ctd["%kWBand"]
+
+                elif ctd['DischargeMode'] == 'Schedule':
+                    tmp = tmp + " DischargeMode=Schedule" + \
+                          " timeDischargeTrigger=" + ctd["timeDischargeTrigger"] + \
+                          " Tup=" + ctd["Tup"] + \
+                          " Tflat=" + ctd["Tflat"] + \
+                          " Tdn=" + ctd["Tdn"] + \
+                          " %RatekW=" + ctd["%RatekW"]
+
+                elif ctd['DischargeMode'] == 'Time':
+                    tmp = tmp + " DischargeMode=Time" + \
+                          " timeDischargeTrigger=" + ctd["timeDischargeTrigger"] + \
+                          " %RatekW=" + ctd["%RatekW"]
+
+            self.memoFileStorages.append(tmp)
 
     def exec_Storages(self):
 
@@ -738,11 +858,11 @@ class C_OpenDSS(): # classe OpenDSSDirect
                               " PriceCurve=" + ctd["ActPow"]["DispCurveName"] + \
                               " ChargeTrigger=" + ctd["ActPow"]["ChargeTrigger"] + \
                               " DischargeTrigger=" + ctd["ActPow"]["DischargeTrigger"]
-            # if "ActPow" in ctd:
-            #     for i in ctd["ActPow"].items():
-            #         tmp = tmp + " " +i[0] + "=" + i[1]
 
             self.memoFileStorages.append(tmp)
+
+        self.exec_StorageControllers()
+
         print('###############')
         for i in self.memoFileStorages:
             print(i)

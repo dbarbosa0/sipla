@@ -248,16 +248,18 @@ class C_Active_Pow_DispMode_Dialog(QDialog): ## Classe Dialog Despacho da Potenc
                       [self.DispSinc_GroupBox_StorageCont_GroupBox_Layout_LoadShape_RadioBtn, self.DialogActPowLoadShape]]:
                 if i[0].isChecked():
                     i[1].show()
+                    if i[0] == self.DispSinc_GroupBox_StorageCont_GroupBox_Layout_LoadShape_RadioBtn:
+                        self.DialogActPowLoadShape.updateDialog()
+                        self.NumComboBox = self.DialogActPowLoadShape.StorControl_GroupBox_Selection_ComboBox.count()  # Número de elementos iniciais no ComboBox
+                        self.DialogActPowLoadShape.NumComboBox = self.NumComboBox
+
                     self.close()
         if self.DispIndep_Radio_Btn.isChecked():
             self.ConfigStorageController.show()
             self.ConfigStorageController.updateDialog()
 
-            self.DialogActPowLoadShape.updateDialog()
-
             self.NumComboBox = self.ConfigStorageController.StorControl_GroupBox_Selection_ComboBox.count() #Número de elementos iniciais no ComboBox
             self.ConfigStorageController.NumComboBox = self.NumComboBox
-            self.DialogActPowLoadShape.NumComboBox = self.NumComboBox
 
             self.close()
             self.ConfigStorageController.ModoCarga_GroupBox_StorageCont_GroupBox_Layout_PeakShaveLow_RadioBtn = self.ModoCarga_GroupBox_StorageCont_GroupBox_Layout_PeakShaveLow_RadioBtn
@@ -770,13 +772,13 @@ class C_ActPow_LoadShape_DispMode_Dialog(QDialog): ## Classe Dialog Despacho Loa
         self.setLayout(self.Dialog_Layout)
 
     def getStorage_Name(self):
-        return self.StorageConfig_GroupBox_Nome_LineEdit.text()
+        return unidecode.unidecode(self.StorageConfig_GroupBox_Nome_LineEdit.text().replace(" ", "_"))
 
     def getStorage_PercentageReserve(self):
         return self.StorageConfig_GroupBox_PercentageReserve_LineEdit.text()
 
     def get_StorControl_Name(self):
-        return self.StorControl_Name.text()
+        return unidecode.unidecode(self.StorControl_Name.text().replace(" ", "_"))
 
     def get_ElementStorControl(self):
         return self.StorControl_Element_ComboBox.currentText()
@@ -819,7 +821,7 @@ class C_ActPow_LoadShape_DispMode_Dialog(QDialog): ## Classe Dialog Despacho Loa
                     self.StorControl_Element_ComboBox.setCurrentText(ctd["Element"])
                     self.StorControl_Terminal_ComboBox.setCurrentText(ctd["Terminal"])
                     self.StorControl_Reserve.setText(ctd["Reserve"])
-                    self.StorControl_Weight.setText(ctd["Weight"])
+                    self.StorControl_Weight.setText(ctd["Weight"][self.getStorage_Name()])
             self.StorControl_Name.setEnabled(False)
             self.EnableDisableParameters(True)
 
@@ -853,12 +855,12 @@ class C_ActPow_LoadShape_DispMode_Dialog(QDialog): ## Classe Dialog Despacho Loa
 
     def AcceptAddEditStorControl(self):
         StorageController = {}
-        StorageController["StorageControllerName"] = unidecode.unidecode(self.get_StorControl_Name().replace(" ", "_"))
+        StorageController["StorageControllerName"] = self.get_StorControl_Name()
         StorageController["ElementList"] = []
         StorageController["Element"] = self.get_ElementStorControl()
         StorageController["Terminal"] = self.get_TerminalStorControl()
         StorageController["Reserve"] = self.get_ReserveStorControl()
-        StorageController["Weight"] = self.get_WeightStorControl()
+        StorageController["Weight"] = {self.getStorage_Name(): self.get_WeightStorControl()}
         StorageController["DispatchMode"] = "LoadShape"
 
         if self.StorControl_Name.isEnabled():
@@ -881,7 +883,7 @@ class C_ActPow_LoadShape_DispMode_Dialog(QDialog): ## Classe Dialog Despacho Loa
                     ctd["Element"] = StorageController["Element"]
                     ctd["Terminal"] = StorageController["Terminal"]
                     ctd["Reserve"] = StorageController["Reserve"]
-                    ctd["Weight"] = StorageController["Weight"]
+                    ctd["Weight"][self.getStorage_Name()] = self.get_WeightStorControl()
                     QMessageBox(QMessageBox.Information, "Storage Controller",
                                 "Storage Controller" + ctd["StorageControllerName"] + " atualizado com sucesso!",
                                 QMessageBox.Ok).exec()
@@ -910,11 +912,13 @@ class C_ActPow_LoadShape_DispMode_Dialog(QDialog): ## Classe Dialog Despacho Loa
         self.close()
 
     def updateDialog(self):
+        print("update loadshape")
         self.StorControl_GroupBox_Selection_ComboBox.clear()
         if not self.StorageControllersTemporario == []:
             for ctd in self.StorageControllersTemporario:
                 if "DispatchMode" in ctd:
                     self.StorControl_GroupBox_Selection_ComboBox.addItem(ctd["StorageControllerName"])
+
         self.StorControl_Element_ComboBox.clear()
         self.StorControl_Element_ComboBox.addItems(self.OpenDSS.getElementList())
 
