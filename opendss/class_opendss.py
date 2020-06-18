@@ -633,22 +633,23 @@ class C_OpenDSS(): # classe OpenDSSDirect
                     self.memoFileStorages.append(tmp)
 
         for ctd in self.StorageControllers:
-            if ctd['DispatchMode'] == 'LoadShape':
-                if "interval" in ctd:
-                    tmp = "New LoadShape." + ctd['DispCurveName'] + \
-                          " interval=" + str(ctd["interval"]) + \
-                          " npts=" + str(ctd["npts"]) + \
-                          " mult=" + str(ctd["mult"])
-                elif "sinterval" in ctd:
-                    tmp = "New LoadShape." + ctd['DispCurveName'] + \
-                          " interval=" + str(ctd["sinterval"]) + \
-                          " npts=" + str(ctd["npts"]) + \
-                          " mult=" + str(ctd["mult"])
-                elif "minterval" in ctd:
-                    tmp = "New LoadShape." + ctd['DispCurveName'] + \
-                          " interval=" + str(ctd["minterval"]) + \
-                          " npts=" + str(ctd["npts"]) + \
-                          " mult=" + str(ctd["mult"])
+            if 'DispatchMode' in ctd:
+                if ctd['DispatchMode'] == 'LoadShape':
+                    if "interval" in ctd:
+                        tmp = "New LoadShape." + ctd['DispCurveName'] + \
+                              " interval=" + str(ctd["interval"]) + \
+                              " npts=" + str(ctd["npts"]) + \
+                              " mult=" + str(ctd["mult"])
+                    elif "sinterval" in ctd:
+                        tmp = "New LoadShape." + ctd['DispCurveName'] + \
+                              " interval=" + str(ctd["sinterval"]) + \
+                              " npts=" + str(ctd["npts"]) + \
+                              " mult=" + str(ctd["mult"])
+                    elif "minterval" in ctd:
+                        tmp = "New LoadShape." + ctd['DispCurveName'] + \
+                              " interval=" + str(ctd["minterval"]) + \
+                              " npts=" + str(ctd["npts"]) + \
+                              " mult=" + str(ctd["mult"])
 
                 self.memoFileStorages.append(tmp)
 
@@ -690,12 +691,12 @@ class C_OpenDSS(): # classe OpenDSSDirect
 
             if 'DispatchMode' in ctd:
                 if ctd['DispatchMode'] == 'LoadShape':
-                    tmp = tmp + " DispMode=LoadShape" + \
+                    tmp = tmp + " ModeDischarge=LoadShape" + \
                           " daily=" + ctd["DispCurveName"]
 
             else:
                 if ctd['ChargeMode'] == 'PeakShaveLow':
-                    tmp = tmp + " ChargeMode=PeakShaveLow" + \
+                    tmp = tmp + " ModeCharge=PeakShaveLow" + \
                           " kWTargetLow=" + ctd["kWTargetLow"]
                     if "kWBandLow" in ctd:
                         tmp = tmp + " kWBandLow=" + ctd["kWBandLow"]
@@ -703,7 +704,7 @@ class C_OpenDSS(): # classe OpenDSSDirect
                         tmp = tmp + " %kWBandLow=" + ctd["%kWBandLow"]
 
                 elif ctd['ChargeMode'] == 'I-PeakShaveLow':
-                    tmp = tmp + " ChargeMode=I-PeakShaveLow" + \
+                    tmp = tmp + " ModeCharge=I-PeakShaveLow" + \
                           " kWTargetLow=" + ctd["kWTargetLow"]
                     if "kWBandLow" in ctd:
                         tmp = tmp + " kWBandLow=" + ctd["kWBandLow"]
@@ -711,13 +712,13 @@ class C_OpenDSS(): # classe OpenDSSDirect
                         tmp = tmp + " %kWBandLow=" + ctd["%kWBandLow"]
 
                 elif ctd['ChargeMode'] == 'Time':
-                    tmp = tmp + " ChargeMode=Time" + \
+                    tmp = tmp + " ModeCharge=Time" + \
                           " timeChargeTrigger=" + ctd["timeChargeTrigger"] + \
                           " %RateCharge=" + ctd["%RateCharge"]
 
 
                 if ctd['DischargeMode'] == 'PeakShave':
-                    tmp = tmp + " DischargeMode=PeakShave" + \
+                    tmp = tmp + " ModeDischarge=PeakShave" + \
                           " kWTarget=" + ctd["kWTarget"]
                     if "kWBand" in ctd:
                         tmp = tmp + " kWBand=" + ctd["kWBand"]
@@ -725,7 +726,7 @@ class C_OpenDSS(): # classe OpenDSSDirect
                         tmp = tmp + " %kWBand=" + ctd["%kWBand"]
 
                 elif ctd['DischargeMode'] == 'I-PeakShave':
-                    tmp = tmp + " DischargeMode=I-PeakShave" + \
+                    tmp = tmp + " ModeDischarge=I-PeakShave" + \
                           " kWTarget=" + ctd["kWTarget"]
                     if "kWBand" in ctd:
                         tmp = tmp + " kWBand=" + ctd["kWBand"]
@@ -733,7 +734,7 @@ class C_OpenDSS(): # classe OpenDSSDirect
                         tmp = tmp + " %kWBand=" + ctd["%kWBand"]
 
                 elif ctd['DischargeMode'] == 'Follow':
-                    tmp = tmp + " DischargeMode=Follow" + \
+                    tmp = tmp + " ModeDischarge=Follow" + \
                           " timeDischargeTrigger=" + ctd["timeDischargeTrigger"]
                     if "kWBand" in ctd:
                         tmp = tmp + " kWBand=" + ctd["kWBand"]
@@ -743,7 +744,7 @@ class C_OpenDSS(): # classe OpenDSSDirect
                         tmp = tmp + " kWThreshold=" + ctd["kWThreshold"]
 
                 elif ctd['DischargeMode'] == 'Support':
-                    tmp = tmp + " DischargeMode=Support" + \
+                    tmp = tmp + " ModeDischarge=Support" + \
                           " kWTarget=" + ctd["kWTarget"]
                     if "kWBand" in ctd:
                         tmp = tmp + " kWBand=" + ctd["kWBand"]
@@ -751,7 +752,7 @@ class C_OpenDSS(): # classe OpenDSSDirect
                         tmp = tmp + " %kWBand=" + ctd["%kWBand"]
 
                 elif ctd['DischargeMode'] == 'Schedule':
-                    tmp = tmp + " DischargeMode=Schedule" + \
+                    tmp = tmp + " ModeDischarge=Schedule" + \
                           " timeDischargeTrigger=" + ctd["timeDischargeTrigger"] + \
                           " Tup=" + ctd["Tup"] + \
                           " Tflat=" + ctd["Tflat"] + \
@@ -759,7 +760,7 @@ class C_OpenDSS(): # classe OpenDSSDirect
                           " %RatekW=" + ctd["%RatekW"]
 
                 elif ctd['DischargeMode'] == 'Time':
-                    tmp = tmp + " DischargeMode=Time" + \
+                    tmp = tmp + " ModeDischarge=Time" + \
                           " timeDischargeTrigger=" + ctd["timeDischargeTrigger"] + \
                           " %RatekW=" + ctd["%RatekW"]
 

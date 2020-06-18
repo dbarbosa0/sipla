@@ -120,7 +120,7 @@ class C_MainActions():
         else:
             self.MainWindowToolBar.OpenDSS_InsertEnergyMeter_Act.setEnabled(False)
             self.MainWindowToolBar.OpenDSS_InsertMonitor_Act.setEnabled(False)
-            self.MainWindowToolBar.OpenDSS_InsertStorage_Act.setEnabled(True)
+            self.MainWindowToolBar.OpenDSS_InsertStorage_Act.setEnabled(False)
             self.MainWindowToolBar.OpenDSS_Save_Act.setEnabled(False)
             self.MainWindowToolBar.OpenDSS_Create_Act.setEnabled(False)
             self.MainWindowToolBar.OpenDSS_View_Act.setEnabled(False)

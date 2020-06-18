@@ -306,7 +306,7 @@ class C_ActPow_Config_StorageController_Dialog(QDialog): ## Classe Dialog config
         return self.StorControl_Weight.text()
 
     def getStorage_Name(self):
-        return self.StorageConfig_GroupBox_Nome_LineEdit.text()
+        return unidecode.unidecode(self.StorageConfig_GroupBox_Nome_LineEdit.text().replace(" ", "_"))
 
     def getStorage_PercentageReserve(self):
         return self.StorageConfig_GroupBox_PercentageReserve_LineEdit.text()
@@ -412,6 +412,8 @@ class C_ActPow_Config_StorageController_Dialog(QDialog): ## Classe Dialog config
                     QMessageBox(QMessageBox.Information, "Storage Controller",
                                 "Storage Controller" + ctd["StorageControllerName"] + " atualizado com sucesso!",
                                 QMessageBox.Ok).exec()
+
+        print(self.StorageControllersTemporario)
         self.updateDialog()
         self.EnableDisableParameters(False)
         self.adjustSize()
@@ -483,9 +485,11 @@ class C_ActPow_Config_StorageController_Dialog(QDialog): ## Classe Dialog config
                         for ctd in self.StorageControllersTemporario:
                             if ctd["StorageControllerName"] == self.StorControl_GroupBox_Selection_ComboBox.currentText():
                                 ctd.update(i[1].DischargeMode)
+                                print(self.getStorage_Name())
                                 ctd["ElementList"].append(self.getStorage_Name())
             if ChargeModeOK and DischargeModeOK:
                 self.close()
+                print(self.StorageControllersTemporario)
 
     def cancelStorageControlSelection(self):
         self.clearStorControlParameters()
@@ -598,7 +602,7 @@ class C_ActPow_Charge_PeakShaveLow_DispMode_Dialog(QDialog): ## Classe Dialog De
     def getkWTargetLow(self):
         return self.kWTargetLow_LineEdit.text()
     def getBandLowUnit(self):
-        return self.BandLow_Unit_ComboBox.currentText
+        return self.BandLow_Unit_ComboBox.currentText()
     def getBandWidthLow(self):
         return self.BandLow_LineEdit.text()
 
@@ -618,10 +622,12 @@ class C_ActPow_Charge_PeakShaveLow_DispMode_Dialog(QDialog): ## Classe Dialog De
         if self.verificaLineEdits():
             self.ChargeMode["ChargeMode"] = "PeakShaveLow"
             self.ChargeMode["kWTargetLow"] = self.getkWTargetLow()
+            print(self.getBandLowUnit())
             if self.getBandLowUnit() == "kW":
                 self.ChargeMode["kWBandLow"] = self.getBandWidthLow()
             else:
                 self.ChargeMode["%kWBandLow"] = self.getBandWidthLow()
+                print("aq")
             self.close()
     def cancelPeakShaveLow(self):
         self.close()
@@ -718,7 +724,7 @@ class C_ActPow_Charge_IPeakShaveLow_DispMode_Dialog(QDialog): ## Classe Dialog D
     def getkampsTargetLow(self):
         return self.kampsTargetLow_LineEdit.text()
     def getBandLowUnit(self):
-        return self.BandLow_Unit_ComboBox.currentText
+        return self.BandLow_Unit_ComboBox.currentText()
     def getBandWidthLow(self):
         return self.BandLow_LineEdit.text()
 
@@ -948,7 +954,7 @@ class C_ActPow_Discharge_PeakShave_DispMode_Dialog(QDialog):# Classe Dialog Desp
     def getkWTarget(self):
         return self.kWTarget_LineEdit.text()
     def getBandUnit(self):
-        return self.Band_Unit_ComboBox.currentText
+        return self.Band_Unit_ComboBox.currentText()
     def getBandWidth(self):
         return self.Band_LineEdit.text()
 
@@ -1068,7 +1074,7 @@ class C_ActPow_Discharge_IPeakShave_DispMode_Dialog(QDialog): ## Classe Dialog D
     def getkampsTarget(self):
         return self.kampsTarget_LineEdit.text()
     def getBandUnit(self):
-        return self.Band_Unit_ComboBox.currentText
+        return self.Band_Unit_ComboBox.currentText()
     def getBandWidth(self):
         return self.Band_LineEdit.text()
 
@@ -1196,7 +1202,7 @@ class C_ActPow_Discharge_Follow_DispMode_Dialog(QDialog): ## Classe Dialog Despa
     def gettimeDischargeTrigger(self):
         return self.timeDischargeTrigger_LineEdit.text()
     def getBandUnit(self):
-        return self.Band_Unit_ComboBox.currentText
+        return self.Band_Unit_ComboBox.currentText()
     def getBandWidth(self):
         return self.Band_LineEdit.text()
     def getkWThreshold(self):
@@ -1336,7 +1342,7 @@ class C_ActPow_Discharge_Support_DispMode_Dialog(QDialog):# Classe Dialog Despac
     def getkWTarget(self):
         return self.kWTarget_LineEdit.text()
     def getBandUnit(self):
-        return self.Band_Unit_ComboBox.currentText
+        return self.Band_Unit_ComboBox.currentText()
     def getBandWidth(self):
         return self.Band_LineEdit.text()
 

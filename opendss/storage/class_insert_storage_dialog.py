@@ -294,15 +294,15 @@ class C_Insert_Storage_Dialog(QDialog):  ## Classe Dialog principal
 
                                 if i['ModoDescarga'] == 'PeakShave':
                                     self.DispModeActPowDialog.ModoDescarga_GroupBox_StorageCont_GroupBox_Layout_PeakShave_RadioBtn.setChecked(True)
-                                elif i['ModoCarga'] == 'I-PeakShave':
+                                elif i['ModoDescarga'] == 'I-PeakShave':
                                     self.DispModeActPowDialog.ModoDescarga_GroupBox_StorageCont_GroupBox_Layout_IPeakShave_RadioBtn.setChecked(True)
-                                elif i['ModoCarga'] == 'Follow':
+                                elif i['ModoDescarga'] == 'Follow':
                                     self.DispModeActPowDialog.ModoDescarga_GroupBox_StorageCont_GroupBox_Layout_Follow_RadioBtn.setChecked(True)
-                                elif i['ModoCarga'] == 'Support':
+                                elif i['ModoDescarga'] == 'Support':
                                     self.DispModeActPowDialog.ModoDescarga_GroupBox_StorageCont_GroupBox_Layout_Support_RadioBtn.setChecked(True)
-                                elif i['ModoCarga'] == 'Schedule':
+                                elif i['ModoDescarga'] == 'Schedule':
                                     self.DispModeActPowDialog.ModoDescarga_GroupBox_StorageCont_GroupBox_Layout_Schedule_RadioBtn.setChecked(True)
-                                elif i['ModoCarga'] == 'Time':
+                                elif i['ModoDescarga'] == 'Time':
                                     self.DispModeActPowDialog.ModoDescarga_GroupBox_StorageCont_GroupBox_Layout_Time_RadioBtn.setChecked(True)
 
                         self.TabConfig.StorageConfig_GroupBox_Nome_LineEdit.setEnabled(False)
@@ -451,8 +451,11 @@ class C_Insert_Storage_Dialog(QDialog):  ## Classe Dialog principal
 
                         if Storage["Carga/Descarga"] == "Independentes":
                             Storage.update({"ActPow": None})
+                            print('aqui')
                             for ctd in self.DispModeActPowDialog.ConfigStorageController.StorageControllersTemporario:
+                                print("oi")
                                 if self.get_StorageName() in ctd["ElementList"]:
+                                    print("pora")
                                     self.StorageControllers.append(ctd)
 
                             Storage_TreeWidget_Item(self.Storages_GroupBox_TreeWidget,
@@ -489,7 +492,7 @@ class C_Insert_Storage_Dialog(QDialog):  ## Classe Dialog principal
                             ctd["%X"] = Storage["%X"]
 
                             ctd["kVA"] = Storage["kVA"]
-                            ctd["kWrated"] = Storage["varFollowInverter"]
+                            ctd["kWrated"] = Storage["kWrated"]
                             ctd["%CutIn"] = Storage["%CutIn"]
                             ctd["%CutOut"] = Storage["%CutOut"]
                             ctd["kvarMax"] = Storage["kvarMax"]
@@ -557,6 +560,7 @@ class C_Insert_Storage_Dialog(QDialog):  ## Classe Dialog principal
                 self.adjustSize()
 
     def CancelAddEditStorage(self):
+        self.TabConfig.StorageConfig_GroupBox_Nome_LineEdit.setEnabled(True)
         self.EnableDisableParameters(False)
         self.adjustSize()
 
