@@ -413,7 +413,6 @@ class C_ActPow_Config_StorageController_Dialog(QDialog): ## Classe Dialog config
                                 "Storage Controller" + ctd["StorageControllerName"] + " atualizado com sucesso!",
                                 QMessageBox.Ok).exec()
 
-        print(self.StorageControllersTemporario)
         self.updateDialog()
         self.EnableDisableParameters(False)
         self.adjustSize()
@@ -485,11 +484,9 @@ class C_ActPow_Config_StorageController_Dialog(QDialog): ## Classe Dialog config
                         for ctd in self.StorageControllersTemporario:
                             if ctd["StorageControllerName"] == self.StorControl_GroupBox_Selection_ComboBox.currentText():
                                 ctd.update(i[1].DischargeMode)
-                                print(self.getStorage_Name())
                                 ctd["ElementList"].append(self.getStorage_Name())
             if ChargeModeOK and DischargeModeOK:
                 self.close()
-                print(self.StorageControllersTemporario)
 
     def cancelStorageControlSelection(self):
         self.clearStorControlParameters()
@@ -515,7 +512,6 @@ class C_ActPow_Config_StorageController_Dialog(QDialog): ## Classe Dialog config
          return DischargeMode
 
     def updateDialog(self):
-        print("lloadshape")
         self.StorControl_GroupBox_Selection_ComboBox.clear()
         if not self.StorageControllersTemporario == []:
             for ctd in self.StorageControllersTemporario:
@@ -622,12 +618,10 @@ class C_ActPow_Charge_PeakShaveLow_DispMode_Dialog(QDialog): ## Classe Dialog De
         if self.verificaLineEdits():
             self.ChargeMode["ChargeMode"] = "PeakShaveLow"
             self.ChargeMode["kWTargetLow"] = self.getkWTargetLow()
-            print(self.getBandLowUnit())
             if self.getBandLowUnit() == "kW":
                 self.ChargeMode["kWBandLow"] = self.getBandWidthLow()
             else:
                 self.ChargeMode["%kWBandLow"] = self.getBandWidthLow()
-                print("aq")
             self.close()
     def cancelPeakShaveLow(self):
         self.close()

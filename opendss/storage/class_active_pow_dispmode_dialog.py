@@ -920,7 +920,6 @@ class C_ActPow_LoadShape_DispMode_Dialog(QDialog): ## Classe Dialog Despacho Loa
         self.close()
 
     def updateDialog(self):
-        print("update loadshape")
         self.StorControl_GroupBox_Selection_ComboBox.clear()
         if not self.StorageControllersTemporario == []:
             for ctd in self.StorageControllersTemporario:

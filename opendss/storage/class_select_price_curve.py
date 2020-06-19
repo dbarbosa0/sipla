@@ -23,8 +23,6 @@ class C_Config_PriceCurve_Dialog(QDialog):
         self.iconWindow = cfg.sipla_icon
         self.stylesheet = cfg.sipla_stylesheet
 
-        self.ConfigDialog = opendss.class_config_dialog.C_ConfigDialog()
-
         self.dataPriceCurve = {}
 
         self.InitUI()

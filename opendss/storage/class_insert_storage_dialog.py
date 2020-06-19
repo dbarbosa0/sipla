@@ -558,8 +558,6 @@ class C_Insert_Storage_Dialog(QDialog):  ## Classe Dialog principal
                                                                 self.TabConfig.StorageConfig_GroupBox_Bus_ComboBox.currentText(),
                                                                 Storage["ModoCarga"] + "/" + Storage["ModoDescarga"])
 
-                print(self.Storages)
-                print(self.StorageControllers)
                 self.updateDialog()
                 self.TabConfig.StorageConfig_GroupBox_Nome_LineEdit.setEnabled(True)
                 self.EnableDisableParameters(False)
@@ -571,11 +569,6 @@ class C_Insert_Storage_Dialog(QDialog):  ## Classe Dialog principal
         self.adjustSize()
 
     def acceptInsertStorage(self):
-        print("StorageControllers")
-        for ctd in self.StorageControllers:
-            ctd['ElementList'] = list(set(ctd['ElementList']))
-            print(ctd)
-        print("XXXXXXXXXXXXXXXX")
         self.OpenDSS.Storages = self.Storages
         self.OpenDSS.StorageControllers = self.StorageControllers
         self.clearStorageParameters()
