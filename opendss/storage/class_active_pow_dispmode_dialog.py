@@ -45,7 +45,13 @@ class C_Active_Pow_DispMode_Dialog(QDialog): ## Classe Dialog Despacho da Potenc
 
         self.Dialog_Layout = QGridLayout()
 
-        self.Disp_BtnGroup = QButtonGroup() # Button Group para os RadioBtn Sincronizado/Independentes
+        self.Disp_BtnGroup = QButtonGroup() # Button Group para os RadioBtn fora da GroupBox
+
+        self.None_Radio_Btn = QRadioButton('Nenhum modo selecionado')
+        self.None_Radio_Btn.setChecked(True)
+        self.None_Radio_Btn.clicked.connect(self.disableGroupBoxes)
+        self.Disp_BtnGroup.addButton(self.None_Radio_Btn)
+        self.Dialog_Layout.addWidget(self.None_Radio_Btn, 0, 1, 1, 2)
 
         self.DispSinc_Radio_Btn = QRadioButton("Carga e Descarga Sincronizados")
         self.DispSinc_Radio_Btn.setChecked(False)
@@ -277,12 +283,12 @@ class C_Active_Pow_DispMode_Dialog(QDialog): ## Classe Dialog Despacho da Potenc
         self.close()
 
     def clearRadioBtns(self):
-        self.Disp_BtnGroup.setExclusive(False)
         self.DispSinc_BtnGroup.setExclusive(False)
         self.ModoCarga_BtnGroup.setExclusive(False)
         self.ModoDescarga_BtnGroup.setExclusive(False)
 
-        self.DispIndep_Radio_Btn.setChecked(False)
+        self.None_Radio_Btn.setChecked(True)
+
         self.DispSinc_GroupBox_AutoDespacho_GroupBox_Layout_Default_RadioBtn.setChecked(False)
         self.DispSinc_GroupBox_AutoDespacho_GroupBox_Layout_Follow_RadioBtn.setChecked(False)
         self.DispSinc_GroupBox_AutoDespacho_GroupBox_Layout_LoadLevel_RadioBtn.setChecked(False)
@@ -290,7 +296,6 @@ class C_Active_Pow_DispMode_Dialog(QDialog): ## Classe Dialog Despacho da Potenc
         self.DispSinc_GroupBox_StorageCont_GroupBox_Layout_LoadShape_RadioBtn.setChecked(False)
         self.DispSinc_GroupBox.setEnabled(False)
 
-        self.DispIndep_Radio_Btn.setChecked(False)
         self.ModoCarga_GroupBox_StorageCont_GroupBox_Layout_PeakShaveLow_RadioBtn.setChecked(False)
         self.ModoCarga_GroupBox_StorageCont_GroupBox_Layout_IPeakShaveLow_RadioBtn.setChecked(False)
         self.ModoCarga_GroupBox_StorageCont_GroupBox_Layout_Time_RadioBtn.setChecked(False)
@@ -302,10 +307,13 @@ class C_Active_Pow_DispMode_Dialog(QDialog): ## Classe Dialog Despacho da Potenc
         self.ModoDescarga_GroupBox_StorageCont_GroupBox_Layout_Time_RadioBtn.setChecked(False)
         self.DispIndep_GroupBox.setEnabled(False)
 
-        self.Disp_BtnGroup.setExclusive(True)
         self.DispSinc_BtnGroup.setExclusive(True)
         self.ModoCarga_BtnGroup.setExclusive(True)
         self.ModoDescarga_BtnGroup.setExclusive(True)
+
+    def disableGroupBoxes(self):
+        self.DispIndep_GroupBox.setEnabled(False)
+        self.DispSinc_GroupBox.setEnabled(False)
 
     def disableDispIndep(self):
         self.DispIndep_GroupBox.setEnabled(False)

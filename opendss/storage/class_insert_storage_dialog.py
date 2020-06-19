@@ -347,7 +347,7 @@ class C_Insert_Storage_Dialog(QDialog):  ## Classe Dialog principal
                             "Selecione uma curva de eficiência do Inversor!",
                             QMessageBox.Ok).exec()
 
-            elif not (self.DispModeActPowDialog.DispSinc_Radio_Btn.isChecked() or self.DispModeActPowDialog.DispIndep_Radio_Btn.isChecked()):
+            elif self.DispModeActPowDialog.None_Radio_Btn.isChecked():
                 QMessageBox(QMessageBox.Information, "Insert Storage",
                             "Configure algum Modo de Despacho!",
                             QMessageBox.Ok).exec()
@@ -444,19 +444,25 @@ class C_Insert_Storage_Dialog(QDialog):  ## Classe Dialog principal
                                 Storage.update({"ActPow": self.DispModeActPowDialog.DialogActPowPrice.PriceParameters})
                             elif Storage["ModoCarga/Descarga"] == "LoadShape":
                                 Storage.update({"ActPow": None})
-                                for ctd in self.DispModeActPowDialog.DialogActPowLoadShape.StorageControllersTemporario:
-                                    if self.get_StorageName() in ctd["ElementList"]:
-                                        print("Storage name in elementlist")
-                                        self.StorageControllers.append(ctd)
+                                StorageCont = 0
+                                for i in self.StorageControllers:
+                                    if self.get_StorageName() in i["ElementList"]:
+                                        StorageCont += 1
+                                if StorageCont == 0:
+                                    for ctd in self.DispModeActPowDialog.DialogActPowLoadShape.StorageControllersTemporario:
+                                        if self.get_StorageName() in ctd["ElementList"]:
+                                            self.StorageControllers.append(ctd)
 
                         if Storage["Carga/Descarga"] == "Independentes":
                             Storage.update({"ActPow": None})
-                            print('aqui')
-                            for ctd in self.DispModeActPowDialog.ConfigStorageController.StorageControllersTemporario:
-                                print("oi")
-                                if self.get_StorageName() in ctd["ElementList"]:
-                                    print("pora")
-                                    self.StorageControllers.append(ctd)
+                            StorageCont = 0
+                            for i in self.StorageControllers:
+                                if self.get_StorageName() in i["ElementList"]:
+                                    StorageCont += 1
+                            if StorageCont == 0:
+                                for ctd in self.DispModeActPowDialog.ConfigStorageController.StorageControllersTemporario:
+                                    if self.get_StorageName() in ctd["ElementList"]:
+                                        self.StorageControllers.append(ctd)
 
                             Storage_TreeWidget_Item(self.Storages_GroupBox_TreeWidget,
                                                     self.get_StorageName(),
@@ -517,7 +523,7 @@ class C_Insert_Storage_Dialog(QDialog):  ## Classe Dialog principal
                                     if not self.DispModeActPowDialog.DialogActPowLoadShape.StorageControllersTemporario == []:
                                         for i in self.StorageControllers:
                                             if self.get_StorageName() in i["ElementList"]:
-                                                self.StorageControllers.remove(i)
+                                                i["ElementList"].remove(self.get_StorageName())
                                         for i in self.DispModeActPowDialog.DialogActPowLoadShape.StorageControllersTemporario:
                                             if self.get_StorageName() in i["ElementList"]:
                                                 self.StorageControllers.append(i)
@@ -538,7 +544,7 @@ class C_Insert_Storage_Dialog(QDialog):  ## Classe Dialog principal
                                 if not self.DispModeActPowDialog.DialogActPowLoadShape.StorageControllersTemporario == []:
                                     for i in self.StorageControllers:
                                         if self.get_StorageName() in i["ElementList"]:
-                                            self.StorageControllers.remove(i)
+                                            i["ElementList"].remove(self.get_StorageName())
                                     for i in self.DispModeActPowDialog.DialogActPowLoadShape.StorageControllersTemporario:
                                         if self.get_StorageName() in i["ElementList"]:
                                             self.StorageControllers.append(i)
