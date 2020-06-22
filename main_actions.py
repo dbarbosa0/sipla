@@ -6,7 +6,8 @@ import opendss.class_opendss
 import opendss.class_config_dialog
 import opendss.class_insert_energymeter_dialog
 import opendss.class_insert_monitor_dialog
-import opendss.class_insert_storage_dialog
+import opendss.storage.class_insert_storage_dialog
+import opendss.storage.class_config_storagecontroller
 import opendss.class_energymeter_results_dialog
 import opendss.class_config_plot_monitor_dialog
 import opendss.class_scan_config_dialog
@@ -62,8 +63,10 @@ class C_MainActions():
         self.SCAnalyze_DialogSettings = opendss.class_scan_config_dialog.C_SCAnalyze_ConfigDialog()
         self.SCAnalyze_DialogSettings.OpenDSS = self.OpenDSS #Apontando o ponteiro de OpenDSS C_MainActions
         # Contribuição Jonas
-        self.OpenDSS_DialogInsertStorage = opendss.class_insert_storage_dialog.C_Insert_Storage_Dialog()
+        self.OpenDSS_DialogInsertStorage = opendss.storage.class_insert_storage_dialog.C_Insert_Storage_Dialog()
         self.OpenDSS_DialogInsertStorage.OpenDSS = self.OpenDSS
+        self.OpenDSS_DialogInsertStorage.DispModeActPowDialog.ConfigStorageController.OpenDSS = self.OpenDSS
+        self.OpenDSS_DialogInsertStorage.DispModeActPowDialog.DialogActPowLoadShape.OpenDSS = self.OpenDSS
 
 
     #############################################
@@ -274,6 +277,7 @@ class C_MainActions():
     def execInsertStorage(self):
         self.OpenDSS_DialogInsertStorage.updateDialog()
         self.OpenDSS_DialogInsertStorage.show()
+        #self.OpenDSS_DialogInsertStorage.DispModeActPowDialog.ConfigStorageController.updateDialog()
 
 
 
