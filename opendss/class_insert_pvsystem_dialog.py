@@ -5,7 +5,8 @@ from PyQt5.QtCore import Qt
 import sys
 import opendss.class_opendss
 import config as cfg
-from opendss.class_config_loadshape_dialog import C_Config_LoadShape_Dialog
+from opendss.PVSystem.class_pvsystem_effcurve_dialog import C_Config_EffCurve_Dialog
+
 
 
 class C_Insert_PVSystem_Dialog(QDialog):
@@ -17,6 +18,7 @@ class C_Insert_PVSystem_Dialog(QDialog):
         self.stylesheet = cfg.sipla_stylesheet
         self.adjustSize()
         self.OpenDSS = opendss.class_opendss.C_OpenDSS()
+        self.effcurve = C_Config_EffCurve_Dialog()
         self.PVSystem_List = []
 
         self.InitUI()
@@ -99,7 +101,7 @@ class C_Insert_PVSystem_Dialog(QDialog):
         pass
 
     def addPVSystem(self):
-        pass
+        return self.effcurve
 
     def editPVSystem(self):
         pass
