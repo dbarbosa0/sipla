@@ -22,7 +22,7 @@ class C_Insert_EnergyMeter_Dialog(QDialog): ## Classe Dialog principal
         self.EnergyMeters = []
 
     def InitUI(self):
-        self.setWindowTitle(self.titleWindow) # titulo janela
+        self.setWindowTitle(self.titleWindow)  # titulo janela
         self.setWindowIcon(QIcon(self.iconWindow))  # ícone da janela
         self.setWindowModality(Qt.ApplicationModal)
         self.setStyle(QStyleFactory.create('Cleanlooks'))  # Estilo da Interface

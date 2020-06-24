@@ -58,6 +58,8 @@ class C_MenuToolBar(QDockWidget):
                               'OpenDSS_Create_Act': 0, # Criar Arquivo .DSS
                               'OpenDSS_Save_Act': 0,
                               'OpenDSS_View_Act': 0,
+                              'PVSystem_Config_Act': 0,  # Configurar PVSystem
+                              'PVSystem_Run_Act': 0,   # Run PVsystem
                               'SCAnalyze_Config_Act': 0,  # Configurar SCAn
                               'SCAnalyze_Run_Act': 0, }  # Run SCAn
 
@@ -130,6 +132,14 @@ class C_MenuToolBar(QDockWidget):
         self.SCAnalyze_Run_Act.setObjectName('SCAnalyze_Run_Act')
         self.OpenDSSActRef['SCAnalyze_Run_Act'] = self.SCAnalyze_Run_Act
 
+        #Contribuição Felipe
+        self.OpenDSS_InsertPVSystem_Act = QAction(QIcon(''), '&PVSystem', self)
+        self.OpenDSS_InsertPVSystem_Act.setShortcut("")
+        self.OpenDSS_InsertPVSystem_Act.setStatusTip('Configure PVSystem')
+        self.OpenDSS_InsertPVSystem_Act.triggered.connect(self.exec_insertPVSystem)
+        self.OpenDSS_InsertPVSystem_Act.setObjectName('PVSystem')
+        self.OpenDSSActRef['OpenDSS_InsertPVSystem_Act'] = self.OpenDSS_InsertPVSystem_Act
+
 
         # ******* Setup the OpenDSS Menu *******
         self.OpenDSSMenu.addAction(self.OpenDSS_Config_Act)
@@ -139,6 +149,7 @@ class C_MenuToolBar(QDockWidget):
                                                               'Insert ')
         self.OpenDSSMenuSubInsert.addAction(self.OpenDSS_InsertEnergyMeter_Act)
         self.OpenDSSMenuSubInsert.addAction(self.OpenDSS_InsertMonitor_Act)
+        self.OpenDSSMenuSubInsert.addAction(self.OpenDSS_InsertPVSystem_Act)
         self.OpenDSSMenuSubProcess = self.OpenDSSMenu.addMenu(QIcon('img/icon_opendss_subprocess.png'),
                                                               'Sub-processos ')
         self.OpenDSSMenuSubProcess.addAction(self.OpenDSS_Create_Act)
@@ -347,6 +358,10 @@ class C_MenuToolBar(QDockWidget):
 
     def exec_dynamicFlt(self):
         self.Actions.exec_SCAnalyze()
+
+    # Contribuição Felipe
+    def exec_insertPVSystem(self):
+        self.Actions.exec_PVSystem_Settings()
 
     ####################################################################
 
