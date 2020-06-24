@@ -134,8 +134,8 @@ class C_MenuToolBar(QDockWidget):
 
         #Contribuição Felipe
         self.OpenDSS_InsertPVSystem_Act = QAction(QIcon(''), '&PVSystem', self)
-        self.OpenDSS_InsertPVSystem_Act.setShortcut("")
-        self.OpenDSS_InsertPVSystem_Act.setStatusTip('Configure PVSystem')
+        self.OpenDSS_InsertPVSystem_Act.setShortcut("Ctrl+P")
+        self.OpenDSS_InsertPVSystem_Act.setStatusTip('Configurar PVSystem')
         self.OpenDSS_InsertPVSystem_Act.triggered.connect(self.exec_insertPVSystem)
         self.OpenDSS_InsertPVSystem_Act.setObjectName('PVSystem')
         self.OpenDSSActRef['OpenDSS_InsertPVSystem_Act'] = self.OpenDSS_InsertPVSystem_Act
