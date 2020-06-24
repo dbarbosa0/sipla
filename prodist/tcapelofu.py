@@ -1,5 +1,5 @@
 TCAPELFU={}
-TCAPELFU["0"] = "NÃO"
+TCAPELFU["0"] = ""
 TCAPELFU["1H"] = "1H"
 TCAPELFU["2H"] = "2H"
 TCAPELFU["3H"] = "3H"
