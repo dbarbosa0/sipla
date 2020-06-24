@@ -1,9 +1,8 @@
 from PyQt5.QtGui import QColor, QIcon
 from PyQt5.QtWidgets import QStyleFactory, QDialog, QGridLayout, QGroupBox, QHBoxLayout, QTreeWidgetItem, \
-    QPushButton, QTreeWidget, QFileDialog, QColorDialog, QMessageBox, QInputDialog, QCheckBox, QLineEdit, QLabel, \
-    QWidget
+    QPushButton, QTreeWidget, QFileDialog, QColorDialog, QMessageBox, QInputDialog, QCheckBox, QLineEdit, QLabel, QWidget
 from PyQt5.QtCore import Qt
-from opendss.PVSystem.class_pvsystem_effcurve_import import C_Eff_Curve_Import
+
 
 import csv
 import random
@@ -14,6 +13,7 @@ import config as cfg
 import class_exception
 
 
+
 class C_Config_EffCurve_Dialog(QDialog):
     def __init__(self):
         super().__init__()
@@ -22,11 +22,6 @@ class C_Config_EffCurve_Dialog(QDialog):
         self.iconWindow = cfg.sipla_icon
         self.stylesheet = cfg.sipla_stylesheet
 
-        self.effcurve_import = C_Eff_Curve_Import()
-        self.effcurve_name = ''
-        self.eff_xpoints = ''
-        self.eff_ypoints = ''
-        self.eff_import_ok = self.effcurve_import.Eff_Curve_Btns_Dialog_Ok_Btn
         self.dataEffCurve = {}
 
         self.InitUI()
@@ -38,9 +33,10 @@ class C_Config_EffCurve_Dialog(QDialog):
         self.setStyle(QStyleFactory.create('Cleanlooks'))  # Estilo da Interface
         self.resize(850, 475)
 
-        # self.setWindowFlags(self.windowFlags() | Qt.WindowMinMaxButtonsHint)
+        self.setWindowFlags(self.windowFlags() | Qt.WindowMinMaxButtonsHint)
 
         self.Dialog_Layout = QGridLayout()  # Layout da Dialog
+
 
         ### Curvas de Eficiências - TreeWidget
         self.EffCurve_GroupBox = QGroupBox("Curvas de Eficiência")
@@ -58,20 +54,22 @@ class C_Config_EffCurve_Dialog(QDialog):
 Pontos Y: Potência aparente (kVA) em p.u.")
         self.EffCurve_GroupBox_Layout.addWidget(self.EffCurve_GroupBox_Label, 2, 1, 1, 2)
 
-        ### Botões adicionar/remover/visualizar curvas
+        ### Botões adicionar/remover curvas
+        self.EffCurve_GroupBox_Remover_Btn = QPushButton("Remover")
+        self.EffCurve_GroupBox_Remover_Btn.setIcon(QIcon('img/icon_remove.png'))
+        # self.Shapes_GroupBox_Remover_Btn.setFixedWidth(80)
+        self.EffCurve_GroupBox_Remover_Btn.clicked.connect(self.removeEffCurve)
+        self.EffCurve_GroupBox_Layout.addWidget(self.EffCurve_GroupBox_Remover_Btn, 3, 1, 1, 1)
 
-        self.EffCurve_GroupBox_Add_Btn = QPushButton("Adicionar")
-        self.EffCurve_GroupBox_Add_Btn.setIcon(QIcon('img/icon_add.png'))
-        # self.EffCurve_GroupBox_Add_Btn.setFixedWidth(80)
-        self.EffCurve_GroupBox_Add_Btn.clicked.connect(self.open_eff_import)
-        self.EffCurve_GroupBox_Layout.addWidget(self.EffCurve_GroupBox_Add_Btn, 3, 2, 1, 1)
+        self.EffCurve_GroupBox_Adicionar_Btn = QPushButton("Adicionar")
+        self.EffCurve_GroupBox_Adicionar_Btn.setIcon(QIcon('img/icon_add.png'))
+        # self.EffCurve_GroupBox_Adicionar_Btn.setFixedWidth(80)
+        self.EffCurve_GroupBox_Adicionar_Btn.clicked.connect(self.addEffCurve)
+        self.EffCurve_GroupBox_Layout.addWidget(self.EffCurve_GroupBox_Adicionar_Btn, 3, 2, 1, 1)
 
-        self.EffCurve_GroupBox_Remove_Btn = QPushButton("Remover")
-        self.EffCurve_GroupBox_Remove_Btn.setIcon(QIcon('img/icon_remove.png'))
-        # self.Shapes_GroupBox_Remove_Btn.setFixedWidth(80)
-        self.EffCurve_GroupBox_Remove_Btn.clicked.connect(self.removeEffCurve)
-        self.EffCurve_GroupBox_Layout.addWidget(self.EffCurve_GroupBox_Remove_Btn, 3, 1, 1, 1)
+        self.EffCurve_GroupBox.setLayout(self.EffCurve_GroupBox_Layout)
 
+        #########################################################
 
         self.EffCurve_GroupBox_Show_Btn = QPushButton("Visualizar")
         self.EffCurve_GroupBox_Show_Btn.setIcon(QIcon('img/icon_line.png'))
@@ -79,24 +77,24 @@ Pontos Y: Potência aparente (kVA) em p.u.")
         self.EffCurve_GroupBox_Show_Btn.clicked.connect(self.viewEffCurve)
         self.EffCurve_GroupBox_Layout.addWidget(self.EffCurve_GroupBox_Show_Btn, 4, 1, 1, 2)
 
-        self.EffCurve_GroupBox.setLayout(self.EffCurve_GroupBox_Layout)
         self.Dialog_Layout.addWidget(self.EffCurve_GroupBox, 1, 1, 1, 1)
 
         #########################################################
 
-        # Curvas de Eficiência - Groupbox Plot
-        self.EffCurve_View_GroupBox = QGroupBox("Visualizar a(s) Curva(s) de Eficiência")
-        self.EffCurve_View_GroupBox_Layout = QHBoxLayout()
+        ### Curvas de Eficiência - Plot
+        self.View_GroupBox = QGroupBox("Visualizar a(s) Curva(s) de Eficiência")
+        self.View_GroupBox_Layout = QHBoxLayout()
 
         self.graphWidget = pyqtgraph.PlotWidget()
-        self.EffCurve_View_GroupBox_Layout.addWidget(self.graphWidget)
 
-        self.EffCurve_View_GroupBox.setLayout(self.EffCurve_View_GroupBox_Layout)
-        self.Dialog_Layout.addWidget(self.EffCurve_View_GroupBox, 1, 2, 1, 2)
+        self.View_GroupBox_Layout.addWidget(self.graphWidget)
+        self.View_GroupBox.setLayout(self.View_GroupBox_Layout)
+
+        self.Dialog_Layout.addWidget(self.View_GroupBox, 1, 2, 1, 2)
 
         ###########################################################
 
-        # Botões
+        ###### Botões
         self.Dialog_Btns_Layout = QHBoxLayout()
         self.Dialog_Btns_Layout.setAlignment(Qt.AlignRight)
 
@@ -106,46 +104,46 @@ Pontos Y: Potência aparente (kVA) em p.u.")
         self.Dialog_Btns_Cancel_Btn.clicked.connect(self.Cancel)
         self.Dialog_Btns_Layout.addWidget(self.Dialog_Btns_Cancel_Btn)
 
-        self.Dialog_Btns_Next_Btn = QPushButton("Ok")
-        self.Dialog_Btns_Next_Btn.setIcon(QIcon('img/icon_ok.png'))
-        self.Dialog_Btns_Next_Btn.setFixedWidth(100)
-        self.Dialog_Btns_Next_Btn.clicked.connect(self.Next)
-        self.Dialog_Btns_Layout.addWidget(self.Dialog_Btns_Next_Btn)
+        self.Dialog_Btns_Ok_Btn = QPushButton("OK")
+        self.Dialog_Btns_Ok_Btn.setIcon(QIcon('img/icon_ok.png'))
+        self.Dialog_Btns_Ok_Btn.setFixedWidth(100)
+        self.Dialog_Btns_Ok_Btn.clicked.connect(self.Accept)
+        self.Dialog_Btns_Layout.addWidget(self.Dialog_Btns_Ok_Btn)
 
         self.Dialog_Layout.addLayout(self.Dialog_Btns_Layout, 2, 3, 1, 1)
 
         self.setLayout(self.Dialog_Layout)
 
-    def open_eff_import(self):
-        self.effcurve_import.show()
-        self.eff_import_ok.clicked.connect(self.teste)
 
-    def teste(self):
-        self.effcurve_name = self.effcurve_import.curve_name
-        self.eff_xpoints = self.effcurve_import.x_axys
-        self.eff_ypoints = self.effcurve_import.y_axys
+    def addEffCurve(self):
 
-        countName = 0
-        for ctd in range(0, self.EffCurve_GroupBox_TreeWidget.topLevelItemCount()):
+        inputLoadName, inputOk = QInputDialog.getText(self, 'Curvas de Eficiência','Entre com o nome da nova Curva de\nEficiência do Inversor:')
 
-            Item = self.EffCurve_GroupBox_TreeWidget.topLevelItem(ctd)
+        if inputOk:
+            countName = 0
+            for ctd in range(0, self.EffCurve_GroupBox_TreeWidget.topLevelItemCount()):
 
-            if Item.name == str(self.effcurve_name):
-                countName += 1
+                Item = self.EffCurve_GroupBox_TreeWidget.topLevelItem(ctd)
 
-        if countName == 0:
-            ptsX = self.eff_xpoints
-            ptsY = self.eff_ypoints
+                if Item.name == str(inputLoadName):
+                    countName += 1
 
-            Config_EffCurve_GroupBox_TreeWidget_Item(self.EffCurve_GroupBox_TreeWidget,
-                                                     self.effcurve_name,
-                                                     ptsX,
-                                                     ptsY,
-                                                     cfg.colorsList[random.randint(0, len(cfg.colorsList) - 1)])
-        else:
-            msg = QMessageBox()
-            msg.information(self, 'Curvas de Eficiência',
-                            "Não foi possível adicionar a curva de eficiência!\nCurva já existente!")
+            if countName == 0:
+                ptsX = [0.1, 0.2, 0.4, 1.0]
+                ptsX = str(ptsX).strip('[]').replace("'", "")
+
+                ptsY = [0.86, 0.9, 0.93, 0.97]
+                ptsY = str(ptsY).strip('[]').replace("'", "")
+
+                Config_EffCurve_GroupBox_TreeWidget_Item(self.EffCurve_GroupBox_TreeWidget,
+                                                         inputLoadName,
+                                                         ptsX,
+                                                         ptsY,
+                                                         cfg.colorsList[random.randint(0, len(cfg.colorsList) - 1)])
+            else:
+                msg = QMessageBox()
+                msg.information(self, 'Curvas de Eficiência',
+                                "Não foi possível adicionar a curva de eficiência!\nCurva já existente!")
 
     def removeEffCurve(self):
         msg = QMessageBox()
@@ -159,10 +157,10 @@ Pontos Y: Potência aparente (kVA) em p.u.")
         if retval == QMessageBox.Yes:
 
             for ctd in range(self.EffCurve_GroupBox_TreeWidget.topLevelItemCount(), 0, -1):
-                Item = self.EffCurve_GroupBox_TreeWidget.topLevelItem(ctd - 1)
+                Item = self.EffCurve_GroupBox_TreeWidget.topLevelItem(ctd-1)
 
                 if Item.checkState(0) == Qt.Checked:
-                    self.EffCurve_GroupBox_TreeWidget.takeTopLevelItem(ctd - 1)
+                    self.EffCurve_GroupBox_TreeWidget.takeTopLevelItem(ctd-1)
                     contChecked += 1
 
             if contChecked > 0:
@@ -175,12 +173,12 @@ Pontos Y: Potência aparente (kVA) em p.u.")
 
     def viewEffCurve(self):
 
-        # Limpando
+        #Limpando
         self.graphWidget.clear()
 
         # Add Background colour to white
         self.graphWidget.setBackground('w')
-        # Add Axis Labels
+        #Add Axis Labels
         self.graphWidget.setLabel('left', 'Pot. aparente (p.u.)', color='red', size=20)
         self.graphWidget.setLabel('bottom', 'Eficiência (p.u.)', color='red', size=20)
         # Add legend
@@ -195,12 +193,11 @@ Pontos Y: Potência aparente (kVA) em p.u.")
 
             if Item.checkState(0) == Qt.Checked:
                 if self.checkEffCurve(Item.name, Item.getPointsX(), Item.getPointsY()):
-                    pen = pyqtgraph.mkPen(color=Item.getColorRGB())
+                    pen = pyqtgraph.mkPen(color = Item.getColorRGB())
 
                     pointsXList = Item.getPointsXList()
                     pointsYList = Item.getPointsYList()
-                    self.graphWidget.plot(pointsXList, pointsYList, name=Item.name, pen=pen, symbol='o', symbolSize=10,
-                                          symbolBrush=Item.getColorRGB())
+                    self.graphWidget.plot(pointsXList, pointsYList, name=Item.name, pen=pen, symbol='o', symbolSize=10, symbolBrush=Item.getColorRGB())
 
                     countSelected += 1
 
@@ -213,7 +210,7 @@ Pontos Y: Potência aparente (kVA) em p.u.")
         self.graphWidget.clear()
         self.close()
 
-    def Next(self):
+    def Accept(self):
         self.setDataEffCurve()
         self.close()
 
@@ -272,19 +269,19 @@ Pontos Y: Potência aparente (kVA) em p.u.")
                         self.dataEffCurve["Yarray"] = self.EffCurveYarray
                     else:
                         raise class_exception.ExecConfigOpenDSS("Erro na verificação da Curva de Eficiência " \
-                                                                + Item.name + " !",
-                                                                "Verifique se todos os pontos estão presentes!")
+                                         + Item.name + " !","Verifique se todos os pontos estão presentes!")
 
         except:
             pass
 
 
 class Config_EffCurve_GroupBox_TreeWidget_Item(QTreeWidgetItem):
-    def __init__(self, parent, name, pointsX, pointsY, color):
+    def __init__(self, parent,  name, pointsX, pointsY, color):
         ## Init super class ( QtGui.QTreeWidgetItem )
         super(Config_EffCurve_GroupBox_TreeWidget_Item, self).__init__(parent)
         self.Config_EffCurve = C_Config_EffCurve_Dialog()
         ## Column 0 - Text:
+
 
         self.setText(0, name)
         self.setFlags(self.flags() | Qt.ItemIsUserCheckable | Qt.ItemIsEditable)
@@ -333,6 +330,7 @@ class Config_EffCurve_GroupBox_TreeWidget_Item(QTreeWidgetItem):
         self.openColorDialog()
 
     def openColorDialog(self):
+
         colorSelectDialog = QColorDialog()
 
         colorSelected = colorSelectDialog.getColor()
