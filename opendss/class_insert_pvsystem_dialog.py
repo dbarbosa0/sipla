@@ -5,6 +5,7 @@ from PyQt5.QtCore import Qt
 import sys
 import opendss.class_opendss
 import config as cfg
+from opendss.class_config_loadshape_dialog import C_Config_LoadShape_Dialog
 
 
 class C_Insert_PVSystem_Dialog(QDialog):
@@ -75,6 +76,10 @@ class C_Insert_PVSystem_Dialog(QDialog):
         self.PVSystem_PVdata_Tempnpts_Label = QLabel("Npts Curva de Temp.:")
         self.PVSystem_PVdata_Phases_Label = QLabel("Nº Fases:")
         self.PVSystem_PVdata_Voltage_Label = QLabel("Tensão do Painel (kV):")
+        self.PVSystem_PVdata_Irrad_Label = QLabel("Irradiação Nominal (normalizada):")
+        self.PVSystem_PVdata_Ppmp_Label = QLabel("Máxima Potência (kVA):")
+        self.PVSystem_PVdata_Temp_Label = QLabel("Temperatura de Operação:")
+        self.PVSystem_PVdata_PF_Label = QLabel("Fator de Potência:")
 
         self.PVSystem_PVdata_LineLosses_Label = QLabel("LineLosses:")
         self.PVSystem_PVdata_Losses_Label = QLabel("Losses:")
