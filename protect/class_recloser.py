@@ -1,3 +1,6 @@
+import csv
+
+import pyqtgraph
 from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import QStyleFactory, QDialog, QGroupBox, QGridLayout, QHBoxLayout, \
     QPushButton, QVBoxLayout, QComboBox, QLineEdit, QWidget, QLabel, QMessageBox
@@ -190,9 +193,11 @@ class EditRecloser(QDialog):
         self.resize(200, 200)
         self.move(825, 0)  ##Resolução 1366x768
         self.Dialog_Layout = QVBoxLayout()
+        self.TesteDialog_Layout = QHBoxLayout()
         self.RecInfo()
         self.Btns()
-        self.setLayout(self.Dialog_Layout)
+        self.setLayout(self.TesteDialog_Layout)
+        self.PlotState = True
 
     def RecInfo(self):
         # Parâmetros Intrínsecos do religador
@@ -301,14 +306,16 @@ class EditRecloser(QDialog):
         self.TCCCurves_Recloser_GroupBox_Layout = QGridLayout()
         self.TCCCurves_Recloser_GroupBox_Layout.setAlignment(Qt.AlignCenter)
 
-        self.GroundDelayList = ['', 'a', 'b', 'c', 'd']
+        self.TccRecloserList = ['',"101","102","103","104","105","106","107","111","112","113","114","115","116","117","118","119","120","121","122","131","132","133","134","135","136","137","138","139","140","141","142","151","152","161","162","163","164","165","200","201","202"]
+
+        self.GroundDelayList = self.TccRecloserList
         self.GroundDelay_ComboBox = QComboBox()
         self.GroundDelay_ComboBox.setMaximumWidth(150)
         self.GroundDelay_ComboBox_Label = QLabel("Ground Delayed")
         for index, item in enumerate(self.GroundDelayList):
             self.GroundDelay_ComboBox.addItem(item, item)
 
-        self.GroundFastList = ['', 'a', 'b', 'c', 'd']
+        self.GroundFastList = self.TccRecloserList
         self.GroundFast_ComboBox = QComboBox()
         self.GroundFast_ComboBox.setMaximumWidth(150)
         self.GroundFast_ComboBox_Label = QLabel("Ground Fast")
@@ -318,26 +325,29 @@ class EditRecloser(QDialog):
         self.GroundTrip_LineEdit = QLineEdit()
         self.GroundTrip_LineEdit.setMaximumWidth(50)
         self.GroundTrip_LineEdit.setPlaceholderText("1.0")
-        self.GroundTrip_LineEdit_Label = QLabel("Ground Multiplier Amps")
+        self.GroundTrip_LineEdit_Label = QLabel("Ground Multiplier")
+        self.GroundTrip_LineEdit_Label.setAlignment(Qt.AlignRight)
 
         self.GroundDelayTimeDial_LineEdit = QLineEdit()
         self.GroundDelayTimeDial_LineEdit.setMaximumWidth(50)
         self.GroundDelayTimeDial_LineEdit.setPlaceholderText("1.0")
-        self.GroundDelayTimeDial_LineEdit_Label = QLabel("Time dial - Ground Delayed")
+        self.GroundDelayTimeDial_LineEdit_Label = QLabel("Time dial")
+        self.GroundDelayTimeDial_LineEdit_Label.setAlignment(Qt.AlignRight)
 
         self.GroundFastTimeDial_LineEdit = QLineEdit()
         self.GroundFastTimeDial_LineEdit.setMaximumWidth(50)
         self.GroundFastTimeDial_LineEdit.setPlaceholderText("1.0")
-        self.GroundFastTimeDial_LineEdit_Label = QLabel("Time dial - Ground Fast")
+        self.GroundFastTimeDial_LineEdit_Label = QLabel("Time dial")
+        self.GroundFastTimeDial_LineEdit_Label.setAlignment(Qt.AlignRight)
 
-        self.PhaseDelayList = ['', 'aaa', 'bbb', 'ccc', 'ddd']
+        self.PhaseDelayList = self.TccRecloserList
         self.PhaseDelay_ComboBox = QComboBox()
         self.PhaseDelay_ComboBox.setMaximumWidth(150)
         self.PhaseDelay_ComboBox_Label = QLabel("Phase Delayed")
         for index, item in enumerate(self.PhaseDelayList):
             self.PhaseDelay_ComboBox.addItem(item, item)
 
-        self.PhaseFastList = ['', 'aaa', 'bbb', 'ccc', 'ddd']
+        self.PhaseFastList = self.TccRecloserList
         self.PhaseFast_ComboBox = QComboBox()
         self.PhaseFast_ComboBox.setMaximumWidth(150)
         self.PhaseFast_ComboBox_Label = QLabel("Phase Fast")
@@ -347,17 +357,20 @@ class EditRecloser(QDialog):
         self.PhaseTrip_LineEdit = QLineEdit()
         self.PhaseTrip_LineEdit.setMaximumWidth(50)
         self.PhaseTrip_LineEdit.setPlaceholderText("1.0")
-        self.PhaseTrip_LineEdit_Label = QLabel("Phase Multiplier Amps")
+        self.PhaseTrip_LineEdit_Label = QLabel("Phase Multiplier")
+        self.PhaseTrip_LineEdit_Label.setAlignment(Qt.AlignRight)
 
         self.PhaseDelayTimeDial_LineEdit = QLineEdit()
         self.PhaseDelayTimeDial_LineEdit.setMaximumWidth(50)
         self.PhaseDelayTimeDial_LineEdit.setPlaceholderText("1.0")
-        self.PhaseDelayTimeDial_LineEdit_Label = QLabel("Time dial - Phase Delayed")
+        self.PhaseDelayTimeDial_LineEdit_Label = QLabel("Time dial")
+        self.PhaseDelayTimeDial_LineEdit_Label.setAlignment(Qt.AlignRight)
 
         self.PhaseFastTimeDial_LineEdit = QLineEdit()
         self.PhaseFastTimeDial_LineEdit.setMaximumWidth(50)
         self.PhaseFastTimeDial_LineEdit.setPlaceholderText("1.0")
-        self.PhaseFastTimeDial_LineEdit_Label = QLabel("Time dial - Phase Fast")
+        self.PhaseFastTimeDial_LineEdit_Label = QLabel("Time dial")
+        self.PhaseFastTimeDial_LineEdit_Label.setAlignment(Qt.AlignRight)
 
         self.TCCCurves_Recloser_GroupBox_Layout.addWidget(self.PhaseTrip_LineEdit_Label, 0, 2, 1, 1)
         self.TCCCurves_Recloser_GroupBox_Layout.addWidget(self.PhaseTrip_LineEdit, 0, 3, 1, 1)
@@ -383,9 +396,182 @@ class EditRecloser(QDialog):
 
         self.TCCCurves_Recloser_GroupBox.setLayout(self.TCCCurves_Recloser_GroupBox_Layout)
 
+        self.graphWidget = pyqtgraph.PlotWidget()
+        self.graphWidget.setHidden(True)
+
         self.Dialog_Layout.addWidget(self.Edit_Recloser_GroupBox)
         self.Dialog_Layout.addWidget(self.Conn_Recloser_GroupBox)
         self.Dialog_Layout.addWidget(self.TCCCurves_Recloser_GroupBox)
+
+        self.TesteDialog_Layout.addLayout(self.Dialog_Layout)
+        self.TesteDialog_Layout.addWidget(self.graphWidget)
+
+
+    def viewCurve(self):
+        dataCSV = {}
+        pointsXList = []
+        pointsYList = []
+        phasemult = self.PhaseTrip_LineEdit.text()
+        tdphasedelay = self.PhaseDelayTimeDial_LineEdit.text()
+        tdphasefast = self.PhaseFastTimeDial_LineEdit.text()
+        groundmult = self.GroundTrip_LineEdit.text()
+        tdgrounddelay = self.GroundDelayTimeDial_LineEdit.text()
+        tdgroundfast = self.GroundFastTimeDial_LineEdit.text()
+        # Limpando
+        self.graphWidget.clear()
+        self.graphWidget.setBackground('w')
+        # Add Axis Labels
+        self.graphWidget.setLabel('left', 'Tempo (s)', color='blue', size=20)
+        self.graphWidget.setLabel('bottom', 'Corrente (A)', color='blue', size=20)
+        # Add legend
+        self.graphWidget.addLegend()
+        # Add grid
+        self.graphWidget.showGrid(x=True, y=True)
+        self.graphWidget.setLogMode(x=True, y=True)
+        pen = pyqtgraph.mkPen(color = 'b')
+        self.PlotState = not self.PlotState
+
+        if not self.PlotState:
+            fname = "./prodist/tcc5051.csv".replace("/","\\")
+
+            with open(fname, 'r', newline='') as file:
+                csv_reader_object = csv.reader(file)
+                # if csv.Sniffer().has_header:
+                name_col = next(csv_reader_object)
+
+                for row in name_col:
+                    dataCSV[row] = []
+
+                for row in csv_reader_object:  ##Varendo todas as linhas
+                    for ndata in range(0, len(name_col)):  ## Varendo todas as colunas
+                        dataCSV[name_col[ndata]].append(row[ndata])
+
+                # Phase Delayed
+                if get_combobox(self.PhaseDelay_ComboBox):
+                    try:
+                        for key, values in dataCSV.items():
+                            if key == get_combobox(self.PhaseDelay_ComboBox):
+                                pointsXList = []
+                                pointsYList = []
+                                for value in values:
+                                    if value:
+                                        if phasemult == '':
+                                            m = float(value.split(';')[0])
+                                        else:
+                                            m = float(value.split(';')[0])*float(phasemult)
+
+                                        if tdphasedelay == '':
+                                            t = float(value.split(';')[1])
+                                        else:
+                                            t = float(value.split(';')[1])*float(tdphasedelay)
+                                        pointsXList.append(m)
+                                        pointsYList.append(t)
+
+                                name = 'Curva ' + key
+
+                        print(pointsXList,pointsYList)
+                        bluergb = (0, 0, 255, 255)
+                        self.graphWidget.plot(pointsXList, pointsYList, name=name, pen=pen, symbol='o', symbolSize=10, symbolBrush=bluergb)
+                    except ValueError:
+                        QMessageBox(QMessageBox.Warning, "Curva TCC - Fusível", "Erro ao carregar curva" , QMessageBox.Ok).exec()
+                        self.PlotState = not self.PlotState
+                # Phase Fast
+                if get_combobox(self.PhaseFast_ComboBox):
+                    try:
+                        for key, values in dataCSV.items():
+                            if key == get_combobox(self.PhaseFast_ComboBox):
+                                pointsXList = []
+                                pointsYList = []
+                                for value in values:
+                                    if value:
+                                        if phasemult == '':
+                                            m = float(value.split(';')[0])
+                                        else:
+                                            m = float(value.split(';')[0])*float(phasemult)
+
+                                        if tdphasefast == '':
+                                            t = float(value.split(';')[1])
+                                        else:
+                                            t = float(value.split(';')[1])*float(tdphasefast)
+                                        pointsXList.append(m)
+                                        pointsYList.append(t)
+
+                                name = 'Curva ' + key
+
+                        print(pointsXList,pointsYList)
+                        redrgb = (255, 0, 0, 255)
+                        self.graphWidget.plot(pointsXList, pointsYList, name=name, pen=pen, symbol='o', symbolSize=10, symbolBrush=redrgb)
+                    except ValueError:
+                        QMessageBox(QMessageBox.Warning, "Curva TCC - Fusível", "Erro ao carregar curva" , QMessageBox.Ok).exec()
+                        self.PlotState = not self.PlotState
+
+                # Ground Delay
+                if get_combobox(self.GroundDelay_ComboBox):
+                    try:
+                        for key, values in dataCSV.items():
+                            if key == get_combobox(self.GroundDelay_ComboBox):
+                                pointsXList = []
+                                pointsYList = []
+                                for value in values:
+                                    if value:
+                                        if groundmult == '':
+                                            m = float(value.split(';')[0])
+                                        else:
+                                            m = float(value.split(';')[0])*float(groundmult)
+
+                                        if tdgrounddelay == '':
+                                            t = float(value.split(';')[1])
+                                        else:
+                                            t = float(value.split(';')[1])*float(tdgrounddelay)
+                                        pointsXList.append(m)
+                                        pointsYList.append(t)
+
+                                name = 'Curva ' + key
+
+                        print(pointsXList,pointsYList)
+                        greenrgb = (0, 255, 0, 255)
+                        self.graphWidget.plot(pointsXList, pointsYList, name=name, pen=pen, symbol='o', symbolSize=10, symbolBrush=greenrgb)
+                    except ValueError:
+                        QMessageBox(QMessageBox.Warning, "Curva TCC - Fusível", "Erro ao carregar curva" , QMessageBox.Ok).exec()
+                        self.PlotState = not self.PlotState
+
+                # Ground Fast
+                if get_combobox(self.GroundFast_ComboBox):
+                    try:
+                        for key, values in dataCSV.items():
+                            if key == get_combobox(self.GroundFast_ComboBox):
+                                pointsXList = []
+                                pointsYList = []
+                                for value in values:
+                                    if value:
+                                        if groundmult == '':
+                                            m = float(value.split(';')[0])
+                                        else:
+                                            m = float(value.split(';')[0])*float(groundmult)
+
+                                        if tdgroundfast == '':
+                                            t = float(value.split(';')[1])
+                                        else:
+                                            t = float(value.split(';')[1])*float(tdgroundfast)
+                                        pointsXList.append(m)
+                                        pointsYList.append(t)
+
+                                name = 'Curva ' + key
+
+                        print(pointsXList,pointsYList)
+                        yellowrgb = (0, 255, 255, 255)
+                        self.graphWidget.plot(pointsXList, pointsYList, name=name, pen=pen, symbol='o', symbolSize=10, symbolBrush=yellowrgb)
+                    except ValueError:
+                        QMessageBox(QMessageBox.Warning, "Curva TCC - Fusível", "Erro ao carregar curva" , QMessageBox.Ok).exec()
+                        self.PlotState = not self.PlotState
+
+        if not self.PlotState:
+             self.setFixedWidth(900)
+             self.move(325,0)
+        else:
+            self.setFixedWidth(440)
+            self.move(860, 0)
+        self.graphWidget.setHidden(self.PlotState)
 
     def Btns(self):
         self.btngroupbox_layout = QHBoxLayout()
@@ -393,9 +579,9 @@ class EditRecloser(QDialog):
         self.Ok_Btn.setMaximumWidth(150)
         self.Ok_Btn.clicked.connect(self.AcceptAddEditRecloser)
 
-        self.AddTCC_Btn = QPushButton("Add TCC Curve")
+        self.AddTCC_Btn = QPushButton("Visualizar TCC")
         self.AddTCC_Btn.setMaximumWidth(150)
-        # self.AddTCC_Btn.clicked.connect(self.recloser_parent.RecloserList)
+        self.AddTCC_Btn.clicked.connect(self.viewCurve)
 
         self.btngroupbox_layout.addWidget(self.AddTCC_Btn)
         self.btngroupbox_layout.addWidget(self.Ok_Btn)

@@ -1,0 +1,12 @@
+Hour=0, Sec=0.06, ControlIter=1, Element=Recloser.f00378, Action=OPENED, FAST
+Hour=0, Sec=0.06, ControlIter=1, Element= , Action=PHASE TARGET
+Hour=0, Sec=0.56, ControlIter=1, Element=Recloser.f00378, Action=CLOSED
+Hour=0, Sec=0.58, ControlIter=1, Element=Recloser.f00378, Action=OPENED, DELAYED
+Hour=0, Sec=0.58, ControlIter=1, Element= , Action=PHASE TARGET
+Hour=0, Sec=1, ControlIter=1, Element=Fault.dynamicfault, Action=**APPLIED**
+Hour=0, Sec=2.59, ControlIter=1, Element=Recloser.f00378, Action=CLOSED
+Hour=0, Sec=2.62, ControlIter=1, Element=Recloser.f00378, Action=OPENED, DELAYED
+Hour=0, Sec=2.62, ControlIter=1, Element= , Action=PHASE TARGET
+Hour=0, Sec=4.62, ControlIter=1, Element=Recloser.f00378, Action=CLOSED
+Hour=0, Sec=4.64, ControlIter=1, Element=Recloser.f00378, Action=OPENED, LOCKED OUT
+Hour=0, Sec=4.64, ControlIter=1, Element= , Action=PHASE TARGET

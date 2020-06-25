@@ -8,6 +8,13 @@
             <Attribute />
           </value>
         </entry>
+        <entry key="\prodist\tcc5051.csv">
+          <value>
+            <Attribute>
+              <option name="escapeCharacter" value="QUOTE" />
+            </Attribute>
+          </value>
+        </entry>
       </map>
     </option>
   </component>

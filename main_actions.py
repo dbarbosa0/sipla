@@ -9,6 +9,7 @@ import opendss.class_insert_monitor_dialog
 import opendss.class_config_plot_monitor_dialog
 import opendss.class_scan_config_dialog
 import protect.class_devices
+import protect.class_curves
 import database.class_base
 import database.class_config_dialog
 import class_exception
@@ -61,6 +62,7 @@ class C_MainActions():
         self.Devices_DialogSettings.TabFuse.OpenDSS = self.OpenDSS
         self.Devices_DialogSettings.TabRelay.OpenDSS = self.OpenDSS
         self.Devices_DialogSettings.TabSwtControl.OpenDSS = self.OpenDSS
+        self.Curves_DialogSettings = protect.class_curves.C_Config_Curves_Dialog()
 
 
     #############################################
@@ -250,6 +252,9 @@ class C_MainActions():
     def exec_Device_Settings(self):
         self.Devices_DialogSettings.updateMainProtectDialog()
         self.Devices_DialogSettings.show()
+
+    def exec_Curves_Settings(self):
+        self.Curves_DialogSettings.show()
 
     #################################################################################
 
