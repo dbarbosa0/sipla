@@ -17,7 +17,7 @@ class C_Config_Curves_Dialog(QDialog):
     def __init__(self):
         super().__init__()
 
-        self.titleWindow = "Curvas de Característica Tempo-Corrente"
+        self.titleWindow = "Curvas de Característica Tempo Corrente"
         self.iconWindow = cfg.sipla_icon
         self.stylesheet = cfg.sipla_stylesheet
 
@@ -81,7 +81,7 @@ class C_Config_Curves_Dialog(QDialog):
 
         self.Shapes_GroupBox_Layout = QGridLayout()
         self.Shapes_GroupBox_TreeWidget = QTreeWidget()
-        self.Shapes_GroupBox_TreeWidget.setHeaderLabels(['Nome', 'Cor', 'Pontos'])
+        self.Shapes_GroupBox_TreeWidget.setHeaderLabels(['Nome', 'Cor', 'Corrente', 'Tempo'])
         self.Shapes_GroupBox_TreeWidget.setColumnWidth(1, 20)
         self.Shapes_GroupBox_Layout.addWidget(self.Shapes_GroupBox_TreeWidget, 1, 1, 1, 2)
 
@@ -142,7 +142,7 @@ class C_Config_Curves_Dialog(QDialog):
         ##############################################################################################
 
         ##### Load Shapes
-        self.View_GroupBox = QGroupBox("Visualizar a(s) Curva(s) de Carga")
+        self.View_GroupBox = QGroupBox("Visualizar as Curvas TCC")
         self.View_GroupBox_Layout = QHBoxLayout()
 
         self.graphWidget = pyqtgraph.PlotWidget()
@@ -206,10 +206,102 @@ class C_Config_Curves_Dialog(QDialog):
                 if self.checkLoadShape(Item.name, Item.getPoints()):
                     self.dataLoadShapes[Item.name] = Item.getPointsList()
                 else:
-                    raise class_exception.ExecConfigOpenDSS("Erro na verificação da Curva de Carga " \
-                                     + Item.name + " !","Verifique se todos os " + self.nPointsLoadDef + " pontos estão presentes!")
+                    raise class_exception.ExecConfigOpenDSS("Erro na verificação da Curva TCC " \
+                                     + Item.name + " !","Verifique se todos os " + str(self.nPointsLoadDef) + " pontos estão presentes!")
         except:
             pass
+
+    def csvImport(self):
+        try:
+            dataCSV = {} #Dicionário para as variáveis
+            pointsXList = []
+            pointsYList = []
+            fname = QFileDialog.getOpenFileName(self, 'Open CSV file',
+                                                "Curvas TCC", "CSV files (*.csv)")
+                                                #str(pathlib.Path.home()), "CSV files (*.csv)")
+
+            if platform.system() == "Windows":
+                fname = fname[0].replace('/', '\\')
+            else:
+                fname = fname[0]
+
+            with open(fname, 'r', newline='') as file:
+                csv_reader_object = csv.reader(file)
+                # if csv.Sniffer().has_header:
+                name_col = next(csv_reader_object)
+
+                for row in name_col:
+                    dataCSV[row] = []
+
+                for row in csv_reader_object:  ##Varendo todas as linhas
+                    for ndata in range(0, len(name_col)):  ## Varendo todas as colunas
+                        dataCSV[name_col[ndata]].append(row[ndata])
+
+                for key, values in dataCSV.items():
+                    for value in values:
+                        if value:
+                            pointsXList.append(float(value.split(';')[0]))
+                            pointsYList.append(float(value.split(';')[1]))
+
+                    if pointsXList:
+                        flag = True
+                    else:
+                        flag = False
+
+                    if flag:
+                        Config_LoadShape_Shapes_GroupBox_TreeWidget_Item(self.Shapes_GroupBox_TreeWidget,
+                                                                 self.Shapes_GroupBox_Checkbox_SelectAll.checkState(),
+                                                                key, str(pointsXList).strip('[]').replace("'",""),
+                                                                         str(pointsYList).strip('[]').replace("'", ""),
+                                                                cfg.colorsList[random.randint(0, len(cfg.colorsList) - 1)])
+                    pointsXList = []
+                    pointsYList = []
+                print(pointsXList,pointsYList)
+
+        except:
+            class_exception.ExecConfigOpenDSS("Erro ao importar a(s) Curva(s) de Carga!","Verifique o arquivo CSV!")
+
+    def viewLoadShapes(self):
+
+        # Limpando
+        self.graphWidget.clear()
+        self.graphWidget.setBackground('w')
+        # Add Axis Labels
+        self.graphWidget.setLabel('left', 'Tempo (s)', color='blue', size=20)
+        self.graphWidget.setLabel('bottom', 'Corrente (A)', color='blue', size=20)
+        # Add legend
+        self.graphWidget.addLegend()
+        # Add grid
+        self.graphWidget.showGrid(x=True, y=True)
+        self.graphWidget.setLogMode(x=True, y=True)
+
+
+        countSelected = 0
+        for ctd in range(0, self.Shapes_GroupBox_TreeWidget.topLevelItemCount()):
+
+            Item = self.Shapes_GroupBox_TreeWidget.topLevelItem(ctd)
+
+            if Item.checkState(0) == Qt.Checked:
+
+                pen = pyqtgraph.mkPen(color = Item.getColorRGB())
+
+                if self.Shapes_GroupBox_Checkbox_Normalize.checkState() == Qt.Checked:
+
+                    pointsXList = Item.getPointsList(2)
+                    pointsXList[:] = [x / max(pointsXList) for x in pointsXList]
+                    pointsYList = Item.getPointsList(3)
+                    pointsYList[:] = [x / max(pointsYList) for x in pointsYList]
+                else:
+                    pointsXList = Item.getPointsList(2)
+                    pointsYList = Item.getPointsList(3)
+
+                self.graphWidget.plot(pointsXList, pointsYList, name=Item.name, pen=pen, symbol='o', symbolSize=10, symbolBrush=Item.getColorRGB())
+                countSelected += 1
+
+        if countSelected == 0:
+            msg = QMessageBox()
+            msg.information(self, 'Curvas TCC', "Nenhuma curva selecionada para visualização!")
+
 
     def csvExport(self):
 
@@ -238,43 +330,6 @@ class C_Config_Curves_Dialog(QDialog):
                 for dataShape in self.dataLoadShapes:
                     rowText.append(self.dataLoadShapes[dataShape][ctdPoints])
                 writer.writerow(rowText)
-
-
-
-    def csvImport(self):
-        try:
-            dataCSV = {} #Dicionário para as variáveis
-
-            fname = QFileDialog.getOpenFileName(self, 'Open CSV file',
-                                                "LoadShapes", "CSV files (*.csv)")
-                                                #str(pathlib.Path.home()), "CSV files (*.csv)")
-
-            if platform.system() == "Windows":
-                fname = fname[0].replace('/', '\\')
-            else:
-                fname = fname[0]
-
-            with open(str(fname), 'r', newline='') as file:
-                csv_reader_object = csv.reader(file)
-                #if csv.Sniffer().has_header:
-                name_col = next(csv_reader_object)
-
-                for row in name_col:
-                    dataCSV[row] = []
-
-                for row in csv_reader_object: ##Varendo todas as linhas
-                    for ndata in range(0, len(name_col)): ## Varendo todas as colunas
-                        dataCSV[name_col[ndata]].append(row[ndata])
-
-                for ctd in dataCSV:
-                    if self.checkLoadShape(ctd, str(dataCSV[ctd]).strip('[]').replace("'","")):
-                        Config_LoadShape_Shapes_GroupBox_TreeWidget_Item(self.Shapes_GroupBox_TreeWidget,
-                                                                         self.Shapes_GroupBox_Checkbox_SelectAll.checkState(),
-                                                                        ctd, str(dataCSV[ctd]).strip('[]').replace("'",""),
-                                                                        cfg.colorsList[random.randint(0, len(cfg.colorsList) - 1)])
-
-        except:
-            class_exception.ExecConfigOpenDSS("Erro ao importar a(s) Curva(s) de Carga!","Verifique o arquivo CSV!")
 
     def removeLoadShape(self):
 
@@ -321,7 +376,7 @@ class C_Config_Curves_Dialog(QDialog):
                 pts = str(pts).strip('[]').replace("'","")
                 Config_LoadShape_Shapes_GroupBox_TreeWidget_Item(self.Shapes_GroupBox_TreeWidget,
                                                                  self.Shapes_GroupBox_Checkbox_SelectAll.checkState(),
-                                                                 inputLoadName, pts,
+                                                                 inputLoadName, pts,pts,
                                                                  cfg.colorsList[
                                                                      random.randint(0, len(cfg.colorsList) - 1)])
             else:
@@ -350,66 +405,9 @@ class C_Config_Curves_Dialog(QDialog):
         else:
             return True
 
-    def viewLoadShapes(self):
-
-        #Limpando
-        self.graphWidget.clear()
-        ##Definindo o X
-
-
-        plot_x = [self.nStepSizeDef * ctd for ctd in range(0,self.nPointsLoadDef)]
-
-        # Add Background colour to white
-        self.graphWidget.setBackground('w')
-        #Add Axis Labels
-        self.graphWidget.setLabel('left', 'Demanda', color='red', size=20)
-        self.graphWidget.setLabel('bottom', 'Tempo (' + self.nStepSizeTimeDef[0] + ")", color='red', size=20)
-        # Add legend
-        self.graphWidget.addLegend()
-        # Add grid
-        self.graphWidget.showGrid(x=True, y=True)
-        # Set Range
-        #self.graphWidget.setXRange(0, max(plot_x), padding=0)
-        #self.graphWidget.setYRange(20, 55, padding=0)
-
-        countSelected = 0
-        for ctd in range(0, self.Shapes_GroupBox_TreeWidget.topLevelItemCount()):
-
-            Item = self.Shapes_GroupBox_TreeWidget.topLevelItem(ctd)
-
-            if Item.checkState(0) == Qt.Checked:
-
-                pen = pyqtgraph.mkPen(color = Item.getColorRGB())
-
-                if self.Shapes_GroupBox_Checkbox_Normalize.checkState() == Qt.Checked:
-
-                    pointsList = Item.getPointsList()
-                    pointsList[:] = [x / max(pointsList) for x in pointsList]
-                else:
-                    pointsList = Item.getPointsList()
-
-                self.graphWidget.plot(plot_x, pointsList, name=Item.name, pen=pen, symbol='o', symbolSize=10, symbolBrush=Item.getColorRGB())
-                print(type(plot_x[0]))
-                print(plot_x)
-                print(type(pointsList[0]))
-                print(pointsList)
-                print(type(Item.name))
-                print(Item.name)
-                print(type(pen))
-                print(pen)
-                print(type(Item.getColorRGB()))
-                print(Item.getColorRGB())
-
-                countSelected += 1
-
-        if countSelected == 0:
-            msg = QMessageBox()
-            msg.information(self, 'Curvas de Carga', "Nenhuma curva selecionada para visualização!")
-
-
 
 class Config_LoadShape_Shapes_GroupBox_TreeWidget_Item(QTreeWidgetItem):
-    def __init__(self, parent, check, name, points, color):
+    def __init__(self, parent, check, name, pointsX,pointsY,color):
         ## Init super class ( QtGui.QTreeWidgetItem )
         super(Config_LoadShape_Shapes_GroupBox_TreeWidget_Item, self).__init__(parent)
 
@@ -430,7 +428,8 @@ class Config_LoadShape_Shapes_GroupBox_TreeWidget_Item(QTreeWidgetItem):
         self.treeWidget().setItemWidget(self, 1, self.TreeWidget_Item_Btn)
 
         ## Column 2 - Pontos:
-        self.setText(2, points)
+        self.setText(2, pointsX)
+        self.setText(3, pointsY)
 
     @property
     def name(self):
@@ -439,8 +438,8 @@ class Config_LoadShape_Shapes_GroupBox_TreeWidget_Item(QTreeWidgetItem):
     def getPoints(self):
         return self.text(2)
 
-    def getPointsList(self):
-        points = [float(x) for x in self.text(2).split(',')]
+    def getPointsList(self,column):
+        points = [float(x) for x in self.text(column).split(',')]
         return points
 
     def getColor(self):

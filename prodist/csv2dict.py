@@ -5,8 +5,8 @@ class c2d:
     def csv2dict(self,csv_path):
         fname = csv_path
         dataCSV = {}
-        # if platform.system() == "Windows":
-        fname = csv_path.replace("/", "\\")
+        if platform.system() == "Windows":
+            fname = csv_path.replace("/", "\\")
 
         with open(fname, 'r', newline='') as file:
             csv_reader_object = csv.reader(file)
