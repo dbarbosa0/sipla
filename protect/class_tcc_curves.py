@@ -91,9 +91,6 @@ class C_Config_Curves_Dialog(QDialog):
         self.Shapes_GroupBox_Checkbox_SelectAll.clicked.connect(self.onAllCurves)
         self.Shapes_GroupBox_Checkbox_Layout.addWidget(self.Shapes_GroupBox_Checkbox_SelectAll)
 
-        self.Shapes_GroupBox_Checkbox_Normalize = QCheckBox("Visualizar as curvas normalizadas")
-        self.Shapes_GroupBox_Checkbox_Normalize.setChecked(True)
-        self.Shapes_GroupBox_Checkbox_Layout.addWidget(self.Shapes_GroupBox_Checkbox_Normalize)
         self.Shapes_GroupBox_Checkbox_GroupBox.setLayout(self.Shapes_GroupBox_Checkbox_Layout)
 
         self.Shapes_GroupBox_Layout.addWidget(self.Shapes_GroupBox_Checkbox_GroupBox, 2, 1, 1, 2)
@@ -197,17 +194,18 @@ class C_Config_Curves_Dialog(QDialog):
     def setDataLoadShapes(self):
 
         self.dataLoadShapes = {}
+        self.dataPointsX = {}
+        self.dataPointsY = {}
 
         try:
             for ctd in range(0, self.Shapes_GroupBox_TreeWidget.topLevelItemCount()):
 
                 Item = self.Shapes_GroupBox_TreeWidget.topLevelItem(ctd)
 
-                if self.checkLoadShape(Item.name, Item.getPoints()):
-                    self.dataLoadShapes[Item.name] = Item.getPointsList()
-                else:
-                    raise class_exception.ExecConfigOpenDSS("Erro na verificação da Curva TCC " \
-                                     + Item.name + " !","Verifique se todos os " + str(self.nPointsLoadDef) + " pontos estão presentes!")
+                self.dataLoadShapes[Item.name] = Item.getPointsList(2)
+                self.dataPointsX[Item.name] = Item.getPointsList(2)
+                self.dataPointsY[Item.name] = Item.getPointsList(3)
+
         except:
             pass
 
@@ -285,15 +283,8 @@ class C_Config_Curves_Dialog(QDialog):
 
                 pen = pyqtgraph.mkPen(color = Item.getColorRGB())
 
-                if self.Shapes_GroupBox_Checkbox_Normalize.checkState() == Qt.Checked:
-
-                    pointsXList = Item.getPointsList(2)
-                    pointsXList[:] = [x / max(pointsXList) for x in pointsXList]
-                    pointsYList = Item.getPointsList(3)
-                    pointsYList[:] = [x / max(pointsYList) for x in pointsYList]
-                else:
-                    pointsXList = Item.getPointsList(2)
-                    pointsYList = Item.getPointsList(3)
+                pointsXList = Item.getPointsList(2)
+                pointsYList = Item.getPointsList(3)
 
                 self.graphWidget.plot(pointsXList, pointsYList, name=Item.name, pen=pen, symbol='o', symbolSize=10, symbolBrush=Item.getColorRGB())
                 countSelected += 1
@@ -301,7 +292,6 @@ class C_Config_Curves_Dialog(QDialog):
         if countSelected == 0:
             msg = QMessageBox()
             msg.information(self, 'Curvas TCC', "Nenhuma curva selecionada para visualização!")
-
 
     def csvExport(self):
 
@@ -325,10 +315,14 @@ class C_Config_Curves_Dialog(QDialog):
 
             writer.writerow(rowText)
 
-            for ctdPoints in range(0, self.nPointsLoadDef):
+            for ctdPoints in range(0, 10):
                 rowText.clear()
-                for dataShape in self.dataLoadShapes:
-                    rowText.append(self.dataLoadShapes[dataShape][ctdPoints])
+                for dataShape in self.dataPointsX:
+                    try:
+                        m = str(self.dataPointsX[dataShape][ctdPoints]) + ";" + str(self.dataPointsY[dataShape][ctdPoints])
+                        rowText.append(m)
+                    except:
+                        rowText.append('')
                 writer.writerow(rowText)
 
     def removeLoadShape(self):
@@ -387,7 +381,6 @@ class C_Config_Curves_Dialog(QDialog):
 
         msgText = ''
         pointsLoadShape = pointsLoadShape.split(',')
-
         if len(pointsLoadShape) != self.nPointsLoadDef:
             msgText += "Número de pontos da curva " + nameLoadShape + " está diferente do definido na configuração! \n"
         else:
@@ -435,8 +428,8 @@ class Config_LoadShape_Shapes_GroupBox_TreeWidget_Item(QTreeWidgetItem):
     def name(self):
         return self.text(0)
 
-    def getPoints(self):
-        return self.text(2)
+    def getPoints(self,column):
+        return self.text(column)
 
     def getPointsList(self,column):
         points = [float(x) for x in self.text(column).split(',')]

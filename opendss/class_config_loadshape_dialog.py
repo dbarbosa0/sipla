@@ -234,6 +234,7 @@ class C_Config_LoadShape_Dialog(QDialog):
             writer.writerow(rowText)
 
             for ctdPoints in range(0, self.nPointsLoadDef):
+                print(self.nPointsLoadDef)
                 rowText.clear()
                 for dataShape in self.dataLoadShapes:
                     rowText.append(self.dataLoadShapes[dataShape][ctdPoints])
