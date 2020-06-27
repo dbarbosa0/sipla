@@ -216,7 +216,7 @@ class C_Config_DispCurve_Dialog(QDialog):
         self.close()
 
     def setDataDispCurve(self):
-        self.mult = []
+        # self.mult = []
         self.dataDispCurve = {}
         self.dataDispCurve["npts"] = self.nPointsLoadDef()
         if self.nStepSizeTimeDef() == "sec":
@@ -241,9 +241,9 @@ class C_Config_DispCurve_Dialog(QDialog):
                                                                 "Selecione ao menos uma curva!")
                     else:
                         if self.checkDispCurve(Item.name, Item.getPoints()):
-                            self.mult = Item.getPointsList()
+                            mult = Item.getPointsList()
                             self.dataDispCurve["DispCurveName"] = Item.name
-                            self.dataDispCurve["mult"] = self.mult
+                            self.dataDispCurve["mult"] = mult
                         else:
                             raise class_exception.ExecConfigOpenDSS("Erro na verificação da Curva de Despacho " \
                                              + Item.name + " !","Verifique se todos os " + self.nPointsLoadDef() + " pontos estão presentes!")

@@ -212,7 +212,6 @@ Pontos Y: Potência aparente (kVA) em p.u.")
 
     def Accept(self):
         self.setDataEffCurve()
-        self.close()
 
     def checkEffCurve(self, nameEffCurve, pointsXEffCurve, pointsYEffCurve):
 
@@ -267,6 +266,7 @@ Pontos Y: Potência aparente (kVA) em p.u.")
                         self.dataEffCurve["npts"] = str(len(self.EffCurveXarray))
                         self.dataEffCurve["Xarray"] = self.EffCurveXarray
                         self.dataEffCurve["Yarray"] = self.EffCurveYarray
+                        self.close()
                     else:
                         raise class_exception.ExecConfigOpenDSS("Erro na verificação da Curva de Eficiência " \
                                          + Item.name + " !","Verifique se todos os pontos estão presentes!")

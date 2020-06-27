@@ -653,7 +653,6 @@ class C_OpenDSS(): # classe OpenDSSDirect
 
                 self.memoFileStorages.append(tmp)
 
-
     def exec_PriceCurves(self):
         for ctd in self.Storages:
             if ctd['Carga/Descarga'] == 'Sincronizados':
@@ -806,7 +805,7 @@ class C_OpenDSS(): # classe OpenDSSDirect
                   " PFPriority=" + ctd["PFPriority"] + \
                   " WattPriority=" + ctd["WattPriority"]
 
-            if "ReactPow" in ctd:
+            if len(ctd["ReactPow"]) > 0:
                 for i in ctd["ReactPow"].items():
                     tmp = tmp + " " +i[0] + "=" + i[1]
 

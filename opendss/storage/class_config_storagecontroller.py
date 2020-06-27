@@ -484,8 +484,16 @@ class C_ActPow_Config_StorageController_Dialog(QDialog): ## Classe Dialog config
                         for ctd in self.StorageControllersTemporario:
                             if ctd["StorageControllerName"] == self.StorControl_GroupBox_Selection_ComboBox.currentText():
                                 ctd.update(i[1].DischargeMode)
-                                ctd["ElementList"].append(self.getStorage_Name())
             if ChargeModeOK and DischargeModeOK:
+                for ctd in self.StorageControllersTemporario:
+                    if self.getStorage_Name() in ctd["ElementList"] and (not ctd["StorageControllerName"] == self.StorControl_GroupBox_Selection_ComboBox.currentText()):
+                        self.StorageControllersTemporario.remove(ctd)
+                for ctd in self.StorageControllersTemporario:
+                    if ctd["StorageControllerName"] == self.StorControl_GroupBox_Selection_ComboBox.currentText():
+                        ctd["ElementList"].append(self.getStorage_Name())
+                for ctd in self.StorageControllersTemporario:
+                    if not ctd["ElementList"]:
+                        self.StorageControllersTemporario.remove(ctd)
                 self.close()
 
     def cancelStorageControlSelection(self):

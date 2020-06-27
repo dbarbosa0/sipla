@@ -895,6 +895,8 @@ class C_ActPow_LoadShape_DispMode_Dialog(QDialog): ## Classe Dialog Despacho Loa
                     QMessageBox(QMessageBox.Information, "Storage Controller",
                                 "Storage Controller" + ctd["StorageControllerName"] + " atualizado com sucesso!",
                                 QMessageBox.Ok).exec()
+        print("Controller tempo:", self.StorageControllersTemporario)
+
         self.updateDialog()
         self.EnableDisableParameters(False)
         self.adjustSize()
@@ -912,8 +914,18 @@ class C_ActPow_LoadShape_DispMode_Dialog(QDialog): ## Classe Dialog Despacho Loa
                 for ctd in self.StorageControllersTemporario:
                     if ctd["StorageControllerName"] == self.StorControl_GroupBox_Selection_ComboBox.currentText():
                         ctd.update(self.Select_DispCurve.dataDispCurve)
-                        ctd["ElementList"].append(self.getStorage_Name())
         if DispatchCurveOK:
+            for ctd in self.StorageControllersTemporario:
+                if self.getStorage_Name() in ctd["ElementList"] and (not ctd["StorageControllerName"] == self.StorControl_GroupBox_Selection_ComboBox.currentText()):
+                    self.StorageControllersTemporario.remove(ctd)
+            for ctd in self.StorageControllersTemporario:
+                if ctd["StorageControllerName"] == self.StorControl_GroupBox_Selection_ComboBox.currentText():
+                    ctd["ElementList"].append(self.getStorage_Name())
+            for ctd in self.StorageControllersTemporario:
+                if not ctd["ElementList"]:
+                    self.StorageControllersTemporario.remove(ctd)
+
+            print(self.StorageControllersTemporario)
             self.close()
 
     def cancelStorageControlSelection(self):
