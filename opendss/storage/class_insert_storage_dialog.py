@@ -304,8 +304,9 @@ class C_Insert_Storage_Dialog(QDialog):  ## Classe Dialog principal
                             elif i['ModoDescarga'] == 'Time':
                                 self.DispModeActPowDialog.ModoDescarga_GroupBox_StorageCont_GroupBox_Layout_Time_RadioBtn.setChecked(True)
 
-                    self.TabConfig.StorageConfig_GroupBox_Nome_LineEdit.setEnabled(False)
-                    self.EnableDisableParameters(True)
+                self.TabConfig.StorageConfig_GroupBox_Nome_LineEdit.setEnabled(False)
+                self.EnableDisableParameters(True)
+
             if checkCont > 1:
                 raise class_exception.ExecConfigOpenDSS("Insert Storage",
                                                         "Selecione somente um Storage para editar!")
