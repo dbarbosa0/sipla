@@ -361,6 +361,10 @@ class C_Insert_Storage_Dialog(QDialog):  ## Classe Dialog principal
                 countName = 0
                 Storage = {}
 
+                for i in self.StorageControllers: # Garante que dois StorageController não controlem um mesmo Storage
+                    while self.get_StorageName() in i["ElementList"]:
+                        i["ElementList"].remove(self.get_StorageName())
+
                 ############# seta data das configurações gerais
                 Storage["StorageName"] = self.get_StorageName()
                 Storage["Conn"] = self.TabConfig.StorageConfig_GroupBox_conn_ComboBox.currentText()
@@ -526,9 +530,9 @@ class C_Insert_Storage_Dialog(QDialog):  ## Classe Dialog principal
                                 if Storage["ModoCarga/Descarga"] == "LoadShape":
                                     ctd["ModoCarga/Descarga"] = Storage["ModoCarga/Descarga"]
                                     if not self.DispModeActPowDialog.DialogActPowLoadShape.StorageControllersTemporario == []:
-                                        for i in self.StorageControllers:
-                                            while self.get_StorageName() in i["ElementList"]:
-                                                i["ElementList"].remove(self.get_StorageName())
+                                        # for i in self.StorageControllers:
+                                        #     while self.get_StorageName() in i["ElementList"]:
+                                        #         i["ElementList"].remove(self.get_StorageName())
                                         for i in self.DispModeActPowDialog.DialogActPowLoadShape.StorageControllersTemporario:
                                             if self.get_StorageName() in i["ElementList"]:
                                                 self.StorageControllers.append(i)
@@ -546,11 +550,11 @@ class C_Insert_Storage_Dialog(QDialog):  ## Classe Dialog principal
                                 ctd["Carga/Descarga"] = Storage["Carga/Descarga"]
                                 ctd['ModoCarga'] = Storage['ModoCarga']
                                 ctd['ModoDescarga'] = Storage['ModoDescarga']
-                                if not self.DispModeActPowDialog.DialogActPowLoadShape.StorageControllersTemporario == []:
+                                if not self.DispModeActPowDialog.ConfigStorageController.StorageControllersTemporario == []:
                                     for i in self.StorageControllers:
                                         while self.get_StorageName() in i["ElementList"]:
                                             i["ElementList"].remove(self.get_StorageName())
-                                    for i in self.DispModeActPowDialog.DialogActPowLoadShape.StorageControllersTemporario:
+                                    for i in self.DispModeActPowDialog.ConfigStorageController.StorageControllersTemporario:
                                         if self.get_StorageName() in i["ElementList"]:
                                             self.StorageControllers.append(i)
 
@@ -579,10 +583,12 @@ class C_Insert_Storage_Dialog(QDialog):  ## Classe Dialog principal
     def acceptInsertStorage(self):
         if not self.StorageControllers == []:
             for ctd in self.StorageControllers:
+                if not ctd["ElementList"]: # Garante que nao haja StorController que não controle nenhum Storage
+                    self.StorageControllers.remove(ctd)
                 ctd["ElementList"] = list(set(ctd["ElementList"]))
         self.OpenDSS.Storages = self.Storages
         self.OpenDSS.StorageControllers = self.StorageControllers
-        print("insert")
+        print("insert:")
         print(self.Storages)
         print(self.StorageControllers)
 
