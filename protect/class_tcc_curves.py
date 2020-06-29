@@ -1,6 +1,6 @@
 from PyQt5.QtGui import QColor, QIcon
 from PyQt5.QtWidgets import QStyleFactory, QDialog, QGridLayout, QGroupBox, QHBoxLayout, QTreeWidgetItem, \
-    QPushButton, QTreeWidget, QFileDialog, QColorDialog, QMessageBox, QInputDialog, QCheckBox
+    QPushButton, QTreeWidget, QFileDialog, QColorDialog, QMessageBox, QInputDialog, QCheckBox, QLineEdit
 from PyQt5.QtCore import Qt
 
 import csv
@@ -21,30 +21,30 @@ class C_Config_Curves_Dialog(QDialog):
         self.iconWindow = cfg.sipla_icon
         self.stylesheet = cfg.sipla_stylesheet
 
-        self._nPointsLoadDef = 0
+        self._nPointsDef = 0
         self._nStepSizeDef = 0
         self._nStepSizeTimeDef = ""
 
-        self._dataLoadCurves = {}
+        self._dataCurves = {}
 
         self.InitUI()
 
 
     @property
-    def dataLoadCurves(self):
-        return self._dataLoadCurves
+    def dataCurves(self):
+        return self._dataCurves
 
-    @dataLoadCurves.setter
-    def dataLoadCurves(self, value):
-        self._dataLoadCurves = value
+    @dataCurves.setter
+    def dataCurves(self, value):
+        self._dataCurves = value
 
     @property
-    def nPointsLoadDef(self):
-        return self._nPointsLoadDef
+    def nPointsDef(self):
+        return self._nPointsDef
 
-    @nPointsLoadDef.setter
-    def nPointsLoadDef(self, value):
-        self._nPointsLoadDef = int(value)
+    @nPointsDef.setter
+    def nPointsDef(self, value):
+        self._nPointsDef = int(value)
 
     @property
     def nStepSizeDef(self):
@@ -75,8 +75,8 @@ class C_Config_Curves_Dialog(QDialog):
         self.Dialog_Layout = QGridLayout()  # Layout da Dialog
 
 
-        ##### Load Curves
-        self.Curves_GroupBox = QGroupBox("Curvas de Carga")
+        #####  Curves
+        self.Curves_GroupBox = QGroupBox("Curvas TCC")
         self.Curves_GroupBox.setFixedWidth(400)
 
         self.Curves_GroupBox_Layout = QGridLayout()
@@ -90,6 +90,12 @@ class C_Config_Curves_Dialog(QDialog):
         self.Curves_GroupBox_Checkbox_SelectAll = QCheckBox("Selecionar todas as curvas")
         self.Curves_GroupBox_Checkbox_SelectAll.clicked.connect(self.onAllCurves)
         self.Curves_GroupBox_Checkbox_Layout.addWidget(self.Curves_GroupBox_Checkbox_SelectAll)
+        self.Curves_GroupBox_Checkbox_Current = QCheckBox("Plotar Corrente de Curto")
+        #self.Curves_GroupBox_Checkbox_SelectAll.clicked.connect(self.onAllCurves)
+        self.Curves_GroupBox_Checkbox_Layout.addWidget(self.Curves_GroupBox_Checkbox_Current)
+        self.Curves_GroupBox_LineEdit_Current = QLineEdit()
+        self.Curves_GroupBox_LineEdit_Current.setPlaceholderText("A")
+        self.Curves_GroupBox_Checkbox_Layout.addWidget(self.Curves_GroupBox_LineEdit_Current)
 
         self.Curves_GroupBox_Checkbox_GroupBox.setLayout(self.Curves_GroupBox_Checkbox_Layout)
 
@@ -100,13 +106,13 @@ class C_Config_Curves_Dialog(QDialog):
         self.Curves_GroupBox_Remover_Btn = QPushButton("Remover")
         self.Curves_GroupBox_Remover_Btn.setIcon(QIcon('img/icon_remove.png'))
         #self.Curves_GroupBox_Remover_Btn.setFixedWidth(80)
-        self.Curves_GroupBox_Remover_Btn.clicked.connect(self.removeLoadShape)
+        self.Curves_GroupBox_Remover_Btn.clicked.connect(self.removeTCCCurves)
         self.Curves_GroupBox_Layout.addWidget(self.Curves_GroupBox_Remover_Btn,3,1,1,1)
 
         self.Curves_GroupBox_Adicionar_Btn = QPushButton("Adicionar")
         self.Curves_GroupBox_Adicionar_Btn.setIcon(QIcon('img/icon_add.png'))
         #self.Curves_GroupBox_Adicionar_Btn.setFixedWidth(80)
-        self.Curves_GroupBox_Adicionar_Btn.clicked.connect(self.addLoadShape)
+        self.Curves_GroupBox_Adicionar_Btn.clicked.connect(self.addTCCCurves)
         self.Curves_GroupBox_Layout.addWidget(self.Curves_GroupBox_Adicionar_Btn,3,2,1,1)
 
 
@@ -130,7 +136,7 @@ class C_Config_Curves_Dialog(QDialog):
         self.Curves_GroupBox_Show_Btn = QPushButton("Visualizar")
         self.Curves_GroupBox_Show_Btn.setIcon(QIcon('img/icon_line.png'))
         #self.Curves_GroupBox_Show_Btn.setFixedWidth(100)
-        self.Curves_GroupBox_Show_Btn.clicked.connect(self.viewLoadCurves)
+        self.Curves_GroupBox_Show_Btn.clicked.connect(self.viewCurves)
         self.Curves_GroupBox_Layout.addWidget(self.Curves_GroupBox_Show_Btn,5,1,1,2)
 
 
@@ -138,7 +144,7 @@ class C_Config_Curves_Dialog(QDialog):
 
         ##############################################################################################
 
-        ##### Load Curves
+        #####  Curves
         self.View_GroupBox = QGroupBox("Visualizar as Curvas TCC")
         self.View_GroupBox_Layout = QHBoxLayout()
 
@@ -180,7 +186,7 @@ class C_Config_Curves_Dialog(QDialog):
 
     def Accept(self):
 
-        self.setDataLoadCurves()
+        self.setDataCurves()
         self.close()
 
 
@@ -191,20 +197,26 @@ class C_Config_Curves_Dialog(QDialog):
             Item.setCheckState(0, self.Curves_GroupBox_Checkbox_SelectAll.checkState())
 
 
-    def setDataLoadCurves(self):
+    def setDataCurves(self):
 
-        self.dataLoadCurves = {}
+        self.dataCurves = {}
         self.dataPointsX = {}
         self.dataPointsY = {}
+        self.nPoints = 0
 
         try:
             for ctd in range(0, self.Curves_GroupBox_TreeWidget.topLevelItemCount()):
 
                 Item = self.Curves_GroupBox_TreeWidget.topLevelItem(ctd)
 
-                self.dataLoadCurves[Item.name] = Item.getPointsList(2)
+                self.dataCurves[Item.name] = Item.getPointsList(2)
                 self.dataPointsX[Item.name] = Item.getPointsList(2)
                 self.dataPointsY[Item.name] = Item.getPointsList(3)
+                print(f'dataPointsX{self.dataPointsX}')
+
+            for key,value in self.dataPointsX.items():
+                if len(value)> self.nPoints:
+                    self.nPoints = len(value)
 
         except:
             pass
@@ -215,7 +227,7 @@ class C_Config_Curves_Dialog(QDialog):
             pointsXList = []
             pointsYList = []
             fname = QFileDialog.getOpenFileName(self, 'Open CSV file',
-                                                "Curvas TCC", "CSV files (*.csv)")
+                                                "", "CSV files (*.csv)")
                                                 #str(pathlib.Path.home()), "CSV files (*.csv)")
 
             if platform.system() == "Windows":
@@ -247,19 +259,18 @@ class C_Config_Curves_Dialog(QDialog):
                         flag = False
 
                     if flag:
-                        Config_LoadShape_Curves_GroupBox_TreeWidget_Item(self.Curves_GroupBox_TreeWidget,
-                                                                 self.Curves_GroupBox_Checkbox_SelectAll.checkState(),
-                                                                key, str(pointsXList).strip('[]').replace("'",""),
-                                                                         str(pointsYList).strip('[]').replace("'", ""),
-                                                                cfg.colorsList[random.randint(0, len(cfg.colorsList) - 1)])
+                        Config_TCCCurves_GroupBox_TreeWidget_Item(self.Curves_GroupBox_TreeWidget,
+                                                                  self.Curves_GroupBox_Checkbox_SelectAll.checkState(),
+                                                                  key, str(pointsXList).strip('[]').replace("'",""),
+                                                                  str(pointsYList).strip('[]').replace("'", ""),
+                                                                  cfg.colorsList[random.randint(0, len(cfg.colorsList) - 1)])
                     pointsXList = []
                     pointsYList = []
-                print(pointsXList,pointsYList)
 
         except:
-            class_exception.ExecConfigOpenDSS("Erro ao importar a(s) Curva(s) de Carga!","Verifique o arquivo CSV!")
+            class_exception.ExecConfigOpenDSS("Erro ao importar a(s) Curva(s) TCC!","Verifique o arquivo CSV!")
 
-    def viewLoadCurves(self):
+    def viewCurves(self):
 
         # Limpando
         self.graphWidget.clear()
@@ -281,8 +292,7 @@ class C_Config_Curves_Dialog(QDialog):
 
             if Item.checkState(0) == Qt.Checked:
 
-                pen = pyqtgraph.mkPen(color = Item.getColorRGB())
-
+                pen = pyqtgraph.mkPen(color = Item.getColorRGB(), width=2)
                 pointsXList = Item.getPointsList(2)
                 pointsYList = Item.getPointsList(3)
 
@@ -292,6 +302,16 @@ class C_Config_Curves_Dialog(QDialog):
         if countSelected == 0:
             msg = QMessageBox()
             msg.information(self, 'Curvas TCC', "Nenhuma curva selecionada para visualização!")
+
+        if self.Curves_GroupBox_Checkbox_Current.isChecked() and self.Curves_GroupBox_LineEdit_Current.text():
+            current = float(self.Curves_GroupBox_LineEdit_Current.text())
+            tempo = [0.01,100]
+            corrente = [current,current]
+            pen = pyqtgraph.mkPen(color='r', width=1, style=pyqtgraph.QtCore.Qt.DashLine)
+            redrgb = (255, 0, 0, 255)
+            self.graphWidget.plot(corrente, tempo, name="Icc", pen=pen, symbol='x', symbolSize=10,
+                                  symbolBrush=redrgb)
+
 
     def csvExport(self):
 
@@ -303,19 +323,19 @@ class C_Config_Curves_Dialog(QDialog):
         else:
             fname = fname[0]
 
-        self.setDataLoadCurves()
+        self.setDataCurves()
 
 
         with open(str(fname), 'w' , newline='') as csvfile:
             writer = csv.writer(csvfile, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
 
             rowText = []
-            for nameShape in self.dataLoadCurves:
+            for nameShape in self.dataCurves:
                 rowText.append(nameShape)
 
             writer.writerow(rowText)
 
-            for ctdPoints in range(0, 10):
+            for ctdPoints in range(0, self.nPoints):
                 rowText.clear()
                 for dataShape in self.dataPointsX:
                     try:
@@ -325,12 +345,12 @@ class C_Config_Curves_Dialog(QDialog):
                         rowText.append('')
                 writer.writerow(rowText)
 
-    def removeLoadShape(self):
+    def removeTCCCurves(self):
 
         msg = QMessageBox()
         msg.setIcon(QMessageBox.Question)
         msg.setText("Você deseja remover a(s) curva(s) selecionada(s)?")
-        msg.setWindowTitle('Curvas de Carga')
+        msg.setWindowTitle('Curvas TCC')
         msg.setStandardButtons(QMessageBox.Yes | QMessageBox.No)
         retval = msg.exec_()
 
@@ -344,16 +364,16 @@ class C_Config_Curves_Dialog(QDialog):
                     contChecked += 1
 
             if contChecked > 0:
-                msg.information(self, 'Curvas de Carga', str(contChecked) + " curva(s) de carga removida(s)!")
+                msg.information(self, 'Curvas TCC', str(contChecked) + " curva(s) TCC removida(s)!")
             else:
-                msg.information(self, 'Curvas de Carga', "Nenhuma curva de carga selecionada!")
+                msg.information(self, 'Curvas TCC', "Nenhuma curva TCC selecionada!")
 
         else:
-            msg.information(self, 'Curvas de Carga', "Nenhuma curva de carga foi removida!")
+            msg.information(self, 'Curvas TCC', "Nenhuma curva TCC foi removida!")
 
-    def addLoadShape(self):
+    def addTCCCurves(self):
 
-        inputLoadName, inputOk = QInputDialog.getText(self, 'Curvas de Carga', 'Entre com o nome da nova Curva de Carga:')
+        inputName, inputOk = QInputDialog.getText(self, 'Curvas TCC', 'Entre com o nome da nova Curva TCC:')
 
         if inputOk:
             countName = 0
@@ -361,47 +381,26 @@ class C_Config_Curves_Dialog(QDialog):
 
                 Item = self.Curves_GroupBox_TreeWidget.topLevelItem(ctd)
 
-                if Item.name == str(inputLoadName):
+                if Item.name == str(inputName):
                     countName += 1
 
             if countName == 0:
-                pts = [0 for ctd in range(0,self.nPointsLoadDef)]
+                pts = [0 for ctd in range(0,self.nPointsDef)]
                 pts = str(pts).strip('[]').replace("'","")
-                Config_LoadShape_Curves_GroupBox_TreeWidget_Item(self.Curves_GroupBox_TreeWidget,
-                                                                 self.Curves_GroupBox_Checkbox_SelectAll.checkState(),
-                                                                 inputLoadName, pts,pts,
-                                                                 cfg.colorsList[
+                Config_TCCCurves_GroupBox_TreeWidget_Item(self.Curves_GroupBox_TreeWidget,
+                                                          self.Curves_GroupBox_Checkbox_SelectAll.checkState(),
+                                                          inputName, pts, pts,
+                                                          cfg.colorsList[
                                                                      random.randint(0, len(cfg.colorsList) - 1)])
             else:
                 msg = QMessageBox()
-                msg.information(self, 'Curvas de Carga', "Não foi possível adicionar a curva de carga!\nCurva de carga já existente!")
-
-    def checkLoadShape(self, nameLoadShape, pointsLoadShape):
-
-        msgText = ''
-        pointsLoadShape = pointsLoadShape.split(',')
-        if len(pointsLoadShape) != self.nPointsLoadDef:
-            msgText += "Número de pontos da curva " + nameLoadShape + " está diferente do definido na configuração! \n"
-        else:
-            for ctd in pointsLoadShape:
-                try:
-                    float(ctd)
-                except:
-                    msgText += "O item: " + ctd + " não é float! Verifique a curva de carga!"
-
-        if msgText != "":
-            msg = QMessageBox()
-            msg.information(self, 'Curvas de Carga',
-                            "Não foi possível adicionar a curva de carga:\n" + msgText)
-            return False
-        else:
-            return True
+                msg.information(self, 'Curvas TCC', "Não foi possível adicionar a curva TCC!\nCurva TCC já existente!")
 
 
-class Config_LoadShape_Curves_GroupBox_TreeWidget_Item(QTreeWidgetItem):
+class Config_TCCCurves_GroupBox_TreeWidget_Item(QTreeWidgetItem):
     def __init__(self, parent, check, name, pointsX,pointsY,color):
         ## Init super class ( QtGui.QTreeWidgetItem )
-        super(Config_LoadShape_Curves_GroupBox_TreeWidget_Item, self).__init__(parent)
+        super(Config_TCCCurves_GroupBox_TreeWidget_Item, self).__init__(parent)
 
         ## Column 0 - Text:
 
