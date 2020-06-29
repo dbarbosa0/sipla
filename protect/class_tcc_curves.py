@@ -25,18 +25,18 @@ class C_Config_Curves_Dialog(QDialog):
         self._nStepSizeDef = 0
         self._nStepSizeTimeDef = ""
 
-        self._dataLoadShapes = {}
+        self._dataLoadCurves = {}
 
         self.InitUI()
 
 
     @property
-    def dataLoadShapes(self):
-        return self._dataLoadShapes
+    def dataLoadCurves(self):
+        return self._dataLoadCurves
 
-    @dataLoadShapes.setter
-    def dataLoadShapes(self, value):
-        self._dataLoadShapes = value
+    @dataLoadCurves.setter
+    def dataLoadCurves(self, value):
+        self._dataLoadCurves = value
 
     @property
     def nPointsLoadDef(self):
@@ -75,70 +75,70 @@ class C_Config_Curves_Dialog(QDialog):
         self.Dialog_Layout = QGridLayout()  # Layout da Dialog
 
 
-        ##### Load Shapes
-        self.Shapes_GroupBox = QGroupBox("Curvas de Carga")
-        self.Shapes_GroupBox.setFixedWidth(400)
+        ##### Load Curves
+        self.Curves_GroupBox = QGroupBox("Curvas de Carga")
+        self.Curves_GroupBox.setFixedWidth(400)
 
-        self.Shapes_GroupBox_Layout = QGridLayout()
-        self.Shapes_GroupBox_TreeWidget = QTreeWidget()
-        self.Shapes_GroupBox_TreeWidget.setHeaderLabels(['Nome', 'Cor', 'Corrente', 'Tempo'])
-        self.Shapes_GroupBox_TreeWidget.setColumnWidth(1, 20)
-        self.Shapes_GroupBox_Layout.addWidget(self.Shapes_GroupBox_TreeWidget, 1, 1, 1, 2)
+        self.Curves_GroupBox_Layout = QGridLayout()
+        self.Curves_GroupBox_TreeWidget = QTreeWidget()
+        self.Curves_GroupBox_TreeWidget.setHeaderLabels(['Nome', 'Cor', 'Corrente', 'Tempo'])
+        self.Curves_GroupBox_TreeWidget.setColumnWidth(1, 20)
+        self.Curves_GroupBox_Layout.addWidget(self.Curves_GroupBox_TreeWidget, 1, 1, 1, 2)
 
-        self.Shapes_GroupBox_Checkbox_GroupBox = QGroupBox()
-        self.Shapes_GroupBox_Checkbox_Layout = QHBoxLayout()
-        self.Shapes_GroupBox_Checkbox_SelectAll = QCheckBox("Selecionar todas as curvas")
-        self.Shapes_GroupBox_Checkbox_SelectAll.clicked.connect(self.onAllCurves)
-        self.Shapes_GroupBox_Checkbox_Layout.addWidget(self.Shapes_GroupBox_Checkbox_SelectAll)
+        self.Curves_GroupBox_Checkbox_GroupBox = QGroupBox()
+        self.Curves_GroupBox_Checkbox_Layout = QHBoxLayout()
+        self.Curves_GroupBox_Checkbox_SelectAll = QCheckBox("Selecionar todas as curvas")
+        self.Curves_GroupBox_Checkbox_SelectAll.clicked.connect(self.onAllCurves)
+        self.Curves_GroupBox_Checkbox_Layout.addWidget(self.Curves_GroupBox_Checkbox_SelectAll)
 
-        self.Shapes_GroupBox_Checkbox_GroupBox.setLayout(self.Shapes_GroupBox_Checkbox_Layout)
+        self.Curves_GroupBox_Checkbox_GroupBox.setLayout(self.Curves_GroupBox_Checkbox_Layout)
 
-        self.Shapes_GroupBox_Layout.addWidget(self.Shapes_GroupBox_Checkbox_GroupBox, 2, 1, 1, 2)
+        self.Curves_GroupBox_Layout.addWidget(self.Curves_GroupBox_Checkbox_GroupBox, 2, 1, 1, 2)
 
 
 
-        self.Shapes_GroupBox_Remover_Btn = QPushButton("Remover")
-        self.Shapes_GroupBox_Remover_Btn.setIcon(QIcon('img/icon_remove.png'))
-        #self.Shapes_GroupBox_Remover_Btn.setFixedWidth(80)
-        self.Shapes_GroupBox_Remover_Btn.clicked.connect(self.removeLoadShape)
-        self.Shapes_GroupBox_Layout.addWidget(self.Shapes_GroupBox_Remover_Btn,3,1,1,1)
+        self.Curves_GroupBox_Remover_Btn = QPushButton("Remover")
+        self.Curves_GroupBox_Remover_Btn.setIcon(QIcon('img/icon_remove.png'))
+        #self.Curves_GroupBox_Remover_Btn.setFixedWidth(80)
+        self.Curves_GroupBox_Remover_Btn.clicked.connect(self.removeLoadShape)
+        self.Curves_GroupBox_Layout.addWidget(self.Curves_GroupBox_Remover_Btn,3,1,1,1)
 
-        self.Shapes_GroupBox_Adicionar_Btn = QPushButton("Adicionar")
-        self.Shapes_GroupBox_Adicionar_Btn.setIcon(QIcon('img/icon_add.png'))
-        #self.Shapes_GroupBox_Adicionar_Btn.setFixedWidth(80)
-        self.Shapes_GroupBox_Adicionar_Btn.clicked.connect(self.addLoadShape)
-        self.Shapes_GroupBox_Layout.addWidget(self.Shapes_GroupBox_Adicionar_Btn,3,2,1,1)
+        self.Curves_GroupBox_Adicionar_Btn = QPushButton("Adicionar")
+        self.Curves_GroupBox_Adicionar_Btn.setIcon(QIcon('img/icon_add.png'))
+        #self.Curves_GroupBox_Adicionar_Btn.setFixedWidth(80)
+        self.Curves_GroupBox_Adicionar_Btn.clicked.connect(self.addLoadShape)
+        self.Curves_GroupBox_Layout.addWidget(self.Curves_GroupBox_Adicionar_Btn,3,2,1,1)
 
 
         #########################################################
 
-        self.Shapes_GroupBox_Import_Btn = QPushButton("Importar")
-        self.Shapes_GroupBox_Import_Btn.setIcon(QIcon('img/icon_import_csv.png'))
-        #self.Shapes_GroupBox_Import_Btn.setFixedWidth(80)
-        self.Shapes_GroupBox_Import_Btn.clicked.connect(self.csvImport)
-        self.Shapes_GroupBox_Layout.addWidget(self.Shapes_GroupBox_Import_Btn,4,1,1,1)
+        self.Curves_GroupBox_Import_Btn = QPushButton("Importar")
+        self.Curves_GroupBox_Import_Btn.setIcon(QIcon('img/icon_import_csv.png'))
+        #self.Curves_GroupBox_Import_Btn.setFixedWidth(80)
+        self.Curves_GroupBox_Import_Btn.clicked.connect(self.csvImport)
+        self.Curves_GroupBox_Layout.addWidget(self.Curves_GroupBox_Import_Btn,4,1,1,1)
 
-        self.Shapes_GroupBox_Export_Btn = QPushButton("Exportar")
-        self.Shapes_GroupBox_Export_Btn.setIcon(QIcon('img/icon_export_csv.png'))
-        #self.Shapes_GroupBox_Export_Btn.setFixedWidth(80)
-        self.Shapes_GroupBox_Export_Btn.clicked.connect(self.csvExport)
-        self.Shapes_GroupBox_Layout.addWidget(self.Shapes_GroupBox_Export_Btn,4,2,1,1)
+        self.Curves_GroupBox_Export_Btn = QPushButton("Exportar")
+        self.Curves_GroupBox_Export_Btn.setIcon(QIcon('img/icon_export_csv.png'))
+        #self.Curves_GroupBox_Export_Btn.setFixedWidth(80)
+        self.Curves_GroupBox_Export_Btn.clicked.connect(self.csvExport)
+        self.Curves_GroupBox_Layout.addWidget(self.Curves_GroupBox_Export_Btn,4,2,1,1)
 
-        self.Shapes_GroupBox.setLayout(self.Shapes_GroupBox_Layout)
+        self.Curves_GroupBox.setLayout(self.Curves_GroupBox_Layout)
         #########################################################
 
-        self.Shapes_GroupBox_Show_Btn = QPushButton("Visualizar")
-        self.Shapes_GroupBox_Show_Btn.setIcon(QIcon('img/icon_line.png'))
-        #self.Shapes_GroupBox_Show_Btn.setFixedWidth(100)
-        self.Shapes_GroupBox_Show_Btn.clicked.connect(self.viewLoadShapes)
-        self.Shapes_GroupBox_Layout.addWidget(self.Shapes_GroupBox_Show_Btn,5,1,1,2)
+        self.Curves_GroupBox_Show_Btn = QPushButton("Visualizar")
+        self.Curves_GroupBox_Show_Btn.setIcon(QIcon('img/icon_line.png'))
+        #self.Curves_GroupBox_Show_Btn.setFixedWidth(100)
+        self.Curves_GroupBox_Show_Btn.clicked.connect(self.viewLoadCurves)
+        self.Curves_GroupBox_Layout.addWidget(self.Curves_GroupBox_Show_Btn,5,1,1,2)
 
 
-        self.Dialog_Layout.addWidget(self.Shapes_GroupBox, 1, 1, 1, 1)
+        self.Dialog_Layout.addWidget(self.Curves_GroupBox, 1, 1, 1, 1)
 
         ##############################################################################################
 
-        ##### Load Shapes
+        ##### Load Curves
         self.View_GroupBox = QGroupBox("Visualizar as Curvas TCC")
         self.View_GroupBox_Layout = QHBoxLayout()
 
@@ -174,35 +174,35 @@ class C_Config_Curves_Dialog(QDialog):
 
     def Cancel(self):
 
-        self.Shapes_GroupBox_TreeWidget.clear()
+        self.Curves_GroupBox_TreeWidget.clear()
         self.graphWidget.clear()
         self.close()
 
     def Accept(self):
 
-        self.setDataLoadShapes()
+        self.setDataLoadCurves()
         self.close()
 
 
     def onAllCurves(self):
 
-        for ctd in range(0, self.Shapes_GroupBox_TreeWidget.topLevelItemCount()):
-            Item = self.Shapes_GroupBox_TreeWidget.topLevelItem(ctd)
-            Item.setCheckState(0, self.Shapes_GroupBox_Checkbox_SelectAll.checkState())
+        for ctd in range(0, self.Curves_GroupBox_TreeWidget.topLevelItemCount()):
+            Item = self.Curves_GroupBox_TreeWidget.topLevelItem(ctd)
+            Item.setCheckState(0, self.Curves_GroupBox_Checkbox_SelectAll.checkState())
 
 
-    def setDataLoadShapes(self):
+    def setDataLoadCurves(self):
 
-        self.dataLoadShapes = {}
+        self.dataLoadCurves = {}
         self.dataPointsX = {}
         self.dataPointsY = {}
 
         try:
-            for ctd in range(0, self.Shapes_GroupBox_TreeWidget.topLevelItemCount()):
+            for ctd in range(0, self.Curves_GroupBox_TreeWidget.topLevelItemCount()):
 
-                Item = self.Shapes_GroupBox_TreeWidget.topLevelItem(ctd)
+                Item = self.Curves_GroupBox_TreeWidget.topLevelItem(ctd)
 
-                self.dataLoadShapes[Item.name] = Item.getPointsList(2)
+                self.dataLoadCurves[Item.name] = Item.getPointsList(2)
                 self.dataPointsX[Item.name] = Item.getPointsList(2)
                 self.dataPointsY[Item.name] = Item.getPointsList(3)
 
@@ -247,8 +247,8 @@ class C_Config_Curves_Dialog(QDialog):
                         flag = False
 
                     if flag:
-                        Config_LoadShape_Shapes_GroupBox_TreeWidget_Item(self.Shapes_GroupBox_TreeWidget,
-                                                                 self.Shapes_GroupBox_Checkbox_SelectAll.checkState(),
+                        Config_LoadShape_Curves_GroupBox_TreeWidget_Item(self.Curves_GroupBox_TreeWidget,
+                                                                 self.Curves_GroupBox_Checkbox_SelectAll.checkState(),
                                                                 key, str(pointsXList).strip('[]').replace("'",""),
                                                                          str(pointsYList).strip('[]').replace("'", ""),
                                                                 cfg.colorsList[random.randint(0, len(cfg.colorsList) - 1)])
@@ -259,7 +259,7 @@ class C_Config_Curves_Dialog(QDialog):
         except:
             class_exception.ExecConfigOpenDSS("Erro ao importar a(s) Curva(s) de Carga!","Verifique o arquivo CSV!")
 
-    def viewLoadShapes(self):
+    def viewLoadCurves(self):
 
         # Limpando
         self.graphWidget.clear()
@@ -275,9 +275,9 @@ class C_Config_Curves_Dialog(QDialog):
 
 
         countSelected = 0
-        for ctd in range(0, self.Shapes_GroupBox_TreeWidget.topLevelItemCount()):
+        for ctd in range(0, self.Curves_GroupBox_TreeWidget.topLevelItemCount()):
 
-            Item = self.Shapes_GroupBox_TreeWidget.topLevelItem(ctd)
+            Item = self.Curves_GroupBox_TreeWidget.topLevelItem(ctd)
 
             if Item.checkState(0) == Qt.Checked:
 
@@ -303,14 +303,14 @@ class C_Config_Curves_Dialog(QDialog):
         else:
             fname = fname[0]
 
-        self.setDataLoadShapes()
+        self.setDataLoadCurves()
 
 
         with open(str(fname), 'w' , newline='') as csvfile:
             writer = csv.writer(csvfile, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
 
             rowText = []
-            for nameShape in self.dataLoadShapes:
+            for nameShape in self.dataLoadCurves:
                 rowText.append(nameShape)
 
             writer.writerow(rowText)
@@ -336,12 +336,11 @@ class C_Config_Curves_Dialog(QDialog):
 
         contChecked = 0
         if retval == QMessageBox.Yes:
-            for ctd in range(self.Shapes_GroupBox_TreeWidget.topLevelItemCount() - 1, 0, -1):
-
-                Item = self.Shapes_GroupBox_TreeWidget.topLevelItem(ctd)
+            for ctd in range(self.Curves_GroupBox_TreeWidget.topLevelItemCount() - 1, -1 , -1):
+                Item = self.Curves_GroupBox_TreeWidget.topLevelItem(ctd)
 
                 if Item.checkState(0) == Qt.Checked:
-                    self.Shapes_GroupBox_TreeWidget.takeTopLevelItem(ctd)
+                    self.Curves_GroupBox_TreeWidget.takeTopLevelItem(ctd)
                     contChecked += 1
 
             if contChecked > 0:
@@ -358,9 +357,9 @@ class C_Config_Curves_Dialog(QDialog):
 
         if inputOk:
             countName = 0
-            for ctd in range(0, self.Shapes_GroupBox_TreeWidget.topLevelItemCount()):
+            for ctd in range(0, self.Curves_GroupBox_TreeWidget.topLevelItemCount()):
 
-                Item = self.Shapes_GroupBox_TreeWidget.topLevelItem(ctd)
+                Item = self.Curves_GroupBox_TreeWidget.topLevelItem(ctd)
 
                 if Item.name == str(inputLoadName):
                     countName += 1
@@ -368,8 +367,8 @@ class C_Config_Curves_Dialog(QDialog):
             if countName == 0:
                 pts = [0 for ctd in range(0,self.nPointsLoadDef)]
                 pts = str(pts).strip('[]').replace("'","")
-                Config_LoadShape_Shapes_GroupBox_TreeWidget_Item(self.Shapes_GroupBox_TreeWidget,
-                                                                 self.Shapes_GroupBox_Checkbox_SelectAll.checkState(),
+                Config_LoadShape_Curves_GroupBox_TreeWidget_Item(self.Curves_GroupBox_TreeWidget,
+                                                                 self.Curves_GroupBox_Checkbox_SelectAll.checkState(),
                                                                  inputLoadName, pts,pts,
                                                                  cfg.colorsList[
                                                                      random.randint(0, len(cfg.colorsList) - 1)])
@@ -399,10 +398,10 @@ class C_Config_Curves_Dialog(QDialog):
             return True
 
 
-class Config_LoadShape_Shapes_GroupBox_TreeWidget_Item(QTreeWidgetItem):
+class Config_LoadShape_Curves_GroupBox_TreeWidget_Item(QTreeWidgetItem):
     def __init__(self, parent, check, name, pointsX,pointsY,color):
         ## Init super class ( QtGui.QTreeWidgetItem )
-        super(Config_LoadShape_Shapes_GroupBox_TreeWidget_Item, self).__init__(parent)
+        super(Config_LoadShape_Curves_GroupBox_TreeWidget_Item, self).__init__(parent)
 
         ## Column 0 - Text:
 
