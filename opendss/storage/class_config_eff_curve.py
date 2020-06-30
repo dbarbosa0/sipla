@@ -11,6 +11,7 @@ import platform
 import pyqtgraph
 import config as cfg
 import class_exception
+import unidecode
 
 
 
@@ -118,6 +119,7 @@ Pontos Y: Potência aparente (kVA) em p.u.")
     def addEffCurve(self):
 
         inputLoadName, inputOk = QInputDialog.getText(self, 'Curvas de Eficiência','Entre com o nome da nova Curva de\nEficiência do Inversor:')
+        inputLoadName = unidecode.unidecode(inputLoadName.replace(" ", "_"))
 
         if inputOk:
             countName = 0

@@ -903,6 +903,7 @@ class C_ActPow_LoadShape_DispMode_Dialog(QDialog): ## Classe Dialog Despacho Loa
 
     def acceptStorageControlSelection(self):
         DispatchCurveOK = False
+
         if self.StorControl_GroupBox_Selection_ComboBox.currentText() == "":
             QMessageBox(QMessageBox.Warning, "Storage Controller", "Pelo menos um Storage Controller deve ser selecionado!",
                         QMessageBox.Ok).exec()
@@ -914,14 +915,17 @@ class C_ActPow_LoadShape_DispMode_Dialog(QDialog): ## Classe Dialog Despacho Loa
                 for ctd in self.StorageControllersTemporario:
                     if ctd["StorageControllerName"] == self.StorControl_GroupBox_Selection_ComboBox.currentText():
                         ctd.update(self.Select_DispCurve.dataDispCurve)
+
         if DispatchCurveOK:
-            for ctd in self.StorageControllersTemporario:
+            for ctd in self.StorageControllersTemporario: # Garante que dois StorageController não controlem um mesmo Storage
                 if self.getStorage_Name() in ctd["ElementList"] and (not ctd["StorageControllerName"] == self.StorControl_GroupBox_Selection_ComboBox.currentText()):
                     self.StorageControllersTemporario.remove(ctd)
+
             for ctd in self.StorageControllersTemporario:
                 if ctd["StorageControllerName"] == self.StorControl_GroupBox_Selection_ComboBox.currentText():
                     ctd["ElementList"].append(self.getStorage_Name())
-            for ctd in self.StorageControllersTemporario:
+
+            for ctd in self.StorageControllersTemporario: # Garante que nao haja StorController que não controle nenhum Storage
                 if not ctd["ElementList"]:
                     self.StorageControllersTemporario.remove(ctd)
 

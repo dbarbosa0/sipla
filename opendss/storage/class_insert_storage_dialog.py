@@ -34,8 +34,8 @@ class C_Insert_Storage_Dialog(QDialog):  ## Classe Dialog principal
         self.InitUI()
 
         self.OpenDSS = opendss.class_opendss.C_OpenDSS()
-        self.EffCurve = opendss.storage.class_config_eff_curve.C_Config_EffCurve_Dialog()
-        self.EffCurveFile = opendss.storage.class_config_eff_curve
+        # self.EffCurve = opendss.storage.class_config_eff_curve.C_Config_EffCurve_Dialog()
+        # self.EffCurveFile = opendss.storage.class_config_eff_curve
         self.DispModeActPowDialog = opendss.storage.class_active_pow_dispmode_dialog.C_Active_Pow_DispMode_Dialog()
         self.DispModeReactPowDialog = opendss.storage.class_reactive_pow_dispmode_dialog.C_Reactive_Pow_DispMode_Dialog()
 
@@ -239,9 +239,13 @@ class C_Insert_Storage_Dialog(QDialog):  ## Classe Dialog principal
                             self.DispModeReactPowDialog.kvarConst_LineEdit.setEnabled(True)
                             self.DispModeReactPowDialog.kvarConst_LineEdit.setText(i['ReactPow']['kvar'])
 
-                        # ptsX = str(i["Xarray"]).strip('[]').replace("'", "")
-                        # ptsY = str(i["Yarray"]).strip('[]').replace("'", "")
-                        # self.EffCurveFile.Config_EffCurve_GroupBox_TreeWidget_Item(self.EffCurve.EffCurve_GroupBox_TreeWidget, i["EffCurveName"], ptsX, ptsY, cfg.colorsList[random.randint(0, len(cfg.colorsList) - 1)])
+                        ptsX = str(i["EffCurve"]["Xarray"]).strip('[]').replace("'", "")
+                        ptsY = str(i["EffCurve"]["Yarray"]).strip('[]').replace("'", "")
+                        self.TabInversorConfig.EffCurveFile.Config_EffCurve_GroupBox_TreeWidget_Item(self.TabInversorConfig.EffCurve.EffCurve_GroupBox_TreeWidget,
+                                                                                                     i["EffCurve"]["EffCurveName"],
+                                                                                                     ptsX,
+                                                                                                     ptsY,
+                                                                                                     cfg.colorsList[random.randint(0, len(cfg.colorsList) - 1)])
 
                         if i["Carga/Descarga"] == "Sincronizados":
                             self.DispModeActPowDialog.DispSinc_Radio_Btn.setChecked(True)
@@ -312,7 +316,7 @@ class C_Insert_Storage_Dialog(QDialog):  ## Classe Dialog principal
                                                         "Selecione somente um Storage para editar!")
             elif checkCont == 0:
                 raise class_exception.ExecConfigOpenDSS("Insert Storage",
-                                                         "Selecione pelo menos um Storage para editar!")
+                                                        "Selecione pelo menos um Storage para editar!")
         except:
             pass
 
@@ -345,6 +349,7 @@ class C_Insert_Storage_Dialog(QDialog):  ## Classe Dialog principal
             self.DispModeReactPowDialog.show()
 
     def AcceptAddEditStorage(self):
+
         if self.TabConfig.verificaLineEdits() and self.TabInversorConfig.verificaLineEdits():
 
             if self.TabInversorConfig.EffCurve.dataEffCurve == {}:
@@ -361,9 +366,9 @@ class C_Insert_Storage_Dialog(QDialog):  ## Classe Dialog principal
                 countName = 0
                 Storage = {}
 
-                for i in self.StorageControllers: # Garante que dois StorageController não controlem um mesmo Storage
-                    while self.get_StorageName() in i["ElementList"]:
-                        i["ElementList"].remove(self.get_StorageName())
+                for e in self.StorageControllers: # Garante que dois StorageController não controlem um mesmo Storage
+                    while self.get_StorageName() in e["ElementList"]:
+                        e["ElementList"].remove(self.get_StorageName())
 
                 ############# seta data das configurações gerais
                 Storage["StorageName"] = self.get_StorageName()
@@ -460,7 +465,7 @@ class C_Insert_Storage_Dialog(QDialog):  ## Classe Dialog principal
                                 if StorageCont == 0:
                                     for ctd in self.DispModeActPowDialog.DialogActPowLoadShape.StorageControllersTemporario:
                                         if self.get_StorageName() in ctd["ElementList"]:
-                                            self.StorageControllers.append(ctd)
+                                            self.StorageControllers.append(ctd.copy())
 
                         if Storage["Carga/Descarga"] == "Independentes":
                             Storage.update({"ActPow": None})
@@ -471,7 +476,7 @@ class C_Insert_Storage_Dialog(QDialog):  ## Classe Dialog principal
                             if StorageCont == 0:
                                 for ctd in self.DispModeActPowDialog.ConfigStorageController.StorageControllersTemporario:
                                     if self.get_StorageName() in ctd["ElementList"]:
-                                        self.StorageControllers.append(ctd)
+                                        self.StorageControllers.append(ctd.copy())
 
                             Storage_TreeWidget_Item(self.Storages_GroupBox_TreeWidget,
                                                     self.get_StorageName(),
@@ -490,6 +495,7 @@ class C_Insert_Storage_Dialog(QDialog):  ## Classe Dialog principal
                         if ctd["StorageName"] == Storage["StorageName"]:
 
                             ctd["Conn"] = Storage["Conn"]
+                            ctd["Bus"] = Storage["Bus"]
                             ctd["kW"] = Storage["kW"]
                             ctd["kV"] = Storage["kV"]
                             ctd["kWhrated"] = Storage["kWhrated"]
@@ -519,6 +525,7 @@ class C_Insert_Storage_Dialog(QDialog):  ## Classe Dialog principal
 
                             if Storage["Carga/Descarga"] == "Sincronizados":
                                 ctd["Carga/Descarga"] = Storage["Carga/Descarga"]
+
                                 for i in [["Default", self.DispModeActPowDialog.DialogActPowDefault.DefaultParameters],
                                           ["Follow", self.DispModeActPowDialog.DialogActPowFollow.FollowParameters],
                                           ["LoadLevel", self.DispModeActPowDialog.DialogActPowLoadLevel.LoadLevelParameters],
@@ -529,13 +536,15 @@ class C_Insert_Storage_Dialog(QDialog):  ## Classe Dialog principal
 
                                 if Storage["ModoCarga/Descarga"] == "LoadShape":
                                     ctd["ModoCarga/Descarga"] = Storage["ModoCarga/Descarga"]
+                                    ctd.update({"ActPow": None})
+
                                     if not self.DispModeActPowDialog.DialogActPowLoadShape.StorageControllersTemporario == []:
                                         # for i in self.StorageControllers:
                                         #     while self.get_StorageName() in i["ElementList"]:
                                         #         i["ElementList"].remove(self.get_StorageName())
                                         for i in self.DispModeActPowDialog.DialogActPowLoadShape.StorageControllersTemporario:
                                             if self.get_StorageName() in i["ElementList"]:
-                                                self.StorageControllers.append(i)
+                                                self.StorageControllers.append(i.copy())
 
                                 for ctd in range(self.Storages_GroupBox_TreeWidget.topLevelItemCount() - 1, -1, -1):
                                     Item = self.Storages_GroupBox_TreeWidget.topLevelItem(ctd)
@@ -550,13 +559,15 @@ class C_Insert_Storage_Dialog(QDialog):  ## Classe Dialog principal
                                 ctd["Carga/Descarga"] = Storage["Carga/Descarga"]
                                 ctd['ModoCarga'] = Storage['ModoCarga']
                                 ctd['ModoDescarga'] = Storage['ModoDescarga']
+                                ctd.update({"ActPow": None})
+
                                 if not self.DispModeActPowDialog.ConfigStorageController.StorageControllersTemporario == []:
-                                    for i in self.StorageControllers:
-                                        while self.get_StorageName() in i["ElementList"]:
-                                            i["ElementList"].remove(self.get_StorageName())
+                                    # for i in self.StorageControllers:
+                                    #     while self.get_StorageName() in i["ElementList"]:
+                                    #         i["ElementList"].remove(self.get_StorageName())
                                     for i in self.DispModeActPowDialog.ConfigStorageController.StorageControllersTemporario:
                                         if self.get_StorageName() in i["ElementList"]:
-                                            self.StorageControllers.append(i)
+                                            self.StorageControllers.append(i.copy())
 
                                 for ctd in range(0, self.Storages_GroupBox_TreeWidget.topLevelItemCount()):
                                     Item = self.Storages_GroupBox_TreeWidget.topLevelItem(ctd)
@@ -583,7 +594,7 @@ class C_Insert_Storage_Dialog(QDialog):  ## Classe Dialog principal
     def acceptInsertStorage(self):
         if not self.StorageControllers == []:
             for ctd in self.StorageControllers:
-                if not ctd["ElementList"]: # Garante que nao haja StorController que não controle nenhum Storage
+                if not ctd["ElementList"]: # Garante que nao haja StorageController que não controle nenhum Storage
                     self.StorageControllers.remove(ctd)
                 ctd["ElementList"] = list(set(ctd["ElementList"]))
         self.OpenDSS.Storages = self.Storages
@@ -678,8 +689,9 @@ class C_Insert_Storage_Dialog(QDialog):  ## Classe Dialog principal
         self.TabInversorConfig.InversorConfig_GroupBox_PminkvarMax_LineEdit.setText("")
         self.TabInversorConfig.InversorConfig_GroupBox_PFPriority_ComboBox.setCurrentIndex(0)
 
-        self.EffCurve.EffCurve_GroupBox_TreeWidget.clear() #Limpa o TreeWidget e o plot da Curva de Eficiencia
-        self.EffCurve.graphWidget.clear()
+        self.TabInversorConfig.EffCurve.EffCurve_GroupBox_TreeWidget.clear() #Limpa o TreeWidget e o plot da Curva de Eficiencia
+        self.TabInversorConfig.EffCurve.graphWidget.clear()
+        self.TabInversorConfig.EffCurve.dataEffCurve = {}
 
         self.DispModeActPowDialog.DialogActPowPrice.Select_PriceCurve.restoreParameters()
         self.DispModeActPowDialog.DialogActPowDefault.Select_DispCurve.restoreParameters()
@@ -867,6 +879,7 @@ class InversorConfig(QWidget):
         self.InitUIInversorConfig()
 
         self.EffCurve = opendss.storage.class_config_eff_curve.C_Config_EffCurve_Dialog()
+        self.EffCurveFile = opendss.storage.class_config_eff_curve
 
     def InitUIInversorConfig(self):
 
