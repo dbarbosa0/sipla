@@ -25,7 +25,17 @@ class C_Config_EffCurve_Dialog(QDialog):
 
         self.dataEffCurve = {}
 
+        self._Storages = []
+
         self.InitUI()
+
+    @property
+    def Storages(self):
+        return self._Storages
+
+    @Storages.setter
+    def Storages(self, value):
+        self._Storages = value
 
     def InitUI(self):
         self.setWindowTitle(self.titleWindow)
@@ -115,7 +125,6 @@ Pontos Y: Potência aparente (kVA) em p.u.")
 
         self.setLayout(self.Dialog_Layout)
 
-
     def addEffCurve(self):
 
         inputLoadName, inputOk = QInputDialog.getText(self, 'Curvas de Eficiência','Entre com o nome da nova Curva de\nEficiência do Inversor:')
@@ -128,6 +137,10 @@ Pontos Y: Potência aparente (kVA) em p.u.")
                 Item = self.EffCurve_GroupBox_TreeWidget.topLevelItem(ctd)
 
                 if Item.name == str(inputLoadName):
+                    countName += 1
+
+            for i in self.Storages:
+                if i["EffCurve"]["EffCurveName"] == str(inputLoadName):
                     countName += 1
 
             if countName == 0:

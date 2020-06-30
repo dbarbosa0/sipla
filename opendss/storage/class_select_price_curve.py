@@ -177,6 +177,9 @@ class C_Config_PriceCurve_Dialog(QDialog):
         self.adjustSize()
 
     def CancelParameters(self):
+        self.Daily_GroupBox_Stepsize_ComboBox.setCurrentIndex(2)
+        self.Daily_GroupBox_Stepsize_SpinBox.setValue(1)
+        self.Daily_GroupBox_Number_SpinBox.setValue(24)
         self.close()
 
     def nPointsLoadDef(self):
@@ -199,6 +202,7 @@ class C_Config_PriceCurve_Dialog(QDialog):
         self.Daily_GroupBox_Stepsize_ComboBox.setCurrentIndex(2)
         self.Daily_GroupBox_Stepsize_SpinBox.setValue(1)
         self.Daily_GroupBox_Number_SpinBox.setValue(24)
+        self.dataPriceCurve = {}
         self.adjustSize()
 
     def Cancel(self):

@@ -177,6 +177,9 @@ class C_Config_DispCurve_Dialog(QDialog):
         self.adjustSize()
 
     def CancelParameters(self):
+        self.Daily_GroupBox_Stepsize_ComboBox.setCurrentIndex(2)
+        self.Daily_GroupBox_Stepsize_SpinBox.setValue(1)
+        self.Daily_GroupBox_Number_SpinBox.setValue(24)
         self.close()
 
     def nPointsLoadDef(self):
@@ -199,7 +202,9 @@ class C_Config_DispCurve_Dialog(QDialog):
         self.Daily_GroupBox_Stepsize_ComboBox.setCurrentIndex(2)
         self.Daily_GroupBox_Stepsize_SpinBox.setValue(1)
         self.Daily_GroupBox_Number_SpinBox.setValue(24)
+        self.dataDispCurve = {}
         self.adjustSize()
+        print("self.dataDispCurve", self.dataDispCurve)
 
     def Cancel(self):
         self.DispCurve_GroupBox_TreeWidget.clear()
@@ -216,7 +221,6 @@ class C_Config_DispCurve_Dialog(QDialog):
         self.close()
 
     def setDataDispCurve(self):
-        # self.mult = []
         self.dataDispCurve = {}
         self.dataDispCurve["npts"] = self.nPointsLoadDef()
         if self.nStepSizeTimeDef() == "sec":

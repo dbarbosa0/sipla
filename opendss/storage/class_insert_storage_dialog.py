@@ -34,8 +34,6 @@ class C_Insert_Storage_Dialog(QDialog):  ## Classe Dialog principal
         self.InitUI()
 
         self.OpenDSS = opendss.class_opendss.C_OpenDSS()
-        # self.EffCurve = opendss.storage.class_config_eff_curve.C_Config_EffCurve_Dialog()
-        # self.EffCurveFile = opendss.storage.class_config_eff_curve
         self.DispModeActPowDialog = opendss.storage.class_active_pow_dispmode_dialog.C_Active_Pow_DispMode_Dialog()
         self.DispModeReactPowDialog = opendss.storage.class_reactive_pow_dispmode_dialog.C_Reactive_Pow_DispMode_Dialog()
 
@@ -173,6 +171,8 @@ class C_Insert_Storage_Dialog(QDialog):  ## Classe Dialog principal
         self.DefaultConfigParameters()
         self.adjustSize()
 
+        self.TabInversorConfig.EffCurve.Storages = self.Storages # Getter/Setter para o class_config_eff_curve.py
+
     def editStorages(self):
         checkCont = 0
         try:
@@ -185,6 +185,7 @@ class C_Insert_Storage_Dialog(QDialog):  ## Classe Dialog principal
                 self.clearStorageParameters()
                 for i in self.Storages:
                     if i["StorageName"] == Item.text(0):
+                        print("edit")
                         self.TabConfig.StorageConfig_GroupBox_Nome_LineEdit.setText(i["StorageName"])
                         self.TabConfig.StorageConfig_GroupBox_conn_ComboBox.setCurrentText(i["Conn"])
                         self.TabConfig.StorageConfig_GroupBox_Bus_ComboBox.setCurrentText(i["Bus"])
@@ -259,12 +260,46 @@ class C_Insert_Storage_Dialog(QDialog):  ## Classe Dialog principal
                                     self.DispModeActPowDialog.DialogActPowDefault.TimeTrigger_LineEdit.setEnabled(True)
                                     self.DispModeActPowDialog.DialogActPowDefault.TimeTrigger_LineEdit.setText(i["ActPow"]['TimeChargeTrigger'])
                                     self.DispModeActPowDialog.DialogActPowDefault.TimeTrigger_CheckBox.setChecked(True)
+                                pts = str(i["ActPow"]["mult"]).strip('[]').replace("'", "")
+                                self.DispModeActPowDialog.DialogActPowDefault.Select_DispCurveFile.Config_DispCurve_GroupBox_TreeWidget_Item(
+                                    self.DispModeActPowDialog.DialogActPowDefault.Select_DispCurve.DispCurve_GroupBox_TreeWidget,
+                                    i["ActPow"]["DispCurveName"],
+                                    pts,
+                                    cfg.colorsList[random.randint(0, len(cfg.colorsList) - 1)])
+                                if "sinterval" in i["ActPow"]:
+                                    self.DispModeActPowDialog.DialogActPowDefault.Select_DispCurve.Daily_GroupBox_Stepsize_ComboBox.setCurrentIndex(0)
+                                    self.DispModeActPowDialog.DialogActPowDefault.Select_DispCurve.Daily_GroupBox_Stepsize_SpinBox.setValue(i["ActPow"]["sinterval"])
+                                elif "minterval" in i["ActPow"]:
+                                    self.DispModeActPowDialog.DialogActPowDefault.Select_DispCurve.Daily_GroupBox_Stepsize_ComboBox.setCurrentIndex(1)
+                                    self.DispModeActPowDialog.DialogActPowDefault.Select_DispCurve.Daily_GroupBox_Stepsize_SpinBox.setValue(i["ActPow"]["minterval"])
+                                elif "interval" in i["ActPow"]:
+                                    self.DispModeActPowDialog.DialogActPowDefault.Select_DispCurve.Daily_GroupBox_Stepsize_ComboBox.setCurrentIndex(2)
+                                    self.DispModeActPowDialog.DialogActPowDefault.Select_DispCurve.Daily_GroupBox_Stepsize_SpinBox.setValue(i["ActPow"]["interval"])
+                                self.DispModeActPowDialog.DialogActPowDefault.Select_DispCurve.Daily_GroupBox_Number_SpinBox.setValue(i["ActPow"]["npts"])
+
                             elif i['ModoCarga/Descarga'] == 'Follow':
                                 self.DispModeActPowDialog.DispSinc_GroupBox_AutoDespacho_GroupBox_Layout_Follow_RadioBtn.setChecked(True)
                                 if 'TimeChargeTrigger' in i["ActPow"]:
                                     self.DispModeActPowDialog.DialogActPowFollow.TimeTrigger_LineEdit.setEnabled(True)
                                     self.DispModeActPowDialog.DialogActPowFollow.TimeTrigger_LineEdit.setText(i["ActPow"]['TimeChargeTrigger'])
                                     self.DispModeActPowDialog.DialogActPowFollow.TimeTrigger_CheckBox.setChecked(True)
+                                pts = str(i["ActPow"]["mult"]).strip('[]').replace("'", "")
+                                self.DispModeActPowDialog.DialogActPowDefault.Select_DispCurveFile.Config_DispCurve_GroupBox_TreeWidget_Item(
+                                    self.DispModeActPowDialog.DialogActPowDefault.Select_DispCurve.DispCurve_GroupBox_TreeWidget,
+                                    i["ActPow"]["DispCurveName"],
+                                    pts,
+                                    cfg.colorsList[random.randint(0, len(cfg.colorsList) - 1)])
+                                if "sinterval" in i["ActPow"]:
+                                    self.DispModeActPowDialog.DialogActPowDefault.Select_DispCurve.Daily_GroupBox_Stepsize_ComboBox.setCurrentIndex(0)
+                                    self.DispModeActPowDialog.DialogActPowDefault.Select_DispCurve.Daily_GroupBox_Stepsize_SpinBox.setValue(i["ActPow"]["sinterval"])
+                                elif "minterval" in i["ActPow"]:
+                                    self.DispModeActPowDialog.DialogActPowDefault.Select_DispCurve.Daily_GroupBox_Stepsize_ComboBox.setCurrentIndex(1)
+                                    self.DispModeActPowDialog.DialogActPowDefault.Select_DispCurve.Daily_GroupBox_Stepsize_SpinBox.setValue(i["ActPow"]["minterval"])
+                                elif "interval" in i["ActPow"]:
+                                    self.DispModeActPowDialog.DialogActPowDefault.Select_DispCurve.Daily_GroupBox_Stepsize_ComboBox.setCurrentIndex(2)
+                                    self.DispModeActPowDialog.DialogActPowDefault.Select_DispCurve.Daily_GroupBox_Stepsize_SpinBox.setValue(i["ActPow"]["interval"])
+                                self.DispModeActPowDialog.DialogActPowDefault.Select_DispCurve.Daily_GroupBox_Number_SpinBox.setValue(i["ActPow"]["npts"])
+
                             elif i['ModoCarga/Descarga'] == 'LoadLevel':
                                 self.DispModeActPowDialog.DispSinc_GroupBox_AutoDespacho_GroupBox_Layout_LoadLevel_RadioBtn.setChecked(True)
                                 self.DispModeActPowDialog.DialogActPowLoadLevel.ChargeTrigger_LineEdit.setText(i["ActPow"]["ChargeTrigger"])
@@ -273,6 +308,23 @@ class C_Insert_Storage_Dialog(QDialog):  ## Classe Dialog principal
                                     self.DispModeActPowDialog.DialogActPowLoadLevel.TimeTrigger_LineEdit.setEnabled(True)
                                     self.DispModeActPowDialog.DialogActPowLoadLevel.TimeTrigger_LineEdit.setText(i["ActPow"]['TimeChargeTrigger'])
                                     self.DispModeActPowDialog.DialogActPowLoadLevel.TimeTrigger_CheckBox.setChecked(True)
+                                pts = str(i["ActPow"]["price"]).strip('[]').replace("'", "")
+                                self.DispModeActPowDialog.DialogActPowPrice.Select_PriceCurveFile.Config_PriceCurve_GroupBox_TreeWidget_Item(
+                                    self.DispModeActPowDialog.DialogActPowPrice.Select_PriceCurve.PriceCurve_GroupBox_TreeWidget,
+                                    i["ActPow"]["PriceCurveName"],
+                                    pts,
+                                    cfg.colorsList[random.randint(0, len(cfg.colorsList) - 1)])
+                                if "sinterval" in i["ActPow"]:
+                                    self.DispModeActPowDialog.DialogActPowPrice.Select_PriceCurve.Daily_GroupBox_Stepsize_ComboBox.setCurrentIndex(0)
+                                    self.DispModeActPowDialog.DialogActPowPrice.Select_PriceCurve.Daily_GroupBox_Stepsize_SpinBox.setValue(i["ActPow"]["sinterval"])
+                                elif "minterval" in i["ActPow"]:
+                                    self.DispModeActPowDialog.DialogActPowPrice.Select_PriceCurve.Daily_GroupBox_Stepsize_ComboBox.setCurrentIndex(1)
+                                    self.DispModeActPowDialog.DialogActPowPrice.Select_PriceCurve.Daily_GroupBox_Stepsize_SpinBox.setValue(i["ActPow"]["minterval"])
+                                elif "interval" in i["ActPow"]:
+                                    self.DispModeActPowDialog.DialogActPowPrice.Select_PriceCurve.Daily_GroupBox_Stepsize_ComboBox.setCurrentIndex(2)
+                                    self.DispModeActPowDialog.DialogActPowPrice.Select_PriceCurve.Daily_GroupBox_Stepsize_SpinBox.setValue(i["ActPow"]["interval"])
+                                self.DispModeActPowDialog.DialogActPowPrice.Select_PriceCurve.Daily_GroupBox_Number_SpinBox.setValue(i["ActPow"]["npts"])
+
                             elif i['ModoCarga/Descarga'] == 'Price':
                                 self.DispModeActPowDialog.DispSinc_GroupBox_AutoDespacho_GroupBox_Layout_Price_RadioBtn.setChecked(True)
                                 self.DispModeActPowDialog.DialogActPowPrice.ChargeTrigger_LineEdit.setText(i["ActPow"]["ChargeTrigger"])
@@ -281,8 +333,43 @@ class C_Insert_Storage_Dialog(QDialog):  ## Classe Dialog principal
                                     self.DispModeActPowDialog.DialogActPowPrice.TimeTrigger_LineEdit.setEnabled(True)
                                     self.DispModeActPowDialog.DialogActPowPrice.TimeTrigger_LineEdit.setText(i["ActPow"]['TimeChargeTrigger'])
                                     self.DispModeActPowDialog.DialogActPowPrice.TimeTrigger_CheckBox.setChecked(True)
+                                pts = str(i["ActPow"]["price"]).strip('[]').replace("'", "")
+                                self.DispModeActPowDialog.DialogActPowPrice.Select_PriceCurveFile.Config_PriceCurve_GroupBox_TreeWidget_Item(
+                                    self.DispModeActPowDialog.DialogActPowPrice.Select_PriceCurve.PriceCurve_GroupBox_TreeWidget,
+                                    i["ActPow"]["PriceCurveName"],
+                                    pts,
+                                    cfg.colorsList[random.randint(0, len(cfg.colorsList) - 1)])
+                                if "sinterval" in i["ActPow"]:
+                                    self.DispModeActPowDialog.DialogActPowPrice.Select_PriceCurve.Daily_GroupBox_Stepsize_ComboBox.setCurrentIndex(0)
+                                    self.DispModeActPowDialog.DialogActPowPrice.Select_PriceCurve.Daily_GroupBox_Stepsize_SpinBox.setValue(i["ActPow"]["sinterval"])
+                                elif "minterval" in i["ActPow"]:
+                                    self.DispModeActPowDialog.DialogActPowPrice.Select_PriceCurve.Daily_GroupBox_Stepsize_ComboBox.setCurrentIndex(1)
+                                    self.DispModeActPowDialog.DialogActPowPrice.Select_PriceCurve.Daily_GroupBox_Stepsize_SpinBox.setValue(i["ActPow"]["minterval"])
+                                elif "interval" in i["ActPow"]:
+                                    self.DispModeActPowDialog.DialogActPowPrice.Select_PriceCurve.Daily_GroupBox_Stepsize_ComboBox.setCurrentIndex(2)
+                                    self.DispModeActPowDialog.DialogActPowPrice.Select_PriceCurve.Daily_GroupBox_Stepsize_SpinBox.setValue(i["ActPow"]["interval"])
+                                self.DispModeActPowDialog.DialogActPowPrice.Select_PriceCurve.Daily_GroupBox_Number_SpinBox.setValue(i["ActPow"]["npts"])
+
                             elif i['ModoCarga/Descarga'] == 'LoadShape':
                                 self.DispModeActPowDialog.DispSinc_GroupBox_StorageCont_GroupBox_Layout_LoadShape_RadioBtn.setChecked(True)
+                                for ctd in self.StorageControllers:
+                                    if i["StorageName"] in ctd["ElementList"]:
+                                        pts = str(ctd["mult"]).strip('[]').replace("'", "")
+                                        self.DispModeActPowDialog.DialogActPowDefault.Select_DispCurveFile.Config_DispCurve_GroupBox_TreeWidget_Item(
+                                            self.DispModeActPowDialog.DialogActPowDefault.Select_DispCurve.DispCurve_GroupBox_TreeWidget,
+                                            ctd["DispCurveName"],
+                                            pts,
+                                            cfg.colorsList[random.randint(0, len(cfg.colorsList) - 1)])
+                                        if "sinterval" in ctd:
+                                            self.DispModeActPowDialog.DialogActPowDefault.Select_DispCurve.Daily_GroupBox_Stepsize_ComboBox.setCurrentIndex(0)
+                                            self.DispModeActPowDialog.DialogActPowDefault.Select_DispCurve.Daily_GroupBox_Stepsize_SpinBox.setValue(ctd["sinterval"])
+                                        elif "minterval" in ctd:
+                                            self.DispModeActPowDialog.DialogActPowDefault.Select_DispCurve.Daily_GroupBox_Stepsize_ComboBox.setCurrentIndex(1)
+                                            self.DispModeActPowDialog.DialogActPowDefault.Select_DispCurve.Daily_GroupBox_Stepsize_SpinBox.setValue(ctd["minterval"])
+                                        elif "interval" in ctd:
+                                            self.DispModeActPowDialog.DialogActPowDefault.Select_DispCurve.Daily_GroupBox_Stepsize_ComboBox.setCurrentIndex(2)
+                                            self.DispModeActPowDialog.DialogActPowDefault.Select_DispCurve.Daily_GroupBox_Stepsize_SpinBox.setValue(ctd["interval"])
+                                        self.DispModeActPowDialog.DialogActPowDefault.Select_DispCurve.Daily_GroupBox_Number_SpinBox.setValue(ctd["npts"])
 
                         if i["Carga/Descarga"] == "Independentes":
                             self.DispModeActPowDialog.DispIndep_Radio_Btn.setChecked(True)
@@ -597,6 +684,7 @@ class C_Insert_Storage_Dialog(QDialog):  ## Classe Dialog principal
                 if not ctd["ElementList"]: # Garante que nao haja StorageController que não controle nenhum Storage
                     self.StorageControllers.remove(ctd)
                 ctd["ElementList"] = list(set(ctd["ElementList"]))
+
         self.OpenDSS.Storages = self.Storages
         self.OpenDSS.StorageControllers = self.StorageControllers
         print("insert:")
@@ -695,7 +783,6 @@ class C_Insert_Storage_Dialog(QDialog):  ## Classe Dialog principal
 
         self.DispModeActPowDialog.DialogActPowPrice.Select_PriceCurve.restoreParameters()
         self.DispModeActPowDialog.DialogActPowDefault.Select_DispCurve.restoreParameters()
-
 
 class StorageConfig(QWidget):
     def __init__(self):

@@ -334,6 +334,8 @@ class C_ActPow_Default_DispMode_Dialog(QDialog): ## Classe Dialog Despacho Deafu
         self.DefaultParameters = {}
 
         self.Select_DispCurve = opendss.storage.class_select_dispatch_curve.C_Config_DispCurve_Dialog()
+        self.Select_DispCurveFile = opendss.storage.class_select_dispatch_curve
+
         self.InitUI()
 
     def InitUI(self):
@@ -382,8 +384,10 @@ class C_ActPow_Default_DispMode_Dialog(QDialog): ## Classe Dialog Despacho Deafu
             self.TimeTrigger_LineEdit.setEnabled(True)
         else:
             self.TimeTrigger_LineEdit.setEnabled(False)
+
     def selectDispCurve(self):
         self.Select_DispCurve.show()
+
     def acceptDefault(self):
         self.DefaultParameters = {}
         self.DefaultParameters["ChargeTrigger"] = self.ChargeTrigger_LineEdit.text()
@@ -392,6 +396,7 @@ class C_ActPow_Default_DispMode_Dialog(QDialog): ## Classe Dialog Despacho Deafu
             self.DefaultParameters["TimeChargeTrigger"] = self.TimeTrigger_LineEdit.text()
         self.DefaultParameters.update(self.Select_DispCurve.dataDispCurve)
         self.close()
+
     def cancelDefault(self):
         self.close()
 
@@ -549,6 +554,7 @@ class C_ActPow_Price_DispMode_Dialog(QDialog): ## Classe Dialog Despacho Price d
         self.InitUI()
 
         self.Select_PriceCurve = opendss.storage.class_select_price_curve.C_Config_PriceCurve_Dialog()
+        self.Select_PriceCurveFile = opendss.storage.class_select_price_curve
 
     def InitUI(self):
         self.setWindowTitle(self.titleWindow)  # titulo janela
@@ -610,7 +616,15 @@ class C_ActPow_Price_DispMode_Dialog(QDialog): ## Classe Dialog Despacho Price d
         self.close()
 
     def cancelPrice(self):
+        self.clearParameters()
         self.close()
+
+    def clearParameters(self):
+        self.ChargeTrigger_LineEdit.setText("")
+        self.DischargeTrigger_LineEdit.setText("")
+        self.TimeTrigger_CheckBox.setChecked(False)
+        self.TimeTrigger_LineEdit.setEnabled(False)
+        self.TimeTrigger_LineEdit.setText("2.00")
 
 class C_ActPow_LoadShape_DispMode_Dialog(QDialog): ## Classe Dialog Despacho LoadShape da Potencia Ativa
     def __init__(self):
