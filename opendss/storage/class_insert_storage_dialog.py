@@ -784,6 +784,12 @@ class C_Insert_Storage_Dialog(QDialog):  ## Classe Dialog principal
         self.DispModeActPowDialog.DialogActPowPrice.Select_PriceCurve.restoreParameters()
         self.DispModeActPowDialog.DialogActPowDefault.Select_DispCurve.restoreParameters()
 
+        self.DispModeActPowDialog.DialogActPowDefault.clearParameters()
+        self.DispModeActPowDialog.DialogActPowFollow.clearParameters()
+        self.DispModeActPowDialog.DialogActPowLoadLevel.clearParameters()
+        self.DispModeActPowDialog.DialogActPowPrice.clearParameters()
+
+
 class StorageConfig(QWidget):
     def __init__(self):
         super().__init__()
