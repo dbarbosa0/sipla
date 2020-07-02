@@ -204,7 +204,6 @@ class C_Config_DispCurve_Dialog(QDialog):
         self.Daily_GroupBox_Number_SpinBox.setValue(24)
         self.dataDispCurve = {}
         self.adjustSize()
-        print("self.dataDispCurve", self.dataDispCurve)
 
     def Cancel(self):
         self.DispCurve_GroupBox_TreeWidget.clear()

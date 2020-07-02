@@ -677,16 +677,11 @@ class C_OpenDSS(): # classe OpenDSSDirect
 
     def exec_StorageControllers(self):
         for ctd in self.StorageControllers:
-            Weights = []
             tmp = "New StorageController2." + ctd["StorageControllerName"] + \
                   " ElementList=" + str(ctd["ElementList"]).replace("'","") + \
                   " Element=" + ctd["Element"] + \
                   " Terminal=" + ctd["Terminal"] + \
                   " %reserve=" + ctd["Reserve"]
-            for i in ctd["ElementList"]:
-                if i in ctd["Weight"]:
-                    Weights.append(ctd["Weight"][i])
-            tmp = tmp + " Weights=" + str(Weights).replace("'","")
 
             if 'DispatchMode' in ctd:
                 if ctd['DispatchMode'] == 'LoadShape':
@@ -775,8 +770,10 @@ class C_OpenDSS(): # classe OpenDSSDirect
 
         for ctd in self.Storages:
             tmp = "New Storage2." + ctd["StorageName"] + \
+                  " phases=" + ctd["phases"] + \
+                  " model=" + ctd["phases"] + \
                   " Conn=" + ctd["Conn"] + \
-                  " Bus=" + ctd["Bus"] + \
+                  " Bus1=" + ctd["Bus"] + \
                   " kW=" + ctd["kW"] + \
                   " kV=" + ctd["kV"] + \
                   " kWhrated=" + ctd["kWhrated"] + \

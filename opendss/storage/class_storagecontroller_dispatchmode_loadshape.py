@@ -107,13 +107,10 @@ class C_ActPow_LoadShape_DispMode_Dialog(QDialog): ## Classe Dialog Despacho Loa
         self.StorControl_Element_Label = QLabel("Elemento:")
         self.StorControl_Terminal_Label = QLabel("Terminal:")
         self.StorControl_Reserve_Label = QLabel("Energia reserva:")
-        self.StorControl_Weight_Label = QLabel("Peso do Storage\nna frota:")
 
         ### LineEdits
         self.StorControl_Name = QLineEdit()
         self.StorControl_Reserve = QLineEdit()
-        self.StorControl_Weight = QLineEdit()
-        self.StorControl_Weight.setText("1.0")
 
         ### Comboboxs
         self.StorControl_Element_ComboBox = QComboBox()
@@ -127,13 +124,11 @@ class C_ActPow_LoadShape_DispMode_Dialog(QDialog): ## Classe Dialog Despacho Loa
         self.StorControl_Layout.addWidget(self.StorControl_Element_Label, 1, 0, 1, 1)
         self.StorControl_Layout.addWidget(self.StorControl_Terminal_Label, 2, 0, 1, 1)
         self.StorControl_Layout.addWidget(self.StorControl_Reserve_Label, 3, 0, 1, 1)
-        self.StorControl_Layout.addWidget(self.StorControl_Weight_Label, 4, 0, 1, 1)
 
         self.StorControl_Layout.addWidget(self.StorControl_Name, 0, 1, 1, 1)
         self.StorControl_Layout.addWidget(self.StorControl_Element_ComboBox, 1, 1, 1, 1)
         self.StorControl_Layout.addWidget(self.StorControl_Terminal_ComboBox, 2, 1, 1, 1)
         self.StorControl_Layout.addWidget(self.StorControl_Reserve, 3, 1, 1, 1)
-        self.StorControl_Layout.addWidget(self.StorControl_Weight, 4, 1, 1, 1)
 
         ###### Botões dos Parâmetros
         self.StorControl_Btns_Layout = QHBoxLayout()
@@ -148,7 +143,7 @@ class C_ActPow_LoadShape_DispMode_Dialog(QDialog): ## Classe Dialog Despacho Loa
         self.StorControl_Btns_Ok_Btn.setIcon(QIcon('img/icon_ok.png'))
         self.StorControl_Btns_Ok_Btn.clicked.connect(self.AcceptAddEditStorControl)
         self.StorControl_Btns_Layout.addWidget(self.StorControl_Btns_Ok_Btn)
-        self.StorControl_Layout.addItem(self.StorControl_Btns_Layout, 5, 0, 1, 2)
+        self.StorControl_Layout.addItem(self.StorControl_Btns_Layout, 4, 0, 1, 2)
         ####
 
         self.StorControl_GroupBox.setLayout(self.StorControl_Layout)
@@ -203,15 +198,11 @@ class C_ActPow_LoadShape_DispMode_Dialog(QDialog): ## Classe Dialog Despacho Loa
     def get_ReserveStorControl(self):
         return self.StorControl_Reserve.text()
 
-    def get_WeightStorControl(self):
-        return self.StorControl_Weight.text()
-
     def clearStorControlParameters(self):
         self.StorControl_Name.setText("")
         self.StorControl_Element_ComboBox.setCurrentIndex(0)
         self.StorControl_Terminal_ComboBox.setCurrentIndex(0)
         self.StorControl_Reserve.setText(self.getStorage_PercentageReserve())
-        self.StorControl_Weight.setText("1.0")
 
     def addStorControl(self):
         if self.StorControl_GroupBox_Selection_ComboBox.count() + 1 - self.NumComboBox <= 1: # Para garantir que só adicione um controlador por Storage
@@ -235,7 +226,6 @@ class C_ActPow_LoadShape_DispMode_Dialog(QDialog): ## Classe Dialog Despacho Loa
                     self.StorControl_Element_ComboBox.setCurrentText(ctd["Element"])
                     self.StorControl_Terminal_ComboBox.setCurrentText(ctd["Terminal"])
                     self.StorControl_Reserve.setText(ctd["Reserve"])
-                    self.StorControl_Weight.setText(ctd["Weight"][self.getStorage_Name()])
             self.StorControl_Name.setEnabled(False)
             self.EnableDisableParameters(True)
 
@@ -274,7 +264,6 @@ class C_ActPow_LoadShape_DispMode_Dialog(QDialog): ## Classe Dialog Despacho Loa
         StorageController["Element"] = self.get_ElementStorControl()
         StorageController["Terminal"] = self.get_TerminalStorControl()
         StorageController["Reserve"] = self.get_ReserveStorControl()
-        StorageController["Weight"] = {self.getStorage_Name(): self.get_WeightStorControl()}
         StorageController["DispatchMode"] = "LoadShape"
 
         if self.StorControl_Name.isEnabled():
@@ -297,11 +286,9 @@ class C_ActPow_LoadShape_DispMode_Dialog(QDialog): ## Classe Dialog Despacho Loa
                     ctd["Element"] = StorageController["Element"]
                     ctd["Terminal"] = StorageController["Terminal"]
                     ctd["Reserve"] = StorageController["Reserve"]
-                    ctd["Weight"][self.getStorage_Name()] = self.get_WeightStorControl()
                     QMessageBox(QMessageBox.Information, "Storage Controller",
                                 "Storage Controller" + ctd["StorageControllerName"] + " atualizado com sucesso!",
                                 QMessageBox.Ok).exec()
-        print("Controller tempo:", self.StorageControllersTemporario)
 
         self.updateDialog()
         self.EnableDisableParameters(False)
@@ -335,7 +322,7 @@ class C_ActPow_LoadShape_DispMode_Dialog(QDialog): ## Classe Dialog Despacho Loa
                 if not ctd["ElementList"]:
                     self.StorageControllersTemporario.remove(ctd)
 
-            print(self.StorageControllersTemporario)
+            print("Controller tempo:", self.StorageControllersTemporario)
             self.close()
 
     def cancelStorageControlSelection(self):
