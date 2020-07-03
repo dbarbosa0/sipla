@@ -860,10 +860,6 @@ class C_OpenDSS(): # classe OpenDSSDirect
 
         self.exec_StorageControllers()
 
-        print('###############')
-        for i in self.memoFileStorages:
-            print(i)
-
     ######################################################################################
     ###
     def exec_DynamicFlt(self):

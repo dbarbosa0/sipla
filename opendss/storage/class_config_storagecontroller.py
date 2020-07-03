@@ -485,7 +485,6 @@ class C_ActPow_Config_StorageController_Dialog(QDialog): ## Classe Dialog config
                 for ctd in self.StorageControllersTemporario:  # Garante que nao haja StorController que não controle nenhum Storage
                     if not ctd["ElementList"]:
                         self.StorageControllersTemporario.remove(ctd)
-                print("StorageControllersTemporario>", self.StorageControllersTemporario)
                 self.close()
 
     def cancelStorageControlSelection(self):

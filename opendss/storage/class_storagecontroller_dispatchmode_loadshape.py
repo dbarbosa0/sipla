@@ -322,7 +322,6 @@ class C_ActPow_LoadShape_DispMode_Dialog(QDialog): ## Classe Dialog Despacho Loa
                 if not ctd["ElementList"]:
                     self.StorageControllersTemporario.remove(ctd)
 
-            print("Controller tempo:", self.StorageControllersTemporario)
             self.close()
 
     def cancelStorageControlSelection(self):

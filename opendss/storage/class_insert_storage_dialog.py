@@ -493,8 +493,6 @@ class C_Insert_Storage_Dialog(QDialog):  ## Classe Dialog principal
 
             self.TabConfig.StorageConfig_GroupBox_Nome_LineEdit.setReadOnly(True)
 
-            print("Controller :", self.StorageControllers)
-
     def DispModeReactPow(self):
         if self.get_StorageName() == "":
             QMessageBox(QMessageBox.Information, "Storage",
@@ -504,8 +502,6 @@ class C_Insert_Storage_Dialog(QDialog):  ## Classe Dialog principal
             self.DispModeReactPowDialog.exec()
 
     def AcceptAddEditStorage(self):
-        print("Storagecontroller _____\n", self.StorageControllers)
-
         if self.TabConfig.verificaLineEdits() and self.TabInversorConfig.verificaLineEdits():
 
             if self.TabInversorConfig.EffCurve.dataEffCurve == {}:
@@ -525,8 +521,6 @@ class C_Insert_Storage_Dialog(QDialog):  ## Classe Dialog principal
                 for e in self.StorageControllers: # Garante que dois StorageController não controlem um mesmo Storage
                     while self.get_StorageName() in e["ElementList"]:
                         e["ElementList"].remove(self.get_StorageName())
-
-                print("StoragecontrollerTEMP +++", self.DispModeActPowDialog.ConfigStorageController.StorageControllersTemporario)
 
                 ############# seta data das configurações gerais
                 Storage["StorageName"] = self.get_StorageName()
@@ -667,8 +661,6 @@ class C_Insert_Storage_Dialog(QDialog):  ## Classe Dialog principal
                             for e in listRemove:
                                 self.StorageControllers.remove(e)
 
-                        print("StorageControllers:::", self.StorageControllers)
-
                     else:
                         QMessageBox(QMessageBox.Warning, "Insert Storage",
                                     "Não foi possível adicionar, pois já existe um Storage com esse nome.",
@@ -746,8 +738,6 @@ class C_Insert_Storage_Dialog(QDialog):  ## Classe Dialog principal
                                 ctd['ModoDescarga'] = Storage['ModoDescarga']
                                 ctd.update({"ActPow": None})
 
-                                print("StorageControllersTEMPO: >>>> :", self.DispModeActPowDialog.ConfigStorageController.StorageControllersTemporario)
-
                                 if not self.DispModeActPowDialog.ConfigStorageController.StorageControllersTemporario == []:
                                     # for i in self.StorageControllers:
                                     #     while self.get_StorageName() in i["ElementList"]:
@@ -778,14 +768,10 @@ class C_Insert_Storage_Dialog(QDialog):  ## Classe Dialog principal
                                 for e in listRemove:
                                     self.StorageControllers.remove(e)
 
-                print("StorageControllersTEMPO:::::", self.DispModeActPowDialog.ConfigStorageController.StorageControllersTemporario)
-
-                print("StorageControllers: >>>> :", self.StorageControllers)
                 if not self.StorageControllers == []:
                     listRemove = []
                     for ctd in self.StorageControllers:
                         ctd["ElementList"] = list(set(ctd["ElementList"]))
-                        print("ctd>", ctd)
                         if not ctd["ElementList"]:  # Garante que nao haja StorageController que não controle nenhum Storage
                             listRemove.append(ctd)
                     for ctd in listRemove:
@@ -807,10 +793,6 @@ class C_Insert_Storage_Dialog(QDialog):  ## Classe Dialog principal
     def acceptInsertStorage(self):
         self.OpenDSS.Storages = self.Storages
         self.OpenDSS.StorageControllers = self.StorageControllers
-        print("insert:")
-        print(self.Storages)
-        print(self.StorageControllers)
-
         self.clearStorageParameters()
         self.DefaultConfigParameters()
         self.close()
