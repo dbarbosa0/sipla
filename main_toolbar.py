@@ -139,7 +139,6 @@ class C_MenuToolBar(QDockWidget):
         self.SCAnalyze_Run_Act.setObjectName('SCAnalyze_Run_Act')
         self.OpenDSSActRef['SCAnalyze_Run_Act'] = self.SCAnalyze_Run_Act
 
-
         # Contribuição Jonas
         self.OpenDSS_InsertStorage_Act = QAction(QIcon('img/icon_opendss_storage.png'), 'Storage', self)
         self.OpenDSS_InsertStorage_Act.setShortcut("")
@@ -147,6 +146,14 @@ class C_MenuToolBar(QDockWidget):
         self.OpenDSS_InsertStorage_Act.triggered.connect(self.exec_InsertStorage)
         self.OpenDSS_InsertStorage_Act.setObjectName('OpenDSS_InsertStorage_Act')
         self.OpenDSSActRef['OpenDSS_InsertStorage_Act'] = self.OpenDSS_InsertStorage_Act
+
+        # Contribuição Lenon
+        self.OpenDSS_InsertInvControl_Act = QAction(QIcon('img/icon_opendss_storage.png'), 'Controle do Inversor', self)
+        self.OpenDSS_InsertInvControl_Act.setShortcut("")
+        self.OpenDSS_InsertInvControl_Act.setStatusTip('Inserir Controle do Inversor')
+        self.OpenDSS_InsertInvControl_Act.triggered.connect(self.exec_InsertInvControl)
+        self.OpenDSS_InsertInvControl_Act.setObjectName('OpenDSS_InsertInvControl_Act')
+        self.OpenDSSActRef['OpenDSS_InsertStorage_Act'] = self.OpenDSS_InsertInvControl_Act
 
 
         # ******* Setup the OpenDSS Menu *******
@@ -157,6 +164,7 @@ class C_MenuToolBar(QDockWidget):
                                                               'Insert ')
         self.OpenDSSMenuSubInsert.addAction(self.OpenDSS_InsertEnergyMeter_Act)
         self.OpenDSSMenuSubInsert.addAction(self.OpenDSS_InsertMonitor_Act)
+        self.OpenDSSMenuSubInsert.addAction(self.OpenDSS_InsertInvControl_Act)
 
         self.OpenDSSMenu.addSeparator()
         self.OpenDSSMenu.addAction(self.OpenDSS_Results_EnergyMeter_Act)
@@ -376,6 +384,10 @@ class C_MenuToolBar(QDockWidget):
     # Contribuição Jonas
     def exec_InsertStorage(self):
         self.Actions.execInsertStorage()
+
+    # Contribuição Lenon
+    def exec_InsertInvControl(self):
+        self.Actions.execInsertInvControl()
 
     ####################################################################
 
