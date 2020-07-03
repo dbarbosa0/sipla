@@ -521,12 +521,12 @@ class C_Insert_Storage_Dialog(QDialog):  ## Classe Dialog principal
             else:
                 countName = 0
                 Storage = {}
-                print("Storagecontroller>>", self.StorageControllers)
-                print("StoragecontrollerTemp:",self.DispModeActPowDialog.DialogActPowLoadShape.StorageControllersTemporario)
 
                 for e in self.StorageControllers: # Garante que dois StorageController não controlem um mesmo Storage
                     while self.get_StorageName() in e["ElementList"]:
                         e["ElementList"].remove(self.get_StorageName())
+
+                print("StoragecontrollerTEMP +++", self.DispModeActPowDialog.ConfigStorageController.StorageControllersTemporario)
 
                 ############# seta data das configurações gerais
                 Storage["StorageName"] = self.get_StorageName()
@@ -660,9 +660,12 @@ class C_Insert_Storage_Dialog(QDialog):  ## Classe Dialog principal
                                 ElementList = i["ElementList"]
 
                         for i in ElementList:
+                            listRemove = []
                             for e in self.StorageControllers:
                                 if (not self.get_StorageName() in e["ElementList"]) and (i in e["ElementList"]):
-                                    self.StorageControllers.remove(e)
+                                    listRemove.append(e)
+                            for e in listRemove:
+                                self.StorageControllers.remove(e)
 
                         print("StorageControllers:::", self.StorageControllers)
 
@@ -743,6 +746,8 @@ class C_Insert_Storage_Dialog(QDialog):  ## Classe Dialog principal
                                 ctd['ModoDescarga'] = Storage['ModoDescarga']
                                 ctd.update({"ActPow": None})
 
+                                print("StorageControllersTEMPO: >>>> :", self.DispModeActPowDialog.ConfigStorageController.StorageControllersTemporario)
+
                                 if not self.DispModeActPowDialog.ConfigStorageController.StorageControllersTemporario == []:
                                     # for i in self.StorageControllers:
                                     #     while self.get_StorageName() in i["ElementList"]:
@@ -760,11 +765,31 @@ class C_Insert_Storage_Dialog(QDialog):  ## Classe Dialog principal
                                                                 self.TabConfig.StorageConfig_GroupBox_Bus_ComboBox.currentText(),
                                                                 Storage["ModoCarga"] + "/" + Storage["ModoDescarga"])
 
+                            ElementList = []  # Garante que dois controladores nao controlem um Storage
+                            for i in self.StorageControllers:
+                                if self.get_StorageName() in i["ElementList"]:
+                                    ElementList = i["ElementList"]
+
+                            for i in ElementList:
+                                listRemove = []
+                                for e in self.StorageControllers:
+                                    if (not self.get_StorageName() in e["ElementList"]) and (i in e["ElementList"]):
+                                        listRemove.append(e)
+                                for e in listRemove:
+                                    self.StorageControllers.remove(e)
+
+                print("StorageControllersTEMPO:::::", self.DispModeActPowDialog.ConfigStorageController.StorageControllersTemporario)
+
+                print("StorageControllers: >>>> :", self.StorageControllers)
                 if not self.StorageControllers == []:
+                    listRemove = []
                     for ctd in self.StorageControllers:
-                        if not ctd["ElementList"]:  # Garante que nao haja StorageController que não controle nenhum Storage
-                            self.StorageControllers.remove(ctd)
                         ctd["ElementList"] = list(set(ctd["ElementList"]))
+                        print("ctd>", ctd)
+                        if not ctd["ElementList"]:  # Garante que nao haja StorageController que não controle nenhum Storage
+                            listRemove.append(ctd)
+                    for ctd in listRemove:
+                        self.StorageControllers.remove(ctd)
 
                 self.updateDialog()
                 self.TabConfig.StorageConfig_GroupBox_Nome_LineEdit.setEnabled(True)
@@ -888,7 +913,6 @@ class C_Insert_Storage_Dialog(QDialog):  ## Classe Dialog principal
         self.DispModeActPowDialog.DialogActPowFollow.clearParameters()
         self.DispModeActPowDialog.DialogActPowLoadLevel.clearParameters()
         self.DispModeActPowDialog.DialogActPowPrice.clearParameters()
-
 
 class StorageConfig(QWidget):
     def __init__(self):

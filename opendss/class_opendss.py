@@ -771,7 +771,7 @@ class C_OpenDSS(): # classe OpenDSSDirect
         for ctd in self.Storages:
             tmp = "New Storage2." + ctd["StorageName"] + \
                   " phases=" + ctd["phases"] + \
-                  " model=" + ctd["phases"] + \
+                  " model=" + ctd["model"] + \
                   " Conn=" + ctd["Conn"] + \
                   " Bus1=" + ctd["Bus"] + \
                   " kW=" + ctd["kW"] + \
