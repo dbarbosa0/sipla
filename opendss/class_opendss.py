@@ -681,7 +681,8 @@ class C_OpenDSS(): # classe OpenDSSDirect
                   " ElementList=" + str(ctd["ElementList"]).replace("'","") + \
                   " Element=" + ctd["Element"] + \
                   " Terminal=" + ctd["Terminal"] + \
-                  " %reserve=" + ctd["Reserve"]
+                  " %reserve=" + ctd["Reserve"] + \
+                  " DispFactor=" + str(ctd["DispFactor"]).replace(",", ".")
 
             if 'DispatchMode' in ctd:
                 if ctd['DispatchMode'] == 'LoadShape':

@@ -1,7 +1,7 @@
 from PyQt5.QtGui import QColor, QIcon
 from PyQt5.QtWidgets import QStyleFactory, QDialog, QGridLayout, QGroupBox, QVBoxLayout, QTreeWidgetItem, \
     QPushButton, QTreeWidget, QFileDialog, QColorDialog, QMessageBox, QInputDialog, QCheckBox, QLabel, QLineEdit, \
-    QComboBox, QTabWidget, QWidget, QHBoxLayout, QRadioButton, QButtonGroup
+    QComboBox, QTabWidget, QWidget, QHBoxLayout, QRadioButton, QButtonGroup, QDoubleSpinBox
 from PyQt5.QtCore import Qt
 
 import csv
@@ -102,11 +102,12 @@ class C_ActPow_LoadShape_DispMode_Dialog(QDialog): ## Classe Dialog Despacho Loa
         self.StorControl_GroupBox = QGroupBox("Configurações Gerais do Storage Controller")
         self.StorControl_GroupBox.setVisible(False)
         ## GroupBox opções
-        ### Labels New StorControl.Sourcebus
+        ### Labels
         self.StorControl_Name_Label = QLabel("Nome:")
         self.StorControl_Element_Label = QLabel("Elemento:")
         self.StorControl_Terminal_Label = QLabel("Terminal:")
         self.StorControl_Reserve_Label = QLabel("Energia reserva:")
+        self.StorControl_DispFactor_Label = QLabel("Dispatch Factor")
 
         ### LineEdits
         self.StorControl_Name = QLineEdit()
@@ -118,17 +119,26 @@ class C_ActPow_LoadShape_DispMode_Dialog(QDialog): ## Classe Dialog Despacho Loa
         self.StorControl_Terminal_ComboBox = QComboBox()
         self.StorControl_Terminal_ComboBox.addItems(["1", "2"])
 
+        ### SpinBox
+        self.StorControl_DispFactor_SpinBox = QDoubleSpinBox()
+        self.StorControl_DispFactor_SpinBox.setValue(1.0)
+        self.StorControl_DispFactor_SpinBox.setRange(0.0, 1.0)
+        self.StorControl_DispFactor_SpinBox.setDecimals(1)
+        self.StorControl_DispFactor_SpinBox.setSingleStep(0.1)
+
         ### Layout
         self.StorControl_Layout = QGridLayout()
         self.StorControl_Layout.addWidget(self.StorControl_Name_Label, 0, 0, 1, 1)
         self.StorControl_Layout.addWidget(self.StorControl_Element_Label, 1, 0, 1, 1)
         self.StorControl_Layout.addWidget(self.StorControl_Terminal_Label, 2, 0, 1, 1)
         self.StorControl_Layout.addWidget(self.StorControl_Reserve_Label, 3, 0, 1, 1)
+        self.StorControl_Layout.addWidget(self.StorControl_DispFactor_Label, 4, 0, 1, 1)
 
         self.StorControl_Layout.addWidget(self.StorControl_Name, 0, 1, 1, 1)
         self.StorControl_Layout.addWidget(self.StorControl_Element_ComboBox, 1, 1, 1, 1)
         self.StorControl_Layout.addWidget(self.StorControl_Terminal_ComboBox, 2, 1, 1, 1)
         self.StorControl_Layout.addWidget(self.StorControl_Reserve, 3, 1, 1, 1)
+        self.StorControl_Layout.addWidget(self.StorControl_DispFactor_SpinBox, 4, 1, 1, 1)
 
         ###### Botões dos Parâmetros
         self.StorControl_Btns_Layout = QHBoxLayout()
@@ -143,7 +153,7 @@ class C_ActPow_LoadShape_DispMode_Dialog(QDialog): ## Classe Dialog Despacho Loa
         self.StorControl_Btns_Ok_Btn.setIcon(QIcon('img/icon_ok.png'))
         self.StorControl_Btns_Ok_Btn.clicked.connect(self.AcceptAddEditStorControl)
         self.StorControl_Btns_Layout.addWidget(self.StorControl_Btns_Ok_Btn)
-        self.StorControl_Layout.addItem(self.StorControl_Btns_Layout, 4, 0, 1, 2)
+        self.StorControl_Layout.addItem(self.StorControl_Btns_Layout, 5, 0, 1, 2)
         ####
 
         self.StorControl_GroupBox.setLayout(self.StorControl_Layout)
@@ -198,11 +208,15 @@ class C_ActPow_LoadShape_DispMode_Dialog(QDialog): ## Classe Dialog Despacho Loa
     def get_ReserveStorControl(self):
         return self.StorControl_Reserve.text()
 
+    def get_DispFactor(self):
+        return self.StorControl_DispFactor_SpinBox.value()
+
     def clearStorControlParameters(self):
         self.StorControl_Name.setText("")
         self.StorControl_Element_ComboBox.setCurrentIndex(0)
         self.StorControl_Terminal_ComboBox.setCurrentIndex(0)
         self.StorControl_Reserve.setText(self.getStorage_PercentageReserve())
+        self.StorControl_DispFactor_SpinBox.setValue(1.0)
 
     def addStorControl(self):
         if self.StorControl_GroupBox_Selection_ComboBox.count() + 1 - self.NumComboBox <= 1: # Para garantir que só adicione um controlador por Storage
@@ -226,6 +240,7 @@ class C_ActPow_LoadShape_DispMode_Dialog(QDialog): ## Classe Dialog Despacho Loa
                     self.StorControl_Element_ComboBox.setCurrentText(ctd["Element"])
                     self.StorControl_Terminal_ComboBox.setCurrentText(ctd["Terminal"])
                     self.StorControl_Reserve.setText(ctd["Reserve"])
+                    self.StorControl_DispFactor_SpinBox.setValue(ctd["DispFactor"])
             self.StorControl_Name.setEnabled(False)
             self.EnableDisableParameters(True)
 
@@ -264,6 +279,7 @@ class C_ActPow_LoadShape_DispMode_Dialog(QDialog): ## Classe Dialog Despacho Loa
         StorageController["Element"] = self.get_ElementStorControl()
         StorageController["Terminal"] = self.get_TerminalStorControl()
         StorageController["Reserve"] = self.get_ReserveStorControl()
+        StorageController["DispFactor"] = self.get_DispFactor()
         StorageController["DispatchMode"] = "LoadShape"
 
         if self.StorControl_Name.isEnabled():
@@ -286,6 +302,7 @@ class C_ActPow_LoadShape_DispMode_Dialog(QDialog): ## Classe Dialog Despacho Loa
                     ctd["Element"] = StorageController["Element"]
                     ctd["Terminal"] = StorageController["Terminal"]
                     ctd["Reserve"] = StorageController["Reserve"]
+                    ctd["DispFactor"] = StorageController["DispFactor"]
                     QMessageBox(QMessageBox.Information, "Storage Controller",
                                 "Storage Controller" + ctd["StorageControllerName"] + " atualizado com sucesso!",
                                 QMessageBox.Ok).exec()
