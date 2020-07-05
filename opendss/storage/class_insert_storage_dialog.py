@@ -486,9 +486,6 @@ class C_Insert_Storage_Dialog(QDialog):  ## Classe Dialog principal
             self.DispModeActPowDialog.ConfigStorageController.StorageConfig_GroupBox_PercentageReserve_LineEdit = self.TabConfig.StorageConfig_GroupBox_PercentageReserve_LineEdit
             self.DispModeActPowDialog.DialogActPowLoadShape.StorageConfig_GroupBox_PercentageReserve_LineEdit = self.TabConfig.StorageConfig_GroupBox_PercentageReserve_LineEdit
 
-            # self.TabConfig.ConfigStorageController.StorageControllers = self.StorageControllers
-            # self.DispModeActPowDialog.DialogActPowLoadShape.StorageControllersTemporario = self.StorageControllers
-            # self.TabConfig.ConfigStorageController.StorageControllersTemporario = self.StorageControllers
             self.DispModeActPowDialog.exec()
 
             self.TabConfig.StorageConfig_GroupBox_Nome_LineEdit.setReadOnly(True)

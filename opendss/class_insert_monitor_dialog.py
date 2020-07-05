@@ -316,9 +316,17 @@ class C_Insert_Monitor_Dialog(QDialog): ## Classe Dialog principal
     def updateDialog(self):
         self.Monitor_GroupBox_MEnergy_ComboBox.clear()
 
+
         for ctd in self.Monitors:
             self.Monitor_GroupBox_MEnergy_ComboBox.addItem(ctd["Name"])
 
         self.Monitor_Element_ComboBox.clear()
-        #self.Monitor_Element_ComboBox.addItems(self.OpenDSS.getAllNamesElements())
-        self.Monitor_Element_ComboBox.addItems(self.OpenDSS.getElementList())
+        try:
+
+            #self.Monitor_Element_ComboBox.addItems(self.OpenDSS.getAllNamesElements())
+            list = self.OpenDSS.getAllNamesElements() + self.OpenDSS.getElementList()
+            list_teste = sorted(set(list))
+            # self.Monitor_Element_ComboBox.addItems(self.OpenDSS.getElementList())
+            self.Monitor_Element_ComboBox.addItems(list_teste)
+        except:
+            self.Monitor_Element_ComboBox.addItems(self.OpenDSS.getElementList())
