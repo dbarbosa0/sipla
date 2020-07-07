@@ -221,6 +221,7 @@ class C_Config_Curves_Dialog(QDialog):
         except:
             pass
 
+
     def csvImport(self):
         try:
             dataCSV = {} #Dicionário para as variáveis
@@ -336,7 +337,9 @@ class C_Config_Curves_Dialog(QDialog):
             writer.writerow(rowText)
 
             for ctdPoints in range(0, self.nPoints):
+                # region Description
                 rowText.clear()
+                # endregion
                 for dataShape in self.dataPointsX:
                     try:
                         m = str(self.dataPointsX[dataShape][ctdPoints]) + ";" + str(self.dataPointsY[dataShape][ctdPoints])

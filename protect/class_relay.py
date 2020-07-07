@@ -1,12 +1,14 @@
 import csv
+import platform
 
 import pyqtgraph
 from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import QStyleFactory, QDialog, QGroupBox, QGridLayout, QHBoxLayout, \
-    QPushButton, QVBoxLayout, QComboBox, QLineEdit, QWidget, QLabel, QMessageBox
+    QPushButton, QVBoxLayout, QComboBox, QLineEdit, QWidget, QLabel, QMessageBox, QFileDialog
 from PyQt5.QtCore import Qt
 import unidecode
 
+import class_exception
 import opendss.class_conn
 import opendss.class_opendss
 import config as cfg
@@ -192,6 +194,8 @@ class EditRelay(QDialog):
     def __init__(self, Relay_parent):
         super().__init__()
         self.datainfo = {}
+        self.ImportedCurves = []
+        self.curvelist = [""]
         self.titleWindow = "Blank"
         self.iconWindow = cfg.sipla_icon
         self.stylesheet = cfg.sipla_stylesheet
@@ -365,7 +369,7 @@ class EditRelay(QDialog):
         self.TCCCurves_Relay_GroupBox_Layout = QGridLayout()
         self.TCCCurves_Relay_GroupBox_Layout.setAlignment(Qt.AlignCenter)
 
-        self.GroundCurveList = ['', 'a', 'b', 'c', 'd']
+        self.GroundCurveList = self.curvelist
         self.GroundCurve_ComboBox = QComboBox()
         self.GroundCurve_ComboBox.setMaximumWidth(150)
         self.GroundCurve_ComboBox_Label = QLabel("Ground Curve")
@@ -384,7 +388,7 @@ class EditRelay(QDialog):
         self.GroundTimeDial_LineEdit_Label = QLabel("Time dial")
         self.GroundTimeDial_LineEdit_Label.setAlignment(Qt.AlignRight)
 
-        self.PhaseCurveList = ['', 'a', 'b', 'c', 'd']
+        self.PhaseCurveList = self.curvelist
         self.PhaseCurve_ComboBox = QComboBox()
         self.PhaseCurve_ComboBox.setMaximumWidth(150)
         self.PhaseCurve_ComboBox_Label = QLabel("Phase Curve")
@@ -403,7 +407,7 @@ class EditRelay(QDialog):
         self.PhaseTimeDial_LineEdit_Label = QLabel("Time dial")
         self.PhaseTimeDial_LineEdit_Label.setAlignment(Qt.AlignRight)
 
-        self.OverVoltCurveList = ['', 'a', 'b', 'c', 'd']
+        self.OverVoltCurveList = self.curvelist
         self.OverVoltCurve_ComboBox = QComboBox()
         self.OverVoltCurve_ComboBox.setMaximumWidth(150)
         self.OverVoltCurve_ComboBox_Label = QLabel("OverVolt Curve")
@@ -416,7 +420,7 @@ class EditRelay(QDialog):
         self.OverVoltTrip_LineEdit_Label = QLabel("Multiplier")
         self.OverVoltTrip_LineEdit_Label.setAlignment(Qt.AlignRight)
 
-        self.UnderVoltCurveList = ['', 'a', 'b', 'c', 'd']
+        self.UnderVoltCurveList = self.curvelist
         self.UnderVoltCurve_ComboBox = QComboBox()
         self.UnderVoltCurve_ComboBox.setMaximumWidth(150)
         self.UnderVoltCurve_ComboBox_Label = QLabel("UnderVolt Curve")
@@ -465,6 +469,68 @@ class EditRelay(QDialog):
         self.TesteDialog_Layout.addLayout(self.Dialog_Layout)
         self.TesteDialog_Layout.addWidget(self.graphWidget)
 
+    def ImportCurve(self):
+        try:
+            dataCSV = {} #Dicionário para as variáveis
+            pointsXList = []
+            pointsYList = []
+            self.UnderVoltCurve_ComboBox.clear()
+            self.OverVoltCurve_ComboBox.clear()
+            self.PhaseCurve_ComboBox.clear()
+            self.GroundCurve_ComboBox.clear()
+            self.UnderVoltCurve_ComboBox.addItem("","")
+            self.OverVoltCurve_ComboBox.addItem("","")
+            self.PhaseCurve_ComboBox.addItem("","")
+            self.GroundCurve_ComboBox.addItem("","")
+            self.filename = QFileDialog.getOpenFileName(self, 'Open CSV file',
+                                                "", "CSV files (*.csv)")
+                                                #str(pathlib.Path.home()), "CSV files (*.csv)")
+
+            if platform.system() == "Windows":
+                fname = self.filename[0].replace('/', '\\')
+            else:
+                fname = self.filename[0]
+
+            with open(fname, 'r', newline='') as file:
+                csv_reader_object = csv.reader(file)
+                # if csv.Sniffer().has_header:
+                name_col = next(csv_reader_object)
+
+                for row in name_col:
+                    dataCSV[row] = []
+
+                for row in csv_reader_object:  ##Varendo todas as linhas
+                    for ndata in range(0, len(name_col)):  ## Varendo todas as colunas
+                        dataCSV[name_col[ndata]].append(row[ndata])
+
+                for key, values in dataCSV.items():
+                    for value in values:
+                        if value:
+                            pointsXList.append(float(value.split(';')[0]))
+                            pointsYList.append(float(value.split(';')[1]))
+
+                    if pointsXList:
+                        flag = True
+                    else:
+                        flag = False
+
+                    if flag:
+                        self.curvelist.append(key)
+                        string = "new TCC_Curve." + key + " npts=" + str(len(pointsXList)) +\
+                                 " c_array=("  + str(pointsXList).strip('[]').replace("'","").replace("," , " ") +\
+                            ") t_array=(" + str(pointsYList).strip('[]').replace("'","").replace("," , " ") + ")"
+                        self.ImportedCurves.append(string)
+                        print(string)
+
+                    pointsXList = []
+                    pointsYList = []
+                    self.UnderVoltCurve_ComboBox.addItem(key,key)
+                    self.OverVoltCurve_ComboBox.addItem(key,key)
+                    self.PhaseCurve_ComboBox.addItem(key,key)
+                    self.GroundCurve_ComboBox.addItem(key,key)
+
+        except:
+            class_exception.ExecConfigOpenDSS("Erro ao importar a(s) Curva(s) TCC!","Verifique o arquivo CSV!")
 
     def viewCurve(self):
         dataCSV = {}
@@ -491,8 +557,13 @@ class EditRelay(QDialog):
         pen = pyqtgraph.mkPen(color = 'b')
         self.PlotState = not self.PlotState
 
-        if not self.PlotState:
-            fname = "./prodist/tcapelofu.csv".replace("/","\\")
+        if not self.PlotState and self.filename:
+
+            if platform.system() == "Windows":
+                fname = self.filename[0].replace('/', '\\')
+            else:
+                fname = self.filename[0]
+
 
             with open(fname, 'r', newline='') as file:
                 csv_reader_object = csv.reader(file)
@@ -511,6 +582,8 @@ class EditRelay(QDialog):
                     try:
                         for key, values in dataCSV.items():
                             if key == get_combobox(self.GroundCurve_ComboBox):
+                                pointsXList = []
+                                pointsYList = []
                                 for value in values:
                                     if value:
                                         if groundmult == '':
@@ -538,6 +611,8 @@ class EditRelay(QDialog):
                     try:
                         for key, values in dataCSV.items():
                             if key == get_combobox(self.PhaseCurve_ComboBox):
+                                pointsXList = []
+                                pointsYList = []
                                 for value in values:
                                     if value:
                                         if phasemult == '':
@@ -566,6 +641,8 @@ class EditRelay(QDialog):
                     try:
                         for key, values in dataCSV.items():
                             if key == get_combobox(self.OverVoltCurve_ComboBox):
+                                pointsXList = []
+                                pointsYList = []
                                 for value in values:
                                     if value:
                                         if overvoltmult == '':
@@ -591,6 +668,8 @@ class EditRelay(QDialog):
                     try:
                         for key, values in dataCSV.items():
                             if key == get_combobox(self.UnderVoltCurve_ComboBox):
+                                pointsXList = []
+                                pointsYList = []
                                 for value in values:
                                     if value:
                                         if undervoltmult == '':
@@ -662,11 +741,17 @@ class EditRelay(QDialog):
         self.Ok_Btn.setMaximumWidth(150)
         self.Ok_Btn.clicked.connect(self.AcceptAddEditRelay)
 
-        self.AddTCC_Btn = QPushButton("Visualizar TCC")
-        self.AddTCC_Btn.setMaximumWidth(150)
-        self.AddTCC_Btn.clicked.connect(self.viewCurve)
+        self.ViewTCC_Btn = QPushButton("Visualizar TCC")
+        self.ViewTCC_Btn.setMaximumWidth(150)
+        self.ViewTCC_Btn.clicked.connect(self.viewCurve)
 
-        self.btngroupbox_layout.addWidget(self.AddTCC_Btn)
+        self.ImportTCC_Btn = QPushButton("Importar TCC")
+        self.ImportTCC_Btn.setMaximumWidth(150)
+        self.ImportTCC_Btn.clicked.connect(self.ImportCurve)
+
+
+        self.btngroupbox_layout.addWidget(self.ImportTCC_Btn)
+        self.btngroupbox_layout.addWidget(self.ViewTCC_Btn)
         self.btngroupbox_layout.addWidget(self.Ok_Btn)
 
         self.Dialog_Layout.addLayout(self.btngroupbox_layout)

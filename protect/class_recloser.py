@@ -1,12 +1,14 @@
 import csv
+import platform
 
 import pyqtgraph
 from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import QStyleFactory, QDialog, QGroupBox, QGridLayout, QHBoxLayout, \
-    QPushButton, QVBoxLayout, QComboBox, QLineEdit, QWidget, QLabel, QMessageBox
+    QPushButton, QVBoxLayout, QComboBox, QLineEdit, QWidget, QLabel, QMessageBox, QFileDialog
 from PyQt5.QtCore import Qt
 import unidecode
 
+import class_exception
 import opendss.class_conn
 import opendss.class_opendss
 import config as cfg
@@ -179,6 +181,8 @@ class Recloser(QWidget):
 class EditRecloser(QDialog):
     def __init__(self, recloser_parent):
         super().__init__()
+        self.ImportedCurves = []
+        self.curvelist = [""]
         self.datainfo = {}
         self.titleWindow = "Blank"
         self.iconWindow = cfg.sipla_icon
@@ -306,7 +310,7 @@ class EditRecloser(QDialog):
         self.TCCCurves_Recloser_GroupBox_Layout = QGridLayout()
         self.TCCCurves_Recloser_GroupBox_Layout.setAlignment(Qt.AlignCenter)
 
-        self.TccRecloserList = ['',"101","102","103","104","105","106","107","111","112","113","114","115","116","117","118","119","120","121","122","131","132","133","134","135","136","137","138","139","140","141","142","151","152","161","162","163","164","165","200","201","202"]
+        self.TccRecloserList = self.curvelist
 
         self.GroundDelayList = self.TccRecloserList
         self.GroundDelay_ComboBox = QComboBox()
@@ -406,6 +410,68 @@ class EditRecloser(QDialog):
         self.TesteDialog_Layout.addLayout(self.Dialog_Layout)
         self.TesteDialog_Layout.addWidget(self.graphWidget)
 
+    def ImportCurve(self):
+        try:
+            dataCSV = {} #Dicionário para as variáveis
+            pointsXList = []
+            pointsYList = []
+            self.PhaseDelay_ComboBox.clear()
+            self.PhaseFast_ComboBox.clear()
+            self.GroundDelay_ComboBox.clear()
+            self.GroundFast_ComboBox.clear()
+            self.PhaseDelay_ComboBox.addItem("","")
+            self.PhaseFast_ComboBox.addItem("","")
+            self.GroundDelay_ComboBox.addItem("","")
+            self.GroundFast_ComboBox.addItem("","")
+            self.filename = QFileDialog.getOpenFileName(self, 'Open CSV file',
+                                                "", "CSV files (*.csv)")
+                                                #str(pathlib.Path.home()), "CSV files (*.csv)")
+
+            if platform.system() == "Windows":
+                fname = self.filename[0].replace('/', '\\')
+            else:
+                fname = self.filename[0]
+
+            with open(fname, 'r', newline='') as file:
+                csv_reader_object = csv.reader(file)
+                # if csv.Sniffer().has_header:
+                name_col = next(csv_reader_object)
+
+                for row in name_col:
+                    dataCSV[row] = []
+
+                for row in csv_reader_object:  ##Varendo todas as linhas
+                    for ndata in range(0, len(name_col)):  ## Varendo todas as colunas
+                        dataCSV[name_col[ndata]].append(row[ndata])
+
+                for key, values in dataCSV.items():
+                    for value in values:
+                        if value:
+                            pointsXList.append(float(value.split(';')[0]))
+                            pointsYList.append(float(value.split(';')[1]))
+
+                    if pointsXList:
+                        flag = True
+                    else:
+                        flag = False
+
+                    if flag:
+                        self.curvelist.append(key)
+                        string = "new TCC_Curve." + key + " npts=" + str(len(pointsXList)) +\
+                                 " c_array=("  + str(pointsXList).strip('[]').replace("'","").replace("," , " ") +\
+                            ") t_array=(" + str(pointsYList).strip('[]').replace("'","").replace("," , " ") + ")"
+                        self.ImportedCurves.append(string)
+                        print(string)
+
+                    pointsXList = []
+                    pointsYList = []
+                    self.PhaseDelay_ComboBox.addItem(key,key)
+                    self.PhaseFast_ComboBox.addItem(key,key)
+                    self.GroundDelay_ComboBox.addItem(key,key)
+                    self.GroundFast_ComboBox.addItem(key,key)
+
+        except:
+            class_exception.ExecConfigOpenDSS("Erro ao importar a(s) Curva(s) TCC!","Verifique o arquivo CSV!")
 
     def viewCurve(self):
         dataCSV = {}
@@ -431,8 +497,12 @@ class EditRecloser(QDialog):
         pen = pyqtgraph.mkPen(color = 'b')
         self.PlotState = not self.PlotState
 
-        if not self.PlotState:
-            fname = "./prodist/tcc5051.csv".replace("/","\\")
+        if not self.PlotState and self.filename:
+
+            if platform.system() == "Windows":
+                fname = self.filename[0].replace('/', '\\')
+            else:
+                fname = self.filename[0]
 
             with open(fname, 'r', newline='') as file:
                 csv_reader_object = csv.reader(file)
@@ -579,11 +649,17 @@ class EditRecloser(QDialog):
         self.Ok_Btn.setMaximumWidth(150)
         self.Ok_Btn.clicked.connect(self.AcceptAddEditRecloser)
 
-        self.AddTCC_Btn = QPushButton("Visualizar TCC")
-        self.AddTCC_Btn.setMaximumWidth(150)
-        self.AddTCC_Btn.clicked.connect(self.viewCurve)
+        self.ViewTCC_Btn = QPushButton("Visualizar TCC")
+        self.ViewTCC_Btn.setMaximumWidth(150)
+        self.ViewTCC_Btn.clicked.connect(self.viewCurve)
 
-        self.btngroupbox_layout.addWidget(self.AddTCC_Btn)
+        self.ImportTCC_Btn = QPushButton("Importar TCC")
+        self.ImportTCC_Btn.setMaximumWidth(150)
+        self.ImportTCC_Btn.clicked.connect(self.ImportCurve)
+
+
+        self.btngroupbox_layout.addWidget(self.ImportTCC_Btn)
+        self.btngroupbox_layout.addWidget(self.ViewTCC_Btn)
         self.btngroupbox_layout.addWidget(self.Ok_Btn)
 
         self.Dialog_Layout.addLayout(self.btngroupbox_layout)

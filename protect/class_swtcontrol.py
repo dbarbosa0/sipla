@@ -280,11 +280,6 @@ class EditSwtControl(QDialog):
         self.Ok_Btn.setMaximumWidth(150)
         self.Ok_Btn.clicked.connect(self.AcceptAddEditSwtControl)
 
-        self.AddTCC_Btn = QPushButton("Add TCC Curve")
-        self.AddTCC_Btn.setMaximumWidth(150)
-        # self.AddTCC_Btn.clicked.connect(self.SwtControl_parent.SwtControlList)
-
-        self.btngroupbox_layout.addWidget(self.AddTCC_Btn)
         self.btngroupbox_layout.addWidget(self.Ok_Btn)
 
         self.Dialog_Layout.addLayout(self.btngroupbox_layout)

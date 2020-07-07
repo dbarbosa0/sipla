@@ -116,8 +116,8 @@ class C_Devices_ConfigDialog(QDialog):
             for key, value in ctd.items():
                 if value != '' and value != 'None'and value is not None and key != 'Device' and key != 'Name':
                     tmp += key + "=" + value + " "
-            # print(tmp)
+            print(tmp)
 
             self.memoFileDevices.append(tmp)
 
-        print(self.memoFileDevices)
+        #print(self.memoFileDevices)
