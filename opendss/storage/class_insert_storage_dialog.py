@@ -40,7 +40,7 @@ class C_Insert_Storage_Dialog(QDialog):  ## Classe Dialog principal
         self.setWindowModality(Qt.ApplicationModal)
         self.setStyle(QStyleFactory.create('Cleanlooks'))  # Estilo da Interface
 
-        self.Dialog_Layout = QHBoxLayout()  # Layout da Dialog
+        self.Dialog_Layout = QVBoxLayout()  # Layout da Dialog
 
         ####################### GroupBox Storages ############################################################
         self.Storages_GroupBox = QGroupBox("Storages")  # Criando a GroupBox Storages
