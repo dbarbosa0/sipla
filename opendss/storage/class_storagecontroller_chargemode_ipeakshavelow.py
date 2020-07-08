@@ -1,12 +1,10 @@
-from PyQt5.QtGui import QColor, QIcon, QDoubleValidator
-from PyQt5.QtWidgets import QStyleFactory, QDialog, QGridLayout, QGroupBox, QVBoxLayout, QTreeWidgetItem, \
-    QPushButton, QTreeWidget, QFileDialog, QColorDialog, QMessageBox, QInputDialog, QCheckBox, QLabel, QLineEdit, \
-    QComboBox, QTabWidget, QWidget, QHBoxLayout, QRadioButton, QButtonGroup, QSpinBox
+from PyQt5.QtGui import QIcon, QDoubleValidator
+from PyQt5.QtWidgets import QStyleFactory, QDialog, QGridLayout, \
+    QPushButton, QMessageBox, QLabel, QLineEdit, QComboBox, QHBoxLayout
 from PyQt5.QtCore import Qt
 
 
 import config as cfg
-import unidecode
 
 class C_ActPow_Charge_IPeakShaveLow_DispMode_Dialog(QDialog): ## Classe Dialog Despacho Charge IPeakShaveLow da Potencia Ativa
     def __init__(self):
