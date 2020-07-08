@@ -1,9 +1,10 @@
-from PyQt5.QtGui import  QIcon, QDoubleValidator
+from PyQt5.QtGui import QIcon, QDoubleValidator
 from PyQt5.QtWidgets import QStyleFactory, QDialog, QGridLayout, QGroupBox, QVBoxLayout, QTreeWidgetItem, \
     QPushButton, QTreeWidget, QMessageBox, QLabel, QLineEdit, \
     QComboBox, QTabWidget, QWidget, QHBoxLayout
 from PyQt5.QtCore import Qt
 
+import random
 import class_exception
 
 import opendss.class_opendss
@@ -29,8 +30,6 @@ class C_Insert_Storage_Dialog(QDialog):  ## Classe Dialog principal
         self.InitUI()
 
         self.OpenDSS = opendss.class_opendss.C_OpenDSS()
-        self.EffCurve = opendss.storage.class_config_eff_curve.C_Config_EffCurve_Dialog()
-        self.EffCurveFile = opendss.storage.class_config_eff_curve
         self.DispModeActPowDialog = opendss.storage.class_active_pow_dispmode_dialog.C_Active_Pow_DispMode_Dialog()
         self.DispModeReactPowDialog = opendss.storage.class_reactive_pow_dispmode_dialog.C_Reactive_Pow_DispMode_Dialog()
 
@@ -60,7 +59,7 @@ class C_Insert_Storage_Dialog(QDialog):  ## Classe Dialog principal
         # Botao Excluir
         self.Storages_GroupBox_Excluir_Btn = QPushButton("Excluir")  # Botão de Excluir dentro do GroupBox
         self.Storages_GroupBox_Excluir_Btn.setIcon(QIcon('img/icon_remove.png'))
-        self.Storages_GroupBox_Excluir_Btn.clicked.connect(self.excluirStorages)
+        self.Storages_GroupBox_Excluir_Btn.clicked.connect(self.removeStorages)
         self.Storages_GroupBox_Layout.addWidget(self.Storages_GroupBox_Excluir_Btn, 3, 2, 1, 1)
         # Botão Editar
         self.Storages_GroupBox_Edit_Btn = QPushButton("Editar")  # Botão de editar dentro do GroupBox
@@ -92,7 +91,8 @@ class C_Insert_Storage_Dialog(QDialog):  ## Classe Dialog principal
         self.ModoDespacho_GroupBox_Layout.addWidget(self.ModoDespacho_GroupBox_PotReat_Btn, 0, 1, 1, 1)
 
         self.Storages_GroupBox.setLayout(self.Storages_GroupBox_Layout)  # define o Layout do GroupBox Storages
-        self.ModoDespacho_GroupBox.setLayout(self.ModoDespacho_GroupBox_Layout)  # define o Layout do GroupBox ModoDespacho
+        self.ModoDespacho_GroupBox.setLayout(
+            self.ModoDespacho_GroupBox_Layout)  # define o Layout do GroupBox ModoDespacho
 
         self.Dialog_Layout.addWidget(self.Storages_GroupBox)  # adiciona o GroupBox Storages ao Dialog
 
@@ -133,8 +133,10 @@ class C_Insert_Storage_Dialog(QDialog):  ## Classe Dialog principal
         self.StorageEInvConfig_GroupBox.setVisible(False)
 
         self.StorageEInvConfig_GroupBox_Layout.addWidget(self.TabWidget)
-        self.StorageEInvConfig_GroupBox_Layout.addWidget(self.ModoDespacho_GroupBox)  # adiciona o GroupBox ModoDespacho ao GroupBox superior
-        self.StorageEInvConfig_GroupBox_Layout.addItem(self.Config_Btns_Layout)  # adiciona o Layout dos Botões das Configurações ao GroupBox superior
+        self.StorageEInvConfig_GroupBox_Layout.addWidget(
+            self.ModoDespacho_GroupBox)  # adiciona o GroupBox ModoDespacho ao GroupBox superior
+        self.StorageEInvConfig_GroupBox_Layout.addItem(
+            self.Config_Btns_Layout)  # adiciona o Layout dos Botões das Configurações ao GroupBox superior
 
         self.StorageEInvConfig_GroupBox.setLayout(self.StorageEInvConfig_GroupBox_Layout)
 
@@ -145,7 +147,7 @@ class C_Insert_Storage_Dialog(QDialog):  ## Classe Dialog principal
     def get_StorageName(self):
         return unidecode.unidecode(self.TabConfig.StorageConfig_GroupBox_Nome_LineEdit.text().replace(" ", "_"))
 
-    def excluirStorages(self):
+    def removeStorages(self):
         for ctd in range(self.Storages_GroupBox_TreeWidget.topLevelItemCount() - 1, -1, -1):
             Item = self.Storages_GroupBox_TreeWidget.topLevelItem(ctd)
 
@@ -168,146 +170,304 @@ class C_Insert_Storage_Dialog(QDialog):  ## Classe Dialog principal
         self.DefaultConfigParameters()
         self.adjustSize()
 
+        self.TabInversorConfig.EffCurve.Storages = self.Storages  # Getter/Setter para o class_config_eff_curve.py
+
     def editStorages(self):
         checkCont = 0
         try:
-            for ctd in range(0, self.Storages_GroupBox_TreeWidget.topLevelItemCount()):
-                Item = self.Storages_GroupBox_TreeWidget.topLevelItem(ctd)
-
-                if Item.checkState(0) == Qt.Checked:
+            for ctd in range(self.Storages_GroupBox_TreeWidget.topLevelItemCount() - 1, -1, -1):
+                if self.Storages_GroupBox_TreeWidget.topLevelItem(ctd).checkState(0) == Qt.Checked:
                     checkCont += 1
+                    Item = self.Storages_GroupBox_TreeWidget.topLevelItem(ctd)
 
-                if checkCont == 1:
-                    self.clearStorageParameters()
-                    for i in self.Storages:
-                        if i["StorageName"] == Item.text(0):
-                            self.TabConfig.StorageConfig_GroupBox_Nome_LineEdit.setText(i["StorageName"])
-                            self.TabConfig.StorageConfig_GroupBox_conn_ComboBox.setCurrentText(i["Conn"])
-                            self.TabConfig.StorageConfig_GroupBox_Bus_ComboBox.setCurrentText(i["Bus"])
-                            self.TabConfig.StorageConfig_GroupBox_kW_LineEdit.setText(i["kW"])
-                            self.TabConfig.StorageConfig_GroupBox_kv_LineEdit.setText(i["kV"])
-                            self.TabConfig.StorageConfig_GroupBox_kWhrated_LineEdit.setText(i["kWhrated"])
-                            self.TabConfig.StorageConfig_GroupBox_kWhstored_LineEdit.setText(i["kWhstored"])
-                            self.TabConfig.StorageConfig_GroupBox_PercentageReserve_LineEdit.setText(i["%reserve"])
-                            self.TabConfig.StorageConfig_GroupBox_IdlingkW_LineEdit.setText(i["%IdlingkW"])
-                            self.TabConfig.StorageConfig_GroupBox_Per100Charge_LineEdit.setText(i["%Charge"])
-                            self.TabConfig.StorageConfig_GroupBox_Per100Discharge_LineEdit.setText(i["%Discharge"])
-                            self.TabConfig.StorageConfig_GroupBox_EffCharge_LineEdit.setText(i["%EffCharge"])
-                            self.TabConfig.StorageConfig_GroupBox_EffDischarge_LineEdit.setText(i["%EffDischarge"])
-                            if i["state"] == "Idling":
-                                self.TabConfig.StorageConfig_GroupBox_state_ComboBox.setCurrentText("Ocioso")
-                            elif i["state"] == "Charging":
-                                self.TabConfig.StorageConfig_GroupBox_state_ComboBox.setCurrentText("Carregando")
-                            else:
-                                self.TabConfig.StorageConfig_GroupBox_state_ComboBox.setCurrentText("Descarregando")
-                            self.TabConfig.StorageConfig_GroupBox_vMinPu_LineEdit.setText(i["vMinpu"])
-                            self.TabConfig.StorageConfig_GroupBox_vMaxPu_LineEdit.setText(i["vMaxpu"])
-                            self.TabConfig.StorageConfig_GroupBox_R_LineEdit.setText(i["%R"])
-                            self.TabConfig.StorageConfig_GroupBox_X_LineEdit.setText(i["%X"])
+            if checkCont == 1:
+                self.clearStorageParameters()
+                for i in self.Storages:
+                    if i["StorageName"] == Item.text(0):
+                        self.TabConfig.StorageConfig_GroupBox_Nome_LineEdit.setText(i["StorageName"])
+                        self.TabConfig.StorageConfig_GroupBox_conn_ComboBox.setCurrentText(i["Conn"])
+                        self.TabConfig.StorageConfig_GroupBox_Bus_ComboBox.setCurrentText(i["Bus"])
+                        self.TabConfig.StorageConfig_GroupBox_kW_LineEdit.setText(i["kW"])
+                        self.TabConfig.StorageConfig_GroupBox_kv_LineEdit.setText(i["kV"])
+                        self.TabConfig.StorageConfig_GroupBox_kWhrated_LineEdit.setText(i["kWhrated"])
+                        self.TabConfig.StorageConfig_GroupBox_kWhstored_LineEdit.setText(i["kWhstored"])
+                        self.TabConfig.StorageConfig_GroupBox_PercentageReserve_LineEdit.setText(i["%reserve"])
+                        self.TabConfig.StorageConfig_GroupBox_IdlingkW_LineEdit.setText(i["%IdlingkW"])
+                        self.TabConfig.StorageConfig_GroupBox_Per100Charge_LineEdit.setText(i["%Charge"])
+                        self.TabConfig.StorageConfig_GroupBox_Per100Discharge_LineEdit.setText(i["%Discharge"])
+                        self.TabConfig.StorageConfig_GroupBox_EffCharge_LineEdit.setText(i["%EffCharge"])
+                        self.TabConfig.StorageConfig_GroupBox_EffDischarge_LineEdit.setText(i["%EffDischarge"])
+                        if i["state"] == "Idling":
+                            self.TabConfig.StorageConfig_GroupBox_state_ComboBox.setCurrentText("Ocioso")
+                        elif i["state"] == "Charging":
+                            self.TabConfig.StorageConfig_GroupBox_state_ComboBox.setCurrentText("Carregando")
+                        else:
+                            self.TabConfig.StorageConfig_GroupBox_state_ComboBox.setCurrentText("Descarregando")
+                        self.TabConfig.StorageConfig_GroupBox_vMinPu_LineEdit.setText(i["vMinpu"])
+                        self.TabConfig.StorageConfig_GroupBox_vMaxPu_LineEdit.setText(i["vMaxpu"])
+                        self.TabConfig.StorageConfig_GroupBox_R_LineEdit.setText(i["%R"])
+                        self.TabConfig.StorageConfig_GroupBox_X_LineEdit.setText(i["%X"])
+                        self.TabConfig.StorageConfig_GroupBox_model_ComboBox.setCurrentText(i["model"])
+                        self.TabConfig.StorageConfig_GroupBox_phases_ComboBox.setCurrentText(i["phases"])
 
-                            self.TabInversorConfig.InversorConfig_GroupBox_kVA_LineEdit.setText(i["kVA"])
-                            self.TabInversorConfig.InversorConfig_GroupBox_kWrated_LineEdit.setText(i["kWrated"])
-                            if i["varFollowInverter"] == "Yes":
-                                self.TabInversorConfig.InversorConfig_GroupBox_varFollowInverter_ComboBox.setCurrentText("Ativa CutIn/CutOut")
-                            else:
-                                self.TabInversorConfig.InversorConfig_GroupBox_varFollowInverter_ComboBox.setCurrentText("Desativa CutIn/CutOut")
-                            self.TabInversorConfig.InversorConfig_GroupBox_CutIn_LineEdit.setText(i["%CutIn"])
-                            self.TabInversorConfig.InversorConfig_GroupBox_CutOut_LineEdit.setText(i["%CutOut"])
-                            self.TabInversorConfig.InversorConfig_GroupBox_kvarMax_LineEdit.setText(i["kvarMax"])
-                            self.TabInversorConfig.InversorConfig_GroupBox_kvarMaxAbs_LineEdit.setText(i["kvarMaxAbs"])
-                            self.TabInversorConfig.InversorConfig_GroupBox_PminNoVars_LineEdit.setText(i["%PminNoVars"])
-                            self.TabInversorConfig.InversorConfig_GroupBox_PminkvarMax_LineEdit.setText(i["%PminkvarMax"])
-                            if i["PFPriority"] == "True":
-                                self.TabInversorConfig.InversorConfig_GroupBox_PFPriority_ComboBox.setCurrentText("Sim")
-                            else:
-                                self.TabInversorConfig.InversorConfig_GroupBox_PFPriority_ComboBox.setCurrentText("Não")
-                            if i["WattPriority"] == "True":
-                                self.TabInversorConfig.InversorConfig_GroupBox_WattPriority_ComboBox.setCurrentText("Sim")
-                            else:
-                                self.TabInversorConfig.InversorConfig_GroupBox_WattPriority_ComboBox.setCurrentText("Não")
+                        self.TabInversorConfig.InversorConfig_GroupBox_kVA_LineEdit.setText(i["kVA"])
+                        self.TabInversorConfig.InversorConfig_GroupBox_kWrated_LineEdit.setText(i["kWrated"])
+                        if i["varFollowInverter"] == "Yes":
+                            self.TabInversorConfig.InversorConfig_GroupBox_varFollowInverter_ComboBox.setCurrentText(
+                                "Ativa CutIn/CutOut")
+                        else:
+                            self.TabInversorConfig.InversorConfig_GroupBox_varFollowInverter_ComboBox.setCurrentText(
+                                "Desativa CutIn/CutOut")
+                        self.TabInversorConfig.InversorConfig_GroupBox_CutIn_LineEdit.setText(i["%CutIn"])
+                        self.TabInversorConfig.InversorConfig_GroupBox_CutOut_LineEdit.setText(i["%CutOut"])
+                        self.TabInversorConfig.InversorConfig_GroupBox_kvarMax_LineEdit.setText(i["kvarMax"])
+                        self.TabInversorConfig.InversorConfig_GroupBox_kvarMaxAbs_LineEdit.setText(i["kvarMaxAbs"])
+                        self.TabInversorConfig.InversorConfig_GroupBox_PminNoVars_LineEdit.setText(i["%PminNoVars"])
+                        self.TabInversorConfig.InversorConfig_GroupBox_PminkvarMax_LineEdit.setText(i["%PminkvarMax"])
+                        if i["PFPriority"] == "True":
+                            self.TabInversorConfig.InversorConfig_GroupBox_PFPriority_ComboBox.setCurrentText("Sim")
+                        else:
+                            self.TabInversorConfig.InversorConfig_GroupBox_PFPriority_ComboBox.setCurrentText("Não")
+                        if i["WattPriority"] == "True":
+                            self.TabInversorConfig.InversorConfig_GroupBox_WattPriority_ComboBox.setCurrentText("Sim")
+                        else:
+                            self.TabInversorConfig.InversorConfig_GroupBox_WattPriority_ComboBox.setCurrentText("Não")
 
-                            if 'FP' in i['ReactPow']:
-                                self.DispModeReactPowDialog.FPConst_RadioBtn.setChecked(True)
-                                self.DispModeReactPowDialog.FPConst_LineEdit.setEnabled(True)
-                                self.DispModeReactPowDialog.FPConst_LineEdit.setText(i['ReactPow']['FP'])
-                            elif 'kvar' in i['ReactPow']:
-                                self.DispModeReactPowDialog.kvarConst_RadioBtn.setChecked(True)
-                                self.DispModeReactPowDialog.kvarConst_LineEdit.setEnabled(True)
-                                self.DispModeReactPowDialog.kvarConst_LineEdit.setText(i['ReactPow']['kvar'])
+                        if 'FP' in i['ReactPow']:
+                            self.DispModeReactPowDialog.FPConst_RadioBtn.setChecked(True)
+                            self.DispModeReactPowDialog.FPConst_LineEdit.setEnabled(True)
+                            self.DispModeReactPowDialog.FPConst_LineEdit.setText(i['ReactPow']['FP'])
+                        elif 'kvar' in i['ReactPow']:
+                            self.DispModeReactPowDialog.kvarConst_RadioBtn.setChecked(True)
+                            self.DispModeReactPowDialog.kvarConst_LineEdit.setEnabled(True)
+                            self.DispModeReactPowDialog.kvarConst_LineEdit.setText(i['ReactPow']['kvar'])
 
-                            # ptsX = str(i["Xarray"]).strip('[]').replace("'", "")
-                            # ptsY = str(i["Yarray"]).strip('[]').replace("'", "")
-                            # self.EffCurveFile.Config_EffCurve_GroupBox_TreeWidget_Item(self.EffCurve.EffCurve_GroupBox_TreeWidget, i["EffCurveName"], ptsX, ptsY, cfg.colorsList[random.randint(0, len(cfg.colorsList) - 1)])
+                        ptsX = str(i["EffCurve"]["Xarray"]).strip('[]').replace("'", "")
+                        ptsY = str(i["EffCurve"]["Yarray"]).strip('[]').replace("'", "")
+                        self.TabInversorConfig.EffCurveFile.Config_EffCurve_GroupBox_TreeWidget_Item(
+                            self.TabInversorConfig.EffCurve.EffCurve_GroupBox_TreeWidget,
+                            i["EffCurve"]["EffCurveName"],
+                            ptsX,
+                            ptsY,
+                            cfg.colorsList[random.randint(0, len(cfg.colorsList) - 1)])
 
-                            if i["Carga/Descarga"] == "Sincronizados":
-                                self.DispModeActPowDialog.DispSinc_Radio_Btn.setChecked(True)
-                                self.DispModeActPowDialog.DispSinc_GroupBox.setEnabled(True)
+                        if i["Carga/Descarga"] == "Sincronizados":
+                            self.DispModeActPowDialog.DispSinc_Radio_Btn.setChecked(True)
+                            self.DispModeActPowDialog.DispSinc_GroupBox.setEnabled(True)
 
-                                if i['ModoCarga/Descarga'] == 'Default':
-                                    self.DispModeActPowDialog.DispSinc_GroupBox_AutoDespacho_GroupBox_Layout_Default_RadioBtn.setChecked(True)
-                                    self.DispModeActPowDialog.DialogActPowDefault.ChargeTrigger_LineEdit.setText(i["ActPow"]["ChargeTrigger"])
-                                    self.DispModeActPowDialog.DialogActPowDefault.DischargeTrigger_LineEdit.setText(i["ActPow"]["DischargeTrigger"])
-                                    if 'TimeChargeTrigger' in i["ActPow"]:
-                                        self.DispModeActPowDialog.DialogActPowDefault.TimeTrigger_LineEdit.setEnabled(True)
-                                        self.DispModeActPowDialog.DialogActPowDefault.TimeTrigger_LineEdit.setText(i["ActPow"]['TimeChargeTrigger'])
-                                        self.DispModeActPowDialog.DialogActPowDefault.TimeTrigger_CheckBox.setChecked(True)
-                                elif i['ModoCarga/Descarga'] == 'Follow':
-                                    self.DispModeActPowDialog.DispSinc_GroupBox_AutoDespacho_GroupBox_Layout_Follow_RadioBtn.setChecked(True)
-                                    if 'TimeChargeTrigger' in i["ActPow"]:
-                                        self.DispModeActPowDialog.DialogActPowFollow.TimeTrigger_LineEdit.setEnabled(True)
-                                        self.DispModeActPowDialog.DialogActPowFollow.TimeTrigger_LineEdit.setText(i["ActPow"]['TimeChargeTrigger'])
-                                        self.DispModeActPowDialog.DialogActPowFollow.TimeTrigger_CheckBox.setChecked(True)
-                                elif i['ModoCarga/Descarga'] == 'LoadLevel':
-                                    self.DispModeActPowDialog.DispSinc_GroupBox_AutoDespacho_GroupBox_Layout_LoadLevel_RadioBtn.setChecked(True)
-                                    self.DispModeActPowDialog.DialogActPowLoadLevel.ChargeTrigger_LineEdit.setText(i["ActPow"]["ChargeTrigger"])
-                                    self.DispModeActPowDialog.DialogActPowLoadLevel.DischargeTrigger_LineEdit.setText(i["ActPow"]["DischargeTrigger"])
-                                    if 'TimeChargeTrigger' in i["ActPow"]:
-                                        self.DispModeActPowDialog.DialogActPowLoadLevel.TimeTrigger_LineEdit.setEnabled(True)
-                                        self.DispModeActPowDialog.DialogActPowLoadLevel.TimeTrigger_LineEdit.setText(i["ActPow"]['TimeChargeTrigger'])
-                                        self.DispModeActPowDialog.DialogActPowLoadLevel.TimeTrigger_CheckBox.setChecked(True)
-                                elif i['ModoCarga/Descarga'] == 'Price':
-                                    self.DispModeActPowDialog.DispSinc_GroupBox_AutoDespacho_GroupBox_Layout_Price_RadioBtn.setChecked(True)
-                                    self.DispModeActPowDialog.DialogActPowPrice.ChargeTrigger_LineEdit.setText(i["ActPow"]["ChargeTrigger"])
-                                    self.DispModeActPowDialog.DialogActPowPrice.DischargeTrigger_LineEdit.setText(i["ActPow"]["DischargeTrigger"])
-                                    if 'TimeChargeTrigger' in i["ActPow"]:
-                                        self.DispModeActPowDialog.DialogActPowPrice.TimeTrigger_LineEdit.setEnabled(True)
-                                        self.DispModeActPowDialog.DialogActPowPrice.TimeTrigger_LineEdit.setText(i["ActPow"]['TimeChargeTrigger'])
-                                        self.DispModeActPowDialog.DialogActPowPrice.TimeTrigger_CheckBox.setChecked(True)
-                                elif i['ModoCarga/Descarga'] == 'LoadShape':
-                                    self.DispModeActPowDialog.DispSinc_GroupBox_StorageCont_GroupBox_Layout_LoadShape_RadioBtn.setChecked(True)
+                            if i['ModoCarga/Descarga'] == 'Default':
+                                self.DispModeActPowDialog.DispSinc_GroupBox_AutoDespacho_GroupBox_Layout_Default_RadioBtn.setChecked(
+                                    True)
+                                self.DispModeActPowDialog.DialogActPowDefault.ChargeTrigger_LineEdit.setText(
+                                    i["ActPow"]["ChargeTrigger"])
+                                self.DispModeActPowDialog.DialogActPowDefault.DischargeTrigger_LineEdit.setText(
+                                    i["ActPow"]["DischargeTrigger"])
+                                if 'TimeChargeTrigger' in i["ActPow"]:
+                                    self.DispModeActPowDialog.DialogActPowDefault.TimeTrigger_LineEdit.setEnabled(True)
+                                    self.DispModeActPowDialog.DialogActPowDefault.TimeTrigger_LineEdit.setText(
+                                        i["ActPow"]['TimeChargeTrigger'])
+                                    self.DispModeActPowDialog.DialogActPowDefault.TimeTrigger_CheckBox.setChecked(True)
+                                pts = str(i["ActPow"]["mult"]).strip('[]').replace("'", "")
+                                self.DispModeActPowDialog.DialogActPowDefault.Select_DispCurveFile.Config_DispCurve_GroupBox_TreeWidget_Item(
+                                    self.DispModeActPowDialog.DialogActPowDefault.Select_DispCurve.DispCurve_GroupBox_TreeWidget,
+                                    i["ActPow"]["DispCurveName"],
+                                    pts,
+                                    cfg.colorsList[random.randint(0, len(cfg.colorsList) - 1)])
+                                if "sinterval" in i["ActPow"]:
+                                    self.DispModeActPowDialog.DialogActPowDefault.Select_DispCurve.Daily_GroupBox_Stepsize_ComboBox.setCurrentIndex(
+                                        0)
+                                    self.DispModeActPowDialog.DialogActPowDefault.Select_DispCurve.Daily_GroupBox_Stepsize_SpinBox.setValue(
+                                        i["ActPow"]["sinterval"])
+                                elif "minterval" in i["ActPow"]:
+                                    self.DispModeActPowDialog.DialogActPowDefault.Select_DispCurve.Daily_GroupBox_Stepsize_ComboBox.setCurrentIndex(
+                                        1)
+                                    self.DispModeActPowDialog.DialogActPowDefault.Select_DispCurve.Daily_GroupBox_Stepsize_SpinBox.setValue(
+                                        i["ActPow"]["minterval"])
+                                elif "interval" in i["ActPow"]:
+                                    self.DispModeActPowDialog.DialogActPowDefault.Select_DispCurve.Daily_GroupBox_Stepsize_ComboBox.setCurrentIndex(
+                                        2)
+                                    self.DispModeActPowDialog.DialogActPowDefault.Select_DispCurve.Daily_GroupBox_Stepsize_SpinBox.setValue(
+                                        i["ActPow"]["interval"])
+                                self.DispModeActPowDialog.DialogActPowDefault.Select_DispCurve.Daily_GroupBox_Number_SpinBox.setValue(
+                                    i["ActPow"]["npts"])
 
-                            if i["Carga/Descarga"] == "Independentes":
-                                self.DispModeActPowDialog.DispIndep_Radio_Btn.setChecked(True)
-                                self.DispModeActPowDialog.DispIndep_GroupBox.setEnabled(True)
+                            elif i['ModoCarga/Descarga'] == 'Follow':
+                                self.DispModeActPowDialog.DispSinc_GroupBox_AutoDespacho_GroupBox_Layout_Follow_RadioBtn.setChecked(
+                                    True)
+                                if 'TimeChargeTrigger' in i["ActPow"]:
+                                    self.DispModeActPowDialog.DialogActPowFollow.TimeTrigger_LineEdit.setEnabled(True)
+                                    self.DispModeActPowDialog.DialogActPowFollow.TimeTrigger_LineEdit.setText(
+                                        i["ActPow"]['TimeChargeTrigger'])
+                                    self.DispModeActPowDialog.DialogActPowFollow.TimeTrigger_CheckBox.setChecked(True)
+                                pts = str(i["ActPow"]["mult"]).strip('[]').replace("'", "")
+                                self.DispModeActPowDialog.DialogActPowDefault.Select_DispCurveFile.Config_DispCurve_GroupBox_TreeWidget_Item(
+                                    self.DispModeActPowDialog.DialogActPowDefault.Select_DispCurve.DispCurve_GroupBox_TreeWidget,
+                                    i["ActPow"]["DispCurveName"],
+                                    pts,
+                                    cfg.colorsList[random.randint(0, len(cfg.colorsList) - 1)])
+                                if "sinterval" in i["ActPow"]:
+                                    self.DispModeActPowDialog.DialogActPowDefault.Select_DispCurve.Daily_GroupBox_Stepsize_ComboBox.setCurrentIndex(
+                                        0)
+                                    self.DispModeActPowDialog.DialogActPowDefault.Select_DispCurve.Daily_GroupBox_Stepsize_SpinBox.setValue(
+                                        i["ActPow"]["sinterval"])
+                                elif "minterval" in i["ActPow"]:
+                                    self.DispModeActPowDialog.DialogActPowDefault.Select_DispCurve.Daily_GroupBox_Stepsize_ComboBox.setCurrentIndex(
+                                        1)
+                                    self.DispModeActPowDialog.DialogActPowDefault.Select_DispCurve.Daily_GroupBox_Stepsize_SpinBox.setValue(
+                                        i["ActPow"]["minterval"])
+                                elif "interval" in i["ActPow"]:
+                                    self.DispModeActPowDialog.DialogActPowDefault.Select_DispCurve.Daily_GroupBox_Stepsize_ComboBox.setCurrentIndex(
+                                        2)
+                                    self.DispModeActPowDialog.DialogActPowDefault.Select_DispCurve.Daily_GroupBox_Stepsize_SpinBox.setValue(
+                                        i["ActPow"]["interval"])
+                                self.DispModeActPowDialog.DialogActPowDefault.Select_DispCurve.Daily_GroupBox_Number_SpinBox.setValue(
+                                    i["ActPow"]["npts"])
 
-                                if i['ModoCarga'] == 'PeakShaveLow':
-                                    self.DispModeActPowDialog.ModoCarga_GroupBox_StorageCont_GroupBox_Layout_PeakShaveLow_RadioBtn.setChecked(True)
-                                elif i['ModoCarga'] == 'I-PeakShaveLow':
-                                    self.DispModeActPowDialog.ModoCarga_GroupBox_StorageCont_GroupBox_Layout_IPeakShaveLow_RadioBtn.setChecked(True)
-                                elif i['ModoCarga'] == 'Time':
-                                    self.DispModeActPowDialog.ModoCarga_GroupBox_StorageCont_GroupBox_Layout_Time_RadioBtn.setChecked(True)
+                            elif i['ModoCarga/Descarga'] == 'LoadLevel':
+                                self.DispModeActPowDialog.DispSinc_GroupBox_AutoDespacho_GroupBox_Layout_LoadLevel_RadioBtn.setChecked(
+                                    True)
+                                self.DispModeActPowDialog.DialogActPowLoadLevel.ChargeTrigger_LineEdit.setText(
+                                    i["ActPow"]["ChargeTrigger"])
+                                self.DispModeActPowDialog.DialogActPowLoadLevel.DischargeTrigger_LineEdit.setText(
+                                    i["ActPow"]["DischargeTrigger"])
+                                if 'TimeChargeTrigger' in i["ActPow"]:
+                                    self.DispModeActPowDialog.DialogActPowLoadLevel.TimeTrigger_LineEdit.setEnabled(
+                                        True)
+                                    self.DispModeActPowDialog.DialogActPowLoadLevel.TimeTrigger_LineEdit.setText(
+                                        i["ActPow"]['TimeChargeTrigger'])
+                                    self.DispModeActPowDialog.DialogActPowLoadLevel.TimeTrigger_CheckBox.setChecked(
+                                        True)
+                                pts = str(i["ActPow"]["price"]).strip('[]').replace("'", "")
+                                self.DispModeActPowDialog.DialogActPowPrice.Select_PriceCurveFile.Config_PriceCurve_GroupBox_TreeWidget_Item(
+                                    self.DispModeActPowDialog.DialogActPowPrice.Select_PriceCurve.PriceCurve_GroupBox_TreeWidget,
+                                    i["ActPow"]["PriceCurveName"],
+                                    pts,
+                                    cfg.colorsList[random.randint(0, len(cfg.colorsList) - 1)])
+                                if "sinterval" in i["ActPow"]:
+                                    self.DispModeActPowDialog.DialogActPowPrice.Select_PriceCurve.Daily_GroupBox_Stepsize_ComboBox.setCurrentIndex(
+                                        0)
+                                    self.DispModeActPowDialog.DialogActPowPrice.Select_PriceCurve.Daily_GroupBox_Stepsize_SpinBox.setValue(
+                                        i["ActPow"]["sinterval"])
+                                elif "minterval" in i["ActPow"]:
+                                    self.DispModeActPowDialog.DialogActPowPrice.Select_PriceCurve.Daily_GroupBox_Stepsize_ComboBox.setCurrentIndex(
+                                        1)
+                                    self.DispModeActPowDialog.DialogActPowPrice.Select_PriceCurve.Daily_GroupBox_Stepsize_SpinBox.setValue(
+                                        i["ActPow"]["minterval"])
+                                elif "interval" in i["ActPow"]:
+                                    self.DispModeActPowDialog.DialogActPowPrice.Select_PriceCurve.Daily_GroupBox_Stepsize_ComboBox.setCurrentIndex(
+                                        2)
+                                    self.DispModeActPowDialog.DialogActPowPrice.Select_PriceCurve.Daily_GroupBox_Stepsize_SpinBox.setValue(
+                                        i["ActPow"]["interval"])
+                                self.DispModeActPowDialog.DialogActPowPrice.Select_PriceCurve.Daily_GroupBox_Number_SpinBox.setValue(
+                                    i["ActPow"]["npts"])
 
-                                if i['ModoDescarga'] == 'PeakShave':
-                                    self.DispModeActPowDialog.ModoDescarga_GroupBox_StorageCont_GroupBox_Layout_PeakShave_RadioBtn.setChecked(True)
-                                elif i['ModoDescarga'] == 'I-PeakShave':
-                                    self.DispModeActPowDialog.ModoDescarga_GroupBox_StorageCont_GroupBox_Layout_IPeakShave_RadioBtn.setChecked(True)
-                                elif i['ModoDescarga'] == 'Follow':
-                                    self.DispModeActPowDialog.ModoDescarga_GroupBox_StorageCont_GroupBox_Layout_Follow_RadioBtn.setChecked(True)
-                                elif i['ModoDescarga'] == 'Support':
-                                    self.DispModeActPowDialog.ModoDescarga_GroupBox_StorageCont_GroupBox_Layout_Support_RadioBtn.setChecked(True)
-                                elif i['ModoDescarga'] == 'Schedule':
-                                    self.DispModeActPowDialog.ModoDescarga_GroupBox_StorageCont_GroupBox_Layout_Schedule_RadioBtn.setChecked(True)
-                                elif i['ModoDescarga'] == 'Time':
-                                    self.DispModeActPowDialog.ModoDescarga_GroupBox_StorageCont_GroupBox_Layout_Time_RadioBtn.setChecked(True)
+                            elif i['ModoCarga/Descarga'] == 'Price':
+                                self.DispModeActPowDialog.DispSinc_GroupBox_AutoDespacho_GroupBox_Layout_Price_RadioBtn.setChecked(
+                                    True)
+                                self.DispModeActPowDialog.DialogActPowPrice.ChargeTrigger_LineEdit.setText(
+                                    i["ActPow"]["ChargeTrigger"])
+                                self.DispModeActPowDialog.DialogActPowPrice.DischargeTrigger_LineEdit.setText(
+                                    i["ActPow"]["DischargeTrigger"])
+                                if 'TimeChargeTrigger' in i["ActPow"]:
+                                    self.DispModeActPowDialog.DialogActPowPrice.TimeTrigger_LineEdit.setEnabled(True)
+                                    self.DispModeActPowDialog.DialogActPowPrice.TimeTrigger_LineEdit.setText(
+                                        i["ActPow"]['TimeChargeTrigger'])
+                                    self.DispModeActPowDialog.DialogActPowPrice.TimeTrigger_CheckBox.setChecked(True)
+                                pts = str(i["ActPow"]["price"]).strip('[]').replace("'", "")
+                                self.DispModeActPowDialog.DialogActPowPrice.Select_PriceCurveFile.Config_PriceCurve_GroupBox_TreeWidget_Item(
+                                    self.DispModeActPowDialog.DialogActPowPrice.Select_PriceCurve.PriceCurve_GroupBox_TreeWidget,
+                                    i["ActPow"]["PriceCurveName"],
+                                    pts,
+                                    cfg.colorsList[random.randint(0, len(cfg.colorsList) - 1)])
+                                if "sinterval" in i["ActPow"]:
+                                    self.DispModeActPowDialog.DialogActPowPrice.Select_PriceCurve.Daily_GroupBox_Stepsize_ComboBox.setCurrentIndex(
+                                        0)
+                                    self.DispModeActPowDialog.DialogActPowPrice.Select_PriceCurve.Daily_GroupBox_Stepsize_SpinBox.setValue(
+                                        i["ActPow"]["sinterval"])
+                                elif "minterval" in i["ActPow"]:
+                                    self.DispModeActPowDialog.DialogActPowPrice.Select_PriceCurve.Daily_GroupBox_Stepsize_ComboBox.setCurrentIndex(
+                                        1)
+                                    self.DispModeActPowDialog.DialogActPowPrice.Select_PriceCurve.Daily_GroupBox_Stepsize_SpinBox.setValue(
+                                        i["ActPow"]["minterval"])
+                                elif "interval" in i["ActPow"]:
+                                    self.DispModeActPowDialog.DialogActPowPrice.Select_PriceCurve.Daily_GroupBox_Stepsize_ComboBox.setCurrentIndex(
+                                        2)
+                                    self.DispModeActPowDialog.DialogActPowPrice.Select_PriceCurve.Daily_GroupBox_Stepsize_SpinBox.setValue(
+                                        i["ActPow"]["interval"])
+                                self.DispModeActPowDialog.DialogActPowPrice.Select_PriceCurve.Daily_GroupBox_Number_SpinBox.setValue(
+                                    i["ActPow"]["npts"])
 
-                        self.TabConfig.StorageConfig_GroupBox_Nome_LineEdit.setEnabled(False)
-                        self.EnableDisableParameters(True)
-                if checkCont > 1:
-                    raise class_exception.ExecConfigOpenDSS("Insert Storage",
-                                                            "Selecione somente um Storage para editar!")
-                elif checkCont == 0:
-                    raise class_exception.ExecConfigOpenDSS("Insert Storage",
-                                                             "Selecione pelo menos um Storage para editar!")
+                            elif i['ModoCarga/Descarga'] == 'LoadShape':
+                                self.DispModeActPowDialog.DispSinc_GroupBox_StorageCont_GroupBox_Layout_LoadShape_RadioBtn.setChecked(
+                                    True)
+                                for ctd in self.StorageControllers:
+                                    if i["StorageName"] in ctd["ElementList"]:
+                                        pts = str(ctd["mult"]).strip('[]').replace("'", "")
+                                        self.DispModeActPowDialog.DialogActPowDefault.Select_DispCurveFile.Config_DispCurve_GroupBox_TreeWidget_Item(
+                                            self.DispModeActPowDialog.DialogActPowDefault.Select_DispCurve.DispCurve_GroupBox_TreeWidget,
+                                            ctd["DispCurveName"],
+                                            pts,
+                                            cfg.colorsList[random.randint(0, len(cfg.colorsList) - 1)])
+                                        if "sinterval" in ctd:
+                                            self.DispModeActPowDialog.DialogActPowDefault.Select_DispCurve.Daily_GroupBox_Stepsize_ComboBox.setCurrentIndex(
+                                                0)
+                                            self.DispModeActPowDialog.DialogActPowDefault.Select_DispCurve.Daily_GroupBox_Stepsize_SpinBox.setValue(
+                                                ctd["sinterval"])
+                                        elif "minterval" in ctd:
+                                            self.DispModeActPowDialog.DialogActPowDefault.Select_DispCurve.Daily_GroupBox_Stepsize_ComboBox.setCurrentIndex(
+                                                1)
+                                            self.DispModeActPowDialog.DialogActPowDefault.Select_DispCurve.Daily_GroupBox_Stepsize_SpinBox.setValue(
+                                                ctd["minterval"])
+                                        elif "interval" in ctd:
+                                            self.DispModeActPowDialog.DialogActPowDefault.Select_DispCurve.Daily_GroupBox_Stepsize_ComboBox.setCurrentIndex(
+                                                2)
+                                            self.DispModeActPowDialog.DialogActPowDefault.Select_DispCurve.Daily_GroupBox_Stepsize_SpinBox.setValue(
+                                                ctd["interval"])
+                                        self.DispModeActPowDialog.DialogActPowDefault.Select_DispCurve.Daily_GroupBox_Number_SpinBox.setValue(
+                                            ctd["npts"])
+
+                        if i["Carga/Descarga"] == "Independentes":
+                            self.DispModeActPowDialog.DispIndep_Radio_Btn.setChecked(True)
+                            self.DispModeActPowDialog.DispIndep_GroupBox.setEnabled(True)
+
+                            if i['ModoCarga'] == 'PeakShaveLow':
+                                self.DispModeActPowDialog.ModoCarga_GroupBox_StorageCont_GroupBox_Layout_PeakShaveLow_RadioBtn.setChecked(
+                                    True)
+                            elif i['ModoCarga'] == 'I-PeakShaveLow':
+                                self.DispModeActPowDialog.ModoCarga_GroupBox_StorageCont_GroupBox_Layout_IPeakShaveLow_RadioBtn.setChecked(
+                                    True)
+                            elif i['ModoCarga'] == 'Time':
+                                self.DispModeActPowDialog.ModoCarga_GroupBox_StorageCont_GroupBox_Layout_Time_RadioBtn.setChecked(
+                                    True)
+
+                            if i['ModoDescarga'] == 'PeakShave':
+                                self.DispModeActPowDialog.ModoDescarga_GroupBox_StorageCont_GroupBox_Layout_PeakShave_RadioBtn.setChecked(
+                                    True)
+                            elif i['ModoDescarga'] == 'I-PeakShave':
+                                self.DispModeActPowDialog.ModoDescarga_GroupBox_StorageCont_GroupBox_Layout_IPeakShave_RadioBtn.setChecked(
+                                    True)
+                            elif i['ModoDescarga'] == 'Follow':
+                                self.DispModeActPowDialog.ModoDescarga_GroupBox_StorageCont_GroupBox_Layout_Follow_RadioBtn.setChecked(
+                                    True)
+                            elif i['ModoDescarga'] == 'Support':
+                                self.DispModeActPowDialog.ModoDescarga_GroupBox_StorageCont_GroupBox_Layout_Support_RadioBtn.setChecked(
+                                    True)
+                            elif i['ModoDescarga'] == 'Schedule':
+                                self.DispModeActPowDialog.ModoDescarga_GroupBox_StorageCont_GroupBox_Layout_Schedule_RadioBtn.setChecked(
+                                    True)
+                            elif i['ModoDescarga'] == 'Time':
+                                self.DispModeActPowDialog.ModoDescarga_GroupBox_StorageCont_GroupBox_Layout_Time_RadioBtn.setChecked(
+                                    True)
+
+                self.TabConfig.StorageConfig_GroupBox_Nome_LineEdit.setEnabled(False)
+                self.EnableDisableParameters(True)
+
+            if checkCont > 1:
+                raise class_exception.ExecConfigOpenDSS("Insert Storage",
+                                                        "Selecione somente um Storage para editar!")
+            elif checkCont == 0:
+                raise class_exception.ExecConfigOpenDSS("Insert Storage",
+                                                        "Selecione pelo menos um Storage para editar!")
         except:
             pass
 
@@ -322,9 +482,9 @@ class C_Insert_Storage_Dialog(QDialog):  ## Classe Dialog principal
             self.DispModeActPowDialog.ConfigStorageController.StorageConfig_GroupBox_PercentageReserve_LineEdit = self.TabConfig.StorageConfig_GroupBox_PercentageReserve_LineEdit
             self.DispModeActPowDialog.DialogActPowLoadShape.StorageConfig_GroupBox_PercentageReserve_LineEdit = self.TabConfig.StorageConfig_GroupBox_PercentageReserve_LineEdit
 
-            # self.TabConfig.ConfigStorageController.StorageControllers = self.StorageControllers
-            self.TabConfig.ConfigStorageController.StorageControllersTemporario = self.StorageControllers
-            self.DispModeActPowDialog.show()
+            self.DispModeActPowDialog.exec()
+
+            self.TabConfig.StorageConfig_GroupBox_Nome_LineEdit.setReadOnly(True)
 
     def DispModeReactPow(self):
         if self.get_StorageName() == "":
@@ -332,7 +492,7 @@ class C_Insert_Storage_Dialog(QDialog):  ## Classe Dialog principal
                         "Antes de configurar o Despacho da Potência Reativa, escolha\num nome para o Storage!",
                         QMessageBox.Ok).exec()
         else:
-            self.DispModeReactPowDialog.show()
+            self.DispModeReactPowDialog.exec()
 
     def AcceptAddEditStorage(self):
         if self.TabConfig.verificaLineEdits() and self.TabInversorConfig.verificaLineEdits():
@@ -350,6 +510,10 @@ class C_Insert_Storage_Dialog(QDialog):  ## Classe Dialog principal
             else:
                 countName = 0
                 Storage = {}
+
+                for e in self.StorageControllers: # Garante que dois StorageController não controlem um mesmo Storage
+                    while self.get_StorageName() in e["ElementList"]:
+                        e["ElementList"].remove(self.get_StorageName())
 
                 ############# seta data das configurações gerais
                 Storage["StorageName"] = self.get_StorageName()
@@ -375,6 +539,8 @@ class C_Insert_Storage_Dialog(QDialog):  ## Classe Dialog principal
                 Storage["vMaxpu"] = self.TabConfig.StorageConfig_GroupBox_vMaxPu_LineEdit.text()
                 Storage["%R"] = self.TabConfig.StorageConfig_GroupBox_R_LineEdit.text()
                 Storage["%X"] = self.TabConfig.StorageConfig_GroupBox_X_LineEdit.text()
+                Storage["model"] = self.TabConfig.StorageConfig_GroupBox_model_ComboBox.currentText()
+                Storage["phases"] = self.TabConfig.StorageConfig_GroupBox_phases_ComboBox.currentText()
                 ############# seta data das configurações do inversor
                 Storage["kVA"] = self.TabInversorConfig.InversorConfig_GroupBox_kVA_LineEdit.text()
                 Storage["kWrated"] = self.TabInversorConfig.InversorConfig_GroupBox_kWrated_LineEdit.text()
@@ -401,11 +567,17 @@ class C_Insert_Storage_Dialog(QDialog):  ## Classe Dialog principal
 
                 if self.DispModeActPowDialog.DispSinc_Radio_Btn.isChecked():
                     Storage["Carga/Descarga"] = "Sincronizados"
-                    for i in [[self.DispModeActPowDialog.DispSinc_GroupBox_AutoDespacho_GroupBox_Layout_Default_RadioBtn, "Default"],
-                        [self.DispModeActPowDialog.DispSinc_GroupBox_AutoDespacho_GroupBox_Layout_Follow_RadioBtn, "Follow"],
-                        [self.DispModeActPowDialog.DispSinc_GroupBox_AutoDespacho_GroupBox_Layout_LoadLevel_RadioBtn,"LoadLevel"],
-                        [self.DispModeActPowDialog.DispSinc_GroupBox_AutoDespacho_GroupBox_Layout_Price_RadioBtn, "Price"],
-                        [self.DispModeActPowDialog.DispSinc_GroupBox_StorageCont_GroupBox_Layout_LoadShape_RadioBtn,"LoadShape"]]:
+                    for i in [
+                        [self.DispModeActPowDialog.DispSinc_GroupBox_AutoDespacho_GroupBox_Layout_Default_RadioBtn,
+                         "Default"],
+                        [self.DispModeActPowDialog.DispSinc_GroupBox_AutoDespacho_GroupBox_Layout_Follow_RadioBtn,
+                         "Follow"],
+                        [self.DispModeActPowDialog.DispSinc_GroupBox_AutoDespacho_GroupBox_Layout_LoadLevel_RadioBtn,
+                         "LoadLevel"],
+                        [self.DispModeActPowDialog.DispSinc_GroupBox_AutoDespacho_GroupBox_Layout_Price_RadioBtn,
+                         "Price"],
+                        [self.DispModeActPowDialog.DispSinc_GroupBox_StorageCont_GroupBox_Layout_LoadShape_RadioBtn,
+                         "LoadShape"]]:
                         if i[0].isChecked():
                             Storage["ModoCarga/Descarga"] = i[1]
 
@@ -430,11 +602,14 @@ class C_Insert_Storage_Dialog(QDialog):  ## Classe Dialog principal
                                                     Storage["ModoCarga/Descarga"])
 
                             if Storage["ModoCarga/Descarga"] == "Default":
-                                Storage.update({"ActPow": self.DispModeActPowDialog.DialogActPowDefault.DefaultParameters})
+                                Storage.update(
+                                    {"ActPow": self.DispModeActPowDialog.DialogActPowDefault.DefaultParameters})
                             elif Storage["ModoCarga/Descarga"] == "Follow":
-                                Storage.update({"ActPow": self.DispModeActPowDialog.DialogActPowFollow.FollowParameters})
+                                Storage.update(
+                                    {"ActPow": self.DispModeActPowDialog.DialogActPowFollow.FollowParameters})
                             elif Storage["ModoCarga/Descarga"] == "LoadLevel":
-                                Storage.update({"ActPow": self.DispModeActPowDialog.DialogActPowLoadLevel.LoadLevelParameters})
+                                Storage.update(
+                                    {"ActPow": self.DispModeActPowDialog.DialogActPowLoadLevel.LoadLevelParameters})
                             elif Storage["ModoCarga/Descarga"] == "Price":
                                 Storage.update({"ActPow": self.DispModeActPowDialog.DialogActPowPrice.PriceParameters})
                             elif Storage["ModoCarga/Descarga"] == "LoadShape":
@@ -446,7 +621,7 @@ class C_Insert_Storage_Dialog(QDialog):  ## Classe Dialog principal
                                 if StorageCont == 0:
                                     for ctd in self.DispModeActPowDialog.DialogActPowLoadShape.StorageControllersTemporario:
                                         if self.get_StorageName() in ctd["ElementList"]:
-                                            self.StorageControllers.append(ctd)
+                                            self.StorageControllers.append(ctd.copy())
 
                         if Storage["Carga/Descarga"] == "Independentes":
                             Storage.update({"ActPow": None})
@@ -457,7 +632,7 @@ class C_Insert_Storage_Dialog(QDialog):  ## Classe Dialog principal
                             if StorageCont == 0:
                                 for ctd in self.DispModeActPowDialog.ConfigStorageController.StorageControllersTemporario:
                                     if self.get_StorageName() in ctd["ElementList"]:
-                                        self.StorageControllers.append(ctd)
+                                        self.StorageControllers.append(ctd.copy())
 
                             Storage_TreeWidget_Item(self.Storages_GroupBox_TreeWidget,
                                                     self.get_StorageName(),
@@ -465,6 +640,19 @@ class C_Insert_Storage_Dialog(QDialog):  ## Classe Dialog principal
                                                     Storage["ModoCarga"] + "/" + Storage["ModoDescarga"])
 
                         self.Storages.append(Storage)
+
+                        ElementList = [] # Garante que dois controladores nao controlem um Storage
+                        for i in self.StorageControllers:
+                            if self.get_StorageName() in i["ElementList"]:
+                                ElementList = i["ElementList"]
+
+                        for i in ElementList:
+                            listRemove = []
+                            for e in self.StorageControllers:
+                                if (not self.get_StorageName() in e["ElementList"]) and (i in e["ElementList"]):
+                                    listRemove.append(e)
+                            for e in listRemove:
+                                self.StorageControllers.remove(e)
 
                     else:
                         QMessageBox(QMessageBox.Warning, "Insert Storage",
@@ -476,6 +664,7 @@ class C_Insert_Storage_Dialog(QDialog):  ## Classe Dialog principal
                         if ctd["StorageName"] == Storage["StorageName"]:
 
                             ctd["Conn"] = Storage["Conn"]
+                            ctd["Bus"] = Storage["Bus"]
                             ctd["kW"] = Storage["kW"]
                             ctd["kV"] = Storage["kV"]
                             ctd["kWhrated"] = Storage["kWhrated"]
@@ -505,9 +694,11 @@ class C_Insert_Storage_Dialog(QDialog):  ## Classe Dialog principal
 
                             if Storage["Carga/Descarga"] == "Sincronizados":
                                 ctd["Carga/Descarga"] = Storage["Carga/Descarga"]
+
                                 for i in [["Default", self.DispModeActPowDialog.DialogActPowDefault.DefaultParameters],
                                           ["Follow", self.DispModeActPowDialog.DialogActPowFollow.FollowParameters],
-                                          ["LoadLevel", self.DispModeActPowDialog.DialogActPowLoadLevel.LoadLevelParameters],
+                                          ["LoadLevel",
+                                           self.DispModeActPowDialog.DialogActPowLoadLevel.LoadLevelParameters],
                                           ["Price", self.DispModeActPowDialog.DialogActPowPrice.PriceParameters]]:
                                     if Storage["ModoCarga/Descarga"] == i[0]:
                                         ctd["ModoCarga/Descarga"] = Storage["ModoCarga/Descarga"]
@@ -515,34 +706,38 @@ class C_Insert_Storage_Dialog(QDialog):  ## Classe Dialog principal
 
                                 if Storage["ModoCarga/Descarga"] == "LoadShape":
                                     ctd["ModoCarga/Descarga"] = Storage["ModoCarga/Descarga"]
+                                    ctd.update({"ActPow": None})
+
                                     if not self.DispModeActPowDialog.DialogActPowLoadShape.StorageControllersTemporario == []:
-                                        for i in self.StorageControllers:
-                                            if self.get_StorageName() in i["ElementList"]:
-                                                i["ElementList"].remove(self.get_StorageName())
+                                        # for i in self.StorageControllers:
+                                        #     while self.get_StorageName() in i["ElementList"]:
+                                        #         i["ElementList"].remove(self.get_StorageName())
                                         for i in self.DispModeActPowDialog.DialogActPowLoadShape.StorageControllersTemporario:
                                             if self.get_StorageName() in i["ElementList"]:
-                                                self.StorageControllers.append(i)
+                                                self.StorageControllers.append(i.copy())
 
                                 for ctd in range(self.Storages_GroupBox_TreeWidget.topLevelItemCount() - 1, -1, -1):
                                     Item = self.Storages_GroupBox_TreeWidget.topLevelItem(ctd)
                                     if Item.text(0) == self.get_StorageName():
                                         self.Storages_GroupBox_TreeWidget.takeTopLevelItem(ctd)
                                         Storage_TreeWidget_Item(self.Storages_GroupBox_TreeWidget,
-                                                        self.get_StorageName(),
-                                                        self.TabConfig.StorageConfig_GroupBox_Bus_ComboBox.currentText(),
-                                                        Storage["ModoCarga/Descarga"])
+                                                                self.get_StorageName(),
+                                                                self.TabConfig.StorageConfig_GroupBox_Bus_ComboBox.currentText(),
+                                                                Storage["ModoCarga/Descarga"])
 
                             elif Storage["Carga/Descarga"] == "Independentes":
                                 ctd["Carga/Descarga"] = Storage["Carga/Descarga"]
                                 ctd['ModoCarga'] = Storage['ModoCarga']
                                 ctd['ModoDescarga'] = Storage['ModoDescarga']
-                                if not self.DispModeActPowDialog.DialogActPowLoadShape.StorageControllersTemporario == []:
-                                    for i in self.StorageControllers:
+                                ctd.update({"ActPow": None})
+
+                                if not self.DispModeActPowDialog.ConfigStorageController.StorageControllersTemporario == []:
+                                    # for i in self.StorageControllers:
+                                    #     while self.get_StorageName() in i["ElementList"]:
+                                    #         i["ElementList"].remove(self.get_StorageName())
+                                    for i in self.DispModeActPowDialog.ConfigStorageController.StorageControllersTemporario:
                                         if self.get_StorageName() in i["ElementList"]:
-                                            i["ElementList"].remove(self.get_StorageName())
-                                    for i in self.DispModeActPowDialog.DialogActPowLoadShape.StorageControllersTemporario:
-                                        if self.get_StorageName() in i["ElementList"]:
-                                            self.StorageControllers.append(i)
+                                            self.StorageControllers.append(i.copy())
 
                                 for ctd in range(0, self.Storages_GroupBox_TreeWidget.topLevelItemCount()):
                                     Item = self.Storages_GroupBox_TreeWidget.topLevelItem(ctd)
@@ -553,13 +748,38 @@ class C_Insert_Storage_Dialog(QDialog):  ## Classe Dialog principal
                                                                 self.TabConfig.StorageConfig_GroupBox_Bus_ComboBox.currentText(),
                                                                 Storage["ModoCarga"] + "/" + Storage["ModoDescarga"])
 
+                            ElementList = []  # Garante que dois controladores nao controlem um Storage
+                            for i in self.StorageControllers:
+                                if self.get_StorageName() in i["ElementList"]:
+                                    ElementList = i["ElementList"]
+
+                            for i in ElementList:
+                                listRemove = []
+                                for e in self.StorageControllers:
+                                    if (not self.get_StorageName() in e["ElementList"]) and (i in e["ElementList"]):
+                                        listRemove.append(e)
+                                for e in listRemove:
+                                    self.StorageControllers.remove(e)
+
+                if not self.StorageControllers == []:
+                    listRemove = []
+                    for ctd in self.StorageControllers:
+                        ctd["ElementList"] = list(set(ctd["ElementList"]))
+                        if not ctd["ElementList"]:  # Garante que nao haja StorageController que não controle nenhum Storage
+                            listRemove.append(ctd)
+                    for ctd in listRemove:
+                        self.StorageControllers.remove(ctd)
+
                 self.updateDialog()
                 self.TabConfig.StorageConfig_GroupBox_Nome_LineEdit.setEnabled(True)
+                self.clearStorageParameters()
+                self.DefaultConfigParameters()
                 self.EnableDisableParameters(False)
                 self.adjustSize()
 
     def CancelAddEditStorage(self):
         self.TabConfig.StorageConfig_GroupBox_Nome_LineEdit.setEnabled(True)
+        self.TabConfig.StorageConfig_GroupBox_Nome_LineEdit.setReadOnly(False)
         self.EnableDisableParameters(False)
         self.adjustSize()
 
@@ -589,7 +809,7 @@ class C_Insert_Storage_Dialog(QDialog):  ## Classe Dialog principal
 
     def DefaultConfigParameters(self):
         self.TabConfig.StorageConfig_GroupBox_Nome_LineEdit.setText("")
-        self.TabConfig.StorageConfig_GroupBox_conn_ComboBox.setCurrentText("Y")
+        self.TabConfig.StorageConfig_GroupBox_conn_ComboBox.setCurrentText("Wye")
         self.TabConfig.StorageConfig_GroupBox_Bus_ComboBox.setCurrentIndex(0)
         self.TabConfig.StorageConfig_GroupBox_kW_LineEdit.setText("")
         self.TabConfig.StorageConfig_GroupBox_kv_LineEdit.setText("")
@@ -606,10 +826,13 @@ class C_Insert_Storage_Dialog(QDialog):  ## Classe Dialog principal
         self.TabConfig.StorageConfig_GroupBox_vMaxPu_LineEdit.setText("1.1")
         self.TabConfig.StorageConfig_GroupBox_R_LineEdit.setText("0")
         self.TabConfig.StorageConfig_GroupBox_X_LineEdit.setText("50")
+        self.TabConfig.StorageConfig_GroupBox_model_ComboBox.setCurrentIndex(0)
+        self.TabConfig.StorageConfig_GroupBox_phases_ComboBox.setCurrentIndex(0)
 
         self.TabInversorConfig.InversorConfig_GroupBox_kVA_LineEdit.setText("")
         self.TabInversorConfig.InversorConfig_GroupBox_kWrated_LineEdit.setText("25")
-        self.TabInversorConfig.InversorConfig_GroupBox_varFollowInverter_ComboBox.setCurrentText("Desativa CutIn/CutOut")
+        self.TabInversorConfig.InversorConfig_GroupBox_varFollowInverter_ComboBox.setCurrentText(
+            "Desativa CutIn/CutOut")
         self.TabInversorConfig.InversorConfig_GroupBox_CutIn_LineEdit.setText("0")
         self.TabInversorConfig.InversorConfig_GroupBox_CutOut_LineEdit.setText("0")
         self.TabInversorConfig.InversorConfig_GroupBox_kvarMax_LineEdit.setText("999999")
@@ -620,6 +843,8 @@ class C_Insert_Storage_Dialog(QDialog):  ## Classe Dialog principal
         self.TabInversorConfig.InversorConfig_GroupBox_WattPriority_ComboBox.setCurrentText("Pot. Reativa")
 
     def clearStorageParameters(self):
+        self.TabConfig.StorageConfig_GroupBox_Nome_LineEdit.setReadOnly(False)
+
         self.TabConfig.StorageConfig_GroupBox_Nome_LineEdit.setText("")
         self.TabConfig.StorageConfig_GroupBox_conn_ComboBox.setCurrentIndex(0)
         self.TabConfig.StorageConfig_GroupBox_Bus_ComboBox.setCurrentIndex(0)
@@ -638,6 +863,8 @@ class C_Insert_Storage_Dialog(QDialog):  ## Classe Dialog principal
         self.TabConfig.StorageConfig_GroupBox_vMaxPu_LineEdit.setText("")
         self.TabConfig.StorageConfig_GroupBox_R_LineEdit.setText("")
         self.TabConfig.StorageConfig_GroupBox_X_LineEdit.setText("")
+        self.TabConfig.StorageConfig_GroupBox_model_ComboBox.setCurrentIndex(0)
+        self.TabConfig.StorageConfig_GroupBox_phases_ComboBox.setCurrentIndex(0)
 
         self.TabInversorConfig.InversorConfig_GroupBox_kVA_LineEdit.setText("")
         self.TabInversorConfig.InversorConfig_GroupBox_kWrated_LineEdit.setText("")
@@ -650,13 +877,23 @@ class C_Insert_Storage_Dialog(QDialog):  ## Classe Dialog principal
         self.TabInversorConfig.InversorConfig_GroupBox_PminkvarMax_LineEdit.setText("")
         self.TabInversorConfig.InversorConfig_GroupBox_PFPriority_ComboBox.setCurrentIndex(0)
 
+        self.TabInversorConfig.EffCurve.EffCurve_GroupBox_TreeWidget.clear()  # Limpa o TreeWidget e o plot da Curva de Eficiencia
+        self.TabInversorConfig.EffCurve.graphWidget.clear()
+        self.TabInversorConfig.EffCurve.dataEffCurve = {}
+
+        self.DispModeActPowDialog.DialogActPowPrice.Select_PriceCurve.restoreParameters()
+        self.DispModeActPowDialog.DialogActPowDefault.Select_DispCurve.restoreParameters()
+
+        self.DispModeActPowDialog.DialogActPowDefault.clearParameters()
+        self.DispModeActPowDialog.DialogActPowFollow.clearParameters()
+        self.DispModeActPowDialog.DialogActPowLoadLevel.clearParameters()
+        self.DispModeActPowDialog.DialogActPowPrice.clearParameters()
 
 class StorageConfig(QWidget):
     def __init__(self):
         super().__init__()
 
         self.InitUIStorageConfig()
-
 
     def InitUIStorageConfig(self):
 
@@ -666,6 +903,7 @@ class StorageConfig(QWidget):
         self.LineEditsValidos.setBottom(0.1)
         self.LineEditsValidos0 = QDoubleValidator()
         self.LineEditsValidos0.setBottom(0.0)
+
         ###################### GroupBox StorageConfig #######################################################
         self.StorageConfig_GroupBox = QGroupBox()  # Criando a GroupBox StorageConfig
         self.StorageConfig_GroupBox_Layout = QGridLayout()  # Layout da GroupBox do StorageConfig é em Grid
@@ -677,7 +915,7 @@ class StorageConfig(QWidget):
         # Configurar propriedade "conn"
         self.StorageConfig_GroupBox_conn_Label = QLabel("Tipo de conexão")
         self.StorageConfig_GroupBox_conn_ComboBox = QComboBox()
-        self.StorageConfig_GroupBox_conn_ComboBox.addItems(["Y", "LN", "Delta", "LN"])
+        self.StorageConfig_GroupBox_conn_ComboBox.addItems(["Wye", "LN", "Delta", "LN"])
         self.StorageConfig_GroupBox_Layout.addWidget(self.StorageConfig_GroupBox_conn_Label, 0, 2, 1, 1)
         self.StorageConfig_GroupBox_Layout.addWidget(self.StorageConfig_GroupBox_conn_ComboBox, 0, 3, 1, 1)
         # Configurar propriedade "Bus"
@@ -697,7 +935,7 @@ class StorageConfig(QWidget):
         self.StorageConfig_GroupBox_kv_LineEdit.setValidator(self.LineEditsValidos)
         self.StorageConfig_GroupBox_Layout.addWidget(self.StorageConfig_GroupBox_kv_Label, 1, 2, 1, 1)
         self.StorageConfig_GroupBox_Layout.addWidget(self.StorageConfig_GroupBox_kv_LineEdit, 1, 3, 1, 1)
-         # Configurar propriedade "kWhrated" (capacidade nominal do Storage em kWh)
+        # Configurar propriedade "kWhrated" (capacidade nominal do Storage em kWh)
         self.StorageConfig_GroupBox_kWhrated_Label = QLabel("Capacidade Nominal (kWh)")
         self.StorageConfig_GroupBox_kWhrated_LineEdit = QLineEdit()
         self.StorageConfig_GroupBox_kWhrated_LineEdit.setValidator(self.LineEditsValidos)
@@ -792,6 +1030,20 @@ class StorageConfig(QWidget):
         self.StorageConfig_GroupBox_X_LineEdit.setValidator(self.LineEditsValidos0)
         self.StorageConfig_GroupBox_Layout.addWidget(self.StorageConfig_GroupBox_X_Label, 8, 2, 1, 1)
         self.StorageConfig_GroupBox_Layout.addWidget(self.StorageConfig_GroupBox_X_LineEdit, 8, 3, 1, 1)
+        # Configurar propriedade "model" (modelo de saída da potência)
+        self.StorageConfig_GroupBox_model_Label = QLabel("Modelo do Storage")
+        self.StorageConfig_GroupBox_model_Label.setToolTip("1: Storage injeta/absorve potência constante.\n2: Storage é modelado como uma impedância constante.")
+        self.StorageConfig_GroupBox_model_ComboBox = QComboBox()
+        self.StorageConfig_GroupBox_model_ComboBox.addItems(["1", "2"])
+        self.StorageConfig_GroupBox_Layout.addWidget(self.StorageConfig_GroupBox_model_Label, 9, 0, 1, 1)
+        self.StorageConfig_GroupBox_Layout.addWidget(self.StorageConfig_GroupBox_model_ComboBox, 9, 1, 1, 1)
+        # Configurar propriedade "phases" (fases)
+        self.StorageConfig_GroupBox_phases_Label = QLabel("Número de fases")
+        self.StorageConfig_GroupBox_phases_Label.setToolTip("A potência é dividida igualmente para o número de fases.")
+        self.StorageConfig_GroupBox_phases_ComboBox = QComboBox()
+        self.StorageConfig_GroupBox_phases_ComboBox.addItems(["3", "2", "1"])
+        self.StorageConfig_GroupBox_Layout.addWidget(self.StorageConfig_GroupBox_phases_Label, 9, 2, 1, 1)
+        self.StorageConfig_GroupBox_Layout.addWidget(self.StorageConfig_GroupBox_phases_ComboBox, 9, 3, 1, 1)
 
         self.StorageConfig_GroupBox.setLayout(
             self.StorageConfig_GroupBox_Layout)  # define o Layout do GroupBox StoragesConfig
@@ -819,8 +1071,9 @@ class StorageConfig(QWidget):
             self.StorageConfig_GroupBox_X_LineEdit,
         ]:
             if not i.hasAcceptableInput():
-                QMessageBox(QMessageBox.Warning, "Insert Storage","Algum valor inserido nas Configurações Gerais não é válido!\n Verifique os valores inseridos!",
-                        QMessageBox.Ok).exec()
+                QMessageBox(QMessageBox.Warning, "Insert Storage",
+                            "Algum valor inserido nas Configurações Gerais não é válido!\n Verifique os valores inseridos!",
+                            QMessageBox.Ok).exec()
                 return False
             else:
                 return True
@@ -832,6 +1085,7 @@ class InversorConfig(QWidget):
         self.InitUIInversorConfig()
 
         self.EffCurve = opendss.storage.class_config_eff_curve.C_Config_EffCurve_Dialog()
+        self.EffCurveFile = opendss.storage.class_config_eff_curve
 
     def InitUIInversorConfig(self):
 
@@ -863,9 +1117,11 @@ potência reativa independentemente\ndo status do inversor. Quando ativado, a ge
 cessar quando o inversor estiver desligado devido a queda da potência DC\nabaixo do CutOut. A geração/absorção vai \
 começar novamente quando a potência\nDC estiver acima de CutIn")
         self.InversorConfig_GroupBox_varFollowInverter_ComboBox = QComboBox()
-        self.InversorConfig_GroupBox_varFollowInverter_ComboBox.addItems(["Ativa CutIn/CutOut", "Desativa CutIn/CutOut"])
+        self.InversorConfig_GroupBox_varFollowInverter_ComboBox.addItems(
+            ["Ativa CutIn/CutOut", "Desativa CutIn/CutOut"])
         self.InversorConfig_GroupBox_Layout.addWidget(self.InversorConfig_GroupBox_varFollowInverter_Label, 1, 0, 1, 1)
-        self.InversorConfig_GroupBox_Layout.addWidget(self.InversorConfig_GroupBox_varFollowInverter_ComboBox, 1, 1, 1, 1)
+        self.InversorConfig_GroupBox_Layout.addWidget(self.InversorConfig_GroupBox_varFollowInverter_ComboBox, 1, 1, 1,
+                                                      1)
         # Configurar propriedade "EffCurve" (True ativa %CutIn %CutOut False desativa %CutIn %CutOut)
         self.InversorConfig_GroupBox_EffCurve_Btn = QPushButton("Selecionar curva de Eficiência")
         self.InversorConfig_GroupBox_EffCurve_Btn.clicked.connect(self.EffCurveConfig)
@@ -938,7 +1194,7 @@ a prioridade\nda potência é negligenciada. Só funciona se estiver operando no
         self.setLayout(self.Tab_layout)
 
     def EffCurveConfig(self):
-        self.EffCurve.show()
+        self.EffCurve.exec()
 
     def verificaLineEdits(self):
         for i in [
@@ -952,11 +1208,13 @@ a prioridade\nda potência é negligenciada. Só funciona se estiver operando no
             self.InversorConfig_GroupBox_PminkvarMax_LineEdit
         ]:
             if not i.hasAcceptableInput():
-                QMessageBox(QMessageBox.Warning, "Insert Storage","Algum valor inserido nas Configurações do Inversor não é válido!\n Verifique os valores inseridos!",
-                        QMessageBox.Ok).exec()
+                QMessageBox(QMessageBox.Warning, "Insert Storage",
+                            "Algum valor inserido nas Configurações do Inversor não é válido!\n Verifique os valores inseridos!",
+                            QMessageBox.Ok).exec()
                 return False
             else:
                 return True
+
 
 class Storage_TreeWidget_Item(QTreeWidgetItem):
     def __init__(self, parent, name, bus, dispatchmode):

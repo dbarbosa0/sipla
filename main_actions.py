@@ -259,7 +259,7 @@ class C_MainActions():
 
     #################################################################################
 
-    def fieldsChangedDSS(self): # A alteração dos alimnetadores implica em rodar o LoadData novamente
+    def fieldsChangedDSS(self): # A alteração dos alimentadores implica em rodar o LoadData novamente
         self.OpenDSS.loadDataFlag = False
         self.updateToobarMenu()
         self.updateStatusBar()

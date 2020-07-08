@@ -653,7 +653,6 @@ class C_OpenDSS(): # classe OpenDSSDirect
 
                 self.memoFileStorages.append(tmp)
 
-
     def exec_PriceCurves(self):
         for ctd in self.Storages:
             if ctd['Carga/Descarga'] == 'Sincronizados':
@@ -678,16 +677,12 @@ class C_OpenDSS(): # classe OpenDSSDirect
 
     def exec_StorageControllers(self):
         for ctd in self.StorageControllers:
-            Weights = []
             tmp = "New StorageController2." + ctd["StorageControllerName"] + \
                   " ElementList=" + str(ctd["ElementList"]).replace("'","") + \
                   " Element=" + ctd["Element"] + \
                   " Terminal=" + ctd["Terminal"] + \
-                  " %reserve=" + ctd["Reserve"]
-            for i in ctd["ElementList"]:
-                if i in ctd["Weight"]:
-                    Weights.append(ctd["Weight"][i])
-            tmp = tmp + " Weights=" + str(Weights).replace("'","")
+                  " %reserve=" + ctd["Reserve"] + \
+                  " DispFactor=" + str(ctd["DispFactor"]).replace(",", ".")
 
             if 'DispatchMode' in ctd:
                 if ctd['DispatchMode'] == 'LoadShape':
@@ -776,8 +771,10 @@ class C_OpenDSS(): # classe OpenDSSDirect
 
         for ctd in self.Storages:
             tmp = "New Storage2." + ctd["StorageName"] + \
+                  " phases=" + ctd["phases"] + \
+                  " model=" + ctd["model"] + \
                   " Conn=" + ctd["Conn"] + \
-                  " Bus=" + ctd["Bus"] + \
+                  " Bus1=" + ctd["Bus"] + \
                   " kW=" + ctd["kW"] + \
                   " kV=" + ctd["kV"] + \
                   " kWhrated=" + ctd["kWhrated"] + \
@@ -806,7 +803,7 @@ class C_OpenDSS(): # classe OpenDSSDirect
                   " PFPriority=" + ctd["PFPriority"] + \
                   " WattPriority=" + ctd["WattPriority"]
 
-            if "ReactPow" in ctd:
+            if len(ctd["ReactPow"]) > 0:
                 for i in ctd["ReactPow"].items():
                     tmp = tmp + " " +i[0] + "=" + i[1]
 
@@ -863,11 +860,8 @@ class C_OpenDSS(): # classe OpenDSSDirect
             self.memoFileStorages.append(tmp)
 
         self.exec_StorageControllers()
-
-        print('###############')
-        for i in self.memoFileStorages:
-            print(i)
-
+        for tmp in self.memoFileStorages:
+            print(tmp)
     ######################################################################################
     ###
     def exec_DynamicFlt(self):

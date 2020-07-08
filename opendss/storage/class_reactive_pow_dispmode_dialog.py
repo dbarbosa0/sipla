@@ -1,6 +1,6 @@
-from PyQt5.QtGui import  QIcon, QDoubleValidator
-from PyQt5.QtWidgets import QStyleFactory, QDialog, QGridLayout, QPushButton, QLabel, QLineEdit, \
-    QHBoxLayout,  QRadioButton, QButtonGroup
+from PyQt5.QtGui import QColor, QIcon, QDoubleValidator
+from PyQt5.QtWidgets import QStyleFactory, QDialog, QGridLayout, \
+    QPushButton, QLabel, QLineEdit, QHBoxLayout,  QRadioButton, QButtonGroup
 from PyQt5.QtCore import Qt
 
 import config as cfg

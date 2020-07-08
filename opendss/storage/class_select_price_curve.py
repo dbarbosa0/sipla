@@ -176,6 +176,9 @@ class C_Config_PriceCurve_Dialog(QDialog):
         self.adjustSize()
 
     def CancelParameters(self):
+        self.Daily_GroupBox_Stepsize_ComboBox.setCurrentIndex(2)
+        self.Daily_GroupBox_Stepsize_SpinBox.setValue(1)
+        self.Daily_GroupBox_Number_SpinBox.setValue(24)
         self.close()
 
     def nPointsLoadDef(self):
@@ -186,6 +189,20 @@ class C_Config_PriceCurve_Dialog(QDialog):
 
     def nStepSizeTimeDef(self):
         return self.Daily_GroupBox_Stepsize_ComboBox.currentText()
+
+    def restoreParameters(self):
+        self.PriceCurve_GroupBox_TreeWidget.clear()
+        self.graphWidget.clear()
+        self.PriceCurve_GroupBox.setVisible(False)
+        self.View_GroupBox.setVisible(False)
+        self.Dialog_Btns_Cancel_Btn.setVisible(False)
+        self.Dialog_Btns_Ok_Btn.setVisible(False)
+        self.Daily_GroupBox.setVisible(True)
+        self.Daily_GroupBox_Stepsize_ComboBox.setCurrentIndex(2)
+        self.Daily_GroupBox_Stepsize_SpinBox.setValue(1)
+        self.Daily_GroupBox_Number_SpinBox.setValue(24)
+        self.dataPriceCurve = {}
+        self.adjustSize()
 
     def Cancel(self):
         self.PriceCurve_GroupBox_TreeWidget.clear()
@@ -261,8 +278,6 @@ class C_Config_PriceCurve_Dialog(QDialog):
                 for dataShape in self.dataPriceCurve:
                     rowText.append(self.dataPriceCurve[dataShape][ctdPoints])
                 writer.writerow(rowText)
-
-
 
     def csvImport(self):
         try:
