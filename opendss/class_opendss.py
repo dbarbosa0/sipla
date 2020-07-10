@@ -897,6 +897,7 @@ class C_OpenDSS(): # classe OpenDSSDirect
         self.exec_OpenDSSRun("set mode=dynamic controlmode=time time=(0,0) stepsize=0.01 number=4000")
         self.exec_OpenDSSRun("Solve")
         self.exec_OpenDSSRun("show eventlog")
+        self.getVoltageResults()  ## Mostrando o resultado das tensões
 
 
     ##
