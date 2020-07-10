@@ -13,6 +13,8 @@ class C_AboutDialog(QDialog):
         self.iconWindow = cfg.sipla_icon
         self.stylesheet = cfg.sipla_stylesheet
 
+        self.dataInfo = {}
+
         self.InitUI()
 
     def InitUI(self):

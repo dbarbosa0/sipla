@@ -56,6 +56,7 @@ class C_MenuToolBar(QDockWidget):
                               'OpenDSS_Results_EnergyMeter_Act':0,
                               'OpenDSS_InsertEnergyMeter_Act': 0, # Inserir o Energy Meter
                               'OpenDSS_InsertMonitor_Act': 0,  # Inserir o Energy Meter
+                              'OpenDSS_InsertStorage_Act': 0, #Inserir o Storage
                               'OpenDSS_Create_Act': 0, # Criar Arquivo .DSS
                               'OpenDSS_Save_Act': 0,
                               'OpenDSS_View_Act': 0,
@@ -139,6 +140,15 @@ class C_MenuToolBar(QDockWidget):
         self.OpenDSSActRef['SCAnalyze_Run_Act'] = self.SCAnalyze_Run_Act
 
 
+        # Contribuição Jonas
+        self.OpenDSS_InsertStorage_Act = QAction(QIcon('img/icon_opendss_storage.png'), 'Storage', self)
+        self.OpenDSS_InsertStorage_Act.setShortcut("")
+        self.OpenDSS_InsertStorage_Act.setStatusTip('Inserir Storage')
+        self.OpenDSS_InsertStorage_Act.triggered.connect(self.exec_InsertStorage)
+        self.OpenDSS_InsertStorage_Act.setObjectName('OpenDSS_InsertStorage_Act')
+        self.OpenDSSActRef['OpenDSS_InsertStorage_Act'] = self.OpenDSS_InsertStorage_Act
+
+
         # ******* Setup the OpenDSS Menu *******
         self.OpenDSSMenu.addAction(self.OpenDSS_Config_Act)
         self.OpenDSSMenu.addAction(self.OpenDSS_Run_Act)
@@ -152,6 +162,7 @@ class C_MenuToolBar(QDockWidget):
         self.OpenDSSMenu.addAction(self.OpenDSS_Results_EnergyMeter_Act)
         self.OpenDSSMenu.addSeparator()
 
+        self.OpenDSSMenuSubInsert.addAction(self.OpenDSS_InsertStorage_Act)
         self.OpenDSSMenuSubProcess = self.OpenDSSMenu.addMenu(QIcon('img/icon_opendss_subprocess.png'),
                                                               'Sub-processos ')
 
@@ -361,6 +372,10 @@ class C_MenuToolBar(QDockWidget):
 
     def exec_dynamicFlt(self):
         self.Actions.exec_SCAnalyze()
+
+    # Contribuição Jonas
+    def exec_InsertStorage(self):
+        self.Actions.execInsertStorage()
 
     ####################################################################
 
