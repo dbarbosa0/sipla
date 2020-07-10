@@ -526,34 +526,40 @@ class C_OpenDSS(): # classe OpenDSSDirect
             self.tableVoltageResults.setItem(ctdVoltageC, 11, QTableWidgetItem(str(round(VoltagePhaseCPU[ctdVoltageC] , 5 ))))
 
         try:
+            step = 0
             for ctdVoltageA in range(0, len(busVoltagesALL)):
                 ## Tensões nodais fase A em V
                 Va = complex(busVoltagesALL[ctdVoltageA], busVoltagesALL[ctdVoltageA+1])
                 self.tableVoltageResults.setItem(ctdVoltageA, 1, QTableWidgetItem(str(round(abs(Va)/1000, 5))))
                 self.tableVoltageResults.setItem(ctdVoltageA, 2, QTableWidgetItem(str(round((cmath.phase(Va) * 180 / cmath.pi) ,3 ))))
                 self.tableVoltageResults.setItem(ctdVoltageA, 8, QTableWidgetItem(str(round((cmath.phase(Va) * 180 / cmath.pi), 3))))
+                step += 5
         except:
             pass
         #    class_exception.ExecOpenDSS("Erro ao processar as tensões!", "Fase A")
 
         try:
+            step = 0
             for ctdVoltageB in range(0, len(busVoltagesALL)):
                 ## Tensões nodais fase B em V
                 Vb = complex(busVoltagesALL[ctdVoltageB+2], busVoltagesALL[ctdVoltageB+3])
                 self.tableVoltageResults.setItem(ctdVoltageB, 3, QTableWidgetItem(str(round(abs(Vb)/1000 , 5))))
                 self.tableVoltageResults.setItem(ctdVoltageB, 4, QTableWidgetItem(str(round( cmath.phase(Vb) * 180 / cmath.pi , 3))))
                 self.tableVoltageResults.setItem(ctdVoltageB, 10, QTableWidgetItem(str(round( cmath.phase(Vb) * 180 / cmath.pi, 3))))
+                step += 5
         except:
             pass
             #class_exception.ExecOpenDSS("Erro ao processar as tensões!", "Fase B")
 
         try:
+            step = 0
             for ctdVoltageC in range(0, len(busVoltagesALL)):
                 ## Tensões nodais fase C em V
                 Vc = complex(busVoltagesALL[ctdVoltageC+4], busVoltagesALL[ctdVoltageC+5])
                 self.tableVoltageResults.setItem(ctdVoltageC, 5, QTableWidgetItem(str(round(abs(Vc)/1000 , 5))))
                 self.tableVoltageResults.setItem(ctdVoltageC, 6, QTableWidgetItem(str(round((cmath.phase(Vc) * 180 / cmath.pi),3))))
                 self.tableVoltageResults.setItem(ctdVoltageC, 12, QTableWidgetItem(str(round((cmath.phase(Vc) * 180 / cmath.pi), 3))))
+                step += 5
         except:
             pass
             #class_exception.ExecOpenDSS("Erro ao processar as tensões!", "Fase C")
