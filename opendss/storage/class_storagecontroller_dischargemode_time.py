@@ -5,7 +5,7 @@ from PyQt5.QtCore import Qt
 
 import config as cfg
 
-class C_ActPow_Discharge_Time_DispMode_Dialog(QDialog): ## Classe Dialog Despacho Discharge Time da Potencia Ativa
+class C_ActPow_Discharge_Time_DispMode_Dialog(QDialog): ## Classe Dialog Despacho Discharge Time da Potência Ativa
     def __init__(self):
         super().__init__()
 
