@@ -102,6 +102,7 @@ class C_ConfigDialog(QDialog):
         else:
             return "COM"
 
+
     def loadParameters(self):
 
         ## Geral
@@ -120,6 +121,9 @@ class C_ConfigDialog(QDialog):
         self.dataInfo["Maxcontroliter"] = self.TabLoadFlow.get_Maxcontroliter()
         self.dataInfo["LoadShapes"] = self.TabLoadFlow.get_LoadShapes()
 
+    def Accept(self):
+        self.loadParameters()
+
         if self.dataInfo["Mode"] == "Daily":
             if not self.dataInfo["LoadShapes"]:
                 QMessageBox(QMessageBox.Information, "OpenDSS Configuration", "Curvas de cargas não estão carregadas!",
@@ -129,8 +133,6 @@ class C_ConfigDialog(QDialog):
                 QMessageBox(QMessageBox.Information, "OpenDSS Configuration", "Algumas cargas não serão consideradas!",
                             QMessageBox.Ok).exec()
 
-    def Accept(self):
-        self.loadParameters()
         self.close()
 
     def saveDefaultParameters(self):
@@ -152,6 +154,16 @@ class C_ConfigDialog(QDialog):
             config['LoadFlow']['Number'] = str(self.TabLoadFlow.get_Number())
             config['LoadFlow']['Maxiterations'] = str(self.TabLoadFlow.get_Maxiterations())
             config['LoadFlow']['Maxcontroliter']  = str(self.TabLoadFlow.get_Maxcontroliter())
+
+            ## LoadShapes
+            config['LoadShapes'] = {}
+
+            for ctd in range(0, self.TabLoadFlow.LoadShapesDialog.Shapes_GroupBox_TreeWidget.topLevelItemCount()):
+
+                Item = self.TabLoadFlow.LoadShapesDialog.Shapes_GroupBox_TreeWidget.topLevelItem(ctd)
+
+                config['LoadShapes'][str(Item.name)] = str(Item.getPointsList())
+
 
             with open('siplaconfig.ini', 'w') as configfile:
                 config.write(configfile)
@@ -184,6 +196,14 @@ class C_ConfigDialog(QDialog):
                 self.TabLoadFlow.LoadFlow_GroupBox_UNCBT_TD_CheckBox.setChecked(True)
             else:
                 self.TabLoadFlow.LoadFlow_GroupBox_UNCBT_TD_CheckBox.setChecked(False)
+
+            ## Curvas de Carga
+            section = config['LoadShapes']
+
+            loadShapes = list(section.keys())
+
+            for nLoadShape in loadShapes:
+                self.TabLoadFlow.LoadShapesDialog.addLoadShapeTreeWidget(nLoadShape, config['LoadShapes'][nLoadShape])
 
 
             ### Tab Load Flow
