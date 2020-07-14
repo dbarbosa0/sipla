@@ -7,7 +7,7 @@ import opendss.class_config_dialog
 import opendss.class_insert_energymeter_dialog
 import opendss.class_insert_monitor_dialog
 import opendss.storage.class_insert_storage_dialog
-import opendss.class_insert_invcontrol_dialog
+import opendss.invcontrol.class_insert_invcontrol_dialog
 import opendss.storage.class_config_storagecontroller
 import opendss.class_energymeter_results_dialog
 import opendss.class_config_plot_monitor_dialog
@@ -69,7 +69,7 @@ class C_MainActions():
         self.OpenDSS_DialogInsertStorage.DispModeActPowDialog.ConfigStorageController.OpenDSS = self.OpenDSS
         self.OpenDSS_DialogInsertStorage.DispModeActPowDialog.DialogActPowLoadShape.OpenDSS = self.OpenDSS
         # Contribuição Lenon
-        self.OpenDSS_DialogInsertInvControl = opendss.class_insert_invcontrol_dialog.C_Insert_InvControl_Dialog()
+        self.OpenDSS_DialogInsertInvControl = opendss.invcontrol.class_insert_invcontrol_dialog.C_Insert_InvControl_Dialog()
         self.OpenDSS_DialogInsertInvControl.OpenDSS = self.OpenDSS
 
 

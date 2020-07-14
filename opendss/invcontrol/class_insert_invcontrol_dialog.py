@@ -4,6 +4,8 @@ from PyQt5.QtWidgets import QStyleFactory, QDialog, QGridLayout, QGroupBox, QVBo
     QComboBox, QTabWidget, QWidget, QHBoxLayout
 from PyQt5.QtCore import Qt
 
+import opendss.invcontrol.class_config_xycurve
+import opendss.invcontrol.class_config_elementlist
 import class_exception
 import opendss.class_opendss
 import config as cfg
@@ -18,6 +20,8 @@ class C_Insert_InvControl_Dialog(QDialog):
         self.iconWindow = cfg.sipla_icon
         self.stylesheet = cfg.sipla_stylesheet
 
+        self.InvControl = []
+
         self.OpenDSS = opendss.class_opendss.C_OpenDSS()
 
         self.InitUI()
@@ -31,8 +35,8 @@ class C_Insert_InvControl_Dialog(QDialog):
         ##Layout principal
         self.Dialog_Layout = QVBoxLayout()  # Layout da Dialog
 
-        ####################### GroupBox InvControl ############################################################
-        self.InvControl_GroupBox = QGroupBox("InvControl")  # Criando a GroupBox InvControl
+        ####################### GroupBox invcontrol ############################################################
+        self.InvControl_GroupBox = QGroupBox("invcontrol")  # Criando a GroupBox invcontrol
         self.InvControl_GroupBox.setMinimumWidth(400)
         self.InvControl_GroupBox_Layout = QGridLayout()  # Layout da GroupBox é em Grid
 
@@ -72,7 +76,7 @@ class C_Insert_InvControl_Dialog(QDialog):
 
         ##################################### Tabs #####################################################################
         self.TabWidget = QTabWidget()
-        self.TabConfig = InvConfig()  # Tab das configurações gerais
+        self.TabConfig = InvConfig()  # Tab das configurações
         self.TabWidget.addTab(self.TabConfig, "Configurações")
 
         ################################### GroupBox das Configurações #################################################
@@ -90,7 +94,7 @@ class C_Insert_InvControl_Dialog(QDialog):
         self.Config_Btns_Default_Btn.clicked.connect(self.DefaultConfigParameters)
         self.Config_Btns_Layout.addWidget(self.Config_Btns_Default_Btn)
         # Botão OK
-        self.Config_Btns_OK_Btn = QPushButton("OK")
+        self.Config_Btns_OK_Btn = QPushButton("OK")              # Botão Ok dentro do GroupBox
         self.Config_Btns_OK_Btn.setIcon(QIcon('img/icon_ok.png'))
         self.Config_Btns_OK_Btn.setFixedHeight(30)
         self.Config_Btns_OK_Btn.clicked.connect(self.AcceptAddEditInvControl)
@@ -122,7 +126,14 @@ class C_Insert_InvControl_Dialog(QDialog):
         self.adjustSize()
 
     def deleteInvControl(self):
-        pass
+        for ctd in range(self.InvControl_GroupBox_TreeWidget.topLevelItemCount() - 1, -1, -1):
+            Item = self.InvControl_GroupBox_TreeWidget.topLevelItem(ctd)
+
+            if Item.checkState(0) == Qt.Checked:
+                self.InvControl_GroupBox_TreeWidget.takeTopLevelItem(ctd)
+                for i in self.InvControl:
+                    if i["InvControlName"] == Item.text(0):
+                        self.InvControl.remove(i)
 
     def editInvControl(self):
         pass
@@ -169,28 +180,31 @@ class C_Insert_InvControl_Dialog(QDialog):
         self.TabConfig.VoltVar_GroupBox_EventLog_ComboBox.setCurrentText("Yes")
         self.TabConfig.VoltVar_GroupBox_RateofChangeMode_ComboBox.setCurrentText("INACTIVE")
         self.TabConfig.VoltVar_GroupBox_HysteresisOffSet_LineEdit.setText("0.0")
-        self.TabConfig.VoltVar_GroupBox_AvgWindowLen_LineEdit.setText("0s")
+        self.TabConfig.VoltVar_GroupBox_AvgWindowLen_LineEdit.setText("0")
         self.TabConfig.VoltVar_GroupBox_VarChangeTolerance_LineEdit.setText("0.025")
         self.TabConfig.VoltVar_GroupBox_VoltageChangeTolerance_LineEdit.setText("0.0001")
         self.TabConfig.VoltVar_GroupBox_LPFtau_LineEdit.setText("0.001")
         self.TabConfig.VoltVar_GroupBox_RiseFallLimit_LineEdit.setText("0.001")
         self.TabConfig.VoltVar_GroupBox_DeltaQFactor_LineEdit.setText("-1.0")
         self.TabConfig.VoltVar_GroupBox_RefReactivePower_ComboBox.setCurrentText("VARAVAL")
+        self.TabConfig.VoltVar_GroupBox_AvgWindowLen_ComboBox.setCurrentText("s")
 
         # FALTAM DEFAULT BOTOES DO VOLTWATT
         self.TabConfig.VoltWatt_GroupBox_VoltageCurvexRef_ComboBox.setCurrentText("rated")
         self.TabConfig.VoltWatt_GroupBox_EventLog_ComboBox.setCurrentText("Yes")
         self.TabConfig.VoltWatt_GroupBox_RateofChangeMode_ComboBox.setCurrentText("INACTIVE")
         self.TabConfig.VoltWatt_GroupBox_VoltWattYAxis_ComboBox.setCurrentText("PMPPPU")
-        self.TabConfig.VoltWatt_GroupBox_AvgWindowLen_LineEdit.setText("0s")
+        self.TabConfig.VoltWatt_GroupBox_AvgWindowLen_LineEdit.setText("0")
         self.TabConfig.VoltWatt_GroupBox_LPFtau_LineEdit.setText("0.001")
         self.TabConfig.VoltWatt_GroupBox_RiseFallLimit_LineEdit.setText("0.001")
         self.TabConfig.VoltWatt_GroupBox_DeltaPFactor_LineEdit.setText("-1.0")
         self.TabConfig.VoltWatt_GroupBox_ActivePChangeTolerance_LineEdit.setText("0.01")
+        self.TabConfig.VoltWatt_GroupBox_AvgWindowLen_ComboBox.setCurrentText("s")
 
         self.TabConfig.VoltWatt_GroupBox_AvgWindowLen_LineEdit.setEnabled(False)
         self.TabConfig.VoltWatt_GroupBox_LPFtau_LineEdit.setEnabled(False)
         self.TabConfig.VoltWatt_GroupBox_RiseFallLimit_LineEdit.setEnabled(False)
+        self.TabConfig.VoltWatt_GroupBox_AvgWindowLen_ComboBox.setEnabled(False)
 
     def clearInvControlParameters(self):
         self.TabConfig.NameEMode_GroupBox_Nome_LineEdit.setText("")
@@ -208,6 +222,7 @@ class C_Insert_InvControl_Dialog(QDialog):
         self.TabConfig.VoltVar_GroupBox_RiseFallLimit_LineEdit.setText("0")
         self.TabConfig.VoltVar_GroupBox_DeltaQFactor_LineEdit.setText("0")
         self.TabConfig.VoltVar_GroupBox_RefReactivePower_ComboBox.setCurrentText("")
+        self.TabConfig.VoltVar_GroupBox_AvgWindowLen_ComboBox.setCurrentText("")
 
         # FALTAM DEFAULT BOTOES DO VOLTWATT
         self.TabConfig.VoltWatt_GroupBox_VoltageCurvexRef_ComboBox.setCurrentText("")
@@ -219,12 +234,16 @@ class C_Insert_InvControl_Dialog(QDialog):
         self.TabConfig.VoltWatt_GroupBox_RiseFallLimit_LineEdit.setText("0")
         self.TabConfig.VoltWatt_GroupBox_DeltaPFactor_LineEdit.setText("0")
         self.TabConfig.VoltWatt_GroupBox_ActivePChangeTolerance_LineEdit.setText("0")
+        self.TabConfig.VoltWatt_GroupBox_AvgWindowLen_ComboBox.setCurrentText("")
 
 class InvConfig(QWidget):
     def __init__(self):
         super().__init__()
 
         self.InitUIInversorConfig()
+
+        self.XYCurve = opendss.invcontrol.class_config_xycurve.C_Config_CurveXY_Dialog()
+        self.ElementList = opendss.invcontrol.class_config_elementlist.C_Config_ElementList_Dialog()
 
     def InitUIInversorConfig(self):
 
@@ -258,45 +277,45 @@ class InvConfig(QWidget):
         # Configurar DERList
         self.VoltVar_GroupBox_DERList_Label = QLabel("DERList")
         self.VoltVar_GroupBox_DERList_Btn = QPushButton("Selecionar Elementos")
-        self.VoltVar_GroupBox_DERList_Btn.clicked.connect(self.SelectElement)
+        self.VoltVar_GroupBox_DERList_Btn.clicked.connect(self.ElementListConfig)
         self.VoltVar_GroupBox_Layout.addWidget(self.VoltVar_GroupBox_DERList_Label, 0, 0, 1, 1)
-        self.VoltVar_GroupBox_Layout.addWidget(self.VoltVar_GroupBox_DERList_Btn, 0, 1, 1, 1)
+        self.VoltVar_GroupBox_Layout.addWidget(self.VoltVar_GroupBox_DERList_Btn, 0, 1, 1, 2)
         # Configurar vvc_curve1
         self.VoltVar_GroupBox_VVCCurvex1_Label = QLabel("vvc_curve1")
         self.VoltVar_GroupBox_VVCCurvex1_Btn = QPushButton("Adicionar Curva XY")
-        self.VoltVar_GroupBox_VVCCurvex1_Btn.clicked.connect(self.AddCurve)
+        self.VoltVar_GroupBox_VVCCurvex1_Btn.clicked.connect(self.XYCurveConfig)
         self.VoltVar_GroupBox_Layout.addWidget(self.VoltVar_GroupBox_VVCCurvex1_Label, 1, 0, 1, 1)
-        self.VoltVar_GroupBox_Layout.addWidget(self.VoltVar_GroupBox_VVCCurvex1_Btn, 1, 1, 1, 1)
+        self.VoltVar_GroupBox_Layout.addWidget(self.VoltVar_GroupBox_VVCCurvex1_Btn, 1, 1, 1, 2)
         # Configurar EventLog
         self.VoltVar_GroupBox_EventLog_Label = QLabel("EventLog")
         self.VoltVar_GroupBox_EventLog_ComboBox = QComboBox()
         self.VoltVar_GroupBox_EventLog_ComboBox.addItems(["Yes", "No"])
         self.VoltVar_GroupBox_Layout.addWidget(self.VoltVar_GroupBox_EventLog_Label, 2, 0, 1, 1)
-        self.VoltVar_GroupBox_Layout.addWidget(self.VoltVar_GroupBox_EventLog_ComboBox, 2, 1, 1, 1)
+        self.VoltVar_GroupBox_Layout.addWidget(self.VoltVar_GroupBox_EventLog_ComboBox, 2, 1, 1, 2)
         # Configurar deltaQ_Factor
         self.VoltVar_GroupBox_DeltaQFactor_Label = QLabel("deltaQ_Factor")
         self.VoltVar_GroupBox_DeltaQFactor_LineEdit = QLineEdit()
         self.VoltVar_GroupBox_DeltaQFactor_LineEdit.setValidator(self.LineEditsValidos)
         self.VoltVar_GroupBox_Layout.addWidget(self.VoltVar_GroupBox_DeltaQFactor_Label, 3, 0, 1, 1)
-        self.VoltVar_GroupBox_Layout.addWidget(self.VoltVar_GroupBox_DeltaQFactor_LineEdit, 3, 1, 1, 1)
+        self.VoltVar_GroupBox_Layout.addWidget(self.VoltVar_GroupBox_DeltaQFactor_LineEdit, 3, 1, 1, 2)
         # Configurar VarChangeTolerance (p.u.)
         self.VoltVar_GroupBox_VarChangeTolerance_Label = QLabel("VarChangeTolerance (p.u.)")
         self.VoltVar_GroupBox_VarChangeTolerance_LineEdit = QLineEdit()
         self.VoltVar_GroupBox_VarChangeTolerance_LineEdit.setValidator(self.LineEditsValidos)
         self.VoltVar_GroupBox_Layout.addWidget(self.VoltVar_GroupBox_VarChangeTolerance_Label, 4, 0, 1, 1)
-        self.VoltVar_GroupBox_Layout.addWidget(self.VoltVar_GroupBox_VarChangeTolerance_LineEdit, 4, 1, 1, 1)
+        self.VoltVar_GroupBox_Layout.addWidget(self.VoltVar_GroupBox_VarChangeTolerance_LineEdit, 4, 1, 1, 2)
         # Configurar VoltageChangeTolerance (p.u.)
         self.VoltVar_GroupBox_VoltageChangeTolerance_Label = QLabel("VoltageChangeTolerance (p.u.)")
         self.VoltVar_GroupBox_VoltageChangeTolerance_LineEdit = QLineEdit()
         self.VoltVar_GroupBox_VoltageChangeTolerance_LineEdit.setValidator(self.LineEditsValidos)
         self.VoltVar_GroupBox_Layout.addWidget(self.VoltVar_GroupBox_VoltageChangeTolerance_Label, 5, 0, 1, 1)
-        self.VoltVar_GroupBox_Layout.addWidget(self.VoltVar_GroupBox_VoltageChangeTolerance_LineEdit, 5, 1, 1, 1)
+        self.VoltVar_GroupBox_Layout.addWidget(self.VoltVar_GroupBox_VoltageChangeTolerance_LineEdit, 5, 1, 1, 2)
         # Configurar hysteresis_offset
         self.VoltVar_GroupBox_HysteresisOffSet_Label = QLabel("hysteresis_offset")
         self.VoltVar_GroupBox_HysteresisOffSet_LineEdit = QLineEdit()
         self.VoltVar_GroupBox_HysteresisOffSet_LineEdit.setValidator(self.LineEditsValidos)
         self.VoltVar_GroupBox_Layout.addWidget(self.VoltVar_GroupBox_HysteresisOffSet_Label, 6, 0, 1, 1)
-        self.VoltVar_GroupBox_Layout.addWidget(self.VoltVar_GroupBox_HysteresisOffSet_LineEdit, 6, 1, 1, 1)
+        self.VoltVar_GroupBox_Layout.addWidget(self.VoltVar_GroupBox_HysteresisOffSet_LineEdit, 6, 1, 1, 2)
         # Configurar voltage_curvex_ref
         self.VoltVar_GroupBox_VoltageCurvexRef_Label = QLabel("voltage_curvex_ref")
         self.VoltVar_GroupBox_VoltageCurvexRef_ComboBox = QComboBox()
@@ -304,14 +323,18 @@ class InvConfig(QWidget):
         self.VoltVar_GroupBox_VoltageCurvexRef_ComboBox.currentIndexChanged.connect(
                                                         self.Enable_VoltageCurvexRef_LineEdit)
         self.VoltVar_GroupBox_Layout.addWidget(self.VoltVar_GroupBox_VoltageCurvexRef_Label, 7, 0, 1, 1)
-        self.VoltVar_GroupBox_Layout.addWidget(self.VoltVar_GroupBox_VoltageCurvexRef_ComboBox, 7, 1, 1, 1)
+        self.VoltVar_GroupBox_Layout.addWidget(self.VoltVar_GroupBox_VoltageCurvexRef_ComboBox, 7, 1, 1, 2)
         # Configurar avgwindowlen
         self.VoltVar_GroupBox_AvgWindowLen_Label = QLabel("avgwindowlen")
         self.VoltVar_GroupBox_AvgWindowLen_LineEdit = QLineEdit()
         self.VoltVar_GroupBox_AvgWindowLen_LineEdit.setValidator(self.LineEditsValidos)
         self.VoltVar_GroupBox_AvgWindowLen_LineEdit.setEnabled(False)
+        self.VoltVar_GroupBox_AvgWindowLen_ComboBox = QComboBox()
+        self.VoltVar_GroupBox_AvgWindowLen_ComboBox.addItems(["s", "m", "h"])
+        self.VoltVar_GroupBox_AvgWindowLen_ComboBox.setEnabled(False)
         self.VoltVar_GroupBox_Layout.addWidget(self.VoltVar_GroupBox_AvgWindowLen_Label, 8, 0, 1, 1)
         self.VoltVar_GroupBox_Layout.addWidget(self.VoltVar_GroupBox_AvgWindowLen_LineEdit, 8, 1, 1, 1)
+        self.VoltVar_GroupBox_Layout.addWidget(self.VoltVar_GroupBox_AvgWindowLen_ComboBox, 8, 2, 1, 1)
         # Configurar RateofChangeMode
         self.VoltVar_GroupBox_RateofChangeMode_Label = QLabel("RateofChangeMode")
         self.VoltVar_GroupBox_RateofChangeMode_ComboBox = QComboBox()
@@ -319,27 +342,27 @@ class InvConfig(QWidget):
         self.VoltVar_GroupBox_RateofChangeMode_ComboBox.currentIndexChanged.connect(
                                                         self.Enable_RateofChageMode_LineEdit)
         self.VoltVar_GroupBox_Layout.addWidget(self.VoltVar_GroupBox_RateofChangeMode_Label, 9, 0, 1, 1)
-        self.VoltVar_GroupBox_Layout.addWidget(self.VoltVar_GroupBox_RateofChangeMode_ComboBox, 9, 1, 1, 1)
+        self.VoltVar_GroupBox_Layout.addWidget(self.VoltVar_GroupBox_RateofChangeMode_ComboBox, 9, 1, 1, 2)
         # Configurar LPFtau
         self.VoltVar_GroupBox_LPFtau_Label = QLabel("LPFtau")
         self.VoltVar_GroupBox_LPFtau_LineEdit = QLineEdit()
         self.VoltVar_GroupBox_LPFtau_LineEdit.setValidator(self.LineEditsValidos)
         self.VoltVar_GroupBox_LPFtau_LineEdit.setEnabled(False)
         self.VoltVar_GroupBox_Layout.addWidget(self.VoltVar_GroupBox_LPFtau_Label, 10, 0, 1, 1)
-        self.VoltVar_GroupBox_Layout.addWidget(self.VoltVar_GroupBox_LPFtau_LineEdit, 10, 1, 1, 1)
+        self.VoltVar_GroupBox_Layout.addWidget(self.VoltVar_GroupBox_LPFtau_LineEdit, 10, 1, 1, 2)
         # Configurar RiseFallLimit
         self.VoltVar_GroupBox_RiseFallLimit_Label = QLabel("RiseFallLimit")
         self.VoltVar_GroupBox_RiseFallLimit_LineEdit = QLineEdit()
         self.VoltVar_GroupBox_RiseFallLimit_LineEdit.setValidator(self.LineEditsValidos)
         self.VoltVar_GroupBox_RiseFallLimit_LineEdit.setEnabled(False)
         self.VoltVar_GroupBox_Layout.addWidget(self.VoltVar_GroupBox_RiseFallLimit_Label, 11, 0, 1, 1)
-        self.VoltVar_GroupBox_Layout.addWidget(self.VoltVar_GroupBox_RiseFallLimit_LineEdit, 11, 1, 1, 1)
+        self.VoltVar_GroupBox_Layout.addWidget(self.VoltVar_GroupBox_RiseFallLimit_LineEdit, 11, 1, 1, 2)
         # Configurar RefReactivePower
         self.VoltVar_GroupBox_RefReactivePower_Label = QLabel("RefReactivePower")
         self.VoltVar_GroupBox_RefReactivePower_ComboBox = QComboBox()
         self.VoltVar_GroupBox_RefReactivePower_ComboBox.addItems(["VARAVAL", "VARMAX"])
         self.VoltVar_GroupBox_Layout.addWidget(self.VoltVar_GroupBox_RefReactivePower_Label, 12, 0, 1, 1)
-        self.VoltVar_GroupBox_Layout.addWidget(self.VoltVar_GroupBox_RefReactivePower_ComboBox, 12, 1, 1, 1)
+        self.VoltVar_GroupBox_Layout.addWidget(self.VoltVar_GroupBox_RefReactivePower_ComboBox, 12, 1, 1, 2)
 
         ###################### GroupBox VOLTWATT #######################################################
         self.VoltWatt_GroupBox = QGroupBox("VOLTWATT")  # Criando a GroupBox InvConfig
@@ -348,33 +371,33 @@ class InvConfig(QWidget):
         # Configurar DERList
         self.VoltWatt_GroupBox_DERList_Label = QLabel("DERList")
         self.VoltWatt_GroupBox_DERList_Btn = QPushButton("Selecionar Elementos")
-        self.VoltWatt_GroupBox_DERList_Btn.clicked.connect(self.SelectElement)
+        self.VoltWatt_GroupBox_DERList_Btn.clicked.connect(self.ElementListConfig)
         self.VoltWatt_GroupBox_Layout.addWidget(self.VoltWatt_GroupBox_DERList_Label, 0, 0, 1, 1)
-        self.VoltWatt_GroupBox_Layout.addWidget(self.VoltWatt_GroupBox_DERList_Btn, 0, 1, 1, 1)
+        self.VoltWatt_GroupBox_Layout.addWidget(self.VoltWatt_GroupBox_DERList_Btn, 0, 1, 1, 2)
         # Configurar voltwatt_curve
         self.VoltWatt_GroupBox_VoltWattCurve_Label = QLabel("voltwatt_curve")
         self.VoltWatt_GroupBox_VoltWattCurve_Btn = QPushButton("Adicionar Curva XY")
-        self.VoltWatt_GroupBox_VoltWattCurve_Btn.clicked.connect(self.AddCurve)
+        self.VoltWatt_GroupBox_VoltWattCurve_Btn.clicked.connect(self.XYCurveConfig)
         self.VoltWatt_GroupBox_Layout.addWidget(self.VoltWatt_GroupBox_VoltWattCurve_Label, 1, 0, 1, 1)
-        self.VoltWatt_GroupBox_Layout.addWidget(self.VoltWatt_GroupBox_VoltWattCurve_Btn, 1, 1, 1, 1)
+        self.VoltWatt_GroupBox_Layout.addWidget(self.VoltWatt_GroupBox_VoltWattCurve_Btn, 1, 1, 1, 2)
         # Configurar EventLog
         self.VoltWatt_GroupBox_EventLog_Label = QLabel("EventLog")
         self.VoltWatt_GroupBox_EventLog_ComboBox = QComboBox()
         self.VoltWatt_GroupBox_EventLog_ComboBox.addItems(["Yes", "No"])
         self.VoltWatt_GroupBox_Layout.addWidget(self.VoltWatt_GroupBox_EventLog_Label, 2, 0, 1, 1)
-        self.VoltWatt_GroupBox_Layout.addWidget(self.VoltWatt_GroupBox_EventLog_ComboBox, 2, 1, 1, 1)
+        self.VoltWatt_GroupBox_Layout.addWidget(self.VoltWatt_GroupBox_EventLog_ComboBox, 2, 1, 1, 2)
         # Configurar deltaP_Factor
         self.VoltWatt_GroupBox_DeltaPFactor_Label = QLabel("deltaP_Factor")
         self.VoltWatt_GroupBox_DeltaPFactor_LineEdit = QLineEdit()
         self.VoltWatt_GroupBox_DeltaPFactor_LineEdit.setValidator(self.LineEditsValidos)
         self.VoltWatt_GroupBox_Layout.addWidget(self.VoltWatt_GroupBox_DeltaPFactor_Label, 3, 0, 1, 1)
-        self.VoltWatt_GroupBox_Layout.addWidget(self.VoltWatt_GroupBox_DeltaPFactor_LineEdit, 3, 1, 1, 1)
+        self.VoltWatt_GroupBox_Layout.addWidget(self.VoltWatt_GroupBox_DeltaPFactor_LineEdit, 3, 1, 1, 2)
         # Configurar ActivePChangeTolerance
         self.VoltWatt_GroupBox_ActivePChangeTolerance_Label = QLabel("ActivePChangeTolerance")
         self.VoltWatt_GroupBox_ActivePChangeTolerance_LineEdit = QLineEdit()
         self.VoltWatt_GroupBox_ActivePChangeTolerance_LineEdit.setValidator(self.LineEditsValidos)
         self.VoltWatt_GroupBox_Layout.addWidget(self.VoltWatt_GroupBox_ActivePChangeTolerance_Label, 4, 0, 1, 1)
-        self.VoltWatt_GroupBox_Layout.addWidget(self.VoltWatt_GroupBox_ActivePChangeTolerance_LineEdit, 4, 1, 1, 1)
+        self.VoltWatt_GroupBox_Layout.addWidget(self.VoltWatt_GroupBox_ActivePChangeTolerance_LineEdit, 4, 1, 1, 2)
         # Configurar voltage_curvex_ref
         self.VoltWatt_GroupBox_VoltageCurvexRef_Label = QLabel("voltage_curvex_ref")
         self.VoltWatt_GroupBox_VoltageCurvexRef_ComboBox = QComboBox()
@@ -382,14 +405,18 @@ class InvConfig(QWidget):
         self.VoltWatt_GroupBox_VoltageCurvexRef_ComboBox.currentIndexChanged.connect(
                                                                  self.Enable_VoltageCurvexRef_LineEdit)
         self.VoltWatt_GroupBox_Layout.addWidget(self.VoltWatt_GroupBox_VoltageCurvexRef_Label, 5, 0, 1, 1)
-        self.VoltWatt_GroupBox_Layout.addWidget(self.VoltWatt_GroupBox_VoltageCurvexRef_ComboBox, 5, 1, 1, 1)
+        self.VoltWatt_GroupBox_Layout.addWidget(self.VoltWatt_GroupBox_VoltageCurvexRef_ComboBox, 5, 1, 1, 2)
         # Configurar avgwindowlen
         self.VoltWatt_GroupBox_AvgWindowLen_Label = QLabel("avgwindowlen")
         self.VoltWatt_GroupBox_AvgWindowLen_LineEdit = QLineEdit()
         self.VoltWatt_GroupBox_AvgWindowLen_LineEdit.setValidator(self.LineEditsValidos)
         self.VoltWatt_GroupBox_AvgWindowLen_LineEdit.setEnabled(False)
+        self.VoltWatt_GroupBox_AvgWindowLen_ComboBox = QComboBox()
+        self.VoltWatt_GroupBox_AvgWindowLen_ComboBox.addItems(["s", "m", "h"])
+        self.VoltWatt_GroupBox_AvgWindowLen_ComboBox.setEnabled(False)
         self.VoltWatt_GroupBox_Layout.addWidget(self.VoltWatt_GroupBox_AvgWindowLen_Label, 6, 0, 1, 1)
         self.VoltWatt_GroupBox_Layout.addWidget(self.VoltWatt_GroupBox_AvgWindowLen_LineEdit, 6, 1, 1, 1)
+        self.VoltWatt_GroupBox_Layout.addWidget(self.VoltWatt_GroupBox_AvgWindowLen_ComboBox, 6, 2, 1, 1)
         # Configurar RateofChangeMode
         self.VoltWatt_GroupBox_RateofChangeMode_Label = QLabel("RateofChangeMode")
         self.VoltWatt_GroupBox_RateofChangeMode_ComboBox = QComboBox()
@@ -397,27 +424,27 @@ class InvConfig(QWidget):
         self.VoltWatt_GroupBox_RateofChangeMode_ComboBox.currentIndexChanged.connect(
                                                             self.Enable_RateofChageMode_LineEdit)
         self.VoltWatt_GroupBox_Layout.addWidget(self.VoltWatt_GroupBox_RateofChangeMode_Label, 7, 0, 1, 1)
-        self.VoltWatt_GroupBox_Layout.addWidget(self.VoltWatt_GroupBox_RateofChangeMode_ComboBox, 7, 1, 1, 1)
+        self.VoltWatt_GroupBox_Layout.addWidget(self.VoltWatt_GroupBox_RateofChangeMode_ComboBox, 7, 1, 1, 2)
         # Configurar LPFtau
         self.VoltWatt_GroupBox_LPFtau_Label = QLabel("LPFtau")
         self.VoltWatt_GroupBox_LPFtau_LineEdit = QLineEdit()
         self.VoltWatt_GroupBox_LPFtau_LineEdit.setValidator(self.LineEditsValidos)
         self.VoltWatt_GroupBox_LPFtau_LineEdit.setEnabled(False)
         self.VoltWatt_GroupBox_Layout.addWidget(self.VoltWatt_GroupBox_LPFtau_Label,8, 0, 1, 1)
-        self.VoltWatt_GroupBox_Layout.addWidget(self.VoltWatt_GroupBox_LPFtau_LineEdit, 8, 1, 1, 1)
+        self.VoltWatt_GroupBox_Layout.addWidget(self.VoltWatt_GroupBox_LPFtau_LineEdit, 8, 1, 1, 2)
         # Configurar RiseFallLimit
         self.VoltWatt_GroupBox_RiseFallLimit_Label = QLabel("RiseFallLimit")
         self.VoltWatt_GroupBox_RiseFallLimit_LineEdit = QLineEdit()
         self.VoltWatt_GroupBox_RiseFallLimit_LineEdit.setValidator(self.LineEditsValidos)
         self.VoltWatt_GroupBox_RiseFallLimit_LineEdit.setEnabled(False)
         self.VoltWatt_GroupBox_Layout.addWidget(self.VoltWatt_GroupBox_RiseFallLimit_Label, 9, 0, 1, 1)
-        self.VoltWatt_GroupBox_Layout.addWidget(self.VoltWatt_GroupBox_RiseFallLimit_LineEdit, 9, 1, 1, 1)
+        self.VoltWatt_GroupBox_Layout.addWidget(self.VoltWatt_GroupBox_RiseFallLimit_LineEdit, 9, 1, 1, 2)
         # Configurar VoltwattYAxis
         self.VoltWatt_GroupBox_VoltWattYAxis_Label = QLabel("VoltwattYAxis")
         self.VoltWatt_GroupBox_VoltWattYAxis_ComboBox = QComboBox()
         self.VoltWatt_GroupBox_VoltWattYAxis_ComboBox.addItems(["PMPPPU", "PAVAILABLEPU", "PCTPMPPPU", "KVARATINGPU"])
         self.VoltWatt_GroupBox_Layout.addWidget(self.VoltWatt_GroupBox_VoltWattYAxis_Label, 10, 0, 1, 1)
-        self.VoltWatt_GroupBox_Layout.addWidget(self.VoltWatt_GroupBox_VoltWattYAxis_ComboBox, 10, 1, 1, 1)
+        self.VoltWatt_GroupBox_Layout.addWidget(self.VoltWatt_GroupBox_VoltWattYAxis_ComboBox, 10, 1, 1, 2)
 
         ##################################################################################################
 
@@ -447,13 +474,17 @@ class InvConfig(QWidget):
         if self.NameEMode_GroupBox_Mode_ComboBox.currentText() == "VOLTVAR":
             if self.VoltVar_GroupBox_VoltageCurvexRef_ComboBox.currentText() == "avg":
                 self.VoltVar_GroupBox_AvgWindowLen_LineEdit.setEnabled(True)
+                self.VoltVar_GroupBox_AvgWindowLen_ComboBox.setEnabled(True)
             else:
                 self.VoltVar_GroupBox_AvgWindowLen_LineEdit.setEnabled(False)
+                self.VoltVar_GroupBox_AvgWindowLen_ComboBox.setEnabled(False)
         else:
             if self.VoltWatt_GroupBox_VoltageCurvexRef_ComboBox.currentText() == "avg":
                 self.VoltWatt_GroupBox_AvgWindowLen_LineEdit.setEnabled(True)
+                self.VoltWatt_GroupBox_AvgWindowLen_ComboBox.setEnabled(True)
             else:
                 self.VoltWatt_GroupBox_AvgWindowLen_LineEdit.setEnabled(False)
+                self.VoltWatt_GroupBox_AvgWindowLen_ComboBox.setEnabled(False)
 
     def Enable_RateofChageMode_LineEdit(self):
         if self.NameEMode_GroupBox_Mode_ComboBox.currentText() == "VOLTVAR":
@@ -479,17 +510,17 @@ class InvConfig(QWidget):
                 self.VoltWatt_GroupBox_LPFtau_LineEdit.setEnabled(False)
                 self.VoltWatt_GroupBox_RiseFallLimit_LineEdit.setEnabled(False)
 
-    def SelectElement(self):
-        pass
+    def XYCurveConfig(self):
+        self.XYCurve.show()
 
-    def AddCurve(self):
-        pass
+    def ElementListConfig(self):
+        self.ElementList.show()
 
     def verificaLineEdits(self):
         pass
 
 class InvControl_TreeWidget_Item(QTreeWidgetItem):
-    def __init__(self, parent, name, elementos, mode):
+    def __init__(self, parent, name, element, mode):
         ## Init super class ( QtGui.QTreeWidgetItem )
         super(InvControl_TreeWidget_Item, self).__init__(parent)
 
@@ -498,6 +529,6 @@ class InvControl_TreeWidget_Item(QTreeWidgetItem):
         self.setFlags(self.flags() | Qt.ItemIsUserCheckable | Qt.ItemIsEditable)
         self.setCheckState(0, Qt.Unchecked)
         ## Column 1 - PVSystem:
-        self.setText(1, elementos)
+        self.setText(1, element)
         ## Column 2 - Modo Despacho:
         self.setText(2, mode)
