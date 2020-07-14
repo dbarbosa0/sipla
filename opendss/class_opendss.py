@@ -419,7 +419,7 @@ class C_OpenDSS(): # classe OpenDSSDirect
             self.exec_OpenDSSRun("Solve")
 
         except:
-            class_exception.ExecOpenDSS("Erro ao executar o fluxo de potência resolvido!")
+            class_exception.ExecOpenDSS("Erro ao executar o fluxo de potência!")
 
 #            self.OpenDSSEngine.run("Show Voltage LN Nodes")
         self.getVoltageResults() ## Mostrando o resultado das tensões
