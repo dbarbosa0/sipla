@@ -834,7 +834,15 @@ class C_OpenDSS(): # classe OpenDSSDirect
         return self.dataOpenDSS.busList
 
     def getElementList(self):
-        return self.dataOpenDSS.elementList
+
+        tempStorage = []
+        for ctd in self.Storages:
+            tempStorage.append("Storage2." + ctd["StorageName"])
+
+        #
+        return self.dataOpenDSS.elementList + tempStorage
+
+        #return self.dataOpenDSS.elementList
 
     ## Gets class_insert_dialog
 

@@ -321,15 +321,4 @@ class C_Insert_Monitor_Dialog(QDialog): ## Classe Dialog principal
 
         self.Monitor_Element_ComboBox.clear()
 
-        tempStorage = []
-        for ctd in self.OpenDSS.Storages:
-            tempStorage.append("Storage2." + ctd["StorageName"])
-
-        #
-        list = elf.OpenDSS.getElementList() + tempStorage
-
-        self.Monitor_Element_ComboBox.addItems(list)
-
-
-        #self.Monitor_Element_ComboBox.addItems(self.OpenDSS.getAllNamesElements())
-        #self.Monitor_Element_ComboBox.addItems(self.OpenDSS.getElementList())
+        self.Monitor_Element_ComboBox.addItems(self.OpenDSS.getElementList())
