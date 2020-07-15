@@ -1,6 +1,6 @@
 from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import QStyleFactory, QDialog, QGridLayout, QGroupBox, \
-   QVBoxLayout, QTabWidget, QLabel, QComboBox, QWidget, QLineEdit, QPushButton, QHBoxLayout, QMessageBox
+   QVBoxLayout, QLabel, QComboBox, QLineEdit, QPushButton, QHBoxLayout, QMessageBox
 
 from PyQt5.QtCore import Qt
 
@@ -308,7 +308,6 @@ class C_Insert_Monitor_Dialog(QDialog): ## Classe Dialog principal
             self.Dialog_Btns_Ok_Btn.setEnabled(True)
             self.Dialog_Btns_Cancel_Btn.setEnabled(True)
 
-
     def Accept(self):
         self.OpenDSS.Monitors = self.Monitors
         self.close()
@@ -321,14 +320,5 @@ class C_Insert_Monitor_Dialog(QDialog): ## Classe Dialog principal
             self.Monitor_GroupBox_MEnergy_ComboBox.addItem(ctd["Name"])
 
         self.Monitor_Element_ComboBox.clear()
-        try:
 
-            #self.Monitor_Element_ComboBox.addItems(self.OpenDSS.getAllNamesElements())
-            list = self.OpenDSS.getAllNamesElements() + self.OpenDSS.getElementList()
-            list_teste = sorted(set(list))
-            # self.Monitor_Element_ComboBox.addItems(self.OpenDSS.getElementList())
-            self.Monitor_Element_ComboBox.addItems(list_teste)
-        except:
-            self.Monitor_Element_ComboBox.addItems(self.OpenDSS.getElementList())
-        #self.Monitor_Element_ComboBox.addItems(self.OpenDSS.getAllNamesElements())
-        #self.Monitor_Element_ComboBox.addItems(self.OpenDSS.getElementList())
+        self.Monitor_Element_ComboBox.addItems(self.OpenDSS.getElementList())

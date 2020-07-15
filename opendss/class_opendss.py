@@ -9,16 +9,6 @@ import database.class_conn
 import opendss.class_data
 import class_exception
 import time
-import multiprocessing
-
-##Thread
-#import opendss.class_thread_load
-#import queue
-#import threading
-
-##Process
-#import opendss.class_process_load
-import queue
 
 class C_OpenDSS(): # classe OpenDSSDirect
 
@@ -187,66 +177,6 @@ class C_OpenDSS(): # classe OpenDSSDirect
                           # "CompBT":["Unidades Compensadoras de BT ...",self.dataOpenDSS.exec_UNID_COMPENSADORAS_DE_REATIVO_DE_BAIXA_TENSAO],
                           }
 
-
-            ##Thread
-            #https://www.tutorialspoint.com/python/python_multithreading.htm
-            # nCPU = multiprocessing.cpu_count()
-            # queueLock = threading.Lock()
-            # workQueue = queue.Queue(len(self.execOpenDSSFunc)) ## Quantidade de Tarefas para serem realizadas
-            # threads = []
-            #
-            # # Create new threads
-            # for threadID in range(1, nCPU):
-            #     thread = opendss.class_thread_load.C_LoadDataThread(threadID, workQueue, queueLock)
-            #     ##Variávies que as Threads podem utilizar nas funções que irão executar
-            #     thread.DataBaseConn = self.DataBaseConn
-            #     thread.nFieldsMT = self.nFieldsMT
-            #     thread.nCircuitoAT_MT = self.nCircuitoAT_MT
-            #     thread.nSE_MT_Selecionada = self.nSE_MT_Selecionada
-            #     thread.OpenDSSConfig = self.OpenDSSConfig
-            #
-            #     thread.start()
-            #     threads.append(thread)
-            #
-            #
-            # # Fill the queue
-            # queueLock.acquire()
-            #
-            # for ctd in self.execOpenDSSFunc:
-            #     msg = self.execOpenDSSFunc[ctd][-2]
-            #     #Executando a função
-            #     ### Verificando o modo de operação
-            #
-            #     ### Roda com a flag em 1
-            #     if (ctd == "UConMT") and (self.OpenDSSConfig["UNCMT"] == "1"):
-            #         workQueue.put(self.execOpenDSSFunc[ctd][-1])
-            #         #print(msg)
-            #     elif (ctd == "UConBTTD") and (self.OpenDSSConfig["UNCBTTD"] == "1"):
-            #         workQueue.put(self.execOpenDSSFunc[ctd][-1])
-            #         #print(msg)
-            #     elif (ctd == "UConMTLoadShapes") or (ctd == "LoadShapes"):
-            #         if (self.OpenDSSConfig["Mode"] == "Daily") and (self.OpenDSSConfig["UNCMT"] == "1"):
-            #             workQueue.put(self.execOpenDSSFunc[ctd][-1])
-            #             #print(msg)
-            #     elif (ctd == "UConBTTD") or (ctd == "UConBTLoadShapes"):
-            #         if (self.OpenDSSConfig["Mode"] == "Daily") and (self.OpenDSSConfig["UNCBTTD"] == "1"):
-            #             workQueue.put(self.execOpenDSSFunc[ctd][-1])
-            #             #print(msg)
-            #     else:
-            #         workQueue.put(self.execOpenDSSFunc[ctd][-1])
-            #
-            # queueLock.release()
-            #
-            # # Wait for queue to empty
-            # while not workQueue.empty():
-            #     pass
-            #
-            # # Wait for all threads to complete
-            # for t in threads:
-            #     t.exitFlag = 1
-            #     t.join()
-            # print("Exiting Main Thread")
-
             for ctd in self.execOpenDSSFunc:
                 msg = self.execOpenDSSFunc[ctd][-2]
                 # Executando a função
@@ -266,10 +196,10 @@ class C_OpenDSS(): # classe OpenDSSDirect
                 "UConMTLoadShapes": ["Unidades Consumidoras MT - Curvas de Carga ...",self.dataOpenDSS.exec_UNID_CONSUMIDORAS_LOADSHAPES_MT],
                 "UConBTLoadShapes": ["Unidades Consumidoras BT - Curvas de Carga ...",self.dataOpenDSS.exec_UNID_CONSUMIDORAS_LOADSHAPES_BT],
                 #
-                "VoltageBase": ["Bases de Tensão ...", self.exec_VoltageBase],
                 "Storages": ["Inserindo os Storages ...", self.exec_Storages],
                 "EnergyMeters": ["Inserindo os Energy Meters ...", self.exec_EnergyMeters],
                 "Monitors": ["Inserindo os Monitors ...", self.exec_Monitors],
+                "VoltageBase": ["Bases de Tensão ...", self.exec_VoltageBase],
                 "Mode": ["Modo de Operação ...", self.exec_Mode],
                 }
 
@@ -335,10 +265,10 @@ class C_OpenDSS(): # classe OpenDSSDirect
                       # "RamLig":self.dataOpenDSS.memoFileRamaisLigBT,self.memoFileRamaisLigBT,
                       "CompMT": self.dataOpenDSS.memoFileUndCompReatMT,
                       # "CompBT":self.dataOpenDSS.memoFileUndCompReatBT,
-                      "VoltageBase":self.memoFileVoltageBase,
                       "Storages": self.memoFileStorages,
                       "EnergyMeters": self.memoFileEnergyMeters,
                       "Monitors": self.memoFileMonitors,
+                      "VoltageBase": self.memoFileVoltageBase,
                       "Mode": self.memoFileMode,
                       }
 
@@ -489,7 +419,7 @@ class C_OpenDSS(): # classe OpenDSSDirect
             self.exec_OpenDSSRun("Solve")
 
         except:
-            class_exception.ExecOpenDSS("Erro ao executar o fluxo de potência resolvido!")
+            class_exception.ExecOpenDSS("Erro ao executar o fluxo de potência!")
 
 #            self.OpenDSSEngine.run("Show Voltage LN Nodes")
         self.getVoltageResults() ## Mostrando o resultado das tensões
@@ -599,7 +529,7 @@ class C_OpenDSS(): # classe OpenDSSDirect
                   " Action=" + ctd["Action"] + \
                   " Enable=" + ctd["Enable"] + \
                   " Ppolar=" + ctd["Ppolar"] + \
-                  " VIPolar="  + ctd["VIpolar"]
+                  " VIPolar=" + ctd["VIpolar"]
 
 
             self.memoFileMonitors.append(tmp)
@@ -866,8 +796,7 @@ class C_OpenDSS(): # classe OpenDSSDirect
             self.memoFileStorages.append(tmp)
 
         self.exec_StorageControllers()
-        for tmp in self.memoFileStorages:
-            print(tmp)
+
     ######################################################################################
     ###
     def exec_DynamicFlt(self):
@@ -905,7 +834,15 @@ class C_OpenDSS(): # classe OpenDSSDirect
         return self.dataOpenDSS.busList
 
     def getElementList(self):
-        return self.dataOpenDSS.elementList
+
+        tempStorage = []
+        for ctd in self.Storages:
+            tempStorage.append("Storage2." + ctd["StorageName"])
+
+        #
+        return self.dataOpenDSS.elementList + tempStorage
+
+        #return self.dataOpenDSS.elementList
 
     ## Gets class_insert_dialog
 
