@@ -1,15 +1,7 @@
-from PyQt5.QtGui import QColor, QIcon
-from PyQt5.QtWidgets import QStyleFactory, QDialog, QGridLayout, QGroupBox, QVBoxLayout, QTreeWidgetItem, \
-    QPushButton, QTreeWidget, QFileDialog, QColorDialog, QMessageBox, QInputDialog, QCheckBox, QLabel, QLineEdit, \
-    QComboBox, QTabWidget, QWidget, QHBoxLayout, QRadioButton, QButtonGroup
+from PyQt5.QtGui import QIcon
+from PyQt5.QtWidgets import QStyleFactory, QDialog, QGridLayout, QGroupBox, QVBoxLayout, \
+    QPushButton, QLabel, QRadioButton, QButtonGroup
 from PyQt5.QtCore import Qt
-
-import csv
-import random
-import pathlib
-import platform
-import pyqtgraph
-import class_exception
 
 import opendss.class_opendss
 import opendss.storage.class_select_dispatch_curve
@@ -21,7 +13,6 @@ import opendss.storage.class_dispatchmode_loadlevel
 import opendss.storage.class_dispatchmode_price
 import opendss.storage.class_storagecontroller_dispatchmode_loadshape
 import config as cfg
-import unidecode
 
 class C_Active_Pow_DispMode_Dialog(QDialog): ## Classe Dialog Despacho da Potencia Ativa
     def __init__(self):

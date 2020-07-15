@@ -1,14 +1,10 @@
-from PyQt5.QtGui import QColor, QIcon, QDoubleValidator
+from PyQt5.QtGui import QIcon, QDoubleValidator
 from PyQt5.QtWidgets import QStyleFactory, QDialog, QGridLayout, QGroupBox, QVBoxLayout, QTreeWidgetItem, \
-    QPushButton, QTreeWidget, QFileDialog, QColorDialog, QMessageBox, QInputDialog, QCheckBox, QLabel, QLineEdit, \
+    QPushButton, QTreeWidget, QMessageBox, QLabel, QLineEdit, \
     QComboBox, QTabWidget, QWidget, QHBoxLayout
 from PyQt5.QtCore import Qt
 
-import csv
 import random
-import pathlib
-import platform
-import pyqtgraph
 import class_exception
 
 import opendss.class_opendss
@@ -47,7 +43,7 @@ class C_Insert_Storage_Dialog(QDialog):  ## Classe Dialog principal
 
         ####################### GroupBox Storages ############################################################
         self.Storages_GroupBox = QGroupBox("Storages")  # Criando a GroupBox Storages
-        self.Storages_GroupBox.setFixedWidth(400)
+        self.Storages_GroupBox.setMinimumWidth(400)
         self.Storages_GroupBox_Layout = QGridLayout()  # Layout da GroupBox do Storages é em Grid
 
         # Tree Widget

@@ -1,25 +1,11 @@
-from PyQt5.QtGui import QColor, QIcon, QDoubleValidator
-from PyQt5.QtWidgets import QStyleFactory, QDialog, QGridLayout, QGroupBox, QVBoxLayout, QTreeWidgetItem, \
-    QPushButton, QTreeWidget, QFileDialog, QColorDialog, QMessageBox, QInputDialog, QCheckBox, QLabel, QLineEdit, \
-    QComboBox, QTabWidget, QWidget, QHBoxLayout, QRadioButton, QButtonGroup, QSpinBox
+from PyQt5.QtGui import  QIcon, QDoubleValidator
+from PyQt5.QtWidgets import QStyleFactory, QDialog, QGridLayout, \
+    QPushButton, QMessageBox, QLabel, QLineEdit, QHBoxLayout
 from PyQt5.QtCore import Qt
 
-import csv
-import random
-import pathlib
-import platform
-import pyqtgraph
-import class_exception
-
-import opendss.class_opendss
-import opendss.storage.class_select_dispatch_curve
-import opendss.storage.class_select_price_curve
-import opendss.storage.class_active_pow_dispmode_dialog
-import opendss.storage.class_insert_storage_dialog
 import config as cfg
-import unidecode
 
-class C_ActPow_Discharge_Time_DispMode_Dialog(QDialog): ## Classe Dialog Despacho Discharge Time da Potencia Ativa
+class C_ActPow_Discharge_Time_DispMode_Dialog(QDialog): ## Classe Dialog Despacho Discharge Time da Potência Ativa
     def __init__(self):
         super().__init__()
 

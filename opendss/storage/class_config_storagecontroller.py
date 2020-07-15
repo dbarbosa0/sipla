@@ -1,7 +1,7 @@
-from PyQt5.QtGui import QColor, QIcon, QDoubleValidator
-from PyQt5.QtWidgets import QStyleFactory, QDialog, QGridLayout, QGroupBox, QVBoxLayout, QTreeWidgetItem, \
-    QPushButton, QTreeWidget, QFileDialog, QColorDialog, QMessageBox, QInputDialog, QCheckBox, QLabel, QLineEdit, \
-    QComboBox, QTabWidget, QWidget, QHBoxLayout, QRadioButton, QButtonGroup, QDoubleSpinBox
+from PyQt5.QtGui import QIcon
+from PyQt5.QtWidgets import QStyleFactory, QDialog, QGridLayout, QGroupBox, QVBoxLayout, \
+    QPushButton, QMessageBox, QInputDialog, QCheckBox, QLabel, QLineEdit, \
+    QComboBox, QHBoxLayout, QDoubleSpinBox
 from PyQt5.QtCore import Qt
 
 import opendss.class_opendss
@@ -263,6 +263,7 @@ class C_ActPow_Config_StorageController_Dialog(QDialog): ## Classe Dialog config
 
         ###### Botões Dialogs para configurar os modos de carga de descarga
         self.Dialog_Btns_ChargeDischarge_Layout = QHBoxLayout()
+        # self.Dialog_Btns_ChargeDischarge_Layout.setAlignment(Qt.AlignRight)
 
         self.Dialog_Btns_Charge_Btn = QPushButton("Configurar Modo de Carga")
         self.Dialog_Btns_Charge_Btn.clicked.connect(self.configChargeDialog)

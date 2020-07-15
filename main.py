@@ -1,8 +1,8 @@
-import sys
+import sys, time
 
 from PyQt5.QtCore import Qt
-from PyQt5.QtGui import QIcon
-from PyQt5.QtWidgets import QApplication, QMainWindow, QStyleFactory
+from PyQt5.QtGui import QIcon, QPixmap
+from PyQt5.QtWidgets import QApplication, QMainWindow, QStyleFactory, QSplashScreen
 
 
 #import opendss.class_insert_dialog
@@ -23,7 +23,7 @@ class mainWindow(QMainWindow):
         super(mainWindow, self).__init__(parent)
 
         self.titleWindow = config.__name__ + " - Version: " + config.__version__
-        self.iconWindow = "img/logo.png"
+        self.iconWindow = config.sipla_icon
         self.stylesheet = "fusion"
 
         self.setWindowTitle(self.titleWindow)
@@ -78,7 +78,14 @@ class mainWindow(QMainWindow):
 if __name__ == '__main__':
     siplaApp = QApplication(sys.argv)
 
+    # Create and display the splash screen
+    splash_pix = QPixmap('img/Logo_SIPLA.png')
+    splash = QSplashScreen(splash_pix, Qt.WindowStaysOnTopHint)
+    splash.setMask(splash_pix.mask())
+    splash.show()
+    siplaApp.processEvents()
+
     GUI = mainWindow()
     GUI.show()
-
+    splash.close()
     sys.exit(siplaApp.exec())

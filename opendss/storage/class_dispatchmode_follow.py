@@ -1,22 +1,12 @@
-from PyQt5.QtGui import QColor, QIcon
-from PyQt5.QtWidgets import QStyleFactory, QDialog, QGridLayout, QGroupBox, QVBoxLayout, QTreeWidgetItem, \
-    QPushButton, QTreeWidget, QFileDialog, QColorDialog, QMessageBox, QInputDialog, QCheckBox, QLabel, QLineEdit, \
-    QComboBox, QTabWidget, QWidget, QHBoxLayout, QRadioButton, QButtonGroup
+from PyQt5.QtGui import QIcon
+from PyQt5.QtWidgets import QStyleFactory, QDialog, QGridLayout, QPushButton, QCheckBox, QLabel, QLineEdit
 from PyQt5.QtCore import Qt
-
-import csv
-import random
-import pathlib
-import platform
-import pyqtgraph
-import class_exception
 
 import opendss.class_opendss
 import opendss.storage.class_select_dispatch_curve
 import opendss.storage.class_select_price_curve
 import opendss.storage.class_config_storagecontroller
 import config as cfg
-import unidecode
 
 class C_ActPow_Follow_DispMode_Dialog(QDialog): ## Classe Dialog Despacho Follow da Potencia Ativa
     def __init__(self):

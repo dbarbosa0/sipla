@@ -1,17 +1,8 @@
 from PyQt5.QtGui import QColor, QIcon, QDoubleValidator
-from PyQt5.QtWidgets import QStyleFactory, QDialog, QGridLayout, QGroupBox, QVBoxLayout, QTreeWidgetItem, \
-    QPushButton, QTreeWidget, QFileDialog, QColorDialog, QMessageBox, QInputDialog, QCheckBox, QLabel, QLineEdit, \
-    QComboBox, QTabWidget, QWidget, QHBoxLayout,  QRadioButton, QButtonGroup
+from PyQt5.QtWidgets import QStyleFactory, QDialog, QGridLayout, \
+    QPushButton, QLabel, QLineEdit, QHBoxLayout,  QRadioButton, QButtonGroup
 from PyQt5.QtCore import Qt
 
-import csv
-import random
-import pathlib
-import platform
-import pyqtgraph
-import class_exception
-
-import opendss.class_opendss
 import config as cfg
 
 class C_Reactive_Pow_DispMode_Dialog(QDialog): ## Classe Dialog Despacho da Potencia Reativa

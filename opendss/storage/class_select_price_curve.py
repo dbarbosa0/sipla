@@ -1,6 +1,6 @@
 from PyQt5.QtGui import QColor, QIcon
 from PyQt5.QtWidgets import QStyleFactory, QDialog, QGridLayout, QGroupBox, QHBoxLayout, QTreeWidgetItem, \
-    QPushButton, QTreeWidget, QFileDialog, QColorDialog, QMessageBox, QInputDialog, QCheckBox, QLabel, QComboBox, QSpinBox
+    QPushButton, QTreeWidget, QFileDialog, QColorDialog, QMessageBox, QInputDialog, QLabel, QComboBox, QSpinBox
 from PyQt5.QtCore import Qt
 
 import csv
@@ -11,7 +11,6 @@ import pyqtgraph
 import config as cfg
 import class_exception
 import unidecode
-import opendss.class_config_dialog
 
 
 
