@@ -2,7 +2,7 @@ from PyQt5.QtGui import  QIcon, QDoubleValidator
 from PyQt5.QtWidgets import QStyleFactory, QDialog, QGridLayout, \
     QPushButton, QMessageBox, QLabel, QLineEdit, \
     QComboBox, QHBoxLayout
-from PyQt5.QtCore import Qt
+from PyQt5.QtCore import Qt, QLocale
 
 import config as cfg
 
@@ -52,6 +52,7 @@ class C_ActPow_Discharge_Support_DispMode_Dialog(QDialog):# Classe Dialog Despac
         self.kWTarget_LineEdit = QLineEdit()
         self.LineEditsValidos = QDoubleValidator()
         self.LineEditsValidos.setBottom(0.1)
+        c = QLocale
         self.kWTarget_LineEdit.setValidator(self.LineEditsValidos)
         self.Dialog_Layout.addWidget(self.kWTarget_LineEdit, 2, 2, 1, 2)
         self.Band_Label = QLabel("Largura da faixa:")
@@ -60,7 +61,7 @@ class C_ActPow_Discharge_Support_DispMode_Dialog(QDialog):# Classe Dialog Despac
         self.Band_LineEdit.setValidator(self.LineEditsValidos)
         self.Dialog_Layout.addWidget(self.Band_LineEdit, 3, 2, 1, 1)
         self.Band_Unit_ComboBox = QComboBox()
-        self.Band_Unit_ComboBox.addItems(["kW", "% kW"])
+        self.Band_Unit_ComboBox.addItems(["% kW", "kW"])
         self.Dialog_Layout.addWidget(self.Band_Unit_ComboBox, 3, 3, 1, 1)
         ### Botões
         self.Dialog_Btns_Layout = QHBoxLayout()

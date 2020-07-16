@@ -59,7 +59,7 @@ class C_ActPow_Charge_IPeakShaveLow_DispMode_Dialog(QDialog): ## Classe Dialog D
         self.BandLow_LineEdit.setValidator(self.LineEditsValidos)
         self.Dialog_Layout.addWidget(self.BandLow_LineEdit, 3, 2, 1, 1)
         self.BandLow_Unit_ComboBox = QComboBox()
-        self.BandLow_Unit_ComboBox.addItems(["kAmps", "% kAmps"])
+        self.BandLow_Unit_ComboBox.addItems(["% kAmps", "kAmps"])
         self.Dialog_Layout.addWidget(self.BandLow_Unit_ComboBox, 3, 3, 1, 1)
         ### Botões
         self.Dialog_Btns_Layout = QHBoxLayout()
@@ -105,6 +105,7 @@ class C_ActPow_Charge_IPeakShaveLow_DispMode_Dialog(QDialog): ## Classe Dialog D
             else:
                 self.ChargeMode["%kWBandLow"] = self.getBandWidthLow()
             self.close()
+
     def cancelIPeakShaveLow(self):
         self.close()
 

@@ -59,7 +59,7 @@ class C_ActPow_Discharge_Follow_DispMode_Dialog(QDialog): ## Classe Dialog Despa
         self.Band_LineEdit.setValidator(self.LineEditsValidos)
         self.Dialog_Layout.addWidget(self.Band_LineEdit, 3, 2, 1, 1)
         self.Band_Unit_ComboBox = QComboBox()
-        self.Band_Unit_ComboBox.addItems(["kW", "% kW"])
+        self.Band_Unit_ComboBox.addItems(["% kW", "kW"])
         self.Dialog_Layout.addWidget(self.Band_Unit_ComboBox, 3, 3, 1, 1)
         self.kWThreshold_CheckBox = QCheckBox("Carga mínima para ativar\ndescarregamento:")
         self.kWThreshold_CheckBox.clicked.connect(self.EnableDisablekWThreshold)

@@ -1,6 +1,6 @@
 from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import QStyleFactory, QDialog, QGridLayout, QGroupBox, QVBoxLayout, \
-    QPushButton, QMessageBox, QInputDialog, QCheckBox, QLabel, QLineEdit, \
+    QPushButton, QMessageBox, QLabel, QLineEdit, \
     QComboBox, QHBoxLayout, QDoubleSpinBox
 from PyQt5.QtCore import Qt
 
@@ -58,7 +58,7 @@ class C_ActPow_Config_StorageController_Dialog(QDialog): ## Classe Dialog config
 
         self._NumComboBox = 0
 
-        # self._StorageControllers = []
+        self._StorageVersion_GroupBox_Storage1_RadioBtn = 0
 
         self.StorageControllersTemporario = []
 
@@ -160,6 +160,14 @@ class C_ActPow_Config_StorageController_Dialog(QDialog): ## Classe Dialog config
     def NumComboBox(self, value):
         self._NumComboBox = value
 
+    @property
+    def StorageVersion_GroupBox_Storage1_RadioBtn(self):
+        return self._StorageVersion_GroupBox_Storage1_RadioBtn
+
+    @StorageVersion_GroupBox_Storage1_RadioBtn.setter
+    def StorageVersion_GroupBox_Storage1_RadioBtn(self, value):
+        self._StorageVersion_GroupBox_Storage1_RadioBtn = value
+
     def InitUI(self):
         self.setWindowTitle(self.titleWindow)  # titulo janela
         self.setWindowIcon(QIcon(self.iconWindow))  # ícone da janela
@@ -205,7 +213,7 @@ class C_ActPow_Config_StorageController_Dialog(QDialog): ## Classe Dialog config
         self.StorControl_Name_Label = QLabel("Nome:")
         self.StorControl_Element_Label = QLabel("Elemento:")
         self.StorControl_Terminal_Label = QLabel("Terminal:")
-        self.StorControl_Reserve_Label = QLabel("Energia reserva:")
+        self.StorControl_Reserve_Label = QLabel("Energia reserva (%):")
         self.StorControl_DispFactor_Label = QLabel("Dispatch Factor")
 
         ### LineEdits
@@ -298,6 +306,12 @@ class C_ActPow_Config_StorageController_Dialog(QDialog): ## Classe Dialog config
     def get_StorControl_Name(self):
         return self.StorControl_Name.text()
 
+    def get_StorControl_Version(self):
+        if self.StorageVersion_GroupBox_Storage1_RadioBtn.isChecked():
+            return 1
+        else:
+            return 2
+
     def get_ElementStorControl(self):
         return self.StorControl_Element_ComboBox.currentText()
 
@@ -383,6 +397,7 @@ class C_ActPow_Config_StorageController_Dialog(QDialog): ## Classe Dialog config
     def AcceptAddEditStorControl(self):
         StorageController = {}
         StorageController["StorageControllerName"] = unidecode.unidecode(self.get_StorControl_Name().replace(" ", "_"))
+        StorageController["StorageControllerVersion"] = self.get_StorControl_Version()
         StorageController["ElementList"] = []
         StorageController["Element"] = self.get_ElementStorControl()
         StorageController["Terminal"] = self.get_TerminalStorControl()
@@ -531,7 +546,7 @@ class C_ActPow_Config_StorageController_Dialog(QDialog): ## Classe Dialog config
         if not self.StorageControllersTemporario == []:
             for ctd in self.StorageControllersTemporario:
                 if "ChargeMode" in ctd and "DischargeMode" in ctd:
-                    if ctd["ChargeMode"] == self.ChargeMode() and ctd["DischargeMode"] == self.DischargeMode():
+                    if ctd["ChargeMode"] == self.ChargeMode() and ctd["DischargeMode"] == self.DischargeMode() and ctd["StorageControllerVersion"] == self.get_StorControl_Version():
                         self.StorControl_GroupBox_Selection_ComboBox.addItem(ctd["StorageControllerName"])
 
         self.StorControl_Element_ComboBox.clear()

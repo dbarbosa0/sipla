@@ -59,7 +59,7 @@ class C_ActPow_Charge_PeakShaveLow_DispMode_Dialog(QDialog): ## Classe Dialog De
         self.BandLow_LineEdit.setValidator(self.LineEditsValidos)
         self.Dialog_Layout.addWidget(self.BandLow_LineEdit, 3, 2, 1, 1)
         self.BandLow_Unit_ComboBox = QComboBox()
-        self.BandLow_Unit_ComboBox.addItems(["kW", "% kW"])
+        self.BandLow_Unit_ComboBox.addItems(["% kW", "kW"])
         self.Dialog_Layout.addWidget(self.BandLow_Unit_ComboBox, 3, 3, 1, 1)
         ### Botões
         self.Dialog_Btns_Layout = QHBoxLayout()

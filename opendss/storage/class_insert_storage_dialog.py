@@ -1,6 +1,6 @@
 from PyQt5.QtGui import QIcon, QDoubleValidator
 from PyQt5.QtWidgets import QStyleFactory, QDialog, QGridLayout, QGroupBox, QVBoxLayout, QTreeWidgetItem, \
-    QPushButton, QTreeWidget, QMessageBox, QLabel, QLineEdit, \
+    QPushButton, QTreeWidget, QMessageBox, QLabel, QLineEdit, QRadioButton, \
     QComboBox, QTabWidget, QWidget, QHBoxLayout
 from PyQt5.QtCore import Qt
 
@@ -26,6 +26,8 @@ class C_Insert_Storage_Dialog(QDialog):  ## Classe Dialog principal
 
         self.Storages = []
         self.StorageControllers = []
+
+        self._OpenDSSConfig = {}
 
         self.InitUI()
 
@@ -77,6 +79,19 @@ class C_Insert_Storage_Dialog(QDialog):  ## Classe Dialog principal
         self.Storages_GroupBox_Cancel_Btn.clicked.connect(self.cancelInsertStorage)
         self.Storages_GroupBox_Layout.addWidget(self.Storages_GroupBox_Cancel_Btn, 4, 3, 1, 1)
 
+        ############################ GroupBox StorageVersion ########################################################
+        self.StorageVersion_GroupBox = QGroupBox("Versão do Storage")  # Criando a GroupBox StorageVersion
+        self.StorageVersion_GroupBox_Layout = QGridLayout()  # Layout da GroupBox do StorageVersion é em Grid
+
+        # Radio Button Storage1
+        self.StorageVersion_GroupBox_Storage1_RadioBtn = QRadioButton("Storage1")
+        self.StorageVersion_GroupBox_Storage1_RadioBtn.clicked.connect(self.DisableStorage2Parameters)
+        self.StorageVersion_GroupBox_Layout.addWidget(self.StorageVersion_GroupBox_Storage1_RadioBtn, 0, 0, 1, 1)
+        # Radio Button Storage2
+        self.StorageVersion_GroupBox_Storage2_RadioBtn = QRadioButton("Storage2")
+        self.StorageVersion_GroupBox_Storage2_RadioBtn.clicked.connect(self.EnableStorage2Parameters)
+        self.StorageVersion_GroupBox_Layout.addWidget(self.StorageVersion_GroupBox_Storage2_RadioBtn, 0, 1, 1, 1)
+
         ############################ GroupBox Modos de Despacho ########################################################
         self.ModoDespacho_GroupBox = QGroupBox("Modos de Despacho")  # Criando a GroupBox Modos de Desapacho
         self.ModoDespacho_GroupBox_Layout = QGridLayout()  # Layout da GroupBox do Modos de Despacho é em Grid
@@ -90,9 +105,10 @@ class C_Insert_Storage_Dialog(QDialog):  ## Classe Dialog principal
         self.ModoDespacho_GroupBox_PotReat_Btn.clicked.connect(self.DispModeReactPow)
         self.ModoDespacho_GroupBox_Layout.addWidget(self.ModoDespacho_GroupBox_PotReat_Btn, 0, 1, 1, 1)
 
+        ################################################################################################################
         self.Storages_GroupBox.setLayout(self.Storages_GroupBox_Layout)  # define o Layout do GroupBox Storages
-        self.ModoDespacho_GroupBox.setLayout(
-            self.ModoDespacho_GroupBox_Layout)  # define o Layout do GroupBox ModoDespacho
+        self.StorageVersion_GroupBox.setLayout(self.StorageVersion_GroupBox_Layout) # define o Layout do GroupBox StorageVersion
+        self.ModoDespacho_GroupBox.setLayout(self.ModoDespacho_GroupBox_Layout)  # define o Layout do GroupBox ModoDespacho
 
         self.Dialog_Layout.addWidget(self.Storages_GroupBox)  # adiciona o GroupBox Storages ao Dialog
 
@@ -132,11 +148,10 @@ class C_Insert_Storage_Dialog(QDialog):  ## Classe Dialog principal
         self.StorageEInvConfig_GroupBox_Layout = QVBoxLayout()
         self.StorageEInvConfig_GroupBox.setVisible(False)
 
+        self.StorageEInvConfig_GroupBox_Layout.addWidget(self.StorageVersion_GroupBox) # adiciona o GroupBox StorageVersion ao GroupBox superior
         self.StorageEInvConfig_GroupBox_Layout.addWidget(self.TabWidget)
-        self.StorageEInvConfig_GroupBox_Layout.addWidget(
-            self.ModoDespacho_GroupBox)  # adiciona o GroupBox ModoDespacho ao GroupBox superior
-        self.StorageEInvConfig_GroupBox_Layout.addItem(
-            self.Config_Btns_Layout)  # adiciona o Layout dos Botões das Configurações ao GroupBox superior
+        self.StorageEInvConfig_GroupBox_Layout.addWidget(self.ModoDespacho_GroupBox)  # adiciona o GroupBox ModoDespacho ao GroupBox superior
+        self.StorageEInvConfig_GroupBox_Layout.addItem(self.Config_Btns_Layout)  # adiciona o Layout dos Botões das Configurações ao GroupBox superior
 
         self.StorageEInvConfig_GroupBox.setLayout(self.StorageEInvConfig_GroupBox_Layout)
 
@@ -146,6 +161,12 @@ class C_Insert_Storage_Dialog(QDialog):  ## Classe Dialog principal
 
     def get_StorageName(self):
         return unidecode.unidecode(self.TabConfig.StorageConfig_GroupBox_Nome_LineEdit.text().replace(" ", "_"))
+
+    def get_StorageVersion(self):
+        if self.StorageVersion_GroupBox_Storage1_RadioBtn.isChecked():
+            return 1
+        else:
+            return 2
 
     def removeStorages(self):
         for ctd in range(self.Storages_GroupBox_TreeWidget.topLevelItemCount() - 1, -1, -1):
@@ -168,9 +189,12 @@ class C_Insert_Storage_Dialog(QDialog):  ## Classe Dialog principal
         self.DispModeActPowDialog.clearRadioBtns()
         self.EnableDisableParameters(True)
         self.DefaultConfigParameters()
+        self.updateDialog()
         self.adjustSize()
 
         self.TabInversorConfig.EffCurve.Storages = self.Storages  # Getter/Setter para o class_config_eff_curve.py
+        self.DispModeActPowDialog.ConfigStorageController.StorageVersion_GroupBox_Storage1_RadioBtn = self.StorageVersion_GroupBox_Storage1_RadioBtn # Getter/Setter para o class_config_storagecontroller.py
+        self.DispModeActPowDialog.DialogActPowLoadShape.StorageVersion_GroupBox_Storage1_RadioBtn = self.StorageVersion_GroupBox_Storage1_RadioBtn # Getter/Setter para o class_storagecontroller_dispatchmode_loadshape.py
 
     def editStorages(self):
         checkCont = 0
@@ -183,14 +207,35 @@ class C_Insert_Storage_Dialog(QDialog):  ## Classe Dialog principal
             if checkCont == 1:
                 self.clearStorageParameters()
                 for i in self.Storages:
+                    print("Item.text(0):", Item.text(0))
+
                     if i["StorageName"] == Item.text(0):
+                        print("Item.text(0):", Item.text(0))
+                        if self.OpenDSS.OpenDSSConfig["openDSSConn"] == "OpenDSSDirect":
+                            if i["StorageVersion"] == 1:
+                                self.StorageVersion_GroupBox_Storage1_RadioBtn.setChecked(True)
+                                self.DisableStorage2Parameters()
+                                self.StorageVersion_GroupBox.setEnabled(False)
+                            else:
+                                raise class_exception.ExecConfigOpenDSS("Insert Storage",
+                                                                        "Não é possível editar um Storage2 utilizando o OpenDSSDirect. Modifique o método de conexão com o OpenDSS.")
+                        elif self.OpenDSS.OpenDSSConfig["openDSSConn"] == "COM":
+                            if i["StorageVersion"] == 1:
+                                self.StorageVersion_GroupBox_Storage1_RadioBtn.setChecked(True)
+                                self.DisableStorage2Parameters()
+                                self.StorageVersion_GroupBox.setEnabled(False)
+                                print("1")
+                            else:
+                                self.StorageVersion_GroupBox_Storage2_RadioBtn.setChecked(True)
+                                self.EnableStorage2Parameters()
+                                self.StorageVersion_GroupBox.setEnabled(False)
                         self.TabConfig.StorageConfig_GroupBox_Nome_LineEdit.setText(i["StorageName"])
                         self.TabConfig.StorageConfig_GroupBox_conn_ComboBox.setCurrentText(i["Conn"])
                         self.TabConfig.StorageConfig_GroupBox_Bus_ComboBox.setCurrentText(i["Bus"])
                         self.TabConfig.StorageConfig_GroupBox_kW_LineEdit.setText(i["kW"])
                         self.TabConfig.StorageConfig_GroupBox_kv_LineEdit.setText(i["kV"])
                         self.TabConfig.StorageConfig_GroupBox_kWhrated_LineEdit.setText(i["kWhrated"])
-                        self.TabConfig.StorageConfig_GroupBox_kWhstored_LineEdit.setText(i["kWhstored"])
+                        self.TabConfig.StorageConfig_GroupBox_kWhstored_LineEdit.setText(i["%stored"])
                         self.TabConfig.StorageConfig_GroupBox_PercentageReserve_LineEdit.setText(i["%reserve"])
                         self.TabConfig.StorageConfig_GroupBox_IdlingkW_LineEdit.setText(i["%IdlingkW"])
                         self.TabConfig.StorageConfig_GroupBox_Per100Charge_LineEdit.setText(i["%Charge"])
@@ -242,15 +287,19 @@ class C_Insert_Storage_Dialog(QDialog):  ## Classe Dialog principal
                             self.DispModeReactPowDialog.kvarConst_LineEdit.setEnabled(True)
                             self.DispModeReactPowDialog.kvarConst_LineEdit.setText(i['ReactPow']['kvar'])
 
-                        ptsX = str(i["EffCurve"]["Xarray"]).strip('[]').replace("'", "")
-                        ptsY = str(i["EffCurve"]["Yarray"]).strip('[]').replace("'", "")
+                        print("2")
+                        # ptsX = str(i["EffCurve"]["Xarray"]).strip('[]').replace("'", "")
+                        print("5")
+                        # ptsY = str(i["EffCurve"]["Yarray"]).strip('[]').replace("'", "")
+                        print("4")
                         self.TabInversorConfig.EffCurveFile.Config_EffCurve_GroupBox_TreeWidget_Item(
                             self.TabInversorConfig.EffCurve.EffCurve_GroupBox_TreeWidget,
                             i["EffCurve"]["EffCurveName"],
-                            ptsX,
-                            ptsY,
+                            str(i["EffCurve"]["Xarray"]).strip('[]').replace("'", ""),
+                            str(i["EffCurve"]["Yarray"]).strip('[]').replace("'", ""),
                             cfg.colorsList[random.randint(0, len(cfg.colorsList) - 1)])
 
+                        print("3")
                         if i["Carga/Descarga"] == "Sincronizados":
                             self.DispModeActPowDialog.DispSinc_Radio_Btn.setChecked(True)
                             self.DispModeActPowDialog.DispSinc_GroupBox.setEnabled(True)
@@ -426,7 +475,9 @@ class C_Insert_Storage_Dialog(QDialog):  ## Classe Dialog principal
                                         self.DispModeActPowDialog.DialogActPowDefault.Select_DispCurve.Daily_GroupBox_Number_SpinBox.setValue(
                                             ctd["npts"])
 
-                        if i["Carga/Descarga"] == "Independentes":
+
+
+                        elif i["Carga/Descarga"] == "Independentes":
                             self.DispModeActPowDialog.DispIndep_Radio_Btn.setChecked(True)
                             self.DispModeActPowDialog.DispIndep_GroupBox.setEnabled(True)
 
@@ -459,8 +510,9 @@ class C_Insert_Storage_Dialog(QDialog):  ## Classe Dialog principal
                                 self.DispModeActPowDialog.ModoDescarga_GroupBox_StorageCont_GroupBox_Layout_Time_RadioBtn.setChecked(
                                     True)
 
-                self.TabConfig.StorageConfig_GroupBox_Nome_LineEdit.setEnabled(False)
-                self.EnableDisableParameters(True)
+                        print("aqui")
+                        self.TabConfig.StorageConfig_GroupBox_Nome_LineEdit.setEnabled(False)
+                        self.EnableDisableParameters(True)
 
             if checkCont > 1:
                 raise class_exception.ExecConfigOpenDSS("Insert Storage",
@@ -497,10 +549,10 @@ class C_Insert_Storage_Dialog(QDialog):  ## Classe Dialog principal
     def AcceptAddEditStorage(self):
         if self.TabConfig.verificaLineEdits() and self.TabInversorConfig.verificaLineEdits():
 
-            if self.TabInversorConfig.EffCurve.dataEffCurve == {}:
-                QMessageBox(QMessageBox.Information, "Insert Storage",
-                            "Selecione uma curva de eficiência do Inversor!",
-                            QMessageBox.Ok).exec()
+            if self.get_StorageVersion() == 2 and self.TabInversorConfig.EffCurve.dataEffCurve == {}:
+                    QMessageBox(QMessageBox.Information, "Insert Storage",
+                                "Selecione uma curva de eficiência do Inversor!",
+                                QMessageBox.Ok).exec()
 
             elif self.DispModeActPowDialog.None_Radio_Btn.isChecked():
                 QMessageBox(QMessageBox.Information, "Insert Storage",
@@ -517,12 +569,13 @@ class C_Insert_Storage_Dialog(QDialog):  ## Classe Dialog principal
 
                 ############# seta data das configurações gerais
                 Storage["StorageName"] = self.get_StorageName()
+                Storage["StorageVersion"] = self.get_StorageVersion()
                 Storage["Conn"] = self.TabConfig.StorageConfig_GroupBox_conn_ComboBox.currentText()
                 Storage["Bus"] = self.TabConfig.StorageConfig_GroupBox_Bus_ComboBox.currentText()
                 Storage["kW"] = self.TabConfig.StorageConfig_GroupBox_kW_LineEdit.text()
                 Storage["kV"] = self.TabConfig.StorageConfig_GroupBox_kv_LineEdit.text()
                 Storage["kWhrated"] = self.TabConfig.StorageConfig_GroupBox_kWhrated_LineEdit.text()
-                Storage["kWhstored"] = self.TabConfig.StorageConfig_GroupBox_kWhstored_LineEdit.text()
+                Storage["%stored"] = self.TabConfig.StorageConfig_GroupBox_kWhstored_LineEdit.text()
                 Storage["%reserve"] = self.TabConfig.StorageConfig_GroupBox_PercentageReserve_LineEdit.text()
                 Storage["%IdlingkW"] = self.TabConfig.StorageConfig_GroupBox_IdlingkW_LineEdit.text()
                 Storage["%Charge"] = self.TabConfig.StorageConfig_GroupBox_Per100Charge_LineEdit.text()
@@ -663,12 +716,13 @@ class C_Insert_Storage_Dialog(QDialog):  ## Classe Dialog principal
                     for ctd in self.Storages:
                         if ctd["StorageName"] == Storage["StorageName"]:
 
+                            ctd["StorageVersion"] = Storage["StorageVersion"]
                             ctd["Conn"] = Storage["Conn"]
                             ctd["Bus"] = Storage["Bus"]
                             ctd["kW"] = Storage["kW"]
                             ctd["kV"] = Storage["kV"]
                             ctd["kWhrated"] = Storage["kWhrated"]
-                            ctd["kWhstored"] = Storage["kWhstored"]
+                            ctd["%stored"] = Storage["%stored"]
                             ctd["%reserve"] = Storage["%reserve"]
                             ctd["%IdlingkW"] = Storage["%IdlingkW"]
                             ctd["%Charge"] = Storage["%Charge"]
@@ -709,9 +763,6 @@ class C_Insert_Storage_Dialog(QDialog):  ## Classe Dialog principal
                                     ctd.update({"ActPow": None})
 
                                     if not self.DispModeActPowDialog.DialogActPowLoadShape.StorageControllersTemporario == []:
-                                        # for i in self.StorageControllers:
-                                        #     while self.get_StorageName() in i["ElementList"]:
-                                        #         i["ElementList"].remove(self.get_StorageName())
                                         for i in self.DispModeActPowDialog.DialogActPowLoadShape.StorageControllersTemporario:
                                             if self.get_StorageName() in i["ElementList"]:
                                                 self.StorageControllers.append(i.copy())
@@ -732,9 +783,6 @@ class C_Insert_Storage_Dialog(QDialog):  ## Classe Dialog principal
                                 ctd.update({"ActPow": None})
 
                                 if not self.DispModeActPowDialog.ConfigStorageController.StorageControllersTemporario == []:
-                                    # for i in self.StorageControllers:
-                                    #     while self.get_StorageName() in i["ElementList"]:
-                                    #         i["ElementList"].remove(self.get_StorageName())
                                     for i in self.DispModeActPowDialog.ConfigStorageController.StorageControllersTemporario:
                                         if self.get_StorageName() in i["ElementList"]:
                                             self.StorageControllers.append(i.copy())
@@ -803,9 +851,61 @@ class C_Insert_Storage_Dialog(QDialog):  ## Classe Dialog principal
             self.StorageEInvConfig_GroupBox.setVisible(False)
             self.Storages_GroupBox.setVisible(True)
 
+    def DisableStorage2Parameters(self):
+        self.TabInversorConfig.InversorConfig_GroupBox_varFollowInverter_ComboBox.setEnabled(False)
+        self.TabInversorConfig.InversorConfig_GroupBox_CutIn_LineEdit.setEnabled(False)
+        self.TabInversorConfig.InversorConfig_GroupBox_CutOut_LineEdit.setEnabled(False)
+        self.TabInversorConfig.InversorConfig_GroupBox_kvarMax_LineEdit.setEnabled(False)
+        self.TabInversorConfig.InversorConfig_GroupBox_kvarMaxAbs_LineEdit.setEnabled(False)
+        self.TabInversorConfig.InversorConfig_GroupBox_PminNoVars_LineEdit.setEnabled(False)
+        self.TabInversorConfig.InversorConfig_GroupBox_PminkvarMax_LineEdit.setEnabled(False)
+        self.TabInversorConfig.InversorConfig_GroupBox_PFPriority_ComboBox.setEnabled(False)
+        self.TabInversorConfig.InversorConfig_GroupBox_WattPriority_ComboBox.setEnabled(False)
+        self.TabInversorConfig.InversorConfig_GroupBox_EffCurve_Btn.setEnabled(False)
+
+        self.DispModeActPowDialog.ConfigStorageController.StorControl_DispFactor_SpinBox.setEnabled(False)
+        self.DispModeActPowDialog.DialogActPowLoadShape.StorControl_DispFactor_SpinBox.setEnabled(False)
+
+        self.DispModeActPowDialog.ConfigStorageController.DialogActPowIPeakShaveLow.BandLow_Unit_ComboBox.setEnabled(False)
+        self.DispModeActPowDialog.ConfigStorageController.DialogActPowPeakShaveLow.BandLow_Unit_ComboBox.setEnabled(False)
+        self.DispModeActPowDialog.ConfigStorageController.DialogActPowIPeakShave.Band_Unit_ComboBox.setEnabled(False)
+        self.DispModeActPowDialog.ConfigStorageController.DialogActPowPeakShave.Band_Unit_ComboBox.setEnabled(False)
+        self.DispModeActPowDialog.ConfigStorageController.DialogActPowSupport.Band_Unit_ComboBox.setEnabled(False)
+        self.DispModeActPowDialog.ConfigStorageController.DialogActPowStorageContFollow.Band_Unit_ComboBox.setEnabled(False)
+
+    def EnableStorage2Parameters(self):
+        self.TabInversorConfig.InversorConfig_GroupBox_varFollowInverter_ComboBox.setEnabled(True)
+        self.TabInversorConfig.InversorConfig_GroupBox_CutIn_LineEdit.setEnabled(True)
+        self.TabInversorConfig.InversorConfig_GroupBox_CutOut_LineEdit.setEnabled(True)
+        self.TabInversorConfig.InversorConfig_GroupBox_kvarMax_LineEdit.setEnabled(True)
+        self.TabInversorConfig.InversorConfig_GroupBox_kvarMaxAbs_LineEdit.setEnabled(True)
+        self.TabInversorConfig.InversorConfig_GroupBox_PminNoVars_LineEdit.setEnabled(True)
+        self.TabInversorConfig.InversorConfig_GroupBox_PminkvarMax_LineEdit.setEnabled(True)
+        self.TabInversorConfig.InversorConfig_GroupBox_PFPriority_ComboBox.setEnabled(True)
+        self.TabInversorConfig.InversorConfig_GroupBox_WattPriority_ComboBox.setEnabled(True)
+        self.TabInversorConfig.InversorConfig_GroupBox_EffCurve_Btn.setEnabled(True)
+
+        self.DispModeActPowDialog.ConfigStorageController.StorControl_DispFactor_SpinBox.setEnabled(True)
+        self.DispModeActPowDialog.DialogActPowLoadShape.StorControl_DispFactor_SpinBox.setEnabled(True)
+
+        self.DispModeActPowDialog.ConfigStorageController.DialogActPowIPeakShaveLow.BandLow_Unit_ComboBox.setEnabled(True)
+        self.DispModeActPowDialog.ConfigStorageController.DialogActPowPeakShaveLow.BandLow_Unit_ComboBox.setEnabled(True)
+        self.DispModeActPowDialog.ConfigStorageController.DialogActPowIPeakShave.Band_Unit_ComboBox.setEnabled(True)
+        self.DispModeActPowDialog.ConfigStorageController.DialogActPowPeakShave.Band_Unit_ComboBox.setEnabled(True)
+        self.DispModeActPowDialog.ConfigStorageController.DialogActPowSupport.Band_Unit_ComboBox.setEnabled(True)
+        self.DispModeActPowDialog.ConfigStorageController.DialogActPowStorageContFollow.Band_Unit_ComboBox.setEnabled(True)
+
     def updateDialog(self):
         self.TabConfig.StorageConfig_GroupBox_Bus_ComboBox.clear()
         self.TabConfig.StorageConfig_GroupBox_Bus_ComboBox.addItems(self.OpenDSS.getBusList())
+        if self.OpenDSS.OpenDSSConfig["openDSSConn"] == "OpenDSSDirect":
+            self.StorageVersion_GroupBox_Storage1_RadioBtn.setChecked(True)
+            self.DisableStorage2Parameters()
+            self.StorageVersion_GroupBox.setEnabled(False)
+        elif self.OpenDSS.OpenDSSConfig["openDSSConn"] == "COM":
+            self.StorageVersion_GroupBox_Storage2_RadioBtn.setChecked(True)
+            self.EnableStorage2Parameters()
+            self.StorageVersion_GroupBox.setEnabled(True)
 
     def DefaultConfigParameters(self):
         self.TabConfig.StorageConfig_GroupBox_Nome_LineEdit.setText("")
@@ -814,7 +914,7 @@ class C_Insert_Storage_Dialog(QDialog):  ## Classe Dialog principal
         self.TabConfig.StorageConfig_GroupBox_kW_LineEdit.setText("")
         self.TabConfig.StorageConfig_GroupBox_kv_LineEdit.setText("")
         self.TabConfig.StorageConfig_GroupBox_kWhrated_LineEdit.setText("50")
-        self.TabConfig.StorageConfig_GroupBox_kWhstored_LineEdit.setText("50")
+        self.TabConfig.StorageConfig_GroupBox_kWhstored_LineEdit.setText("100")
         self.TabConfig.StorageConfig_GroupBox_PercentageReserve_LineEdit.setText("20")
         self.TabConfig.StorageConfig_GroupBox_IdlingkW_LineEdit.setText("1")
         self.TabConfig.StorageConfig_GroupBox_Per100Charge_LineEdit.setText("100")
@@ -831,8 +931,7 @@ class C_Insert_Storage_Dialog(QDialog):  ## Classe Dialog principal
 
         self.TabInversorConfig.InversorConfig_GroupBox_kVA_LineEdit.setText("")
         self.TabInversorConfig.InversorConfig_GroupBox_kWrated_LineEdit.setText("25")
-        self.TabInversorConfig.InversorConfig_GroupBox_varFollowInverter_ComboBox.setCurrentText(
-            "Desativa CutIn/CutOut")
+        self.TabInversorConfig.InversorConfig_GroupBox_varFollowInverter_ComboBox.setCurrentText("Desativa CutIn/CutOut")
         self.TabInversorConfig.InversorConfig_GroupBox_CutIn_LineEdit.setText("0")
         self.TabInversorConfig.InversorConfig_GroupBox_CutOut_LineEdit.setText("0")
         self.TabInversorConfig.InversorConfig_GroupBox_kvarMax_LineEdit.setText("999999")
@@ -941,9 +1040,9 @@ class StorageConfig(QWidget):
         self.StorageConfig_GroupBox_kWhrated_LineEdit.setValidator(self.LineEditsValidos)
         self.StorageConfig_GroupBox_Layout.addWidget(self.StorageConfig_GroupBox_kWhrated_Label, 2, 2, 1, 1)
         self.StorageConfig_GroupBox_Layout.addWidget(self.StorageConfig_GroupBox_kWhrated_LineEdit, 2, 3, 1, 1)
-        # Configurar propriedade "kWhstored" (quantidade atual de energia armazenada em kWh)
-        self.StorageConfig_GroupBox_kWhstored_Label = QLabel("Energia armazenada atual (kWh)")
-        self.StorageConfig_GroupBox_kWhstored_Label.setToolTip("Energia Armazenada atual em kWh")
+        # Configurar propriedade "%stored" (porcentagem atual de energia armazenada)
+        self.StorageConfig_GroupBox_kWhstored_Label = QLabel("Energia armazenada atual (%)")
+        self.StorageConfig_GroupBox_kWhstored_Label.setToolTip("Energia Armazenada atual em % da capacidade nominal.")
         self.StorageConfig_GroupBox_kWhstored_LineEdit = QLineEdit()
         self.StorageConfig_GroupBox_kWhstored_LineEdit.setValidator(self.LineEditsValidos)
         self.StorageConfig_GroupBox_Layout.addWidget(self.StorageConfig_GroupBox_kWhstored_Label, 3, 2, 1, 1)

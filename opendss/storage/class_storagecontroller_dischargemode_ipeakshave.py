@@ -58,7 +58,7 @@ class C_ActPow_Discharge_IPeakShave_DispMode_Dialog(QDialog): ## Classe Dialog D
         self.Band_LineEdit.setValidator(self.LineEditsValidos)
         self.Dialog_Layout.addWidget(self.Band_LineEdit, 3, 2, 1, 1)
         self.Band_Unit_ComboBox = QComboBox()
-        self.Band_Unit_ComboBox.addItems(["kAmps", "% kAmps"])
+        self.Band_Unit_ComboBox.addItems(["% kAmps", "kAmps"])
         self.Dialog_Layout.addWidget(self.Band_Unit_ComboBox, 3, 3, 1, 1)
         ### Botões
         self.Dialog_Btns_Layout = QHBoxLayout()
@@ -104,6 +104,7 @@ class C_ActPow_Discharge_IPeakShave_DispMode_Dialog(QDialog): ## Classe Dialog D
             else:
                 self.DischargeMode["%kWBand"] = self.getBandWidth()
             self.close()
+
     def cancelIPeakShave(self):
         self.close()
 
