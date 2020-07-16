@@ -6,6 +6,7 @@ import sys
 import opendss.class_opendss
 import config as cfg
 from opendss.PVSystem.class_pvsystem_effcurve_dialog import C_Config_EffCurve_Dialog
+from opendss.PVSystem.class_xy_curves_select_dialog import C_XY_Curve_Dialog
 
 
 
@@ -19,6 +20,7 @@ class C_Insert_PVSystem_Dialog(QDialog):
         self.adjustSize()
         self.OpenDSS = opendss.class_opendss.C_OpenDSS()
         self.effcurve = C_Config_EffCurve_Dialog()
+        self.selectcurve = C_XY_Curve_Dialog()
         self.PVSystem_List = []
 
         self.InitUI()
@@ -101,43 +103,12 @@ class C_Insert_PVSystem_Dialog(QDialog):
         pass
 
     def addPVSystem(self):
-        return self.effcurve
+        #self.effcurve.show()
+        self.selectcurve.show()
+# TODO: LEMBRAR DE BOTAR O EFF CURVE E TRANSFERIR O SELECT CURVE..
 
     def editPVSystem(self):
         pass
-
-
-'''
-        #Teste button
-        self.radiobutton_layout = QGridLayout()
-        self.radiobutton = QRadioButton("Por Barra")
-        self.radiobutton.setChecked(True)
-        self.radiobutton.name = "Australia"
-        self.radiobutton.toggled.connect(self.onClicked)
-        self.radiobutton_layout.addWidget(self.radiobutton, 0, 0)
-
-        self.radiobutton = QRadioButton("Randomico")
-        self.radiobutton.country = "China"
-        self.radiobutton.toggled.connect(self.onClicked)
-        self.radiobutton_layout.addWidget(self.radiobutton, 0, 1)
-
-        self.radiobutton = QRadioButton("randomico")
-        self.radiobutton.country = "Japan"
-        self.radiobutton.toggled.connect(self.onClicked)
-        self.radiobutton_layout.addWidget(self.radiobutton, 0, 2)
-
-        #self.PVSystem_Groupbox_Insert_config_Layout.addWidget(self.radiobutton_layout, 0, 1)
-
-
-
-    def onClicked(self):
-        self.radiobutton = self.sender()
-        if self.radiobutton.isChecked():
-            print("Country is %s" % (self.radiobutton.country))
-'''
-
-
-# Teste do button
 
 
 # self.loadDefaultParameters()
