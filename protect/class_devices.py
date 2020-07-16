@@ -20,6 +20,7 @@ class C_Devices_ConfigDialog(QDialog):
 
         self.editedDevices = []
         self.addedDevices = []
+        self.ImportedCurvesMain = []
         # self.OpenDSS = opendss.class_opendss.C_OpenDSS()
 
         self.InitUI()
@@ -64,11 +65,28 @@ class C_Devices_ConfigDialog(QDialog):
         self.exec_Devices()
         self.close()
 
+        self.updateImportedCurves()
+
     def updateMainProtectDialog(self):
         self.TabFuse.updateProtectDialog()
         self.TabRecloser.updateProtectDialog()
         self.TabRelay.updateProtectDialog()
         self.TabSwtControl.updateProtectDialog()
+
+    def updateImportedCurves(self):
+        for curvestring in self.TabRecloser.Edit_Recloser.ImportedCurves:
+            if curvestring not in self.ImportedCurvesMain:
+                self.ImportedCurvesMain.append(curvestring)
+
+        for curvestring in self.TabFuse.Edit_Fuse.ImportedCurves:
+            if curvestring not in self.ImportedCurvesMain:
+                self.ImportedCurvesMain.append(curvestring)
+
+        for curvestring in self.TabRelay.Edit_Relay.ImportedCurves:
+            if curvestring not in self.ImportedCurvesMain:
+                self.ImportedCurvesMain.append(curvestring)
+
+        print(self.ImportedCurvesMain)
 
     def gen_devices(self):
         self.addedDevices = []

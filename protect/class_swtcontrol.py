@@ -145,7 +145,7 @@ class SwtControl(QWidget):
         self.SwtControlSelect_Combobox.clear()
         for dicio in self.SwtControlDataInfo:
             self.SwtControlSelect_Combobox.addItem(dicio["Name"], dicio["Name"])
-
+        print(f'SwtControls:{len(self.SwtControlDataInfo)}')
 
 class EditSwtControl(QDialog):
     def __init__(self, SwtControl_parent):

@@ -139,6 +139,7 @@ class Fuse(QWidget):
         self.FuseSelect_Combobox.clear()
         for dicio in self.FuseDataInfo:
             self.FuseSelect_Combobox.addItem(dicio["Name"], dicio["Name"])
+        print(f'FuseS:{len(self.FuseDataInfo)}')
 
 
 class EditFuse(QDialog):

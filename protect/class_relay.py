@@ -188,6 +188,7 @@ class Relay(QWidget):
         self.RelaySelect_Combobox.clear()
         for dicio in self.RelayDataInfo:
             self.RelaySelect_Combobox.addItem(dicio["Name"], dicio["Name"])
+        print(f'RelayS:{len(self.RelayDataInfo)}')
 
 
 class EditRelay(QDialog):

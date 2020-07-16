@@ -176,6 +176,7 @@ class Recloser(QWidget):
         self.RecloserSelect_Combobox.clear()
         for dicio in self.RecloserDataInfo:
             self.RecloserSelect_Combobox.addItem(dicio["Name"], dicio["Name"])
+        print(f'RecloserS:{len(self.RecloserDataInfo)}')
 
 
 class EditRecloser(QDialog):
@@ -461,7 +462,7 @@ class EditRecloser(QDialog):
                                  " c_array=("  + str(pointsXList).strip('[]').replace("'","").replace("," , " ") +\
                             ") t_array=(" + str(pointsYList).strip('[]').replace("'","").replace("," , " ") + ")"
                         self.ImportedCurves.append(string)
-                        print(string)
+                        # print(string)
 
                     pointsXList = []
                     pointsYList = []
@@ -539,7 +540,7 @@ class EditRecloser(QDialog):
 
                                 name = 'Curva ' + key
 
-                        print(pointsXList,pointsYList)
+                        #print(pointsXList,pointsYList)
                         bluergb = (0, 0, 255, 255)
                         self.graphWidget.plot(pointsXList, pointsYList, name=name, pen=pen, symbol='o', symbolSize=10, symbolBrush=bluergb)
                     except ValueError:
@@ -568,7 +569,7 @@ class EditRecloser(QDialog):
 
                                 name = 'Curva ' + key
 
-                        print(pointsXList,pointsYList)
+                        #print(pointsXList,pointsYList)
                         redrgb = (255, 0, 0, 255)
                         self.graphWidget.plot(pointsXList, pointsYList, name=name, pen=pen, symbol='o', symbolSize=10, symbolBrush=redrgb)
                     except ValueError:
@@ -598,7 +599,7 @@ class EditRecloser(QDialog):
 
                                 name = 'Curva ' + key
 
-                        print(pointsXList,pointsYList)
+                        #print(pointsXList,pointsYList)
                         greenrgb = (0, 255, 0, 255)
                         self.graphWidget.plot(pointsXList, pointsYList, name=name, pen=pen, symbol='o', symbolSize=10, symbolBrush=greenrgb)
                     except ValueError:
@@ -628,7 +629,7 @@ class EditRecloser(QDialog):
 
                                 name = 'Curva ' + key
 
-                        print(pointsXList,pointsYList)
+                        # print(pointsXList,pointsYList)
                         yellowrgb = (0, 255, 255, 255)
                         self.graphWidget.plot(pointsXList, pointsYList, name=name, pen=pen, symbol='o', symbolSize=10, symbolBrush=yellowrgb)
                     except ValueError:
