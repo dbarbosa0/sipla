@@ -54,22 +54,18 @@ class C_Config_EffCurve_Dialog(QDialog):
 Pontos Y: Potência aparente (kVA) em p.u.")
         self.EffCurve_GroupBox_Layout.addWidget(self.EffCurve_GroupBox_Label, 2, 1, 1, 2)
 
-        ### Botões adicionar/remover curvas
-        self.EffCurve_GroupBox_Remover_Btn = QPushButton("Remover")
-        self.EffCurve_GroupBox_Remover_Btn.setIcon(QIcon('img/icon_remove.png'))
-        # self.Shapes_GroupBox_Remover_Btn.setFixedWidth(80)
-        self.EffCurve_GroupBox_Remover_Btn.clicked.connect(self.removeEffCurve)
-        self.EffCurve_GroupBox_Layout.addWidget(self.EffCurve_GroupBox_Remover_Btn, 3, 1, 1, 1)
+        ### Botões adicionar/remover/visualizar curvas
+        self.EffCurve_GroupBox_Remove_Btn = QPushButton("Remover")
+        self.EffCurve_GroupBox_Remove_Btn.setIcon(QIcon('img/icon_remove.png'))
+        # self.Shapes_GroupBox_Remove_Btn.setFixedWidth(80)
+        self.EffCurve_GroupBox_Remove_Btn.clicked.connect(self.removeEffCurve)
+        self.EffCurve_GroupBox_Layout.addWidget(self.EffCurve_GroupBox_Remove_Btn, 3, 1, 1, 1)
 
-        self.EffCurve_GroupBox_Adicionar_Btn = QPushButton("Adicionar")
-        self.EffCurve_GroupBox_Adicionar_Btn.setIcon(QIcon('img/icon_add.png'))
-        # self.EffCurve_GroupBox_Adicionar_Btn.setFixedWidth(80)
-        self.EffCurve_GroupBox_Adicionar_Btn.clicked.connect(self.addEffCurve)
-        self.EffCurve_GroupBox_Layout.addWidget(self.EffCurve_GroupBox_Adicionar_Btn, 3, 2, 1, 1)
-
-        self.EffCurve_GroupBox.setLayout(self.EffCurve_GroupBox_Layout)
-
-        #########################################################
+        self.EffCurve_GroupBox_Add_Btn = QPushButton("Adicionar")
+        self.EffCurve_GroupBox_Add_Btn.setIcon(QIcon('img/icon_add.png'))
+        # self.EffCurve_GroupBox_Add_Btn.setFixedWidth(80)
+        self.EffCurve_GroupBox_Add_Btn.clicked.connect(self.addEffCurve)
+        self.EffCurve_GroupBox_Layout.addWidget(self.EffCurve_GroupBox_Add_Btn, 3, 2, 1, 1)
 
         self.EffCurve_GroupBox_Show_Btn = QPushButton("Visualizar")
         self.EffCurve_GroupBox_Show_Btn.setIcon(QIcon('img/icon_line.png'))
@@ -77,20 +73,21 @@ Pontos Y: Potência aparente (kVA) em p.u.")
         self.EffCurve_GroupBox_Show_Btn.clicked.connect(self.viewEffCurve)
         self.EffCurve_GroupBox_Layout.addWidget(self.EffCurve_GroupBox_Show_Btn, 4, 1, 1, 2)
 
+        self.EffCurve_GroupBox.setLayout(self.EffCurve_GroupBox_Layout)
         self.Dialog_Layout.addWidget(self.EffCurve_GroupBox, 1, 1, 1, 1)
 
         #########################################################
 
-        ### Curvas de Eficiência - Plot
-        self.View_GroupBox = QGroupBox("Visualizar a(s) Curva(s) de Eficiência")
-        self.View_GroupBox_Layout = QHBoxLayout()
+        ### Curvas de Eficiência - Groupbox Plot
+        self.EffCurve_View_GroupBox = QGroupBox("Visualizar a(s) Curva(s) de Eficiência")
+        self.EffCurve_View_GroupBox_Layout = QHBoxLayout()
 
         self.graphWidget = pyqtgraph.PlotWidget()
+        self.EffCurve_View_GroupBox_Layout.addWidget(self.graphWidget)
 
-        self.View_GroupBox_Layout.addWidget(self.graphWidget)
-        self.View_GroupBox.setLayout(self.View_GroupBox_Layout)
 
-        self.Dialog_Layout.addWidget(self.View_GroupBox, 1, 2, 1, 2)
+        self.EffCurve_View_GroupBox.setLayout(self.EffCurve_View_GroupBox_Layout)
+        self.Dialog_Layout.addWidget(self.EffCurve_View_GroupBox, 1, 2, 1, 2)
 
         ###########################################################
 
@@ -104,11 +101,11 @@ Pontos Y: Potência aparente (kVA) em p.u.")
         self.Dialog_Btns_Cancel_Btn.clicked.connect(self.Cancel)
         self.Dialog_Btns_Layout.addWidget(self.Dialog_Btns_Cancel_Btn)
 
-        self.Dialog_Btns_Ok_Btn = QPushButton("OK")
-        self.Dialog_Btns_Ok_Btn.setIcon(QIcon('img/icon_ok.png'))
-        self.Dialog_Btns_Ok_Btn.setFixedWidth(100)
-        self.Dialog_Btns_Ok_Btn.clicked.connect(self.Accept)
-        self.Dialog_Btns_Layout.addWidget(self.Dialog_Btns_Ok_Btn)
+        self.Dialog_Btns_Next_Btn = QPushButton("Próximo")
+        self.Dialog_Btns_Next_Btn.setIcon(QIcon('img/icon_ok.png'))
+        self.Dialog_Btns_Next_Btn.setFixedWidth(100)
+        self.Dialog_Btns_Next_Btn.clicked.connect(self.Next)
+        self.Dialog_Btns_Layout.addWidget(self.Dialog_Btns_Next_Btn)
 
         self.Dialog_Layout.addLayout(self.Dialog_Btns_Layout, 2, 3, 1, 1)
 
@@ -116,10 +113,9 @@ Pontos Y: Potência aparente (kVA) em p.u.")
 
 
     def addEffCurve(self):
+        inputLoadName, Ok = QInputDialog.getText(self, 'Curvas de Eficiência','Entre com o nome da nova Curva de Eficiência do Inversor:')
 
-        inputLoadName, inputOk = QInputDialog.getText(self, 'Curvas de Eficiência','Entre com o nome da nova Curva de\nEficiência do Inversor:')
-
-        if inputOk:
+        if Ok:
             countName = 0
             for ctd in range(0, self.EffCurve_GroupBox_TreeWidget.topLevelItemCount()):
 
@@ -131,6 +127,7 @@ Pontos Y: Potência aparente (kVA) em p.u.")
             if countName == 0:
                 ptsX = [0.1, 0.2, 0.4, 1.0]
                 ptsX = str(ptsX).strip('[]').replace("'", "")
+                print(ptsX)
 
                 ptsY = [0.86, 0.9, 0.93, 0.97]
                 ptsY = str(ptsY).strip('[]').replace("'", "")
@@ -210,7 +207,7 @@ Pontos Y: Potência aparente (kVA) em p.u.")
         self.graphWidget.clear()
         self.close()
 
-    def Accept(self):
+    def Next(self):
         self.setDataEffCurve()
         self.close()
 
