@@ -37,8 +37,8 @@ class C_Config_ElementList_Dialog(QDialog):
         self.ElementList_GroupBox_Layout = QGridLayout()
         self.ElementList_GroupBox_TreeWidget = QTreeWidget()
         self.ElementList_GroupBox_TreeWidget.setHeaderLabels(['Nome', 'Elemento'])
-        self.ElementList_GroupBox_TreeWidget.setColumnWidth(1, 100)
-        self.ElementList_GroupBox_Layout.addWidget(self.ElementList_GroupBox_TreeWidget, 1, 1, 1, 1)
+        self.ElementList_GroupBox_TreeWidget.setColumnWidth(0, 150)
+        self.ElementList_GroupBox_Layout.addWidget(self.ElementList_GroupBox_TreeWidget, 1, 1, 1, 2)
 
         ###### Botões
         self.Dialog_Btns_Layout = QHBoxLayout()
@@ -56,10 +56,10 @@ class C_Config_ElementList_Dialog(QDialog):
         self.Dialog_Btns_Ok_Btn.clicked.connect(self.Accept)
         self.Dialog_Btns_Layout.addWidget(self.Dialog_Btns_Ok_Btn)
 
-        self.Dialog_Layout.addLayout(self.Dialog_Btns_Layout, 2, 1, 1, 1)
+        self.Dialog_Layout.addLayout(self.Dialog_Btns_Layout, 2, 2, 1, 1)
 
         self.ElementList_GroupBox.setLayout(self.ElementList_GroupBox_Layout)
-        self.Dialog_Layout.addWidget(self.ElementList_GroupBox, 1, 1, 1, 1)
+        self.Dialog_Layout.addWidget(self.ElementList_GroupBox, 1, 1, 1, 2)
 
         self.setLayout(self.Dialog_Layout)
 
