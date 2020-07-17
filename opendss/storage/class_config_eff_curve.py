@@ -140,7 +140,7 @@ Pontos Y: Potência aparente (kVA) em p.u.")
                     countName += 1
 
             for i in self.Storages:
-                if i["EffCurve"]["EffCurveName"] == str(inputLoadName):
+                if i["StorageVersion"] == 2 and i["EffCurve"]["EffCurveName"] == str(inputLoadName):
                     countName += 1
 
             if countName == 0:

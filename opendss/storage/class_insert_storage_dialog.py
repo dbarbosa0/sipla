@@ -207,10 +207,8 @@ class C_Insert_Storage_Dialog(QDialog):  ## Classe Dialog principal
             if checkCont == 1:
                 self.clearStorageParameters()
                 for i in self.Storages:
-                    print("Item.text(0):", Item.text(0))
 
                     if i["StorageName"] == Item.text(0):
-                        print("Item.text(0):", Item.text(0))
                         if self.OpenDSS.OpenDSSConfig["openDSSConn"] == "OpenDSSDirect":
                             if i["StorageVersion"] == 1:
                                 self.StorageVersion_GroupBox_Storage1_RadioBtn.setChecked(True)
@@ -224,7 +222,6 @@ class C_Insert_Storage_Dialog(QDialog):  ## Classe Dialog principal
                                 self.StorageVersion_GroupBox_Storage1_RadioBtn.setChecked(True)
                                 self.DisableStorage2Parameters()
                                 self.StorageVersion_GroupBox.setEnabled(False)
-                                print("1")
                             else:
                                 self.StorageVersion_GroupBox_Storage2_RadioBtn.setChecked(True)
                                 self.EnableStorage2Parameters()
@@ -287,19 +284,14 @@ class C_Insert_Storage_Dialog(QDialog):  ## Classe Dialog principal
                             self.DispModeReactPowDialog.kvarConst_LineEdit.setEnabled(True)
                             self.DispModeReactPowDialog.kvarConst_LineEdit.setText(i['ReactPow']['kvar'])
 
-                        print("2")
-                        # ptsX = str(i["EffCurve"]["Xarray"]).strip('[]').replace("'", "")
-                        print("5")
-                        # ptsY = str(i["EffCurve"]["Yarray"]).strip('[]').replace("'", "")
-                        print("4")
-                        self.TabInversorConfig.EffCurveFile.Config_EffCurve_GroupBox_TreeWidget_Item(
-                            self.TabInversorConfig.EffCurve.EffCurve_GroupBox_TreeWidget,
-                            i["EffCurve"]["EffCurveName"],
-                            str(i["EffCurve"]["Xarray"]).strip('[]').replace("'", ""),
-                            str(i["EffCurve"]["Yarray"]).strip('[]').replace("'", ""),
-                            cfg.colorsList[random.randint(0, len(cfg.colorsList) - 1)])
+                        if i["StorageVersion"] == 2:
+                            self.TabInversorConfig.EffCurveFile.Config_EffCurve_GroupBox_TreeWidget_Item(
+                                self.TabInversorConfig.EffCurve.EffCurve_GroupBox_TreeWidget,
+                                i["EffCurve"]["EffCurveName"],
+                                str(i["EffCurve"]["Xarray"]).strip('[]').replace("'", ""),
+                                str(i["EffCurve"]["Yarray"]).strip('[]').replace("'", ""),
+                                cfg.colorsList[random.randint(0, len(cfg.colorsList) - 1)])
 
-                        print("3")
                         if i["Carga/Descarga"] == "Sincronizados":
                             self.DispModeActPowDialog.DispSinc_Radio_Btn.setChecked(True)
                             self.DispModeActPowDialog.DispSinc_GroupBox.setEnabled(True)
@@ -510,7 +502,6 @@ class C_Insert_Storage_Dialog(QDialog):  ## Classe Dialog principal
                                 self.DispModeActPowDialog.ModoDescarga_GroupBox_StorageCont_GroupBox_Layout_Time_RadioBtn.setChecked(
                                     True)
 
-                        print("aqui")
                         self.TabConfig.StorageConfig_GroupBox_Nome_LineEdit.setEnabled(False)
                         self.EnableDisableParameters(True)
 
