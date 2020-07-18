@@ -122,6 +122,7 @@ class C_Insert_InvControl_Dialog(QDialog):
         return unidecode.unidecode(self.TabConfig.NameEMode_GroupBox_Nome_LineEdit.text().replace(" ", "_"))
 
     def addInvControl(self):
+        self.TabConfig.NameEMode_GroupBox_Nome_LineEdit.setEnabled(True)
         self.EnableDisableParameters(True)
         self.DefaultConfigParameters()
         self.adjustSize()
@@ -137,7 +138,79 @@ class C_Insert_InvControl_Dialog(QDialog):
                         self.InvControl.remove(i)
 
     def editInvControl(self):
-        pass
+        checkCont = 0
+        try:
+            for ctd in range(self.InvControl_GroupBox_TreeWidget.topLevelItemCount() - 1, - 1, - 1):
+                if self.InvControl_GroupBox_TreeWidget.topLevelItem(ctd).checkState(0) == Qt.Checked:
+                    checkCont += 1
+                    Item = self.InvControl_GroupBox_TreeWidget.topLevelItem(ctd)
+
+                if checkCont == 1:
+                    self.clearInvControlParameters()
+                    for i in self.InvControl:
+                        if i["InvControlName"] == Item.text(0):
+
+                            self.TabConfig.NameEMode_GroupBox_Nome_LineEdit.setText(i["InvControlName"])
+                            self.TabConfig.NameEMode_GroupBox_Mode_ComboBox.setCurrentText(i["Mode"])
+
+                            if self.TabConfig.NameEMode_GroupBox_Mode_ComboBox.currentText() == "VOLTVAR":
+                                # FALTAM DEFAULT BOTOES DO VOLTVAR
+                                self.TabConfig.VoltVar_GroupBox_EventLog_ComboBox.setCurrentText(i["VV_EventLog"])
+                                self.TabConfig.VoltVar_GroupBox_DeltaQFactor_LineEdit.setText(i["VV_DeltaQFactor"])
+                                self.TabConfig.VoltVar_GroupBox_VarChangeTolerance_LineEdit.setText(
+                                                                        i["VV_VarChangeTolerance"])
+                                self.TabConfig.VoltVar_GroupBox_VoltageChangeTolerance_LineEdit.setText(
+                                                                        i["VV_VoltageChangeTolerance"])
+                                self.TabConfig.VoltVar_GroupBox_HysteresisOffSet_LineEdit.setText(
+                                                                        i["VV_HysteresisOffSet"])
+                                self.TabConfig.VoltVar_GroupBox_VoltageCurvexRef_ComboBox.setCurrentText(
+                                                                        i["VV_VoltageCurvexRef"])
+                                if self.TabConfig.VoltVar_GroupBox_VoltageCurvexRef_ComboBox.currentText() == "avg":
+                                    self.TabConfig.VoltVar_GroupBox_AvgWindowLen_LineEdit.setText(i["VV_AvgWindowLen"])
+                                    self.TabConfig.VoltVar_GroupBox_AvgWindowLen_ComboBox.setCurrentText(i["VV_Unit"])
+                                self.TabConfig.VoltVar_GroupBox_RateofChangeMode_ComboBox.setCurrentText(
+                                                                        i["VV_RateofChangeMode"])
+                                if self.TabConfig.VoltVar_GroupBox_RateofChangeMode_ComboBox.currentText() == "LPF":
+                                    self.TabConfig.VoltVar_GroupBox_LPFtau_LineEdit.setText(i["VV_LPFtau"])
+                                if self.TabConfig.VoltVar_GroupBox_RateofChangeMode_ComboBox.currentText() == "RISEFALL":
+                                    self.TabConfig.VoltVar_GroupBox_RiseFallLimit_LineEdit.setText(
+                                                                        i["VV_RiseFallLimit"])
+                                self.TabConfig.VoltVar_GroupBox_RefReactivePower_ComboBox.setCurrentText(
+                                                                        i["VV_RefReactivePower"])
+                            else:
+                                # FALTAM DEFAULT BOTOES DO VOLTWATT
+                                self.TabConfig.VoltWatt_GroupBox_EventLog_ComboBox.setCurrentText(i["VW_EventLog"])
+                                self.TabConfig.VoltWatt_GroupBox_DeltaPFactor_LineEdit.setText(i["VW_DeltaPFactor"])
+                                self.TabConfig.VoltWatt_GroupBox_ActivePChangeTolerance_LineEdit.setText(
+                                                                            i["VW_ActivePChangeTolerance"])
+                                self.TabConfig.VoltWatt_GroupBox_VoltageCurvexRef_ComboBox.setCurrentText(
+                                                                            i["VW_VoltageCurvexRef"])
+                                if self.TabConfig.VoltWatt_GroupBox_VoltageCurvexRef_ComboBox.currentText() == "avg":
+                                    self.TabConfig.VoltWatt_GroupBox_AvgWindowLen_LineEdit.setText(i["VW_AvgWindowLen"])
+                                    self.TabConfig.VoltWatt_GroupBox_AvgWindowLen_ComboBox.setCurrentText(i["VW_Unit"])
+                                self.TabConfig.VoltWatt_GroupBox_RateofChangeMode_ComboBox.setCurrentText(
+                                                                            i["VW_RateofChangeMode"])
+                                if self.TabConfig.VoltWatt_GroupBox_RateofChangeMode_ComboBox.currentText() == "LPF":
+                                    self.TabConfig.VoltWatt_GroupBox_LPFtau_LineEdit.setText(i["VW_LPFtau"])
+                                if self.TabConfig.VoltWatt_GroupBox_RateofChangeMode_ComboBox.currentText() == "RISEFALL":
+                                    self.TabConfig.VoltWatt_GroupBox_RiseFallLimit_LineEdit.setText(i["VW_RiseFallLimit"])
+                                self.TabConfig.VoltWatt_GroupBox_VoltWattYAxis_ComboBox.setCurrentText(
+                                                                            i["VW_VoltWattYAxis"])
+
+                    self.TabConfig.NameEMode_GroupBox_Nome_LineEdit.setEnabled(False)
+                    self.EnableDisableParameters(True)
+                    self.adjustSize()
+
+                if checkCont > 1:
+                    raise class_exception.ExecConfigOpenDSS("Insert Controle do Inversor",
+                                                            "Selecione somente um InvControl para editar!")
+
+                elif checkCont == 0:
+                    raise class_exception.ExecConfigOpenDSS("Insert Controle do Inversor",
+                                                            "Selecione pelo menos um InvControl para editar!")
+
+        except:
+            pass
 
     def acceptInsertInvControl(self):
         self.clearInvControlParameters()
@@ -163,64 +236,105 @@ class C_Insert_InvControl_Dialog(QDialog):
                 ############# seta data das configurações VoltVar
                 if self.TabConfig.NameEMode_GroupBox_Mode_ComboBox.currentText() == "VOLTVAR":
                     #FALTA SALVAR BOTOES
-                    InvControl["EventLog"] = self.TabConfig.VoltVar_GroupBox_EventLog_ComboBox.currentText()
-                    InvControl["DeltaQFactor"] = self.TabConfig.VoltVar_GroupBox_DeltaQFactor_LineEdit.text()
-                    InvControl["VarChangeTolerance"] = self.TabConfig.VoltVar_GroupBox_VarChangeTolerance_LineEdit.text()
-                    InvControl["VoltageChangeTolerance"] = self.TabConfig.VoltVar_GroupBox_VoltageChangeTolerance_LineEdit.text()
-                    InvControl["HysteresisOffSet"] = self.TabConfig.VoltVar_GroupBox_HysteresisOffSet_LineEdit.text()
-                    InvControl["VoltageCurvexRef"] = self.TabConfig.VoltVar_GroupBox_VoltageCurvexRef_ComboBox.currentText()
+                    InvControl["VV_EventLog"] = self.TabConfig.VoltVar_GroupBox_EventLog_ComboBox.currentText()
+                    InvControl["VV_DeltaQFactor"] = self.TabConfig.VoltVar_GroupBox_DeltaQFactor_LineEdit.text()
+                    InvControl["VV_VarChangeTolerance"] = self.TabConfig.VoltVar_GroupBox_VarChangeTolerance_LineEdit.text()
+                    InvControl["VV_VoltageChangeTolerance"] = self.TabConfig.VoltVar_GroupBox_VoltageChangeTolerance_LineEdit.text()
+                    InvControl["VV_HysteresisOffSet"] = self.TabConfig.VoltVar_GroupBox_HysteresisOffSet_LineEdit.text()
+                    InvControl["VV_VoltageCurvexRef"] = self.TabConfig.VoltVar_GroupBox_VoltageCurvexRef_ComboBox.currentText()
                     if self.TabConfig.VoltVar_GroupBox_VoltageCurvexRef_ComboBox.currentText() == "avg":
-                        InvControl["AvgWindowLen"] = self.TabConfig.VoltVar_GroupBox_AvgWindowLen_LineEdit.text()
-                        InvControl["Unit"] = self.TabConfig.VoltVar_GroupBox_AvgWindowLen_ComboBox.currentText()
-                    InvControl["RateofChangeMode"] = self.TabConfig.VoltVar_GroupBox_RateofChangeMode_ComboBox.currentText()
+                        InvControl["VV_AvgWindowLen"] = self.TabConfig.VoltVar_GroupBox_AvgWindowLen_LineEdit.text()
+                        InvControl["VV_Unit"] = self.TabConfig.VoltVar_GroupBox_AvgWindowLen_ComboBox.currentText()
+                    InvControl["VV_RateofChangeMode"] = self.TabConfig.VoltVar_GroupBox_RateofChangeMode_ComboBox.currentText()
                     if self.TabConfig.VoltVar_GroupBox_RateofChangeMode_ComboBox.currentText() == "LPF":
-                        InvControl["LPFtau"] = self.TabConfig.VoltVar_GroupBox_LPFtau_LineEdit.text()
+                        InvControl["VV_LPFtau"] = self.TabConfig.VoltVar_GroupBox_LPFtau_LineEdit.text()
                     if self.TabConfig.VoltVar_GroupBox_RateofChangeMode_ComboBox.currentText() == "RISEFALL":
-                        InvControl["RiseFallLimit"] = self.TabConfig.VoltVar_GroupBox_RiseFallLimit_LineEdit.text()
-                    InvControl["RefReactivePower"] = self.TabConfig.VoltVar_GroupBox_RefReactivePower_ComboBox.currentText()
+                        InvControl["VV_RiseFallLimit"] = self.TabConfig.VoltVar_GroupBox_RiseFallLimit_LineEdit.text()
+                    InvControl["VV_RefReactivePower"] = self.TabConfig.VoltVar_GroupBox_RefReactivePower_ComboBox.currentText()
 
                 ############# seta data das configurações VoltWatt
                 else:
                     # FALTA SALVAR BOTOES
-                    InvControl["EventLog"] = self.TabConfig.VoltWatt_GroupBox_EventLog_ComboBox.currentText()
-                    InvControl["DeltaPFactor"] = self.TabConfig.VoltWatt_GroupBox_DeltaPFactor_LineEdit.text()
-                    InvControl["ActivePChangeTolerance"] = self.TabConfig.VoltWatt_GroupBox_ActivePChangeTolerance_LineEdit.text()
-                    InvControl["VoltageCurvexRef"] = self.TabConfig.VoltWatt_GroupBox_VoltageCurvexRef_ComboBox.currentText()
+                    InvControl["VW_EventLog"] = self.TabConfig.VoltWatt_GroupBox_EventLog_ComboBox.currentText()
+                    InvControl["VW_DeltaPFactor"] = self.TabConfig.VoltWatt_GroupBox_DeltaPFactor_LineEdit.text()
+                    InvControl["VW_ActivePChangeTolerance"] = self.TabConfig.VoltWatt_GroupBox_ActivePChangeTolerance_LineEdit.text()
+                    InvControl["VW_VoltageCurvexRef"] = self.TabConfig.VoltWatt_GroupBox_VoltageCurvexRef_ComboBox.currentText()
                     if self.TabConfig.VoltWatt_GroupBox_VoltageCurvexRef_ComboBox.currentText() == "avg":
-                        InvControl["AvgWindowLen"] = self.TabConfig.VoltWatt_GroupBox_AvgWindowLen_LineEdit.text()
-                        InvControl["Unit"] = self.TabConfig.VoltWatt_GroupBox_AvgWindowLen_ComboBox.currentText()
-                    InvControl["RateofChangeMode"] = self.TabConfig.VoltWatt_GroupBox_RateofChangeMode_ComboBox.currentText()
+                        InvControl["VW_AvgWindowLen"] = self.TabConfig.VoltWatt_GroupBox_AvgWindowLen_LineEdit.text()
+                        InvControl["VW_Unit"] = self.TabConfig.VoltWatt_GroupBox_AvgWindowLen_ComboBox.currentText()
+                    InvControl["VW_RateofChangeMode"] = self.TabConfig.VoltWatt_GroupBox_RateofChangeMode_ComboBox.currentText()
                     if self.TabConfig.VoltWatt_GroupBox_RateofChangeMode_ComboBox.currentText() == "LPF":
-                        InvControl["LPFtau"] = self.TabConfig.VoltWatt_GroupBox_LPFtau_LineEdit.text()
+                        InvControl["VW_LPFtau"] = self.TabConfig.VoltWatt_GroupBox_LPFtau_LineEdit.text()
                     if self.TabConfig.VoltWatt_GroupBox_RateofChangeMode_ComboBox.currentText() == "RISEFALL":
-                        InvControl["RiseFallLimit"] = self.TabConfig.VoltWatt_GroupBox_RiseFallLimit_LineEdit.text()
-                    InvControl["VoltWattYAxis"] = self.TabConfig.VoltWatt_GroupBox_VoltWattYAxis_ComboBox.currentText()
+                        InvControl["VW_RiseFallLimit"] = self.TabConfig.VoltWatt_GroupBox_RiseFallLimit_LineEdit.text()
+                    InvControl["VW_VoltWattYAxis"] = self.TabConfig.VoltWatt_GroupBox_VoltWattYAxis_ComboBox.currentText()
 
+                if self.TabConfig.NameEMode_GroupBox_Nome_LineEdit.isEnabled():  # Se estiver adicionando um InvControl
+                    for ctd in range(0, self.InvControl_GroupBox_TreeWidget.topLevelItemCount()):
+                        Item = self.InvControl_GroupBox_TreeWidget.topLevelItem(ctd)
 
+                        if Item.text(0) == self.get_InvControlName():
+                            countName += 1
 
+                    if countName == 0:
 
-
-                for ctd in range(0, self.InvControl_GroupBox_TreeWidget.topLevelItemCount()):
-                    Item = self.InvControl_GroupBox_TreeWidget.topLevelItem(ctd)
-
-                    if Item.text(0) == self.get_InvControlName():
-                        countName += 1
-
-                if countName == 0:
-
-                    InvControl_TreeWidget_Item(self.InvControl_GroupBox_TreeWidget,
+                        InvControl_TreeWidget_Item(self.InvControl_GroupBox_TreeWidget,
                                            self.get_InvControlName(),
                                            self.TabConfig.NameEMode_GroupBox_Mode_ComboBox.currentText(),
                                            "Algum")
 
+                        self.InvControl.append(InvControl)
 
-                    self.InvControl.append(InvControl)
-
-                else:
-                    QMessageBox(QMessageBox.Warning, "Inserir Controle do Inversor",
+                    else:
+                        QMessageBox(QMessageBox.Warning, "Inserir Controle do Inversor",
                                 "Não foi possível adicionar, já existe um InvControl com esse nome.",
                                 QMessageBox.Ok).exec()
 
+                else:  # Se estiver editando um InvControl
+                    for ctd in self.InvControl:
+                        if ctd["InvControlName"] == InvControl["InvControlName"]:
+
+                            ctd["Mode"] = InvControl["Mode"]
+                            if InvControl["Mode"] == "VOLTVAR":
+                                ctd["VV_EventLog"] = InvControl["VV_EventLog"]
+                                ctd["VV_DeltaQFactor"] = InvControl["VV_DeltaQFactor"]
+                                ctd["VV_VarChangeTolerance"] = InvControl["VV_VarChangeTolerance"]
+                                ctd["VV_VoltageChangeTolerance"] = InvControl["VV_VoltageChangeTolerance"]
+                                ctd["VV_HysteresisOffSet"] = InvControl["VV_HysteresisOffSet"]
+                                ctd["VV_VoltageCurvexRef"] = InvControl["VV_VoltageCurvexRef"]
+                                if InvControl["VV_VoltageCurvexRef"] == "avg":
+                                    ctd["VV_AvgWindowLen"] = InvControl["VV_AvgWindowLen"]
+                                    ctd["VV_Unit"] = InvControl["VV_Unit"]
+                                ctd["VV_RateofChangeMode"] = InvControl["VV_RateofChangeMode"]
+                                if InvControl["VV_RateofChangeMode"] == "LPF":
+                                    ctd["VV_LPFtau"] = InvControl["VV_LPFtau"]
+                                if InvControl["VV_RateofChangeMode"] == "RISEFALL":
+                                    ctd["VV_RiseFallLimit"] = InvControl["VV_RiseFallLimit"]
+                                ctd["VV_RefReactivePower"] = InvControl["VV_RefReactivePower"]
+                            else:
+                                ctd["VW_EventLog"] = InvControl["VW_EventLog"]
+                                ctd["VW_DeltaPFactor"] = InvControl["VW_DeltaPFactor"]
+                                ctd["VW_ActivePChangeTolerance"] = InvControl["VW_ActivePChangeTolerance"]
+                                ctd["VW_VoltageCurvexRef"] = InvControl["VW_VoltageCurvexRef"]
+                                if InvControl["VW_VoltageCurvexRef"] == "avg":
+                                    ctd["VW_AvgWindowLen"] = InvControl["VW_AvgWindowLen"]
+                                    ctd["VW_Unit"] = InvControl["VW_Unit"]
+                                ctd["VW_RateofChangeMode"] = InvControl["VW_RateofChangeMode"]
+                                if InvControl["VW_RateofChangeMode"] == "LPF":
+                                    ctd["VW_LPFtau"] = InvControl["VW_LPFtau"]
+                                if InvControl["VV_RateofChangeMode"] == "RISEFALL":
+                                    ctd["VW_RiseFallLimit"] = InvControl["VW_RiseFallLimit"]
+                                ctd["VW_VoltWattYAxis"] = InvControl["VW_VoltWattYAxis"]
+
+
+                            for ctd in range(self.InvControl_GroupBox_TreeWidget.topLevelItemCount() - 1, -1, -1):
+                                    Item = self.InvControl_GroupBox_TreeWidget.topLevelItem(ctd)
+                                    if Item.text(0) == self.get_InvControlName():
+                                        self.InvControl_GroupBox_TreeWidget.takeTopLevelItem(ctd)
+                                        InvControl_TreeWidget_Item(self.InvControl_GroupBox_TreeWidget,
+                                                        self.get_InvControlName(),
+                                                        self.TabConfig.NameEMode_GroupBox_Mode_ComboBox.currentText(),
+                                                        "Algum")
 
                 self.EnableDisableParameters(False)
                 self.adjustSize()
@@ -238,7 +352,8 @@ class C_Insert_InvControl_Dialog(QDialog):
             self.InvControl_GroupBox.setVisible(True)
 
     def updateDialog(self):
-        pass
+        self.EnableDisableParameters(False)
+        self.adjustSize()
 
     def DefaultConfigParameters(self):
         self.TabConfig.NameEMode_GroupBox_Nome_LineEdit.setText("")
@@ -586,17 +701,17 @@ class InvConfig(QWidget):
     def verificaLineEdits(self):
         for i in [
             self.VoltVar_GroupBox_HysteresisOffSet_LineEdit,
-            #self.VoltVar_GroupBox_AvgWindowLen_LineEdit,
-            #self.VoltVar_GroupBox_VarChangeTolerance_LineEdit,
-            #self.VoltVar_GroupBox_VoltageChangeTolerance_LineEdit,
-            #self.VoltVar_GroupBox_LPFtau_LineEdit,
-            #self.VoltVar_GroupBox_RiseFallLimit_LineEdit,
-            #self.VoltVar_GroupBox_DeltaQFactor_LineEdit,
-            #self.VoltWatt_GroupBox_AvgWindowLen_LineEdit,
-            #self.VoltWatt_GroupBox_LPFtau_LineEdit,
-            #self.VoltWatt_GroupBox_RiseFallLimit_LineEdit,
-            #self.VoltWatt_GroupBox_DeltaPFactor_LineEdit,
-            #self.VoltWatt_GroupBox_ActivePChangeTolerance_LineEdit
+            self.VoltVar_GroupBox_AvgWindowLen_LineEdit,
+            self.VoltVar_GroupBox_VarChangeTolerance_LineEdit,
+            self.VoltVar_GroupBox_VoltageChangeTolerance_LineEdit,
+            self.VoltVar_GroupBox_LPFtau_LineEdit,
+            self.VoltVar_GroupBox_RiseFallLimit_LineEdit,
+            self.VoltVar_GroupBox_DeltaQFactor_LineEdit,
+            self.VoltWatt_GroupBox_AvgWindowLen_LineEdit,
+            self.VoltWatt_GroupBox_LPFtau_LineEdit,
+            self.VoltWatt_GroupBox_RiseFallLimit_LineEdit,
+            self.VoltWatt_GroupBox_DeltaPFactor_LineEdit,
+            self.VoltWatt_GroupBox_ActivePChangeTolerance_LineEdit
         ]:
             if not i.hasAcceptableInput():
                 QMessageBox(QMessageBox.Warning, "Inserir Controle do Inversor",
