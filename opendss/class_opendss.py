@@ -32,7 +32,7 @@ class C_OpenDSS(): # classe OpenDSSDirect
         ##SC Carvalho
         self._SCDataInfo = []
         ## FlagLoadData - Só roda se tiver alguma alteração nos alimentadores
-        self.loadDataFlag = True
+        self.loadDataFlag = False
 
 
         self.OpenDSSEngine = opendss.class_conn.C_Conn() ## Apenas para o Objeto Existir, depois será sobrecarregado
@@ -804,11 +804,9 @@ class C_OpenDSS(): # classe OpenDSSDirect
                               " ChargeTrigger=" + ctd["ActPow"]["ChargeTrigger"] + \
                               " DischargeTrigger=" + ctd["ActPow"]["DischargeTrigger"]
 
-            print(tmp)
             self.memoFileStorages.append(tmp)
 
         self.exec_StorageControllers()
-
 
 
     ######################################################################################
@@ -851,7 +849,10 @@ class C_OpenDSS(): # classe OpenDSSDirect
 
         tempStorage = []
         for ctd in self.Storages:
-            tempStorage.append("Storage2." + ctd["StorageName"])
+            if ctd["StorageVersion"] == 1:
+                tempStorage.append("Storage." + ctd["StorageName"])
+            elif ctd["StorageVersion"] == 2:
+                tempStorage.append("Storage2." + ctd["StorageName"])
 
         #
         return self.dataOpenDSS.elementList + tempStorage

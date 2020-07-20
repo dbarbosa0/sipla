@@ -528,6 +528,7 @@ class C_Insert_Storage_Dialog(QDialog):  ## Classe Dialog principal
             self.DispModeActPowDialog.exec()
 
             self.TabConfig.StorageConfig_GroupBox_Nome_LineEdit.setReadOnly(True)
+            self.StorageVersion_GroupBox.setEnabled(False)
 
     def DispModeReactPow(self):
         if self.get_StorageName() == "":
@@ -819,6 +820,7 @@ class C_Insert_Storage_Dialog(QDialog):  ## Classe Dialog principal
     def CancelAddEditStorage(self):
         self.TabConfig.StorageConfig_GroupBox_Nome_LineEdit.setEnabled(True)
         self.TabConfig.StorageConfig_GroupBox_Nome_LineEdit.setReadOnly(False)
+        self.StorageVersion_GroupBox.setEnabled(True)
         self.EnableDisableParameters(False)
         self.adjustSize()
 
@@ -934,6 +936,7 @@ class C_Insert_Storage_Dialog(QDialog):  ## Classe Dialog principal
 
     def clearStorageParameters(self):
         self.TabConfig.StorageConfig_GroupBox_Nome_LineEdit.setReadOnly(False)
+        self.StorageVersion_GroupBox.setEnabled(True)
 
         self.TabConfig.StorageConfig_GroupBox_Nome_LineEdit.setText("")
         self.TabConfig.StorageConfig_GroupBox_conn_ComboBox.setCurrentIndex(0)

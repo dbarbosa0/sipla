@@ -173,14 +173,16 @@ class C_ActPow_Config_StorageController_Dialog(QDialog): ## Classe Dialog config
         self.setWindowIcon(QIcon(self.iconWindow))  # ícone da janela
         self.setWindowModality(Qt.ApplicationModal)
         self.setStyle(QStyleFactory.create('Cleanlooks'))  # Estilo da Interface
+        self.setFixedWidth(380)
+        self.setMaximumHeight(270)
         self.adjustSize()
         self.Dialog_Layout = QVBoxLayout()  # Layout da Dialog
-
 
         ## GroupBox Seleção do Storage Controller
         self.StorControl_GroupBox_Selection = QGroupBox("Storage Controllers")
         self.StorControl_GroupBox_Selection_Label = QLabel("Selecione um dos Storage Controllers Existentes")
         self.StorControl_GroupBox_Selection_ComboBox = QComboBox()
+        self.StorControl_GroupBox_Selection.setFixedHeight(125)
 
         # Layout do GroupBox Seleção do Storage Controller
         self.StorControl_GroupBox_Selection_Layout = QGridLayout()
@@ -551,3 +553,10 @@ class C_ActPow_Config_StorageController_Dialog(QDialog): ## Classe Dialog config
 
         self.StorControl_Element_ComboBox.clear()
         self.StorControl_Element_ComboBox.addItems(self.OpenDSS.getElementList())
+
+        if self.StorControl_GroupBox_Selection_ComboBox.count() == 0:
+            self.Dialog_Btns_Charge_Btn.setVisible(False)
+            self.Dialog_Btns_Discharge_Btn.setVisible(False)
+        else:
+            self.Dialog_Btns_Charge_Btn.setVisible(True)
+            self.Dialog_Btns_Discharge_Btn.setVisible(True)

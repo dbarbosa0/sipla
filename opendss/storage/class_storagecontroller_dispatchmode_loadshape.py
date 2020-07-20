@@ -67,14 +67,16 @@ class C_ActPow_LoadShape_DispMode_Dialog(QDialog): ## Classe Dialog Despacho Loa
         self.setWindowIcon(QIcon(self.iconWindow))  # ícone da janela
         self.setWindowModality(Qt.ApplicationModal)
         self.setStyle(QStyleFactory.create('Cleanlooks'))  # Estilo da Interface
+        self.setFixedWidth(380)
+        self.setMaximumHeight(270)
         self.adjustSize()
         self.Dialog_Layout = QVBoxLayout()  # Layout da Dialog
-
 
         ## GroupBox Seleção do Storage Controller
         self.StorControl_GroupBox_Selection = QGroupBox("Storage Controllers")
         self.StorControl_GroupBox_Selection_Label = QLabel("Selecione um dos Storage Controllers Existentes")
         self.StorControl_GroupBox_Selection_ComboBox = QComboBox()
+        self.StorControl_GroupBox_Selection.setFixedHeight(125)
 
         # Layout do GroupBox Seleção do Storage Controller
         self.StorControl_GroupBox_Selection_Layout = QGridLayout()
@@ -362,5 +364,10 @@ class C_ActPow_LoadShape_DispMode_Dialog(QDialog): ## Classe Dialog Despacho Loa
         self.StorControl_Element_ComboBox.clear()
         self.StorControl_Element_ComboBox.addItems(self.OpenDSS.getElementList())
 
+        if self.StorControl_GroupBox_Selection_ComboBox.count() == 0:
+            self.DispCurve_Btn.setVisible(False)
+        else:
+            self.DispCurve_Btn.setVisible(True)
+
     def selectDispCurve(self):
-        self.Select_DispCurve.show()
+        self.Select_DispCurve.exec()
