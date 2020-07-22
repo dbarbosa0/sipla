@@ -47,6 +47,9 @@ class C_ActPow_Discharge_PeakShave_DispMode_Dialog(QDialog):# Classe Dialog Desp
         self.Dialog_Layout.addWidget(self.Label, 1, 1, 1, 2)
 
         self.kWTarget_Label = QLabel("Pot. alvo (kW):")
+        self.kWTarget_Label.setToolTip("\
+A frota de Storages é despachada a fim de manter a potência no elemento monitorado abaixo da Potência Alvo ou\n\
+dentro da faixa aceitável.")
         self.Dialog_Layout.addWidget(self.kWTarget_Label, 2, 1, 1, 1)
         self.kWTarget_LineEdit = QLineEdit()
         self.LineEditsValidos = QDoubleValidator()

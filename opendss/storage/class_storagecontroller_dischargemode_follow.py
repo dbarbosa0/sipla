@@ -47,6 +47,9 @@ class C_ActPow_Discharge_Follow_DispMode_Dialog(QDialog): ## Classe Dialog Despa
         self.Dialog_Layout.addWidget(self.Label, 1, 1, 1, 2)
 
         self.timeDischargeTrigger_Label = QLabel("Discharge Trigger:")
+        self.timeDischargeTrigger_Label.setToolTip("\
+Ao atingir o horário do Discharge Trigger, a frota de Storages é despachada a fim de manter a potência no \n\
+elemento monitorado abaixo da Potência medida no momento do Trigger ou dentro da faixa aceitável.")
         self.Dialog_Layout.addWidget(self.timeDischargeTrigger_Label, 2, 1, 1, 1)
         self.timeDischargeTrigger_LineEdit = QLineEdit()
         self.LineEditsValidos = QDoubleValidator()

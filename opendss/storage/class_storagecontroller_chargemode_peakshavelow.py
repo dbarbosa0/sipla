@@ -47,6 +47,9 @@ class C_ActPow_Charge_PeakShaveLow_DispMode_Dialog(QDialog): ## Classe Dialog De
         self.Dialog_Layout.addWidget(self.Label, 1, 1, 1, 2)
 
         self.kWTargetLow_Label = QLabel("Pot. alvo (kW):")
+        self.kWTargetLow_Label.setToolTip("\
+A frota de Storages é carregada a fim de manter a potência no elemento monitorado abaixo da Potência Alvo ou\n\
+dentro da faixa aceitável.")
         self.Dialog_Layout.addWidget(self.kWTargetLow_Label, 2, 1, 1, 1)
         self.kWTargetLow_LineEdit = QLineEdit()
         self.LineEditsValidos = QDoubleValidator()

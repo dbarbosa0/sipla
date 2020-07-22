@@ -46,6 +46,9 @@ class C_ActPow_Discharge_IPeakShave_DispMode_Dialog(QDialog): ## Classe Dialog D
         self.Dialog_Layout.addWidget(self.Label, 1, 1, 1, 2)
 
         self.kampsTarget_Label = QLabel("Corrente alvo (kAmps):")
+        self.kampsTarget_Label.setToolTip("\
+A frota de Storages é despachada a fim de manter a corrente no elemento monitorado abaixo da Corrente Alvo ou\n\
+dentro da faixa aceitável.")
         self.Dialog_Layout.addWidget(self.kampsTarget_Label, 2, 1, 1, 1)
         self.kampsTarget_LineEdit = QLineEdit()
         self.LineEditsValidos = QDoubleValidator()

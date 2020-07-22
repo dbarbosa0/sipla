@@ -48,11 +48,13 @@ class C_ActPow_Discharge_Support_DispMode_Dialog(QDialog):# Classe Dialog Despac
         self.Dialog_Layout.addWidget(self.Label, 1, 1, 1, 2)
 
         self.kWTarget_Label = QLabel("Pot. alvo (kW):")
+        self.kWTarget_Label.setToolTip("\
+A frota de Storages é despachada a fim de manter a potência no elemento monitorado acima da Potência Alvo ou\n\
+dentro da faixa aceitável.")
         self.Dialog_Layout.addWidget(self.kWTarget_Label, 2, 1, 1, 1)
         self.kWTarget_LineEdit = QLineEdit()
         self.LineEditsValidos = QDoubleValidator()
         self.LineEditsValidos.setBottom(0.1)
-        c = QLocale
         self.kWTarget_LineEdit.setValidator(self.LineEditsValidos)
         self.Dialog_Layout.addWidget(self.kWTarget_LineEdit, 2, 2, 1, 2)
         self.Band_Label = QLabel("Largura da faixa:")
