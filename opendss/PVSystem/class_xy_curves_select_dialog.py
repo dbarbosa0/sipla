@@ -2,7 +2,8 @@ from PyQt5.QtGui import QColor, QIcon
 from PyQt5.QtWidgets import QStyleFactory, QDialog, QGridLayout, QGroupBox, QVBoxLayout, QTreeWidgetItem, QRadioButton, \
     QPushButton, QHBoxLayout, QFileDialog, QColorDialog, QMessageBox, QInputDialog, QSizePolicy, QLineEdit, QLabel, \
     QWidget
-from PyQt5.QtCore import Qt, QEvent
+from PyQt5.QtCore import Qt, QStringListModel
+import opendss.PVSystem.csv_to_dict
 
 import csv
 import random
@@ -21,6 +22,8 @@ class C_XY_Curve_Dialog(QDialog):
         self.iconWindow = cfg.sipla_icon
         self.stylesheet = cfg.sipla_stylesheet
         self.InitUI()
+
+        self.choose_csv = opendss.PVSystem.csv_to_dict.c2d()
         self.curve_name = ''
         self.x_axys = ''
         self.y_axys = ''
@@ -64,13 +67,13 @@ class C_XY_Curve_Dialog(QDialog):
         self.XY_Curve_Xdata_Label = QLabel("Pontos do eixo X:")
         self.XY_Curve_Xdata = QLineEdit()
         self.XY_Curve_Xdata.setToolTip('Preencha este campo somente com números, usando ponto (.) para \n'
-                                    'determinar as casas decimais e separando cada valor com vírgula (,) \n'
-                                    'EX: 0.6 0.7 0.8 0.9 1')
+                                       'determinar as casas decimais e separando cada valor com vírgula (,) \n'
+                                       'EX: 0.6 0.7 0.8 0.9 1')
         self.XY_Curve_Ydata_Label = QLabel("Pontos do eixo Y:")
         self.XY_Curve_Ydata = QLineEdit()
         self.XY_Curve_Ydata.setToolTip('Preencha este campo somente com números, usando ponto (.) para \n'
-                                    'determinar as casas decimais e separando cada valor com vírgula (,) \n'
-                                    'EX: 0.6 0.7 0.8 0.9 1')
+                                       'determinar as casas decimais e separando cada valor com vírgula (,) \n'
+                                       'EX: 0.6 0.7 0.8 0.9 1')
 
         self.XY_Curve_Manual_Mode_GroupBox_Layout.addWidget(self.XY_Curve_Manual_Name_Label, 0, 0, 1, 1)
         self.XY_Curve_Manual_Mode_GroupBox_Layout.addWidget(self.XY_Curve_Xdata_Label, 1, 0, 1, 1)
@@ -85,7 +88,10 @@ class C_XY_Curve_Dialog(QDialog):
         self.XY_Curve_Select_Default_Btn = QRadioButton("Default")
         self.XY_Curve_Select_Manual_Btn = QRadioButton("Inserção Manual")
         self.XY_Curve_Select_Csv_Btn = QRadioButton("Buscar CSV")
+
         self.XY_Curve_Csv_Mode_File_Btn = QPushButton("Escolha o arquivo CSV")
+        self.XY_Curve_Csv_Mode_File_Btn.setIcon(QIcon('Imagens/Text-csv-text.svg'))
+        self.XY_Curve_Csv_Mode_File_Btn.clicked.connect(self.csv_select)
 
         self.XY_Curve_Dialog_Btns_Cancel_Btn = QPushButton("Cancelar")
         self.XY_Curve_Dialog_Btns_Cancel_Btn.setIcon(QIcon('img/icon_cancel.png'))
@@ -166,15 +172,27 @@ class C_XY_Curve_Dialog(QDialog):
 
         return self.curve_name, self.x_axys, self.y_axys
 
-    def verify_Csv_entries(self):  # Validando as entradas do arquivo Csv
+# TODO:Continuar daqui.. Tratar o arquivo csv e o diretório dele.
 
+    def csv_select(self):  # Pegando o arquivo csv pra tratar
+        self.options = QFileDialog.Options()
+        self.options |= QFileDialog.DontUseNativeDialog
+        self.fileName, _ = QFileDialog.getOpenFileName(self, "Selecione o arquivo CSV", "",
+                                                  "All Files (*);;CSV Files (*.csv)", options=self.options)
+        if self.fileName:
+            print(self.fileName)
+
+
+
+
+    def verify_Csv_entries(self):  # Validando as entradas do arquivo Csv
         if self.XY_Curve_Csv_Name.text().isspace() or self.XY_Curve_Csv_Name.text() == '':  # Verifica se há campos vazios
             msg = QMessageBox()
             msg.information(self, 'Campos Vazios ',
                             "Por favor preencha o nome da curva")
-
         else:
             self.curve_name = self.XY_Curve_Csv_Name.text()
+
 
     def Accept(self):
         if self.XY_Curve_Select_Default_Btn.isChecked():
