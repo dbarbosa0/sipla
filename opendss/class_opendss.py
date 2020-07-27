@@ -43,6 +43,8 @@ class C_OpenDSS(): # classe OpenDSSDirect
         self._SCDataInfo = []
         ## FlagLoadData - Só roda se tiver alguma alteração nos alimentadores
         self.loadDataFlag = False
+        #### InvControl
+        self._InvControl = []
 
 
         self.OpenDSSEngine = opendss.class_conn.C_Conn() ## Apenas para o Objeto Existir, depois será sobrecarregado
@@ -135,6 +137,14 @@ class C_OpenDSS(): # classe OpenDSSDirect
     @SCDataInfo.setter
     def SCDataInfo(self, value):
         self._SCDataInfo = value
+
+    @property
+    def InvControl(self):
+        return self._InvControl
+
+    @InvControl.setter
+    def S(self, value):
+        self._InvControl = value
 
     def loadData(self):
 
