@@ -38,6 +38,9 @@ class C_OpenDSS(): # classe OpenDSSDirect
         self.OpenDSSEngine = opendss.class_conn.C_Conn() ## Apenas para o Objeto Existir, depois será sobrecarregado
         self._OpenDSSConfig = {}
 
+        ####
+        self.memoFileVoltageBase = []
+        self.memoFileMode = []
         self.memoLoadShapes = ''
 
         self.tableVoltageResults = QTableWidget() # Tabela de Resultados
@@ -265,12 +268,35 @@ class C_OpenDSS(): # classe OpenDSSDirect
                       # "RamLig":self.dataOpenDSS.memoFileRamaisLigBT,self.memoFileRamaisLigBT,
                       "CompMT": self.dataOpenDSS.memoFileUndCompReatMT,
                       # "CompBT":self.dataOpenDSS.memoFileUndCompReatBT,
-                      "Storages": self.memoFileStorages,
-                      "EnergyMeters": self.memoFileEnergyMeters,
-                      "Monitors": self.memoFileMonitors,
-                      "VoltageBase": self.memoFileVoltageBase,
-                      "Mode": self.memoFileMode,
-                      }
+                    }
+
+        if self.Storages:
+            tmpStorages = {"Storages": self.memoFileStorages,}
+            self.OpenDSSDataResult.update(tmpStorages)
+
+        if self.EnergyMeters:
+            tmpEnergyMeter = {"EnergyMeters": self.memoFileEnergyMeters,}
+            self.OpenDSSDataResult.update(tmpEnergyMeter)
+
+        if self.Monitors:
+            tmpMonitors = {"Monitors": self.memoFileMonitors,}
+            self.OpenDSSDataResult.update(tmpMonitors)
+
+        if not self.memoFileVoltageBase:
+            self.exec_VoltageBase()
+
+        if not  self.memoFileMode:
+            self.exec_Mode()
+
+        tmpVoltageBase = {"VoltageBase": self.memoFileVoltageBase,}
+
+        self.OpenDSSDataResult.update(tmpVoltageBase)
+
+        tmpFileMode = {"Mode": self.memoFileMode,}
+
+        self.OpenDSSDataResult.update(tmpFileMode)
+
+
 
 
     def exec_SaveFileDialogDSS(self):
@@ -317,6 +343,8 @@ class C_OpenDSS(): # classe OpenDSSDirect
 
     def createMainFileDSS(self): # Para salvar em arquivo
 
+        self.loadDataResult()
+
         mainFile = ''
 
         for ctd in self.execOpenDSSFunc:
@@ -351,13 +379,13 @@ class C_OpenDSS(): # classe OpenDSSDirect
     def exec_VoltageBase(self):
 
         ######
-        self.memoFileVoltageBase = []
+        self.memoFileVoltageBase.clear()
         self.memoFileVoltageBase.append("set voltagebases = [" + self.OpenDSSConfig["VoltageBase"] + "]")
         self.memoFileVoltageBase.append("Calcvoltagebases")
 
     def exec_Mode(self):
 
-        self.memoFileMode = []
+        self.memoFileMode.clear()
 
         if self.OpenDSSConfig["Mode"] == "Daily":
             sztime = self.OpenDSSConfig["StepSizeTime"][0]
@@ -538,13 +566,14 @@ class C_OpenDSS(): # classe OpenDSSDirect
     #### Storages
     def exec_EffCurves(self):
         for ctd in self.Storages:
-            Xarray = str(ctd['EffCurve']["Xarray"])
-            Yarray = str(ctd['EffCurve']["Yarray"])
-            tmp = "New XYCurve." + ctd['EffCurve']['EffCurveName'] + \
-                  " npts=" + ctd['EffCurve']["npts"] + \
-                  " Xarray=" + Xarray + \
-                  " Yarray=" + Yarray
-            self.memoFileStorages.append(tmp)
+            if ctd["StorageVersion"] == 2:
+                Xarray = str(ctd['EffCurve']["Xarray"])
+                Yarray = str(ctd['EffCurve']["Yarray"])
+                tmp = "New XYCurve." + ctd['EffCurve']['EffCurveName'] + \
+                      " npts=" + ctd['EffCurve']["npts"] + \
+                      " Xarray=" + Xarray + \
+                      " Yarray=" + Yarray
+                self.memoFileStorages.append(tmp)
 
     def exec_DispatchCurves(self):
         for ctd in self.Storages:
@@ -613,12 +642,17 @@ class C_OpenDSS(): # classe OpenDSSDirect
 
     def exec_StorageControllers(self):
         for ctd in self.StorageControllers:
-            tmp = "New StorageController2." + ctd["StorageControllerName"] + \
-                  " ElementList=" + str(ctd["ElementList"]).replace("'","") + \
-                  " Element=" + ctd["Element"] + \
-                  " Terminal=" + ctd["Terminal"] + \
-                  " %reserve=" + ctd["Reserve"] + \
-                  " DispFactor=" + str(ctd["DispFactor"]).replace(",", ".")
+            tmpStorageController1Parameters = "New StorageController2." + ctd["StorageControllerName"] + \
+                                              " ElementList=" + str(ctd["ElementList"]).replace("'","") + \
+                                              " Element=" + ctd["Element"] + \
+                                              " Terminal=" + ctd["Terminal"] + \
+                                              " %reserve=" + ctd["Reserve"]
+            if ctd["StorageControllerVersion"] == 1:
+                tmp = "New StorageController." + ctd["StorageControllerName"] + tmpStorageController1Parameters
+            else:
+                tmp = "New StorageController2." + ctd["StorageControllerName"] + \
+                      tmpStorageController1Parameters + \
+                      " DispFactor=" + str(ctd["DispFactor"]).replace(",", ".")
 
             if 'DispatchMode' in ctd:
                 if ctd['DispatchMode'] == 'LoadShape':
@@ -706,38 +740,43 @@ class C_OpenDSS(): # classe OpenDSSDirect
         self.exec_EffCurves()
 
         for ctd in self.Storages:
-            tmp = "New Storage2." + ctd["StorageName"] + \
-                  " phases=" + ctd["phases"] + \
-                  " model=" + ctd["model"] + \
-                  " Conn=" + ctd["Conn"] + \
-                  " Bus1=" + ctd["Bus"] + \
-                  " kW=" + ctd["kW"] + \
-                  " kV=" + ctd["kV"] + \
-                  " kWhrated=" + ctd["kWhrated"] + \
-                  " kWhstored=" + ctd["kWhstored"] + \
-                  " %reserve=" + ctd["%reserve"] + \
-                  " %IdlingkW=" + ctd["%IdlingkW"] + \
-                  " %Charge=" + ctd["%Charge"] + \
-                  " %Discharge=" + ctd["%Discharge"] + \
-                  " %EffCharge=" + ctd["%EffCharge"] + \
-                  " %EffDischarge=" + ctd["%EffDischarge"] + \
-                  " state=" + ctd["state"] + \
-                  " vMinpu=" + ctd["vMinpu"] + \
-                  " vMaxpu=" + ctd["vMaxpu"] + \
-                  " %R=" + ctd["%R"] + \
-                  " %X=" + ctd["%X"] + \
-                  " EffCurve=" + ctd["EffCurve"]['EffCurveName'] + \
-                  " kVA=" + ctd["kVA"] + \
-                  " kWrated=" + ctd["kWrated"] + \
-                  " varFollowInverter=" + ctd["varFollowInverter"] + \
-                  " %CutIn=" + ctd["%CutIn"] + \
-                  " %CutOut=" + ctd["%CutOut"] + \
-                  " kvarMax=" + ctd["kvarMax"] + \
-                  " kvarMaxAbs=" + ctd["kvarMaxAbs"] + \
-                  " %PminNoVars=" + ctd["%PminNoVars"] + \
-                  " %PminkvarMax=" + ctd["%PminkvarMax"] + \
-                  " PFPriority=" + ctd["PFPriority"] + \
-                  " WattPriority=" + ctd["WattPriority"]
+            tmpStorage1Parameters = " phases=" + ctd["phases"] + \
+                                      " model=" + ctd["model"] + \
+                                      " Conn=" + ctd["Conn"] + \
+                                      " Bus1=" + ctd["Bus"] + \
+                                      " kW=" + ctd["kW"] + \
+                                      " kV=" + ctd["kV"] + \
+                                      " kWhrated=" + ctd["kWhrated"] + \
+                                      " %stored=" + ctd["%stored"] + \
+                                      " %reserve=" + ctd["%reserve"] + \
+                                      " %IdlingkW=" + ctd["%IdlingkW"] + \
+                                      " %Charge=" + ctd["%Charge"] + \
+                                      " %Discharge=" + ctd["%Discharge"] + \
+                                      " %EffCharge=" + ctd["%EffCharge"] + \
+                                      " %EffDischarge=" + ctd["%EffDischarge"] + \
+                                      " state=" + ctd["state"] + \
+                                      " vMinpu=" + ctd["vMinpu"] + \
+                                      " vMaxpu=" + ctd["vMaxpu"] + \
+                                      " %R=" + ctd["%R"] + \
+                                      " %X=" + ctd["%X"] + \
+                                      " kVA=" + ctd["kVA"] + \
+                                      " kWrated=" + ctd["kWrated"]
+
+            if ctd["StorageVersion"] == 1:
+                tmp = "New Storage." + ctd["StorageName"] + tmpStorage1Parameters
+            else:
+                tmp = "New Storage2." + ctd["StorageName"] + \
+                      tmpStorage1Parameters + \
+                      " EffCurve=" + ctd["EffCurve"]['EffCurveName'] + \
+                      " varFollowInverter=" + ctd["varFollowInverter"] + \
+                      " %CutIn=" + ctd["%CutIn"] + \
+                      " %CutOut=" + ctd["%CutOut"] + \
+                      " kvarMax=" + ctd["kvarMax"] + \
+                      " kvarMaxAbs=" + ctd["kvarMaxAbs"] + \
+                      " %PminNoVars=" + ctd["%PminNoVars"] + \
+                      " %PminkvarMax=" + ctd["%PminkvarMax"] + \
+                      " PFPriority=" + ctd["PFPriority"] + \
+                      " WattPriority=" + ctd["WattPriority"]
 
             if len(ctd["ReactPow"]) > 0:
                 for i in ctd["ReactPow"].items():
@@ -837,7 +876,10 @@ class C_OpenDSS(): # classe OpenDSSDirect
 
         tempStorage = []
         for ctd in self.Storages:
-            tempStorage.append("Storage2." + ctd["StorageName"])
+            if ctd["StorageVersion"] == 1:
+                tempStorage.append("Storage." + ctd["StorageName"])
+            elif ctd["StorageVersion"] == 2:
+                tempStorage.append("Storage2." + ctd["StorageName"])
 
         #
         return self.dataOpenDSS.elementList + tempStorage

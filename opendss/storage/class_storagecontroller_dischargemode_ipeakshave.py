@@ -46,6 +46,9 @@ class C_ActPow_Discharge_IPeakShave_DispMode_Dialog(QDialog): ## Classe Dialog D
         self.Dialog_Layout.addWidget(self.Label, 1, 1, 1, 2)
 
         self.kampsTarget_Label = QLabel("Corrente alvo (kAmps):")
+        self.kampsTarget_Label.setToolTip("\
+A frota de Storages é despachada a fim de manter a corrente no elemento monitorado abaixo da Corrente Alvo ou\n\
+dentro da faixa aceitável.")
         self.Dialog_Layout.addWidget(self.kampsTarget_Label, 2, 1, 1, 1)
         self.kampsTarget_LineEdit = QLineEdit()
         self.LineEditsValidos = QDoubleValidator()
@@ -58,7 +61,7 @@ class C_ActPow_Discharge_IPeakShave_DispMode_Dialog(QDialog): ## Classe Dialog D
         self.Band_LineEdit.setValidator(self.LineEditsValidos)
         self.Dialog_Layout.addWidget(self.Band_LineEdit, 3, 2, 1, 1)
         self.Band_Unit_ComboBox = QComboBox()
-        self.Band_Unit_ComboBox.addItems(["kAmps", "% kAmps"])
+        self.Band_Unit_ComboBox.addItems(["% kAmps", "kAmps"])
         self.Dialog_Layout.addWidget(self.Band_Unit_ComboBox, 3, 3, 1, 1)
         ### Botões
         self.Dialog_Btns_Layout = QHBoxLayout()
@@ -104,6 +107,7 @@ class C_ActPow_Discharge_IPeakShave_DispMode_Dialog(QDialog): ## Classe Dialog D
             else:
                 self.DischargeMode["%kWBand"] = self.getBandWidth()
             self.close()
+
     def cancelIPeakShave(self):
         self.close()
 
