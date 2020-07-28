@@ -292,7 +292,6 @@ class C_Config_DispCurve_Dialog(QDialog):
 
             with open(str(fname), 'r', newline='') as file:
                 csv_reader_object = csv.reader(file)
-                #if csv.Sniffer().has_header:
                 name_col = next(csv_reader_object)
 
                 for row in name_col:

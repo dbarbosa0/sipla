@@ -47,6 +47,9 @@ class C_ActPow_Discharge_PeakShave_DispMode_Dialog(QDialog):# Classe Dialog Desp
         self.Dialog_Layout.addWidget(self.Label, 1, 1, 1, 2)
 
         self.kWTarget_Label = QLabel("Pot. alvo (kW):")
+        self.kWTarget_Label.setToolTip("\
+A frota de Storages é despachada a fim de manter a potência no elemento monitorado abaixo da Potência Alvo ou\n\
+dentro da faixa aceitável.")
         self.Dialog_Layout.addWidget(self.kWTarget_Label, 2, 1, 1, 1)
         self.kWTarget_LineEdit = QLineEdit()
         self.LineEditsValidos = QDoubleValidator()
@@ -59,7 +62,7 @@ class C_ActPow_Discharge_PeakShave_DispMode_Dialog(QDialog):# Classe Dialog Desp
         self.Band_LineEdit.setValidator(self.LineEditsValidos)
         self.Dialog_Layout.addWidget(self.Band_LineEdit, 3, 2, 1, 1)
         self.Band_Unit_ComboBox = QComboBox()
-        self.Band_Unit_ComboBox.addItems(["kW", "% kW"])
+        self.Band_Unit_ComboBox.addItems(["% kW", "kW"])
         self.Dialog_Layout.addWidget(self.Band_Unit_ComboBox, 3, 3, 1, 1)
         ### Botões
         self.Dialog_Btns_Layout = QHBoxLayout()
@@ -105,6 +108,7 @@ class C_ActPow_Discharge_PeakShave_DispMode_Dialog(QDialog):# Classe Dialog Desp
             else:
                 self.DischargeMode["%kWBand"] = self.getBandWidth()
             self.close()
+
     def cancelPeakShave(self):
         self.close()
 

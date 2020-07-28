@@ -2,7 +2,7 @@ from PyQt5.QtGui import  QIcon, QDoubleValidator
 from PyQt5.QtWidgets import QStyleFactory, QDialog, QGridLayout, \
     QPushButton, QMessageBox, QLabel, QLineEdit, \
     QComboBox, QHBoxLayout
-from PyQt5.QtCore import Qt
+from PyQt5.QtCore import Qt, QLocale
 
 import config as cfg
 
@@ -48,6 +48,9 @@ class C_ActPow_Discharge_Support_DispMode_Dialog(QDialog):# Classe Dialog Despac
         self.Dialog_Layout.addWidget(self.Label, 1, 1, 1, 2)
 
         self.kWTarget_Label = QLabel("Pot. alvo (kW):")
+        self.kWTarget_Label.setToolTip("\
+A frota de Storages é despachada a fim de manter a potência no elemento monitorado acima da Potência Alvo ou\n\
+dentro da faixa aceitável.")
         self.Dialog_Layout.addWidget(self.kWTarget_Label, 2, 1, 1, 1)
         self.kWTarget_LineEdit = QLineEdit()
         self.LineEditsValidos = QDoubleValidator()
@@ -60,7 +63,7 @@ class C_ActPow_Discharge_Support_DispMode_Dialog(QDialog):# Classe Dialog Despac
         self.Band_LineEdit.setValidator(self.LineEditsValidos)
         self.Dialog_Layout.addWidget(self.Band_LineEdit, 3, 2, 1, 1)
         self.Band_Unit_ComboBox = QComboBox()
-        self.Band_Unit_ComboBox.addItems(["kW", "% kW"])
+        self.Band_Unit_ComboBox.addItems(["% kW", "kW"])
         self.Dialog_Layout.addWidget(self.Band_Unit_ComboBox, 3, 3, 1, 1)
         ### Botões
         self.Dialog_Btns_Layout = QHBoxLayout()

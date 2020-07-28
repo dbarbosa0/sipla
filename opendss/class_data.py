@@ -557,7 +557,7 @@ class C_Data():  # classe OpenDSS
                     ##Originalmente o OpenDSS não retorna esse elemento
                     temp_Element = "" #"Fuse.{0}".format(dados_sec[ctd].cod_id)
 
-                if tipoSEC == "29":  # Chave DJ Relé
+                elif tipoSEC == "29":  # Chave DJ Relé
                     temp_memoFileSEC_CONTROL = "New Relay.{0}".format(
                         dados_sec[ctd].cod_id) + " MonitoredObj={0}".format("Line." + dados_sec[ctd].cod_id)
                     temp_memoFileSEC_CONTROL += " SwitchedObj={0}".format(
@@ -566,7 +566,7 @@ class C_Data():  # classe OpenDSS
 
                     temp_Element = "Relay.{0}".format(dados_sec[ctd].cod_id)
 
-                if tipoSEC == "32":  # Religador
+                elif tipoSEC == "32":  # Religador
                     temp_memoFileSEC_CONTROL = "New Recloser.{0}".format(
                         dados_sec[ctd].cod_id) + " MonitoredObj={0}".format("Line." + dados_sec[ctd].cod_id)
                     temp_memoFileSEC_CONTROL += " SwitchedObj={0}".format(
