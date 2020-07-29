@@ -51,7 +51,7 @@ class C_Config_VoltWatt_XYCurve_Dialog(QDialog):
         ### Botões adicionar/remover curvas
         self.XYCurve_GroupBox_Delete_Btn = QPushButton("Remover")
         self.XYCurve_GroupBox_Delete_Btn.setIcon(QIcon('img/icon_remove.png'))
-        self.XYCurve_GroupBox_Delete_Btn.clicked.connect(self.deleteXYCurve)
+        self.XYCurve_GroupBox_Delete_Btn.clicked.connect(self.removeXYCurve)
         self.XYCurve_GroupBox_Layout.addWidget(self.XYCurve_GroupBox_Delete_Btn, 3, 1, 1, 1)
 
         self.XYCurve_GroupBox_Adicionar_Btn = QPushButton("Adicionar")
@@ -105,7 +105,7 @@ class C_Config_VoltWatt_XYCurve_Dialog(QDialog):
 
         self.setLayout(self.Dialog_Layout)
 
-    def deleteXYCurve(self):
+    def removeXYCurve(self):
         msg = QMessageBox()
         msg.setIcon(QMessageBox.Question)
         msg.setText("Você deseja remover a(s) curva(s) selecionada(s)?")

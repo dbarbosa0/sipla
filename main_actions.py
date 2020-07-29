@@ -286,6 +286,7 @@ class C_MainActions():
     #Contribuição Lenon
     def execInsertInvControl(self):
         self.OpenDSS_DialogInsertInvControl.updateDialog()
+        self.OpenDSS_DialogInsertInvControl.move(500, 90)
         self.OpenDSS_DialogInsertInvControl.show()
 
 
