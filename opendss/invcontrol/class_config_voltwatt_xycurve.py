@@ -138,30 +138,36 @@ class C_Config_VoltWatt_XYCurve_Dialog(QDialog):
         inputLoadName = str(inputLoadName).strip().replace(" ", "_")
 
         if inputOk:
-            countName = 0
-            for ctd in range(0, self.XYCurve_GroupBox_TreeWidget.topLevelItemCount()):
-
-                Item = self.XYCurve_GroupBox_TreeWidget.topLevelItem(ctd)
-
-                if Item.name == str(inputLoadName):
-                    countName += 1
-
-            if countName == 0:
-                ptsX = [0.0, 1.0, 1.1, 2.0]
-                ptsX = str(ptsX).strip('[]').replace("'", "")
-
-                ptsY = [1.0, 1.0, 0.0, 0.0]
-                ptsY = str(ptsY).strip('[]').replace("'", "")
-
-                Config_XYCurve_GroupBox_TreeWidget_Item(self.XYCurve_GroupBox_TreeWidget,
-                                                         inputLoadName,
-                                                         ptsX,
-                                                         ptsY,
-                                                         cfg.colorsList[random.randint(0, len(cfg.colorsList) - 1)])
-            else:
+            if str(inputLoadName) == "":
                 msg = QMessageBox()
                 msg.information(self, 'Curva XY',
-                                "Não foi possível adicionar a Curva XY\nCurva já existente!")
+                                "Adicione um nome a Curva XY")
+
+            else:
+                countName = 0
+                for ctd in range(0, self.XYCurve_GroupBox_TreeWidget.topLevelItemCount()):
+
+                    Item = self.XYCurve_GroupBox_TreeWidget.topLevelItem(ctd)
+
+                    if Item.name == str(inputLoadName):
+                        countName += 1
+
+                if countName == 0:
+                    ptsX = [0.0, 1.0, 1.1, 2.0]
+                    ptsX = str(ptsX).strip('[]').replace("'", "")
+
+                    ptsY = [1.0, 1.0, 0.0, 0.0]
+                    ptsY = str(ptsY).strip('[]').replace("'", "")
+
+                    Config_XYCurve_GroupBox_TreeWidget_Item(self.XYCurve_GroupBox_TreeWidget,
+                                                            inputLoadName,
+                                                            ptsX,
+                                                            ptsY,
+                                                            cfg.colorsList[random.randint(0, len(cfg.colorsList) - 1)])
+                else:
+                    msg = QMessageBox()
+                    msg.information(self, 'Curva XY',
+                                    "Não foi possível adicionar a Curva XY\nCurva já existente!")
 
     def viewXYCurve(self):
 
@@ -243,12 +249,12 @@ class C_Config_VoltWatt_XYCurve_Dialog(QDialog):
                 try:
                     float(ctd)
                 except:
-                    msgText += "O item: " + ctd + " não é float! Verifique a curva XY!"
+                    msgText += "O item: " + ctd + " não é um número\n"
             for ctd in YpointsXYCurve:
                 try:
                     float(ctd)
                 except:
-                    msgText += "O item: " + ctd + " não é float! Verifique a curva XY!"
+                    msgText += "O item: " + ctd + " não é número\n"
 
         if msgText != "":
             msg = QMessageBox()

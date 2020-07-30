@@ -127,6 +127,7 @@ class C_Insert_InvControl_Dialog(QDialog):
 
     def addInvControl(self):
         self.TabConfig.NameEMode_GroupBox_Nome_LineEdit.setEnabled(True)
+        self.TabConfig.NameEMode_GroupBox_Mode_ComboBox.setEnabled(True)
         self.EnableDisableParameters(True)
         self.DefaultConfigParameters()
         self.adjustSize()
@@ -220,6 +221,7 @@ class C_Insert_InvControl_Dialog(QDialog):
                             cfg.colorsList[random.randint(0, len(cfg.colorsList) - 1)])
 
             self.TabConfig.NameEMode_GroupBox_Nome_LineEdit.setEnabled(False)
+            self.TabConfig.NameEMode_GroupBox_Mode_ComboBox.setEnabled(False)
             self.EnableDisableParameters(True)
             self.adjustSize()
 
@@ -422,7 +424,8 @@ class C_Insert_InvControl_Dialog(QDialog):
     def DefaultConfigParameters(self):
         if self.TabConfig.NameEMode_GroupBox_Nome_LineEdit.isEnabled():
             self.TabConfig.NameEMode_GroupBox_Nome_LineEdit.setText("")
-        self.TabConfig.NameEMode_GroupBox_Mode_ComboBox.setCurrentText("VOLTVAR")
+        if self.TabConfig.NameEMode_GroupBox_Mode_ComboBox.isEnabled():
+            self.TabConfig.NameEMode_GroupBox_Mode_ComboBox.setCurrentText("VOLTVAR")
 
         #FALTAM DEFAULT BOTOES DO VOLTVAR
         self.TabConfig.VoltVar_GroupBox_EventLog_ComboBox.setCurrentText("Yes")
@@ -434,8 +437,8 @@ class C_Insert_InvControl_Dialog(QDialog):
         self.TabConfig.VoltVar_GroupBox_AvgWindowLen_SpinBox.setValue(0.0)
         self.TabConfig.VoltVar_GroupBox_AvgWindowLen_ComboBox.setCurrentText("s")
         self.TabConfig.VoltVar_GroupBox_RateofChangeMode_ComboBox.setCurrentText("INACTIVE")
-        self.TabConfig.VoltVar_GroupBox_LPFtau_DoubleSpinBox.setValue(0.001)
-        self.TabConfig.VoltVar_GroupBox_RiseFallLimit_DoubleSpinBox.setValue(0.001)
+        self.TabConfig.VoltVar_GroupBox_LPFtau_DoubleSpinBox.setValue(0.0)
+        self.TabConfig.VoltVar_GroupBox_RiseFallLimit_DoubleSpinBox.setValue(-1.0)
         self.TabConfig.VoltVar_GroupBox_RefReactivePower_ComboBox.setCurrentText("VARAVAL")
 
         # FALTAM DEFAULT BOTOES DO VOLTWATT
@@ -446,8 +449,8 @@ class C_Insert_InvControl_Dialog(QDialog):
         self.TabConfig.VoltWatt_GroupBox_AvgWindowLen_SpinBox.setValue(0.0)
         self.TabConfig.VoltWatt_GroupBox_AvgWindowLen_ComboBox.setCurrentText("s")
         self.TabConfig.VoltWatt_GroupBox_RateofChangeMode_ComboBox.setCurrentText("INACTIVE")
-        self.TabConfig.VoltWatt_GroupBox_LPFtau_DoubleSpinBox.setValue(0.001)
-        self.TabConfig.VoltWatt_GroupBox_RiseFallLimit_DoubleSpinBox.setValue(0.001)
+        self.TabConfig.VoltWatt_GroupBox_LPFtau_DoubleSpinBox.setValue(0.0)
+        self.TabConfig.VoltWatt_GroupBox_RiseFallLimit_DoubleSpinBox.setValue(-1.0)
         self.TabConfig.VoltWatt_GroupBox_VoltWattYAxis_ComboBox.setCurrentText("PMPPPU")
 
         self.TabConfig.VoltWatt_GroupBox_AvgWindowLen_SpinBox.setEnabled(False)
@@ -547,15 +550,15 @@ class InvConfig(QWidget):
         # Configurar deltaQ_Factor
         self.VoltVar_GroupBox_DeltaQFactor_Label = QLabel("deltaQ_Factor")
         self.VoltVar_GroupBox_DeltaQFactor_DoubleSpinBox = QDoubleSpinBox()
-        self.VoltVar_GroupBox_DeltaQFactor_DoubleSpinBox.setDecimals(5)
-        self.VoltVar_GroupBox_DeltaQFactor_DoubleSpinBox.setRange(-100, 100)
+        self.VoltVar_GroupBox_DeltaQFactor_DoubleSpinBox.setDecimals(2)
+        self.VoltVar_GroupBox_DeltaQFactor_DoubleSpinBox.setRange(-1, 1)
         self.VoltVar_GroupBox_DeltaQFactor_DoubleSpinBox.setButtonSymbols(2)
         self.VoltVar_GroupBox_Layout.addWidget(self.VoltVar_GroupBox_DeltaQFactor_Label, 3, 0, 1, 1)
         self.VoltVar_GroupBox_Layout.addWidget(self.VoltVar_GroupBox_DeltaQFactor_DoubleSpinBox, 3, 1, 1, 2)
         # Configurar VarChangeTolerance (p.u.)
         self.VoltVar_GroupBox_VarChangeTolerance_Label = QLabel("VarChangeTolerance (p.u.)")
         self.VoltVar_GroupBox_VarChangeTolerance_DoubleSpinBox = QDoubleSpinBox()
-        self.VoltVar_GroupBox_VarChangeTolerance_DoubleSpinBox.setDecimals(5)
+        self.VoltVar_GroupBox_VarChangeTolerance_DoubleSpinBox.setDecimals(3)
         self.VoltVar_GroupBox_VarChangeTolerance_DoubleSpinBox.setRange(-100, 100)
         self.VoltVar_GroupBox_VarChangeTolerance_DoubleSpinBox.setButtonSymbols(2)
         self.VoltVar_GroupBox_Layout.addWidget(self.VoltVar_GroupBox_VarChangeTolerance_Label, 4, 0, 1, 1)
@@ -563,7 +566,7 @@ class InvConfig(QWidget):
         # Configurar VoltageChangeTolerance (p.u.)
         self.VoltVar_GroupBox_VoltageChangeTolerance_Label = QLabel("VoltageChangeTolerance (p.u.)")
         self.VoltVar_GroupBox_VoltageChangeTolerance_DoubleSpinBox = QDoubleSpinBox()
-        self.VoltVar_GroupBox_VoltageChangeTolerance_DoubleSpinBox.setDecimals(5)
+        self.VoltVar_GroupBox_VoltageChangeTolerance_DoubleSpinBox.setDecimals(4)
         self.VoltVar_GroupBox_VoltageChangeTolerance_DoubleSpinBox.setRange(-100, 100)
         self.VoltVar_GroupBox_VoltageChangeTolerance_DoubleSpinBox.setButtonSymbols(2)
         self.VoltVar_GroupBox_Layout.addWidget(self.VoltVar_GroupBox_VoltageChangeTolerance_Label, 5, 0, 1, 1)
@@ -571,7 +574,7 @@ class InvConfig(QWidget):
         # Configurar hysteresis_offset
         self.VoltVar_GroupBox_HysteresisOffSet_Label = QLabel("hysteresis_offset")
         self.VoltVar_GroupBox_HysteresisOffSet_DoubleSpinBox = QDoubleSpinBox()
-        self.VoltVar_GroupBox_HysteresisOffSet_DoubleSpinBox.setDecimals(5)
+        self.VoltVar_GroupBox_HysteresisOffSet_DoubleSpinBox.setDecimals(2)
         self.VoltVar_GroupBox_HysteresisOffSet_DoubleSpinBox.setRange(-100, 100)
         self.VoltVar_GroupBox_HysteresisOffSet_DoubleSpinBox.setButtonSymbols(2)
         self.VoltVar_GroupBox_Layout.addWidget(self.VoltVar_GroupBox_HysteresisOffSet_Label, 6, 0, 1, 1)
@@ -607,7 +610,7 @@ class InvConfig(QWidget):
         # Configurar LPFtau
         self.VoltVar_GroupBox_LPFtau_Label = QLabel("LPFtau")
         self.VoltVar_GroupBox_LPFtau_DoubleSpinBox = QDoubleSpinBox()
-        self.VoltVar_GroupBox_LPFtau_DoubleSpinBox.setDecimals(5)
+        self.VoltVar_GroupBox_LPFtau_DoubleSpinBox.setDecimals(3)
         self.VoltVar_GroupBox_LPFtau_DoubleSpinBox.setRange(-100, 100)
         self.VoltVar_GroupBox_LPFtau_DoubleSpinBox.setButtonSymbols(2)
         self.VoltVar_GroupBox_LPFtau_DoubleSpinBox.setEnabled(False)
@@ -616,8 +619,8 @@ class InvConfig(QWidget):
         # Configurar RiseFallLimit
         self.VoltVar_GroupBox_RiseFallLimit_Label = QLabel("RiseFallLimit")
         self.VoltVar_GroupBox_RiseFallLimit_DoubleSpinBox = QDoubleSpinBox()
-        self.VoltVar_GroupBox_RiseFallLimit_DoubleSpinBox.setDecimals(5)
-        self.VoltVar_GroupBox_RiseFallLimit_DoubleSpinBox.setRange(-100, 100)
+        self.VoltVar_GroupBox_RiseFallLimit_DoubleSpinBox.setDecimals(3)
+        self.VoltVar_GroupBox_RiseFallLimit_DoubleSpinBox.setRange(-1, 100)
         self.VoltVar_GroupBox_RiseFallLimit_DoubleSpinBox.setButtonSymbols(2)
         self.VoltVar_GroupBox_RiseFallLimit_DoubleSpinBox.setEnabled(False)
         self.VoltVar_GroupBox_Layout.addWidget(self.VoltVar_GroupBox_RiseFallLimit_Label, 11, 0, 1, 1)
@@ -654,15 +657,15 @@ class InvConfig(QWidget):
         # Configurar deltaP_Factor
         self.VoltWatt_GroupBox_DeltaPFactor_Label = QLabel("deltaP_Factor")
         self.VoltWatt_GroupBox_DeltaPFactor_DoubleSpinBox = QDoubleSpinBox()
-        self.VoltWatt_GroupBox_DeltaPFactor_DoubleSpinBox.setDecimals(5)
-        self.VoltWatt_GroupBox_DeltaPFactor_DoubleSpinBox.setRange(-100, 100)
+        self.VoltWatt_GroupBox_DeltaPFactor_DoubleSpinBox.setDecimals(2)
+        self.VoltWatt_GroupBox_DeltaPFactor_DoubleSpinBox.setRange(-1, 1)
         self.VoltWatt_GroupBox_DeltaPFactor_DoubleSpinBox.setButtonSymbols(2)
         self.VoltWatt_GroupBox_Layout.addWidget(self.VoltWatt_GroupBox_DeltaPFactor_Label, 3, 0, 1, 1)
         self.VoltWatt_GroupBox_Layout.addWidget(self.VoltWatt_GroupBox_DeltaPFactor_DoubleSpinBox, 3, 1, 1, 2)
         # Configurar ActivePChangeTolerance
         self.VoltWatt_GroupBox_ActivePChangeTolerance_Label = QLabel("ActivePChangeTolerance")
         self.VoltWatt_GroupBox_ActivePChangeTolerance_DoubleSpinBox = QDoubleSpinBox()
-        self.VoltWatt_GroupBox_ActivePChangeTolerance_DoubleSpinBox.setDecimals(5)
+        self.VoltWatt_GroupBox_ActivePChangeTolerance_DoubleSpinBox.setDecimals(2)
         self.VoltWatt_GroupBox_ActivePChangeTolerance_DoubleSpinBox.setRange(-100, 100)
         self.VoltWatt_GroupBox_ActivePChangeTolerance_DoubleSpinBox.setButtonSymbols(2)
         self.VoltWatt_GroupBox_Layout.addWidget(self.VoltWatt_GroupBox_ActivePChangeTolerance_Label, 4, 0, 1, 1)
@@ -698,7 +701,7 @@ class InvConfig(QWidget):
         # Configurar LPFtau
         self.VoltWatt_GroupBox_LPFtau_Label = QLabel("LPFtau")
         self.VoltWatt_GroupBox_LPFtau_DoubleSpinBox = QDoubleSpinBox()
-        self.VoltWatt_GroupBox_LPFtau_DoubleSpinBox.setDecimals(5)
+        self.VoltWatt_GroupBox_LPFtau_DoubleSpinBox.setDecimals(3)
         self.VoltWatt_GroupBox_LPFtau_DoubleSpinBox.setRange(-100, 100)
         self.VoltWatt_GroupBox_LPFtau_DoubleSpinBox.setButtonSymbols(2)
         self.VoltWatt_GroupBox_LPFtau_DoubleSpinBox.setEnabled(False)
@@ -707,8 +710,8 @@ class InvConfig(QWidget):
         # Configurar RiseFallLimit
         self.VoltWatt_GroupBox_RiseFallLimit_Label = QLabel("RiseFallLimit")
         self.VoltWatt_GroupBox_RiseFallLimit_DoubleSpinBox = QDoubleSpinBox()
-        self.VoltWatt_GroupBox_RiseFallLimit_DoubleSpinBox.setDecimals(5)
-        self.VoltWatt_GroupBox_RiseFallLimit_DoubleSpinBox.setRange(-100, 100)
+        self.VoltWatt_GroupBox_RiseFallLimit_DoubleSpinBox.setDecimals(3)
+        self.VoltWatt_GroupBox_RiseFallLimit_DoubleSpinBox.setRange(-1, 100)
         self.VoltWatt_GroupBox_RiseFallLimit_DoubleSpinBox.setButtonSymbols(2)
         self.VoltWatt_GroupBox_RiseFallLimit_DoubleSpinBox.setEnabled(False)
         self.VoltWatt_GroupBox_Layout.addWidget(self.VoltWatt_GroupBox_RiseFallLimit_Label, 9, 0, 1, 1)
