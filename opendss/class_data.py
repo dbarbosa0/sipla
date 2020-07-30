@@ -20,7 +20,10 @@ class C_Data():  # classe OpenDSS
         ##Lista com o nome das Barras
         self.busList = []
         self.elementList = []
-
+        self.recloserList = []
+        self.fuseList = []
+        self.relayList = []
+        self.swtcontrolList = []
         ##Curvas de Carga
         self.loadShapeUniCons = {}
 
@@ -522,12 +525,14 @@ class C_Data():  # classe OpenDSS
 
     def getSEC_CONTROL(self, nomeSE_ATMT, tipoSEC, testAL_MT=None):
         try:
+            lista = []
             ###Teste Alimentador para Chaves de Média Tensão
 
             if testAL_MT is not None:  # MT
                 dados_ctmt = self.DataBase.getData_CTMT(None)
 
                 lista_de_identificadores_dos_alimentadores = self.getID_Fields(dados_ctmt)
+                lista = lista_de_identificadores_dos_alimentadores
 
             if testAL_MT is not None:  # MT
                 dados_sec = self.DataBase.getData_SecMT(nomeSE_ATMT, tipoSEC)
@@ -553,11 +558,12 @@ class C_Data():  # classe OpenDSS
                         "Line." + dados_sec[ctd].cod_id) + " SwitchedTerm={0}".format("1")
                     temp_memoFileSEC_CONTROL += " FuseCurve={0}".format(curva_do_fusivel) + " RatedCurrent={0}".format(
                         RatedCurrent)
-
+                    if dados_sec[ctd].ctmt in lista:
+                        self.insertFuseList(temp_memoFileSEC_CONTROL)
                     ##Originalmente o OpenDSS não retorna esse elemento
                     temp_Element = "" #"Fuse.{0}".format(dados_sec[ctd].cod_id)
 
-                if tipoSEC == "29":  # Chave DJ Relé
+                elif tipoSEC == "29":  # Chave DJ Relé
                     temp_memoFileSEC_CONTROL = "New Relay.{0}".format(
                         dados_sec[ctd].cod_id) + " MonitoredObj={0}".format("Line." + dados_sec[ctd].cod_id)
                     temp_memoFileSEC_CONTROL += " SwitchedObj={0}".format(
@@ -566,7 +572,7 @@ class C_Data():  # classe OpenDSS
 
                     temp_Element = "Relay.{0}".format(dados_sec[ctd].cod_id)
 
-                if tipoSEC == "32":  # Religador
+                elif tipoSEC == "32":  # Religador
                     temp_memoFileSEC_CONTROL = "New Recloser.{0}".format(
                         dados_sec[ctd].cod_id) + " MonitoredObj={0}".format("Line." + dados_sec[ctd].cod_id)
                     temp_memoFileSEC_CONTROL += " SwitchedObj={0}".format(
@@ -581,7 +587,11 @@ class C_Data():  # classe OpenDSS
                     temp_memoFileSEC_CONTROL += " SwitchedTerm={0}".format("1") + " Action={0}".format(
                         operacao_da_chave)
                     temp_memoFileSEC_CONTROL += " lock=yes"
-
+                    try:
+                        if dados_sec[ctd].ctmt in lista:
+                            self.insertSwtControlList(temp_memoFileSEC_CONTROL)
+                    except:
+                        pass
                     temp_Element = "Swtcontrol.{0}".format(dados_sec[ctd].cod_id)
 
                 # Chaves de Média
@@ -1032,7 +1042,7 @@ class C_Data():  # classe OpenDSS
                 dados_db = self.DataBase.getData_UniCompReativo(nomeSE_MT, "BT")
             else:
                 raise class_exception.ExecOpenDSS(
-                    "Erro ao carregar as informações das Linhas BT, pois o tipo não foi especificado! \n" + tipoLinha)
+                    "Erro ao carregar as informações das Linhas BT, pois o tipo não foi especificado! \n" + tipoCAP)
 
             memoFileComp = []
 
@@ -1149,3 +1159,19 @@ class C_Data():  # classe OpenDSS
     def insertElementList(self, name):
         if str(name) not in self.elementList:
             self.elementList.append(str(name))
+
+    def insertRecloserList(self, name):
+        if str(name) not in self.recloserList:
+            self.recloserList.append(str(name))
+
+    def insertFuseList(self, name):
+        if str(name) not in self.fuseList:
+            self.fuseList.append(str(name))
+
+    def insertRelayList(self, name):
+        if str(name) not in self.relayList:
+            self.relayList.append(str(name))
+
+    def insertSwtControlList(self, name):
+        if str(name) not in self.swtcontrolList:
+            self.swtcontrolList.append(str(name))

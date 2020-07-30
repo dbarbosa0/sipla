@@ -38,6 +38,9 @@ class C_OpenDSS(): # classe OpenDSSDirect
         self.OpenDSSEngine = opendss.class_conn.C_Conn() ## Apenas para o Objeto Existir, depois será sobrecarregado
         self._OpenDSSConfig = {}
 
+        ####
+        self.memoFileVoltageBase = []
+        self.memoFileMode = []
         self.memoLoadShapes = ''
 
         self.tableVoltageResults = QTableWidget() # Tabela de Resultados
@@ -265,12 +268,35 @@ class C_OpenDSS(): # classe OpenDSSDirect
                       # "RamLig":self.dataOpenDSS.memoFileRamaisLigBT,self.memoFileRamaisLigBT,
                       "CompMT": self.dataOpenDSS.memoFileUndCompReatMT,
                       # "CompBT":self.dataOpenDSS.memoFileUndCompReatBT,
-                      "Storages": self.memoFileStorages,
-                      "EnergyMeters": self.memoFileEnergyMeters,
-                      "Monitors": self.memoFileMonitors,
-                      "VoltageBase": self.memoFileVoltageBase,
-                      "Mode": self.memoFileMode,
-                      }
+                    }
+
+        if self.Storages:
+            tmpStorages = {"Storages": self.memoFileStorages,}
+            self.OpenDSSDataResult.update(tmpStorages)
+
+        if self.EnergyMeters:
+            tmpEnergyMeter = {"EnergyMeters": self.memoFileEnergyMeters,}
+            self.OpenDSSDataResult.update(tmpEnergyMeter)
+
+        if self.Monitors:
+            tmpMonitors = {"Monitors": self.memoFileMonitors,}
+            self.OpenDSSDataResult.update(tmpMonitors)
+
+        if not self.memoFileVoltageBase:
+            self.exec_VoltageBase()
+
+        if not  self.memoFileMode:
+            self.exec_Mode()
+
+        tmpVoltageBase = {"VoltageBase": self.memoFileVoltageBase,}
+
+        self.OpenDSSDataResult.update(tmpVoltageBase)
+
+        tmpFileMode = {"Mode": self.memoFileMode,}
+
+        self.OpenDSSDataResult.update(tmpFileMode)
+
+
 
 
     def exec_SaveFileDialogDSS(self):
@@ -317,6 +343,8 @@ class C_OpenDSS(): # classe OpenDSSDirect
 
     def createMainFileDSS(self): # Para salvar em arquivo
 
+        self.loadDataResult()
+
         mainFile = ''
 
         for ctd in self.execOpenDSSFunc:
@@ -351,13 +379,13 @@ class C_OpenDSS(): # classe OpenDSSDirect
     def exec_VoltageBase(self):
 
         ######
-        self.memoFileVoltageBase = []
+        self.memoFileVoltageBase.clear()
         self.memoFileVoltageBase.append("set voltagebases = [" + self.OpenDSSConfig["VoltageBase"] + "]")
         self.memoFileVoltageBase.append("Calcvoltagebases")
 
     def exec_Mode(self):
 
-        self.memoFileMode = []
+        self.memoFileMode.clear()
 
         if self.OpenDSSConfig["Mode"] == "Daily":
             sztime = self.OpenDSSConfig["StepSizeTime"][0]
@@ -459,7 +487,7 @@ class C_OpenDSS(): # classe OpenDSSDirect
             step = 0
             for ctdVoltageA in range(0, len(busVoltagesALL)):
                 ## Tensões nodais fase A em V
-                Va = complex(busVoltagesALL[ctdVoltageA], busVoltagesALL[ctdVoltageA+1])
+                Va = complex(busVoltagesALL[ctdVoltageA], busVoltagesALL[ctdVoltageA+1+step])
                 self.tableVoltageResults.setItem(ctdVoltageA, 1, QTableWidgetItem(str(round(abs(Va)/1000, 5))))
                 self.tableVoltageResults.setItem(ctdVoltageA, 2, QTableWidgetItem(str(round((cmath.phase(Va) * 180 / cmath.pi) ,3 ))))
                 self.tableVoltageResults.setItem(ctdVoltageA, 8, QTableWidgetItem(str(round((cmath.phase(Va) * 180 / cmath.pi), 3))))
@@ -472,7 +500,7 @@ class C_OpenDSS(): # classe OpenDSSDirect
             step = 0
             for ctdVoltageB in range(0, len(busVoltagesALL)):
                 ## Tensões nodais fase B em V
-                Vb = complex(busVoltagesALL[ctdVoltageB+2], busVoltagesALL[ctdVoltageB+3])
+                Vb = complex(busVoltagesALL[ctdVoltageB+2], busVoltagesALL[ctdVoltageB+3+step])
                 self.tableVoltageResults.setItem(ctdVoltageB, 3, QTableWidgetItem(str(round(abs(Vb)/1000 , 5))))
                 self.tableVoltageResults.setItem(ctdVoltageB, 4, QTableWidgetItem(str(round( cmath.phase(Vb) * 180 / cmath.pi , 3))))
                 self.tableVoltageResults.setItem(ctdVoltageB, 10, QTableWidgetItem(str(round( cmath.phase(Vb) * 180 / cmath.pi, 3))))
@@ -485,7 +513,7 @@ class C_OpenDSS(): # classe OpenDSSDirect
             step = 0
             for ctdVoltageC in range(0, len(busVoltagesALL)):
                 ## Tensões nodais fase C em V
-                Vc = complex(busVoltagesALL[ctdVoltageC+4], busVoltagesALL[ctdVoltageC+5])
+                Vc = complex(busVoltagesALL[ctdVoltageC+4], busVoltagesALL[ctdVoltageC+5+step])
                 self.tableVoltageResults.setItem(ctdVoltageC, 5, QTableWidgetItem(str(round(abs(Vc)/1000 , 5))))
                 self.tableVoltageResults.setItem(ctdVoltageC, 6, QTableWidgetItem(str(round((cmath.phase(Vc) * 180 / cmath.pi),3))))
                 self.tableVoltageResults.setItem(ctdVoltageC, 12, QTableWidgetItem(str(round((cmath.phase(Vc) * 180 / cmath.pi), 3))))
