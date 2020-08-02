@@ -478,6 +478,8 @@ class C_OpenDSS(): # classe OpenDSSDirect
             #    self.exec_OpenDSSRun("Export monitor " + ctd["Name"])
 
             self.exec_OpenDSSRun("Solve")
+            self.exec_OpenDSSRun("Show currents elements")
+            self.exec_OpenDSSRun("Show eventlog")
 
         except:
             class_exception.ExecOpenDSS("Erro ao executar o fluxo de potência resolvido!")
@@ -620,11 +622,12 @@ class C_OpenDSS(): # classe OpenDSSDirect
 
             if stdSC["FltRepair"] != "":
                 faultstr += " repair=" + stdSC["FltRepair"]
-
+        print(faultstr)
         self.exec_OpenDSSRun(faultstr)
         self.exec_OpenDSSRun("set mode=dynamic controlmode=time time=(0,0) stepsize=0.01 number=4000")
         self.exec_OpenDSSRun("Solve")
         self.exec_OpenDSSRun("show eventlog")
+        self.exec_OpenDSSRun("show currents elements")
         self.getVoltageResults() ## Mostrando o resultado das tensões
 
     def results(self):
@@ -637,22 +640,22 @@ class C_OpenDSS(): # classe OpenDSSDirect
 
     ##
     def getBusList(self):
-        return self.dataOpenDSS.busList
+        return sorted(self.dataOpenDSS.busList)
 
     def getElementList(self):
-        return self.dataOpenDSS.elementList
+        return sorted(self.dataOpenDSS.elementList)
 
     def getRecloserList(self):
-        return self.dataOpenDSS.recloserList
+        return sorted(self.dataOpenDSS.recloserList)
 
     def getFuseList(self):
-        return self.dataOpenDSS.fuseList
+        return sorted(self.dataOpenDSS.fuseList)
 
     def getRelayList(self):
-        return self.dataOpenDSS.relayList
+        return sorted(self.dataOpenDSS.relayList)
 
     def getSwtControlList(self):
-        return self.dataOpenDSS.swtcontrolList
+        return sorted(self.dataOpenDSS.swtcontrolList)
 
 
 

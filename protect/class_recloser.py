@@ -243,7 +243,7 @@ class EditRecloser(QDialog):
         self.Shots_LineEdit_Label = QLabel("Total Shots")
 
         self.RecloserIntervals_LineEdit = QLineEdit()
-        self.RecloserIntervals_LineEdit.setPlaceholderText("Ex: 2,2,5,5")
+        self.RecloserIntervals_LineEdit.setPlaceholderText("Ex: (2,2,5,5)")
         self.RecloserIntervals_LineEdit.setMaximumWidth(150)
         self.RecloserIntervals_LineEdit_Label = QLabel("RecloserIntervals")
 

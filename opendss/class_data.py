@@ -560,17 +560,18 @@ class C_Data():  # classe OpenDSS
                     ##Originalmente o OpenDSS não retorna esse elemento
                     temp_Element = "" #"Fuse.{0}".format(dados_sec[ctd].cod_id)
 
-                if tipoSEC == "29":  # Chave DJ Relé
+                elif tipoSEC == "29":  # Chave DJ Relé
                     temp_memoFileSEC_CONTROL = "New Relay.{0}".format(
                         dados_sec[ctd].cod_id) + " MonitoredObj={0}".format("Line." + dados_sec[ctd].cod_id)
                     temp_memoFileSEC_CONTROL += " SwitchedObj={0}".format(
                         "Line." + dados_sec[ctd].cod_id) + " SwitchedTerm={0}".format("1")
                     temp_memoFileSEC_CONTROL += " type=current"
+
+                    temp_Element = "Relay.{0}".format(dados_sec[ctd].cod_id)
                     if dados_sec[ctd].ctmt in lista:
                         self.insertRelayList(temp_memoFileSEC_CONTROL)
-                    temp_Element = "Relay.{0}".format(dados_sec[ctd].cod_id)
 
-                if tipoSEC == "32":  # Religador
+                elif tipoSEC == "32":  # Religador
                     temp_memoFileSEC_CONTROL = "New Recloser.{0}".format(
                         dados_sec[ctd].cod_id) + " MonitoredObj={0}".format("Line." + dados_sec[ctd].cod_id)
                     temp_memoFileSEC_CONTROL += " SwitchedObj={0}".format(
@@ -595,7 +596,7 @@ class C_Data():  # classe OpenDSS
 
                 # Chaves de Média
                 if testAL_MT is not None:  # MT
-                    if dados_sec[ctd].ctmt in lista_de_identificadores_dos_alimentadores:
+                    if dados_sec[ctd].ctmt in lista:
                         if dados_sec[ctd].tip_unid == tipoSEC:
                             memoFileSEC_CONTROL.append(temp_memoFileSEC_CONTROL)
 
