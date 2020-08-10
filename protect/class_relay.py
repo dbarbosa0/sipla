@@ -811,7 +811,7 @@ class EditRelay(QDialog):
         self.datainfo["Action"] = get_combobox(self.Action_ComboBox)
         self.datainfo["Delay"] = get_lineedit(self.Delay_LineEdit)
         self.datainfo["Shots"] = get_lineedit(self.Shots_LineEdit)
-        self.datainfo["RecloseIntervals"] = get_lineedit(self.RecloseIntervals_LineEdit)
+        self.datainfo["RecloseIntervals"] = "(" + get_lineedit(self.RecloseIntervals_LineEdit) + ")"
         self.datainfo["Kvbase"] = get_lineedit(self.Kvbase_LineEdit)
         self.datainfo["Breakertime"] = get_lineedit(self.Breakertime_LineEdit)
         self.datainfo["Reset"] = get_lineedit(self.ResetTime_LineEdit)
@@ -846,7 +846,7 @@ class EditRelay(QDialog):
                     "Enabled": get_combobox(self.Enable_ComboBox), "Type": get_combobox(self.type_ComboBox),
                     "Action": get_combobox(self.Action_ComboBox), "Delay": get_lineedit(self.Delay_LineEdit),
                     "Shots": get_lineedit(self.Shots_LineEdit),
-                    "RecloseIntervals": get_lineedit(self.RecloseIntervals_LineEdit),
+                    "RecloseIntervals": "(" + get_lineedit(self.RecloseIntervals_LineEdit) + ")",
                     "Kvbase": get_lineedit(self.Kvbase_LineEdit),
                     "Breakertime": get_lineedit(self.Breakertime_LineEdit),
                     "Reset": get_lineedit(self.ResetTime_LineEdit), "46%Pickup": get_lineedit(self.Pickup46_LineEdit),

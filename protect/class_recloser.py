@@ -243,7 +243,7 @@ class EditRecloser(QDialog):
         self.Shots_LineEdit_Label = QLabel("Total Shots")
 
         self.RecloserIntervals_LineEdit = QLineEdit()
-        self.RecloserIntervals_LineEdit.setPlaceholderText("Ex: (2,2,5,5)")
+        self.RecloserIntervals_LineEdit.setPlaceholderText("Ex: 2,2,5,5")
         self.RecloserIntervals_LineEdit.setMaximumWidth(150)
         self.RecloserIntervals_LineEdit_Label = QLabel("RecloserIntervals")
 
@@ -714,7 +714,7 @@ class EditRecloser(QDialog):
         self.datainfo["Enabled"] = get_combobox(self.Enable_ComboBox)
         self.datainfo["Shots"] = get_lineedit(self.Shots_LineEdit)
         self.datainfo["NumFast"] = get_lineedit(self.NumFast_LineEdit)
-        self.datainfo["RecloseIntervals"] = get_lineedit(self.RecloserIntervals_LineEdit)
+        self.datainfo["RecloseIntervals"] = "(" + get_lineedit(self.RecloserIntervals_LineEdit) + ")"
         self.datainfo["Reset"] = get_lineedit(self.ResetTime_LineEdit)
 
         #  Connections
@@ -744,7 +744,7 @@ class EditRecloser(QDialog):
                     "Action": get_combobox(self.Action_ComboBox), "Delay": get_lineedit(self.Delay_LineEdit),
                     "Enabled": get_combobox(self.Enable_ComboBox), "Shots": get_lineedit(self.Shots_LineEdit),
                     "NumFast": get_lineedit(self.NumFast_LineEdit),
-                    "RecloseIntervals": get_lineedit(self.RecloserIntervals_LineEdit),
+                    "RecloseIntervals": "(" + get_lineedit(self.RecloserIntervals_LineEdit) + ")",
                     "Reset": get_lineedit(self.ResetTime_LineEdit),
                     "MonitoredObj": get_combobox(self.MonitObj_ComboBox),
                     "MonitoredTerm": get_combobox(self.MonitTerm_ComboBox),
