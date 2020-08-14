@@ -29,6 +29,8 @@ class C_OpenDSS(): # classe OpenDSSDirect
         #### Storages
         self._Storages = []
         self._StorageControllers = []
+        #### InvControl
+        self._InvControl = []
         ##SC Carvalho
         self._SCDataInfo = []
         ## FlagLoadData - Só roda se tiver alguma alteração nos alimentadores
@@ -122,6 +124,14 @@ class C_OpenDSS(): # classe OpenDSSDirect
         self._StorageControllers = value
 
     @property
+    def InvControl(self):
+        return self._InvControl
+
+    @InvControl.setter
+    def InvControl(self, value):
+        self._InvControl = value
+
+    @property
     def SCDataInfo(self):
         return self._SCDataInfo
 
@@ -200,6 +210,7 @@ class C_OpenDSS(): # classe OpenDSSDirect
                 "UConBTLoadShapes": ["Unidades Consumidoras BT - Curvas de Carga ...",self.dataOpenDSS.exec_UNID_CONSUMIDORAS_LOADSHAPES_BT],
                 #
                 "Storages": ["Inserindo os Storages ...", self.exec_Storages],
+                "InvControl": ["Inserindo os Controles dos Inversores ...", self.exec_InvControl],
                 "EnergyMeters": ["Inserindo os Energy Meters ...", self.exec_EnergyMeters],
                 "Monitors": ["Inserindo os Monitors ...", self.exec_Monitors],
                 "VoltageBase": ["Bases de Tensão ...", self.exec_VoltageBase],
@@ -267,12 +278,17 @@ class C_OpenDSS(): # classe OpenDSSDirect
                       "UConBTLoadShapes": self.dataOpenDSS.memoFileUniConsumidoraLoadShapesBT,
                       # "RamLig":self.dataOpenDSS.memoFileRamaisLigBT,self.memoFileRamaisLigBT,
                       "CompMT": self.dataOpenDSS.memoFileUndCompReatMT,
-                      # "CompBT":self.dataOpenDSS.memoFileUndCompReatBT,
+                      # "CompBT":self.dataOpenDSS.memoFileUndCompReatBT
                     }
 
         if self.Storages:
             tmpStorages = {"Storages": self.memoFileStorages,}
             self.OpenDSSDataResult.update(tmpStorages)
+
+
+        if self.InvControl:
+            tmpInvControl = {"InvControl": self.memoFileInvControl,}
+            self.OpenDSSDataResult.update(tmpInvControl)
 
         if self.EnergyMeters:
             tmpEnergyMeter = {"EnergyMeters": self.memoFileEnergyMeters,}
@@ -285,7 +301,7 @@ class C_OpenDSS(): # classe OpenDSSDirect
         if not self.memoFileVoltageBase:
             self.exec_VoltageBase()
 
-        if not  self.memoFileMode:
+        if not self.memoFileMode:
             self.exec_Mode()
 
         tmpVoltageBase = {"VoltageBase": self.memoFileVoltageBase,}
@@ -837,7 +853,70 @@ class C_OpenDSS(): # classe OpenDSSDirect
         self.exec_StorageControllers()
 
     ######################################################################################
-    ###
+
+    def exec_XYCurves(self):
+        for ctd in self.InvControl:
+            if ctd["Mode"] == "VOLTVAR":  ###VOLTVAR
+                Xarray = str(ctd['VV_XYCurve']["Xarray"])
+                Yarray = str(ctd['VV_XYCurve']["Yarray"])
+                tmp = "New XYCurve." + ctd['VV_XYCurve']['XYCurveName'] + \
+                      " npts=" + ctd['VV_XYCurve']["npts"] + \
+                      " Xarray=" + Xarray + \
+                      " Yarray=" + Yarray
+            else:  ###VOLTWATT
+                Xarray = str(ctd['VW_XYCurve']["Xarray"])
+                Yarray = str(ctd['VW_XYCurve']["Yarray"])
+                tmp = "New XYCurve." + ctd['VW_XYCurve']['XYCurveName'] + \
+                      " npts=" + ctd['VW_XYCurve']["npts"] + \
+                      " Xarray=" + Xarray + \
+                      " Yarray=" + Yarray
+            self.memoFileInvControl.append(tmp)
+
+    def exec_InvControl(self):
+
+        self.memoFileInvControl = []
+
+        self.exec_XYCurves()
+
+        for ctd in self.InvControl:
+            tmp = "New InvControl." + ctd["InvControlName"] + \
+                  " Mode=" + ctd["Mode"]
+            if ctd["Mode"] == "VOLTVAR":  ###VOLTVAR
+                tmp = tmp + " vvc_curve1=" + ctd['VV_XYCurve']['XYCurveName'] + \
+                      " EventLog=" + ctd["VV_EventLog"] + \
+                      " DeltaQFactor=" + ctd["VV_DeltaQFactor"] + \
+                      " VarChangeTolerance=" + ctd["VV_VarChangeTolerance"] + \
+                      " VoltageChangeTolerance=" + ctd["VV_VoltageChangeTolerance"] + \
+                      " HysteresisOffSet=" + ctd["VV_HysteresisOffSet"] + \
+                      " VoltageCurvexRef=" + ctd["VV_VoltageCurvexRef"]
+                if ctd["VV_VoltageCurvexRef"] == "avg":
+                    tmp = tmp + " AvgWindowLen=" + ctd["VV_AvgWindowLen"] + ctd["VV_Unit"]
+                tmp = tmp + " RateofChangeMode=" + ctd["VV_RateofChangeMode"]
+                if ctd["VV_RateofChangeMode"] == "LPF":
+                    tmp = tmp + " LPFTau=" + ctd["VV_LPFtau"]
+                if ctd["VV_RateofChangeMode"] == "RISEFALL":
+                    tmp = tmp + " RiseFallLimit=" + ctd["VV_RiseFallLimit"]
+                tmp = tmp + " RefReactivePower=" + ctd["VV_RefReactivePower"]
+            else:  ###VOLTWATT
+                tmp = tmp + " voltwatt_curve=" + ctd['VW_XYCurve']['XYCurveName'] + \
+                      " EventLog=" + ctd["VW_EventLog"] + \
+                      " DeltaPFactor=" + ctd["VW_DeltaPFactor"] + \
+                      " ActivePChangeTolerance=" + ctd["VW_ActivePChangeTolerance"] + \
+                      " VoltageCurvexRef=" + ctd["VW_VoltageCurvexRef"]
+                if ctd["VW_VoltageCurvexRef"] == "avg":
+                    tmp = tmp + " AvgWindowLen=" + ctd["VW_AvgWindowLen"] + ctd["VW_Unit"]
+                tmp = tmp + " RateofChangeMode=" + ctd["VW_RateofChangeMode"]
+                if ctd["VW_RateofChangeMode"] == "LPF":
+                    tmp = tmp + " LPFTau=" + ctd["VW_LPFtau"]
+                if ctd["VW_RateofChangeMode"] == "RISEFALL":
+                    tmp = tmp + " RiseFallLimit=" + ctd["VW_RiseFallLimit"]
+                tmp = tmp + " VoltWattYAxis=" + ctd["VW_VoltWattYAxis"]
+
+            self.memoFileInvControl.append(tmp)
+
+    #####################################################################################
+
+
     def exec_DynamicFlt(self):
 
         self.memoFileSC = []
