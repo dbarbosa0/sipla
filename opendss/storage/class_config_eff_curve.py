@@ -61,8 +61,8 @@ class C_Config_EffCurve_Dialog(QDialog):
 
         ### Label
         self.EffCurve_GroupBox_Label = QLabel(
-            "Pontos X: Eficiência do inversor em p.u.\n\
-Pontos Y: Potência aparente (kVA) em p.u.")
+            "Pontos X: Potência aparente (kVA) em p.u.\n\
+Pontos Y: Eficiência do inversor em p.u.")
         self.EffCurve_GroupBox_Layout.addWidget(self.EffCurve_GroupBox_Label, 2, 1, 1, 2)
 
         ### Botões adicionar/remover curvas
@@ -140,7 +140,7 @@ Pontos Y: Potência aparente (kVA) em p.u.")
                     countName += 1
 
             for i in self.Storages:
-                if i["EffCurve"]["EffCurveName"] == str(inputLoadName):
+                if i["StorageVersion"] == 2 and i["EffCurve"]["EffCurveName"] == str(inputLoadName):
                     countName += 1
 
             if countName == 0:
@@ -194,8 +194,8 @@ Pontos Y: Potência aparente (kVA) em p.u.")
         # Add Background colour to white
         self.graphWidget.setBackground('w')
         #Add Axis Labels
-        self.graphWidget.setLabel('left', 'Pot. aparente (p.u.)', color='red', size=20)
-        self.graphWidget.setLabel('bottom', 'Eficiência (p.u.)', color='red', size=20)
+        self.graphWidget.setLabel('left', 'Eficiência (p.u.)', color='red', size=20)
+        self.graphWidget.setLabel('bottom', 'Pot. aparente (p.u.)', color='red', size=20)
         # Add legend
         self.graphWidget.addLegend()
         # Add grid

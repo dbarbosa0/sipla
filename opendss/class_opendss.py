@@ -33,13 +33,14 @@ class C_OpenDSS(): # classe OpenDSSDirect
         self._SCDataInfo = []
         ## FlagLoadData - Só roda se tiver alguma alteração nos alimentadores
         self.loadDataFlag = False
-        #### InvControl
-        self._InvControl = []
 
 
         self.OpenDSSEngine = opendss.class_conn.C_Conn() ## Apenas para o Objeto Existir, depois será sobrecarregado
         self._OpenDSSConfig = {}
 
+        ####
+        self.memoFileVoltageBase = []
+        self.memoFileMode = []
         self.memoLoadShapes = ''
 
         self.tableVoltageResults = QTableWidget() # Tabela de Resultados
@@ -128,14 +129,6 @@ class C_OpenDSS(): # classe OpenDSSDirect
     def SCDataInfo(self, value):
         self._SCDataInfo = value
 
-    @property
-    def InvControl(self):
-        return self._InvControl
-
-    @InvControl.setter
-    def InvControl(self, value):
-        self._InvControl = value
-
     def loadData(self):
 
         if not self.loadDataFlag:
@@ -207,7 +200,6 @@ class C_OpenDSS(): # classe OpenDSSDirect
                 "UConBTLoadShapes": ["Unidades Consumidoras BT - Curvas de Carga ...",self.dataOpenDSS.exec_UNID_CONSUMIDORAS_LOADSHAPES_BT],
                 #
                 "Storages": ["Inserindo os Storages ...", self.exec_Storages],
-                "InvControl": ["Inserindo os Controles do Inversor ...", self.exec_InvControl],
                 "EnergyMeters": ["Inserindo os Energy Meters ...", self.exec_EnergyMeters],
                 "Monitors": ["Inserindo os Monitors ...", self.exec_Monitors],
                 "VoltageBase": ["Bases de Tensão ...", self.exec_VoltageBase],
@@ -276,13 +268,35 @@ class C_OpenDSS(): # classe OpenDSSDirect
                       # "RamLig":self.dataOpenDSS.memoFileRamaisLigBT,self.memoFileRamaisLigBT,
                       "CompMT": self.dataOpenDSS.memoFileUndCompReatMT,
                       # "CompBT":self.dataOpenDSS.memoFileUndCompReatBT,
-                      "Storages": self.memoFileStorages,
-                      "InvControl": self.memoFileInvControl,
-                      "EnergyMeters": self.memoFileEnergyMeters,
-                      "Monitors": self.memoFileMonitors,
-                      "VoltageBase": self.memoFileVoltageBase,
-                      "Mode": self.memoFileMode,
-                      }
+                    }
+
+        if self.Storages:
+            tmpStorages = {"Storages": self.memoFileStorages,}
+            self.OpenDSSDataResult.update(tmpStorages)
+
+        if self.EnergyMeters:
+            tmpEnergyMeter = {"EnergyMeters": self.memoFileEnergyMeters,}
+            self.OpenDSSDataResult.update(tmpEnergyMeter)
+
+        if self.Monitors:
+            tmpMonitors = {"Monitors": self.memoFileMonitors,}
+            self.OpenDSSDataResult.update(tmpMonitors)
+
+        if not self.memoFileVoltageBase:
+            self.exec_VoltageBase()
+
+        if not  self.memoFileMode:
+            self.exec_Mode()
+
+        tmpVoltageBase = {"VoltageBase": self.memoFileVoltageBase,}
+
+        self.OpenDSSDataResult.update(tmpVoltageBase)
+
+        tmpFileMode = {"Mode": self.memoFileMode,}
+
+        self.OpenDSSDataResult.update(tmpFileMode)
+
+
 
 
     def exec_SaveFileDialogDSS(self):
@@ -329,6 +343,8 @@ class C_OpenDSS(): # classe OpenDSSDirect
 
     def createMainFileDSS(self): # Para salvar em arquivo
 
+        self.loadDataResult()
+
         mainFile = ''
 
         for ctd in self.execOpenDSSFunc:
@@ -363,13 +379,13 @@ class C_OpenDSS(): # classe OpenDSSDirect
     def exec_VoltageBase(self):
 
         ######
-        self.memoFileVoltageBase = []
+        self.memoFileVoltageBase.clear()
         self.memoFileVoltageBase.append("set voltagebases = [" + self.OpenDSSConfig["VoltageBase"] + "]")
         self.memoFileVoltageBase.append("Calcvoltagebases")
 
     def exec_Mode(self):
 
-        self.memoFileMode = []
+        self.memoFileMode.clear()
 
         if self.OpenDSSConfig["Mode"] == "Daily":
             sztime = self.OpenDSSConfig["StepSizeTime"][0]
@@ -471,7 +487,7 @@ class C_OpenDSS(): # classe OpenDSSDirect
             step = 0
             for ctdVoltageA in range(0, len(busVoltagesALL)):
                 ## Tensões nodais fase A em V
-                Va = complex(busVoltagesALL[ctdVoltageA], busVoltagesALL[ctdVoltageA+1])
+                Va = complex(busVoltagesALL[ctdVoltageA], busVoltagesALL[ctdVoltageA+1+step])
                 self.tableVoltageResults.setItem(ctdVoltageA, 1, QTableWidgetItem(str(round(abs(Va)/1000, 5))))
                 self.tableVoltageResults.setItem(ctdVoltageA, 2, QTableWidgetItem(str(round((cmath.phase(Va) * 180 / cmath.pi) ,3 ))))
                 self.tableVoltageResults.setItem(ctdVoltageA, 8, QTableWidgetItem(str(round((cmath.phase(Va) * 180 / cmath.pi), 3))))
@@ -484,7 +500,7 @@ class C_OpenDSS(): # classe OpenDSSDirect
             step = 0
             for ctdVoltageB in range(0, len(busVoltagesALL)):
                 ## Tensões nodais fase B em V
-                Vb = complex(busVoltagesALL[ctdVoltageB+2], busVoltagesALL[ctdVoltageB+3])
+                Vb = complex(busVoltagesALL[ctdVoltageB+2], busVoltagesALL[ctdVoltageB+3+step])
                 self.tableVoltageResults.setItem(ctdVoltageB, 3, QTableWidgetItem(str(round(abs(Vb)/1000 , 5))))
                 self.tableVoltageResults.setItem(ctdVoltageB, 4, QTableWidgetItem(str(round( cmath.phase(Vb) * 180 / cmath.pi , 3))))
                 self.tableVoltageResults.setItem(ctdVoltageB, 10, QTableWidgetItem(str(round( cmath.phase(Vb) * 180 / cmath.pi, 3))))
@@ -497,7 +513,7 @@ class C_OpenDSS(): # classe OpenDSSDirect
             step = 0
             for ctdVoltageC in range(0, len(busVoltagesALL)):
                 ## Tensões nodais fase C em V
-                Vc = complex(busVoltagesALL[ctdVoltageC+4], busVoltagesALL[ctdVoltageC+5])
+                Vc = complex(busVoltagesALL[ctdVoltageC+4], busVoltagesALL[ctdVoltageC+5+step])
                 self.tableVoltageResults.setItem(ctdVoltageC, 5, QTableWidgetItem(str(round(abs(Vc)/1000 , 5))))
                 self.tableVoltageResults.setItem(ctdVoltageC, 6, QTableWidgetItem(str(round((cmath.phase(Vc) * 180 / cmath.pi),3))))
                 self.tableVoltageResults.setItem(ctdVoltageC, 12, QTableWidgetItem(str(round((cmath.phase(Vc) * 180 / cmath.pi), 3))))
@@ -550,13 +566,14 @@ class C_OpenDSS(): # classe OpenDSSDirect
     #### Storages
     def exec_EffCurves(self):
         for ctd in self.Storages:
-            Xarray = str(ctd['EffCurve']["Xarray"])
-            Yarray = str(ctd['EffCurve']["Yarray"])
-            tmp = "New XYCurve." + ctd['EffCurve']['EffCurveName'] + \
-                  " npts=" + ctd['EffCurve']["npts"] + \
-                  " Xarray=" + Xarray + \
-                  " Yarray=" + Yarray
-            self.memoFileStorages.append(tmp)
+            if ctd["StorageVersion"] == 2:
+                Xarray = str(ctd['EffCurve']["Xarray"])
+                Yarray = str(ctd['EffCurve']["Yarray"])
+                tmp = "New XYCurve." + ctd['EffCurve']['EffCurveName'] + \
+                      " npts=" + ctd['EffCurve']["npts"] + \
+                      " Xarray=" + Xarray + \
+                      " Yarray=" + Yarray
+                self.memoFileStorages.append(tmp)
 
     def exec_DispatchCurves(self):
         for ctd in self.Storages:
@@ -625,12 +642,17 @@ class C_OpenDSS(): # classe OpenDSSDirect
 
     def exec_StorageControllers(self):
         for ctd in self.StorageControllers:
-            tmp = "New StorageController2." + ctd["StorageControllerName"] + \
-                  " ElementList=" + str(ctd["ElementList"]).replace("'","") + \
-                  " Element=" + ctd["Element"] + \
-                  " Terminal=" + ctd["Terminal"] + \
-                  " %reserve=" + ctd["Reserve"] + \
-                  " DispFactor=" + str(ctd["DispFactor"]).replace(",", ".")
+            tmpStorageController1Parameters = "New StorageController2." + ctd["StorageControllerName"] + \
+                                              " ElementList=" + str(ctd["ElementList"]).replace("'","") + \
+                                              " Element=" + ctd["Element"] + \
+                                              " Terminal=" + ctd["Terminal"] + \
+                                              " %reserve=" + ctd["Reserve"]
+            if ctd["StorageControllerVersion"] == 1:
+                tmp = "New StorageController." + ctd["StorageControllerName"] + tmpStorageController1Parameters
+            else:
+                tmp = "New StorageController2." + ctd["StorageControllerName"] + \
+                      tmpStorageController1Parameters + \
+                      " DispFactor=" + str(ctd["DispFactor"]).replace(",", ".")
 
             if 'DispatchMode' in ctd:
                 if ctd['DispatchMode'] == 'LoadShape':
@@ -718,38 +740,43 @@ class C_OpenDSS(): # classe OpenDSSDirect
         self.exec_EffCurves()
 
         for ctd in self.Storages:
-            tmp = "New Storage2." + ctd["StorageName"] + \
-                  " phases=" + ctd["phases"] + \
-                  " model=" + ctd["model"] + \
-                  " Conn=" + ctd["Conn"] + \
-                  " Bus1=" + ctd["Bus"] + \
-                  " kW=" + ctd["kW"] + \
-                  " kV=" + ctd["kV"] + \
-                  " kWhrated=" + ctd["kWhrated"] + \
-                  " kWhstored=" + ctd["kWhstored"] + \
-                  " %reserve=" + ctd["%reserve"] + \
-                  " %IdlingkW=" + ctd["%IdlingkW"] + \
-                  " %Charge=" + ctd["%Charge"] + \
-                  " %Discharge=" + ctd["%Discharge"] + \
-                  " %EffCharge=" + ctd["%EffCharge"] + \
-                  " %EffDischarge=" + ctd["%EffDischarge"] + \
-                  " state=" + ctd["state"] + \
-                  " vMinpu=" + ctd["vMinpu"] + \
-                  " vMaxpu=" + ctd["vMaxpu"] + \
-                  " %R=" + ctd["%R"] + \
-                  " %X=" + ctd["%X"] + \
-                  " EffCurve=" + ctd["EffCurve"]['EffCurveName'] + \
-                  " kVA=" + ctd["kVA"] + \
-                  " kWrated=" + ctd["kWrated"] + \
-                  " varFollowInverter=" + ctd["varFollowInverter"] + \
-                  " %CutIn=" + ctd["%CutIn"] + \
-                  " %CutOut=" + ctd["%CutOut"] + \
-                  " kvarMax=" + ctd["kvarMax"] + \
-                  " kvarMaxAbs=" + ctd["kvarMaxAbs"] + \
-                  " %PminNoVars=" + ctd["%PminNoVars"] + \
-                  " %PminkvarMax=" + ctd["%PminkvarMax"] + \
-                  " PFPriority=" + ctd["PFPriority"] + \
-                  " WattPriority=" + ctd["WattPriority"]
+            tmpStorage1Parameters = " phases=" + ctd["phases"] + \
+                                      " model=" + ctd["model"] + \
+                                      " Conn=" + ctd["Conn"] + \
+                                      " Bus1=" + ctd["Bus"] + \
+                                      " kW=" + ctd["kW"] + \
+                                      " kV=" + ctd["kV"] + \
+                                      " kWhrated=" + ctd["kWhrated"] + \
+                                      " %stored=" + ctd["%stored"] + \
+                                      " %reserve=" + ctd["%reserve"] + \
+                                      " %IdlingkW=" + ctd["%IdlingkW"] + \
+                                      " %Charge=" + ctd["%Charge"] + \
+                                      " %Discharge=" + ctd["%Discharge"] + \
+                                      " %EffCharge=" + ctd["%EffCharge"] + \
+                                      " %EffDischarge=" + ctd["%EffDischarge"] + \
+                                      " state=" + ctd["state"] + \
+                                      " vMinpu=" + ctd["vMinpu"] + \
+                                      " vMaxpu=" + ctd["vMaxpu"] + \
+                                      " %R=" + ctd["%R"] + \
+                                      " %X=" + ctd["%X"] + \
+                                      " kVA=" + ctd["kVA"] + \
+                                      " kWrated=" + ctd["kWrated"]
+
+            if ctd["StorageVersion"] == 1:
+                tmp = "New Storage." + ctd["StorageName"] + tmpStorage1Parameters
+            else:
+                tmp = "New Storage2." + ctd["StorageName"] + \
+                      tmpStorage1Parameters + \
+                      " EffCurve=" + ctd["EffCurve"]['EffCurveName'] + \
+                      " varFollowInverter=" + ctd["varFollowInverter"] + \
+                      " %CutIn=" + ctd["%CutIn"] + \
+                      " %CutOut=" + ctd["%CutOut"] + \
+                      " kvarMax=" + ctd["kvarMax"] + \
+                      " kvarMaxAbs=" + ctd["kvarMaxAbs"] + \
+                      " %PminNoVars=" + ctd["%PminNoVars"] + \
+                      " %PminkvarMax=" + ctd["%PminkvarMax"] + \
+                      " PFPriority=" + ctd["PFPriority"] + \
+                      " WattPriority=" + ctd["WattPriority"]
 
             if len(ctd["ReactPow"]) > 0:
                 for i in ctd["ReactPow"].items():
@@ -810,69 +837,7 @@ class C_OpenDSS(): # classe OpenDSSDirect
         self.exec_StorageControllers()
 
     ######################################################################################
-    def exec_XYCurves(self):
-        for ctd in self.InvControl:
-            if ctd["Mode"] == "VOLTVAR":  ###VOLTVAR
-                Xarray = str(ctd['VV_XYCurve']["Xarray"])
-                Yarray = str(ctd['VV_XYCurve']["Yarray"])
-                tmp = "New XYCurve." + ctd['VV_XYCurve']['XYCurveName'] + \
-                    " npts=" + ctd['VV_XYCurve']["npts"] + \
-                    " Xarray=" + Xarray + \
-                    " Yarray=" + Yarray
-            else:    ###VOLTWATT
-                Xarray = str(ctd['VW_XYCurve']["Xarray"])
-                Yarray = str(ctd['VW_XYCurve']["Yarray"])
-                tmp = "New XYCurve." + ctd['VW_XYCurve']['XYCurveName'] + \
-                      " npts=" + ctd['VW_XYCurve']["npts"] + \
-                      " Xarray=" + Xarray + \
-                      " Yarray=" + Yarray
-            self.memoFileStorages.append(tmp)
-
-    def exec_InvControl(self):
-
-        self.memoFileInvControl = []
-
-        self.exec_XYCurves()
-
-        for ctd in self.InvControl:
-            tmp = "New InvControl." + ctd["InvControlName"] + \
-                  " Mode=" + ctd["Mode"]
-            if ctd["Mode"] == "VOLTVAR":   ###VOLTVAR
-                tmp = tmp + " vvc_curve1=" + ctd['VV_XYCurve']['XYCurveName'] + \
-                    " EventLog=" + ctd["VV_EventLog"] + \
-                    " DeltaQFactor=" + ctd["VV_DeltaQFactor"] + \
-                    " VarChangeTolerance=" + ctd["VV_VarChangeTolerance"] + \
-                    " VoltageChangeTolerance=" + ctd["VV_VoltageChangeTolerance"] + \
-                    " HysteresisOffSet=" + ctd["VV_HysteresisOffSet"] + \
-                    " VoltageCurvexRef=" + ctd["VV_VoltageCurvexRef"]
-                if ctd["VV_VoltageCurvexRef"] == "avg":
-                    tmp = tmp + " AvgWindowLen=" + ctd["VV_AvgWindowLen"] + ctd["VV_Unit"]
-                tmp = tmp + " RateofChangeMode=" + ctd["VV_RateofChangeMode"]
-                if ctd["VV_RateofChangeMode"] == "LPF":
-                    tmp = tmp + " LPFTau=" + ctd["VV_LPFtau"]
-                if ctd["VV_RateofChangeMode"] == "RISEFALL":
-                    tmp = tmp + " RiseFallLimit=" + ctd["VV_RiseFallLimit"]
-                tmp = tmp + " RefReactivePower=" + ctd["VV_RefReactivePower"]
-            else:    ###VOLTWATT
-                tmp = tmp + " voltwatt_curve=" + ctd['VW_XYCurve']['XYCurveName'] + \
-                    " EventLog=" + ctd["VW_EventLog"] + \
-                    " DeltaPFactor=" + ctd["VW_DeltaPFactor"] + \
-                    " ActivePChangeTolerance=" + ctd["VW_ActivePChangeTolerance"] + \
-                    " VoltageCurvexRef=" + ctd["VW_VoltageCurvexRef"]
-                if ctd["VW_VoltageCurvexRef"] == "avg":
-                    tmp = tmp + " AvgWindowLen=" + ctd["VW_AvgWindowLen"] + ctd["VW_Unit"]
-                tmp = tmp + " RateofChangeMode=" + ctd["VW_RateofChangeMode"]
-                if ctd["VW_RateofChangeMode"] == "LPF":
-                    tmp = tmp + " LPFTau=" + ctd["VW_LPFtau"]
-                if ctd["VW_RateofChangeMode"] == "RISEFALL":
-                    tmp = tmp + " RiseFallLimit=" + ctd["VW_RiseFallLimit"]
-                tmp = tmp + " VoltWattYAxis=" + ctd["VW_VoltWattYAxis"]
-
-            self.memoFileInvControl.append(tmp)
-
-
-    #####################################################################################
-
+    ###
     def exec_DynamicFlt(self):
 
         self.memoFileSC = []
@@ -911,7 +876,10 @@ class C_OpenDSS(): # classe OpenDSSDirect
 
         tempStorage = []
         for ctd in self.Storages:
-            tempStorage.append("Storage2." + ctd["StorageName"])
+            if ctd["StorageVersion"] == 1:
+                tempStorage.append("Storage." + ctd["StorageName"])
+            elif ctd["StorageVersion"] == 2:
+                tempStorage.append("Storage2." + ctd["StorageName"])
 
         #
         return self.dataOpenDSS.elementList + tempStorage
