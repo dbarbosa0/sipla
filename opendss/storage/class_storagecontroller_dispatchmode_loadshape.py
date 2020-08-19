@@ -26,7 +26,6 @@ class C_ActPow_LoadShape_DispMode_Dialog(QDialog): ## Classe Dialog Despacho Loa
         self._NumComboBox = 0
         self._StorageConfig_GroupBox_Nome_LineEdit = 0
         self._StorageConfig_GroupBox_PercentageReserve_LineEdit = 0
-        self._StorageVersion_GroupBox_Storage1_RadioBtn = 0
 
         self.InitUI()
 
@@ -54,14 +53,6 @@ class C_ActPow_LoadShape_DispMode_Dialog(QDialog): ## Classe Dialog Despacho Loa
     def StorageConfig_GroupBox_PercentageReserve_LineEdit(self, value):
         self._StorageConfig_GroupBox_PercentageReserve_LineEdit = value
 
-    @property
-    def StorageVersion_GroupBox_Storage1_RadioBtn(self):
-        return self._StorageVersion_GroupBox_Storage1_RadioBtn
-
-    @StorageVersion_GroupBox_Storage1_RadioBtn.setter
-    def StorageVersion_GroupBox_Storage1_RadioBtn(self, value):
-        self._StorageVersion_GroupBox_Storage1_RadioBtn = value
-
     def InitUI(self):
         self.setWindowTitle(self.titleWindow)  # titulo janela
         self.setWindowIcon(QIcon(self.iconWindow))  # ícone da janela
@@ -71,7 +62,6 @@ class C_ActPow_LoadShape_DispMode_Dialog(QDialog): ## Classe Dialog Despacho Loa
         self.setMaximumHeight(270)
         self.adjustSize()
         self.Dialog_Layout = QVBoxLayout()  # Layout da Dialog
-
 
         ## GroupBox Seleção do Storage Controller
         self.StorControl_GroupBox_Selection = QGroupBox("Storage Controllers")
@@ -197,12 +187,6 @@ class C_ActPow_LoadShape_DispMode_Dialog(QDialog): ## Classe Dialog Despacho Loa
     def getStorage_Name(self):
         return unidecode.unidecode(self.StorageConfig_GroupBox_Nome_LineEdit.text().replace(" ", "_"))
 
-    def get_StorControl_Version(self):
-        if self.StorageVersion_GroupBox_Storage1_RadioBtn.isChecked():
-            return 1
-        else:
-            return 2
-
     def getStorage_PercentageReserve(self):
         return self.StorageConfig_GroupBox_PercentageReserve_LineEdit.text()
 
@@ -285,7 +269,6 @@ class C_ActPow_LoadShape_DispMode_Dialog(QDialog): ## Classe Dialog Despacho Loa
     def AcceptAddEditStorControl(self):
         StorageController = {}
         StorageController["StorageControllerName"] = self.get_StorControl_Name()
-        StorageController["StorageControllerVersion"] = self.get_StorControl_Version()
         StorageController["ElementList"] = []
         StorageController["Element"] = self.get_ElementStorControl()
         StorageController["Terminal"] = self.get_TerminalStorControl()
@@ -359,7 +342,7 @@ class C_ActPow_LoadShape_DispMode_Dialog(QDialog): ## Classe Dialog Despacho Loa
         self.StorControl_GroupBox_Selection_ComboBox.clear()
         if not self.StorageControllersTemporario == []:
             for ctd in self.StorageControllersTemporario:
-                if "DispatchMode" in ctd and ctd["StorageControllerVersion"] == self.get_StorControl_Version():
+                if "DispatchMode" in ctd:
                     self.StorControl_GroupBox_Selection_ComboBox.addItem(ctd["StorageControllerName"])
 
         self.StorControl_Element_ComboBox.clear()
