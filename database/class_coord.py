@@ -91,3 +91,53 @@ class C_DBaseCoord():
         except:
             raise class_exception.ExecData(
                 "Erro no processamento do Banco de Dados para os Transformadores de Distribuição! ")
+
+
+    def getData_UniConsumidoraMT(self, nomeSE_MT, codField):
+
+        try:
+            lista_dados  = []
+
+            sqlStrSSDMT = "SELECT pn_con_1, pn_con_2, x, y" \
+                        " FROM  ssdmt WHERE sub = '" + nomeSE_MT[0] + "' AND ctmt = '" + codField + "'"
+
+            tmp_ssdmt = []
+
+            dadosSSDMT = self.DataBaseConn.getSQLDB("SSDMT", sqlStrSSDMT)
+
+            for lnhSSDMT in dadosSSDMT.fetchall():  # Pegando o Transformador
+
+                tmp_dados = [lnhSSDMT[0],lnhSSDMT[1],lnhSSDMT[2],lnhSSDMT[3]]
+
+                tmp_ssdmt.append(tmp_dados)
+
+
+            ######### Dados do Consumidor
+            sqlStrUCMT = "SELECT pn_con, brr, sit_ativ, car_inst, dat_con, ctmt" \
+                          " FROM  ucmt WHERE sub = '" + nomeSE_MT[0] + "' AND ctmt = '" + codField + "'"
+
+            dadosUCMT = self.DataBaseConn.getSQLDB("UCMT", sqlStrUCMT)
+
+
+            for lnhUCMT in dadosUCMT.fetchall():  # Pegando o Transformador
+
+                ##Verificar a questão do X e do Y
+
+                tmp_dados = []
+
+                for lnhSSDMT in tmp_ssdmt:
+
+                    if (lnhSSDMT[0] == lnhUCMT[0]) or (lnhSSDMT[1] == lnhUCMT[0]):
+
+                        tmp_dados = [lnhSSDMT[3], lnhSSDMT[2], lnhUCMT[1],lnhUCMT[2],lnhUCMT[3],lnhUCMT[4]]
+
+                        break
+
+                lista_dados.append(tmp_dados)
+
+
+            return lista_dados
+
+        except:
+            raise class_exception.ExecData(
+                "Erro no processamento do Banco de Dados para as Unidades Consumidoras de Média Tensão! ")
