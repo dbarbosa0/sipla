@@ -324,7 +324,7 @@ class EditFuse(QDialog):
                                  " c_array=("  + str(pointsXList).strip('[]').replace("'","").replace("," , " ") +\
                             ") t_array=(" + str(pointsYList).strip('[]').replace("'","").replace("," , " ") + ")"
                         self.ImportedCurves.append(string)
-                        print(string)
+                        # print(string)
 
                     pointsXList = []
                     pointsYList = []

@@ -62,10 +62,10 @@ class C_Devices_ConfigDialog(QDialog):
 
     def Accept(self):
         self.gen_devices()
+        self.updateImportedCurves()
         self.exec_Devices()
         self.close()
 
-        self.updateImportedCurves()
 
     def updateMainProtectDialog(self):
         self.TabFuse.updateProtectDialog()
@@ -86,7 +86,7 @@ class C_Devices_ConfigDialog(QDialog):
             if curvestring not in self.ImportedCurvesMain:
                 self.ImportedCurvesMain.append(curvestring)
 
-        print(self.ImportedCurvesMain)
+        # print(self.ImportedCurvesMain)
 
     def gen_devices(self):
         self.addedDevices = []
@@ -115,17 +115,21 @@ class C_Devices_ConfigDialog(QDialog):
             else:
                 self.editedDevices.append(item)
 
-    # SERÁ MOVIDA PARA A "class_opendss"
+
     def exec_Devices(self):
 
         self.memoFileDevices = []
+        print(f' Curvas importadas : {self.ImportedCurvesMain}')
+
+        for ctd in self.ImportedCurvesMain:
+            self.memoFileDevices.append(ctd)
 
         for ctd in self.addedDevices:
             tmp = "New " + ctd["Device"] + "." + ctd["Name"] + " "
             for key, value in ctd.items():
                 if value != '' and value != 'None'and value is not None and key != 'Device' and key != 'Name':
                     tmp += key + "=" + value + " "
-            # print(tmp)
+            print(f' Dispositivos adicionados : {tmp}')
 
             self.memoFileDevices.append(tmp)
 
@@ -134,8 +138,9 @@ class C_Devices_ConfigDialog(QDialog):
             for key, value in ctd.items():
                 if value != '' and value != 'None'and value is not None and key != 'Device' and key != 'Name':
                     tmp += key + "=" + value + " "
-            print(tmp)
+            print(f' Dispositivos editados : {tmp}')
 
             self.memoFileDevices.append(tmp)
 
-        #print(self.memoFileDevices)
+        print(f' memo Devices : {self.memoFileDevices}')
+        return self.memoFileDevices

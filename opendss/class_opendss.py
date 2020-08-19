@@ -622,7 +622,7 @@ class C_OpenDSS(): # classe OpenDSSDirect
 
             if stdSC["FltRepair"] != "":
                 faultstr += " repair=" + stdSC["FltRepair"]
-        print(faultstr)
+        # print(faultstr)
         self.exec_OpenDSSRun(faultstr)
         self.exec_OpenDSSRun("set mode=dynamic controlmode=time time=(0,0) stepsize=0.01 number=4000")
         self.exec_OpenDSSRun("Solve")
@@ -630,12 +630,9 @@ class C_OpenDSS(): # classe OpenDSSDirect
         self.exec_OpenDSSRun("show currents elements")
         self.getVoltageResults() ## Mostrando o resultado das tensões
 
-    def results(self):
-        string = "A"
-        pass
-
     def exec_ProtectEdit(self):
-        pass
+        self.memoFileDevices = ''
+
 
 
     ##
