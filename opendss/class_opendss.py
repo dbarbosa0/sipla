@@ -500,7 +500,7 @@ class C_OpenDSS(): # classe OpenDSSDirect
             step = 0
             for ctdVoltageA in range(0, len(busVoltagesALL)):
                 ## Tensões nodais fase A em V
-                Va = complex(busVoltagesALL[ctdVoltageA], busVoltagesALL[ctdVoltageA+1+step])
+                Va = complex(busVoltagesALL[ctdVoltageA+step], busVoltagesALL[ctdVoltageA+1+step])
                 self.tableVoltageResults.setItem(ctdVoltageA, 1, QTableWidgetItem(str(round(abs(Va)/1000, 5))))
                 self.tableVoltageResults.setItem(ctdVoltageA, 2, QTableWidgetItem(str(round((cmath.phase(Va) * 180 / cmath.pi) ,3 ))))
                 self.tableVoltageResults.setItem(ctdVoltageA, 8, QTableWidgetItem(str(round((cmath.phase(Va) * 180 / cmath.pi), 3))))
@@ -513,7 +513,7 @@ class C_OpenDSS(): # classe OpenDSSDirect
             step = 0
             for ctdVoltageB in range(0, len(busVoltagesALL)):
                 ## Tensões nodais fase B em V
-                Vb = complex(busVoltagesALL[ctdVoltageB+2], busVoltagesALL[ctdVoltageB+3+step])
+                Vb = complex(busVoltagesALL[ctdVoltageB+2+step], busVoltagesALL[ctdVoltageB+3+step])
                 self.tableVoltageResults.setItem(ctdVoltageB, 3, QTableWidgetItem(str(round(abs(Vb)/1000 , 5))))
                 self.tableVoltageResults.setItem(ctdVoltageB, 4, QTableWidgetItem(str(round( cmath.phase(Vb) * 180 / cmath.pi , 3))))
                 self.tableVoltageResults.setItem(ctdVoltageB, 10, QTableWidgetItem(str(round( cmath.phase(Vb) * 180 / cmath.pi, 3))))
@@ -526,7 +526,7 @@ class C_OpenDSS(): # classe OpenDSSDirect
             step = 0
             for ctdVoltageC in range(0, len(busVoltagesALL)):
                 ## Tensões nodais fase C em V
-                Vc = complex(busVoltagesALL[ctdVoltageC+4], busVoltagesALL[ctdVoltageC+5+step])
+                Vc = complex(busVoltagesALL[ctdVoltageC+4+step], busVoltagesALL[ctdVoltageC+5+step])
                 self.tableVoltageResults.setItem(ctdVoltageC, 5, QTableWidgetItem(str(round(abs(Vc)/1000 , 5))))
                 self.tableVoltageResults.setItem(ctdVoltageC, 6, QTableWidgetItem(str(round((cmath.phase(Vc) * 180 / cmath.pi),3))))
                 self.tableVoltageResults.setItem(ctdVoltageC, 12, QTableWidgetItem(str(round((cmath.phase(Vc) * 180 / cmath.pi), 3))))
