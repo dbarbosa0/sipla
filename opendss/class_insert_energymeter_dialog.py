@@ -160,7 +160,7 @@ class C_Insert_EnergyMeter_Dialog(QDialog): ## Classe Dialog principal
         #self.EnergyMeter_Btns_Ok_Btn.setFixedWidth(100)
         self.EnergyMeter_Btns_Ok_Btn.clicked.connect(self.AcceptAddEditEnergyMeter)
         self.EnergyMeter_Btns_Layout.addWidget(self.EnergyMeter_Btns_Ok_Btn)
-        self.EnergyMeter_Layout.addItem(self.EnergyMeter_Btns_Layout,13, 0, 1, 2)
+        self.EnergyMeter_Layout.addItem(self.EnergyMeter_Btns_Layout, 13, 0, 1, 2)
         ####
 
         self.EnergyMeter_GroupBox.setLayout(self.EnergyMeter_Layout)
