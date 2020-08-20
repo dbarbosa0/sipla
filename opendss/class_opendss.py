@@ -31,6 +31,7 @@ class C_OpenDSS(): # classe OpenDSSDirect
         self._StorageControllers = []
         ##SC Carvalho
         self._SCDataInfo = []
+        self.RECDataInfo = []
         ## FlagLoadData - Só roda se tiver alguma alteração nos alimentadores
         self.loadDataFlag = False
 
@@ -129,6 +130,14 @@ class C_OpenDSS(): # classe OpenDSSDirect
     def SCDataInfo(self, value):
         self._SCDataInfo = value
 
+    @property
+    def RECDataInfo(self):
+        return self._RECDataInfo
+
+    @RECDataInfo.setter
+    def RECDataInfo(self, value):
+        self._RECDataInfo = value
+
     def loadData(self):
 
         if not self.loadDataFlag:
@@ -140,6 +149,10 @@ class C_OpenDSS(): # classe OpenDSSDirect
             ##Zerando a lista de barras
             self.dataOpenDSS.busList = []
             self.dataOpenDSS.elementList = []
+            self.dataOpenDSS.recloserList = []
+            self.dataOpenDSS.fuseList = []
+            self.dataOpenDSS.relayList = []
+            self.dataOpenDSS.swtcontrolList = []
 
 
             ##### Executa os Arquitvos que serão executados e inseridos
@@ -854,7 +867,12 @@ class C_OpenDSS(): # classe OpenDSSDirect
         self.exec_OpenDSSRun("set mode=dynamic controlmode=time time=(0,0) stepsize=0.01 number=4000")
         self.exec_OpenDSSRun("Solve")
         self.exec_OpenDSSRun("show eventlog")
-        self.getVoltageResults()  ## Mostrando o resultado das tensões
+        self.exec_OpenDSSRun("show currents elements")
+        self.getVoltageResults() ## Mostrando o resultado das tensões
+
+    def exec_ProtectEdit(self):
+        self.memoFileDevices = ''
+
 
 
     ##
@@ -870,7 +888,18 @@ class C_OpenDSS(): # classe OpenDSSDirect
         #
         return self.dataOpenDSS.elementList + tempStorage
 
-        #return self.dataOpenDSS.elementList
+    def getRecloserList(self):
+        return sorted(self.dataOpenDSS.recloserList)
+
+    def getFuseList(self):
+        return sorted(self.dataOpenDSS.fuseList)
+
+    def getRelayList(self):
+        return sorted(self.dataOpenDSS.relayList)
+
+    def getSwtControlList(self):
+        return sorted(self.dataOpenDSS.swtcontrolList)
+
 
     ## Gets class_insert_dialog
 

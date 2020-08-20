@@ -571,6 +571,9 @@ class C_Data():  # classe OpenDSS
                     temp_memoFileSEC_CONTROL += " type=current"
 
                     temp_Element = "Relay.{0}".format(dados_sec[ctd].cod_id)
+                    #Carvalho
+                    if dados_sec[ctd].ctmt in lista:
+                        self.insertRelayList(temp_memoFileSEC_CONTROL)
 
                 elif tipoSEC == "32":  # Religador
                     temp_memoFileSEC_CONTROL = "New Recloser.{0}".format(
@@ -580,7 +583,9 @@ class C_Data():  # classe OpenDSS
                     temp_memoFileSEC_CONTROL += " action={0}".format(operacao_da_chave)
 
                     temp_Element = "Recloser.{0}".format(dados_sec[ctd].cod_id)
-
+                    #Carvalho
+                    if dados_sec[ctd].ctmt in lista:
+                        self.insertRecloserList(temp_memoFileSEC_CONTROL)
                 else:
                     temp_memoFileSEC_CONTROL = "New Swtcontrol.{0}".format(
                         dados_sec[ctd].cod_id) + " SwitchedObj={0}".format("Line." + dados_sec[ctd].cod_id)
@@ -596,7 +601,7 @@ class C_Data():  # classe OpenDSS
 
                 # Chaves de Média
                 if testAL_MT is not None:  # MT
-                    if dados_sec[ctd].ctmt in lista_de_identificadores_dos_alimentadores:
+                    if dados_sec[ctd].ctmt in lista:
                         if dados_sec[ctd].tip_unid == tipoSEC:
                             memoFileSEC_CONTROL.append(temp_memoFileSEC_CONTROL)
 

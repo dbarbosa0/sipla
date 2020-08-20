@@ -177,6 +177,35 @@ class C_MenuToolBar(QDockWidget):
         self.OpenDSSMenu.addAction(self.OpenDSS_View_Act)
         self.OpenDSSMenu.addSeparator()
 
+    ####################################################################################
+        # ******* Actions the Window Menu  *******
+        self.ProtectActRef = {'Protect_Devices_Act': 0,
+                              'Protect_Curves_Act': 0
+                              }
+
+        # ******* Create the Protect Menu *******
+        self.ProtectMenu = self.MainMenu.addMenu('&Proteção')
+
+        self.Protect_Devices_Act = QAction(QIcon('img/Devices.png'), '&Dispositivos', self)
+        self.Protect_Devices_Act.setShortcut("Alt+Q")
+        self.Protect_Devices_Act.setStatusTip('Configurar dispositivos de proteção')
+        self.Protect_Devices_Act.triggered.connect(self.exec_configDevice)
+        self.Protect_Devices_Act.setObjectName('Protect_Devices_Act')
+        self.ProtectActRef['Protect_Devices_Act'] = self.Protect_Devices_Act
+
+        self.Protect_Curves_Act = QAction(QIcon('img/Devices.png'), '&Gerenciar Curvas TCC', self)
+        self.Protect_Curves_Act.setShortcut("Alt+W")
+        self.Protect_Curves_Act.setStatusTip('Gerenciar Curvas TCC')
+        self.Protect_Curves_Act.triggered.connect(self.exec_configCurves)
+        self.Protect_Devices_Act.setObjectName('Protect_Curves_Act')
+        self.ProtectActRef['Protect_Curves_Act'] = self.Protect_Curves_Act
+
+        # ******* Setup the Protect Menu *******
+        self.ProtectMenu.addAction(self.Protect_Devices_Act)
+        self.ProtectMenu.addAction(self.Protect_Curves_Act)
+
+      ##################################################################################
+
         # ******* Actions the Plot Menu  ******************************************************************************
         self.PlotActRef = {'Plot_Act': 0}
         self.PlotMenu = self.MainMenu.addMenu("&Plot")
@@ -372,6 +401,12 @@ class C_MenuToolBar(QDockWidget):
 
     def exec_dynamicFlt(self):
         self.Actions.exec_SCAnalyze()
+
+    def exec_configDevice(self):
+        self.Actions.exec_Device_Settings()
+
+    def exec_configCurves(self):
+        self.Actions.exec_Curves_Settings()
 
     # Contribuição Jonas
     def exec_InsertStorage(self):

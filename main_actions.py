@@ -11,6 +11,8 @@ import opendss.storage.class_config_storagecontroller
 import opendss.class_energymeter_results_dialog
 import opendss.class_config_plot_monitor_dialog
 import opendss.class_scan_config_dialog
+import protect.class_devices
+import protect.class_tcc_curves
 import database.class_base
 import database.class_config_dialog
 # import class_exception
@@ -62,6 +64,13 @@ class C_MainActions():
         # Contribuição Carvalho
         self.SCAnalyze_DialogSettings = opendss.class_scan_config_dialog.C_SCAnalyze_ConfigDialog()
         self.SCAnalyze_DialogSettings.OpenDSS = self.OpenDSS #Apontando o ponteiro de OpenDSS C_MainActions
+        self.Devices_DialogSettings = protect.class_devices.C_Devices_ConfigDialog()
+        self.Devices_DialogSettings.TabRecloser.OpenDSS = self.OpenDSS
+        self.Devices_DialogSettings.TabFuse.OpenDSS = self.OpenDSS
+        self.Devices_DialogSettings.TabRelay.OpenDSS = self.OpenDSS
+        self.Devices_DialogSettings.TabSwtControl.OpenDSS = self.OpenDSS
+        self.Curves_DialogSettings = protect.class_tcc_curves.C_Config_Curves_Dialog()
+
         # Contribuição Jonas
         self.OpenDSS_DialogInsertStorage = opendss.storage.class_insert_storage_dialog.C_Insert_Storage_Dialog()
         self.OpenDSS_DialogInsertStorage.OpenDSS = self.OpenDSS
@@ -111,21 +120,31 @@ class C_MainActions():
         if self.OpenDSS.loadDataFlag:
             self.MainWindowToolBar.OpenDSS_InsertEnergyMeter_Act.setEnabled(True)
             self.MainWindowToolBar.OpenDSS_InsertMonitor_Act.setEnabled(True)
-            self.MainWindowToolBar.OpenDSS_InsertStorage_Act.setEnabled(True)
             self.MainWindowToolBar.OpenDSS_Save_Act.setEnabled(True)
             self.MainWindowToolBar.OpenDSS_Create_Act.setEnabled(True)
             self.MainWindowToolBar.OpenDSS_View_Act.setEnabled(True)
+            #Jonas
+            self.MainWindowToolBar.OpenDSS_InsertStorage_Act.setEnabled(True)
+            #Carvalho
             self.MainWindowToolBar.SCAnalyze_Config_Act.setEnabled(True)
             self.MainWindowToolBar.SCAnalyze_Run_Act.setEnabled(True)
+            self.MainWindowToolBar.Protect_Devices_Act.setEnabled(True)
+            #self.MainWindowToolBar.Protect_Curves_Act.setEnabled(True)
         else:
             self.MainWindowToolBar.OpenDSS_InsertEnergyMeter_Act.setEnabled(False)
             self.MainWindowToolBar.OpenDSS_InsertMonitor_Act.setEnabled(False)
-            self.MainWindowToolBar.OpenDSS_InsertStorage_Act.setEnabled(False)
             self.MainWindowToolBar.OpenDSS_Save_Act.setEnabled(False)
             self.MainWindowToolBar.OpenDSS_Create_Act.setEnabled(False)
             self.MainWindowToolBar.OpenDSS_View_Act.setEnabled(False)
             self.MainWindowToolBar.SCAnalyze_Config_Act.setEnabled(False)
             self.MainWindowToolBar.SCAnalyze_Run_Act.setEnabled(False)
+            #Jonas
+            self.MainWindowToolBar.OpenDSS_InsertStorage_Act.setEnabled(False)
+            #Carvalho
+            self.MainWindowToolBar.SCAnalyze_Config_Act.setEnabled(False)
+            self.MainWindowToolBar.SCAnalyze_Run_Act.setEnabled(False)
+            self.MainWindowToolBar.Protect_Devices_Act.setEnabled(False)
+            #self.MainWindowToolBar.Protect_Curves_Act.setEnabled(False)
 
 
     #############################################
@@ -256,6 +275,13 @@ class C_MainActions():
 
     def exec_SCAnalyze(self):
         self.OpenDSS.exec_DynamicFlt()
+
+    def exec_Device_Settings(self):
+        self.Devices_DialogSettings.updateMainProtectDialog()
+        self.Devices_DialogSettings.show()
+
+    def exec_Curves_Settings(self):
+        self.Curves_DialogSettings.show()
 
     #################################################################################
 
