@@ -6,6 +6,7 @@ from PyQt5.QtCore import Qt
 
 import configparser
 import class_exception
+import random
 import opendss.class_conn
 import opendss.class_opendss
 import config as cfg
@@ -148,8 +149,7 @@ class C_SCAnalyze_ConfigDialog(QDialog):
 
     def Accept(self):
         self.loadParameters()
-        self.OpenDSS.SCDataInfo = self.SCDataInfo # ponteiro
-        print(self.SCDataInfo)
+        self.OpenDSS.SCDataInfo = self.SCDataInfo
         self.close()
 
     def updateDialog(self):
@@ -157,7 +157,6 @@ class C_SCAnalyze_ConfigDialog(QDialog):
         buslist = self.OpenDSS.getBusList()
         for index, item in enumerate(buslist):
             self.TabBasic.FltBus_GroupBox_ComboBox.addItem(item, item)
-        print(f'Tamanho da buslist pelo AllBusNames : {len(buslist)}')
 
         #print(f'Tamanho da buslist pelo AllBusNames : {len(buslist)}')
 

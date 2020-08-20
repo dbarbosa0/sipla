@@ -24,6 +24,9 @@ class C_Data():  # classe OpenDSS
         self.fuseList = []
         self.relayList = []
         self.swtcontrolList = []
+        ##Curvas de Carga
+        self.loadShapeUniCons = {}
+
         self.initUI()
 
     @property
@@ -438,7 +441,7 @@ class C_Data():  # classe OpenDSS
 
         # self.memoFileCondRamal.append("New Linecode.CHAVE_3 nphases=3 R1=0.0001 X1=0.0001 R0=0.02 X0=0.02 C1=0.02 C0=0.02 NormAmps=300 units=km BaseFreq=60")
 
-    def     getID_Fields(self, nameFields):
+    def getID_Fields(self, nameFields):
 
         lista_de_identificadores_dos_alimentadores = []
 
@@ -467,8 +470,6 @@ class C_Data():  # classe OpenDSS
 
             for ctd in range(0, len(dados_sec)):
 
-
-
                 [num_de_fases, pac_1, pac_2] = self.getFasesConexao(dados_sec[ctd].fas_con, dados_sec[ctd].pac_1,
                                                                     dados_sec[ctd].pac_2)
 
@@ -484,6 +485,8 @@ class C_Data():  # classe OpenDSS
                 if dados_sec[ctd].sit_ativ == "AT":
                     situacao = "true"
                 if dados_sec[ctd].sit_ativ == "DS":
+                    situacao = "false"
+                if dados_sec[ctd].sit_ativ == "0":
                     situacao = "false"
 
 
@@ -568,6 +571,7 @@ class C_Data():  # classe OpenDSS
                     temp_memoFileSEC_CONTROL += " type=current"
 
                     temp_Element = "Relay.{0}".format(dados_sec[ctd].cod_id)
+                    #Carvalho
                     if dados_sec[ctd].ctmt in lista:
                         self.insertRelayList(temp_memoFileSEC_CONTROL)
 
@@ -579,6 +583,7 @@ class C_Data():  # classe OpenDSS
                     temp_memoFileSEC_CONTROL += " action={0}".format(operacao_da_chave)
 
                     temp_Element = "Recloser.{0}".format(dados_sec[ctd].cod_id)
+                    #Carvalho
                     if dados_sec[ctd].ctmt in lista:
                         self.insertRecloserList(temp_memoFileSEC_CONTROL)
                 else:
@@ -806,7 +811,7 @@ class C_Data():  # classe OpenDSS
 
         try:
             # Curvas de Carga para se for Daily não precisar fazer nova consulta
-            self.loadShapeUniCons = {}
+
             self.loadShapeUniCons[tipoUniCons] = []
             ################################################################
 
@@ -830,6 +835,8 @@ class C_Data():  # classe OpenDSS
 
                     [num_de_fases, pac_1, pac_2] = self.getFasesConexao(dados_db[ctd].fas_con, dados_db[ctd].pac, None)
 
+                    if dados_db[ctd].fas_con == "ABC":
+                        conexao = "wye"
                     if dados_db[ctd].fas_con == "ABCN":
                         conexao = "wye"
                     if dados_db[ctd].fas_con == "ABN":
@@ -844,6 +851,7 @@ class C_Data():  # classe OpenDSS
                         conexao = "wye"
                     if dados_db[ctd].fas_con == "CN":
                         conexao = "wye"
+
 
                     ######
                     if conBTTD == True:
@@ -860,7 +868,6 @@ class C_Data():  # classe OpenDSS
                     memoFileUC.append(tmp)
 
                     self.loadShapeUniCons[tipoUniCons].append([dados_db[ctd].objectid, str(dados_db[ctd].tip_cc.replace(' ', ""))])
-
                     ##Buffer
                     self.insertBusList(dados_db[ctd].pac)
                     self.insertElementList("Load.{0}".format(dados_db[ctd].objectid))
@@ -874,6 +881,7 @@ class C_Data():  # classe OpenDSS
     def exec_UNID_CONSUMIDORAS_MT(self):
 
         self.memoFileUniConsumidoraMT = self.getUNIDADE_CONSUMIDORA(self.nSE_MT_Selecionada, "MT", None)
+
 
         self.memoFileUniConsumidoraMT.insert(0, "! UNIDADES CONSUMIDORAS DE MEDIA TENSAO ")
 
@@ -1039,7 +1047,7 @@ class C_Data():  # classe OpenDSS
                 dados_db = self.DataBase.getData_UniCompReativo(nomeSE_MT, "BT")
             else:
                 raise class_exception.ExecOpenDSS(
-                    "Erro ao carregar as informações das Linhas BT, pois o tipo não foi especificado! \n" + tipoLinha)
+                    "Erro ao carregar as informações das Linhas BT, pois o tipo não foi especificado! \n" + tipoCAP)
 
             memoFileComp = []
 
@@ -1090,8 +1098,8 @@ class C_Data():  # classe OpenDSS
 
         if fas_con == "ABC":
             num_de_fases = "3"
-            pac_1 = pac_1.replace('-', "") + ".1.2.3.0"
-            pac_2 = pac_2.replace('-', "") + ".1.2.3.0"
+            pac_1 = pac_1.replace('-', "") + ".1.2.3"
+            pac_2 = pac_2.replace('-', "") + ".1.2.3"
         if fas_con == ("AB"):
             num_de_fases = "2"
             pac_1 = pac_1.replace('-', "") + ".1.2.0"
@@ -1152,7 +1160,6 @@ class C_Data():  # classe OpenDSS
     def insertBusList(self, pac):
         if pac.replace('-', "") not in self.busList:
             self.busList.append(pac.replace('-', ""))
-
 
     def insertElementList(self, name):
         if str(name) not in self.elementList:

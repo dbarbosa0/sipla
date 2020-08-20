@@ -139,14 +139,10 @@ class C_Config_Plot_Dialog(QDialog):
         self.OpenDSS.setMonitorActive(self.Monitor_Select_GroupBox_ComboBox.currentText())
 
         listChannels = self.OpenDSS.getMonitorActive_ChannelNames()
-
-        for ctd in range(0, len(listChannels) + 1):
+        for ctd in range(1, len(listChannels) + 1):
 
             data = self.OpenDSS.getMonitorActive_DataChannel(ctd)
-            if ctd == 0:
-                time = data
-            else:
-                Monitor_Select_Variable_GroupBox_TreeWidget_Item(self.Monitor_Select_Variable_GroupBox_TreeWidget,
+            Monitor_Select_Variable_GroupBox_TreeWidget_Item(self.Monitor_Select_Variable_GroupBox_TreeWidget,
                                                                  self.Monitor_Select_Variable_SelectAll.checkState(),
                                                                  listChannels[ctd -1], data,
                                                                  cfg.colorsList[random.randint(0, len(cfg.colorsList) - 1)])
@@ -156,13 +152,18 @@ class C_Config_Plot_Dialog(QDialog):
         #Limpando
         self.graphWidget.clear()
 
+        try:
+            self.graphWidget.removeItem(self.legend)
+        except:
+            pass
+
         # Add Background colour to white
         self.graphWidget.setBackground('w')
         #Add Axis Labels
         self.graphWidget.setLabel('left', 'Demanda', color='red', size=20)
         self.graphWidget.setLabel('bottom', 'Tempo', color='red', size=20)
         # Add legend
-        self.graphWidget.addLegend()
+        self.legend = self.graphWidget.addLegend()
         # Add grid
         self.graphWidget.showGrid(x=True, y=True)
         # Set Range

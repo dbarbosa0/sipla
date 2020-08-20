@@ -68,9 +68,16 @@ class C_OpenDSSDirect_Conn(C_Conn):  # classe OpenDSSDirect
     def set_MonitorActive(self, name):
         self.engineMonitors.Name(name)
 
+    def set_EnergyMeterActive(self, name):
+        self.engineMeters.Name(name)
+
     def get_MonitorActive_ChannelNames(self):
         return self.engineMonitors.Header()
 
+    def get_RegisterNames(self):
+        return self.engineMeters.RegisterNames()
+    def get_RegisterValues(self):
+        return self.engineMeters.RegisterValues()
 
 ################
 
@@ -115,6 +122,9 @@ class C_OpenDSSCOM_Conn(C_Conn):  # classe OpenDSSCOM
 
     def set_MonitorActive(self, name):
         self.engineMonitors.Name = name
+
+    def set_EnergyMeterActive(self, name):
+        self.engineMeters.Name = name
 
     def get_MonitorActive_ChannelNames(self):
         return self.engineMonitors.Header
