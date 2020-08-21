@@ -106,9 +106,13 @@ class C_MainActions():
         if self.OpenDSS.StatusSolutionProcessTime > 0:
             self.MainWindowToolBar.Plot_Monitor_Act.setEnabled(True)
             self.MainWindowToolBar.OpenDSS_Results_EnergyMeter_Act.setEnabled(True)
+            self.MainWindowToolBar.OpenDSS_Save_Act.setEnabled(True)
+            self.MainWindowToolBar.OpenDSS_Create_Act.setEnabled(True)
         else:
             self.MainWindowToolBar.Plot_Monitor_Act.setEnabled(False)
             self.MainWindowToolBar.OpenDSS_Results_EnergyMeter_Act.setEnabled(False)
+            self.MainWindowToolBar.OpenDSS_Save_Act.setEnabled(False)
+            self.MainWindowToolBar.OpenDSS_Create_Act.setEnabled(False)
 
         ## Habilitar o Solve Apenas se puder visualizar, o que significa que está tudo certo
         if self.MainNetPanel.Deck_GroupBox_MapView_Btn.isEnabled():
