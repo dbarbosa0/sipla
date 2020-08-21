@@ -155,6 +155,13 @@ class C_MenuToolBar(QDockWidget):
         self.OpenDSS_InsertInvControl_Act.setObjectName('OpenDSS_InsertInvControl_Act')
         self.OpenDSSActRef['OpenDSS_InsertStorage_Act'] = self.OpenDSS_InsertInvControl_Act
 
+        # Contribuição Nyegirton
+        self.OpenDSS_InsertMassivePV_Act = QAction(QIcon('img/icon_opendss_storage.png'), 'Inserção massiva de PV', self)
+        self.OpenDSS_InsertMassivePV_Act.setShortcut("")
+        self.OpenDSS_InsertMassivePV_Act.setStatusTip('Inserir PV massivamente')
+        self.OpenDSS_InsertMassivePV_Act.triggered.connect(self.exec_InsertMassivePV)
+        self.OpenDSS_InsertMassivePV_Act.setObjectName('OpenDSS_InsertMassivePV_Act')
+        self.OpenDSSActRef['OpenDSS_InsertMassivePV_Act'] = self.OpenDSS_InsertMassivePV_Act
 
         # ******* Setup the OpenDSS Menu *******
         self.OpenDSSMenu.addAction(self.OpenDSS_Config_Act)
@@ -389,6 +396,9 @@ class C_MenuToolBar(QDockWidget):
     def exec_InsertInvControl(self):
         self.Actions.execInsertInvControl()
 
+    # Contribuição Nyegirton
+    def exec_InsertMassivePV(self):
+        self.Actions.execInsertMassivePV()
     ####################################################################
 
     def exec_PlotMonitor(self):

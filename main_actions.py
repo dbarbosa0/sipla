@@ -71,6 +71,9 @@ class C_MainActions():
         # Contribuição Lenon
         self.OpenDSS_DialogInsertInvControl = opendss.invcontrol.class_insert_invcontrol_dialog.C_Insert_InvControl_Dialog()
         self.OpenDSS_DialogInsertInvControl.OpenDSS = self.OpenDSS
+        # Contribuição Nyegirton
+        self.OpenDSS_DialogInsertMassivePV = opendss.
+        self.OpenDSS_DialogInsertMassivePV.OpenDSS = self.OpenDSS
 
 
     #############################################
@@ -289,7 +292,11 @@ class C_MainActions():
         self.OpenDSS_DialogInsertInvControl.move(500, 90)
         self.OpenDSS_DialogInsertInvControl.show()
 
-
+    #Contribuição Nyegirton
+    def execInsertMassivePV(self):
+        self.OpenDSS_DialogInsertMassivePV.updateDialog()
+        self.OpenDSS_DialogMassivePV.show()
+        #self.OpenDSS_DialogInsertStorage.DispModeActPowDialog.ConfigStorageController.updateDialog()
 
 
 

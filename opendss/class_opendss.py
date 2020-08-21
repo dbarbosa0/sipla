@@ -131,6 +131,7 @@ class C_OpenDSS(): # classe OpenDSSDirect
     def InvControl(self, value):
         self._InvControl = value
 
+
     @property
     def SCDataInfo(self):
         return self._SCDataInfo
