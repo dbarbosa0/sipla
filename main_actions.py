@@ -14,6 +14,7 @@ import opendss.class_config_plot_monitor_dialog
 import opendss.class_scan_config_dialog
 import database.class_base
 import database.class_config_dialog
+import opendss.voltvarwatt.class_InsertMassivePV
 # import class_exception
 import maps.class_view
 import main_panels_dock
@@ -72,7 +73,7 @@ class C_MainActions():
         self.OpenDSS_DialogInsertInvControl = opendss.invcontrol.class_insert_invcontrol_dialog.C_Insert_InvControl_Dialog()
         self.OpenDSS_DialogInsertInvControl.OpenDSS = self.OpenDSS
         # Contribuição Nyegirton
-        self.OpenDSS_DialogInsertMassivePV = opendss.
+        self.OpenDSS_DialogInsertMassivePV = opendss.voltvarwatt.class_InsertMassivePV.C_Insert_MassivePV()
         self.OpenDSS_DialogInsertMassivePV.OpenDSS = self.OpenDSS
 
 
