@@ -1,5 +1,5 @@
 from PyQt5.QtWidgets import QStatusBar, QMessageBox
-
+from opendss.voltvarwatt.class_InsertMassivePV import C_Insert_MassivePV
 ###
 import database.class_conn
 import opendss.class_opendss
@@ -15,7 +15,7 @@ import opendss.class_scan_config_dialog
 import database.class_base
 import database.class_config_dialog
 import opendss.voltvarwatt.class_InsertMassivePV
-# import class_exception
+#import class_exception
 import maps.class_view
 import main_panels_dock
 import main_toolbar
@@ -120,20 +120,26 @@ class C_MainActions():
             self.MainWindowToolBar.OpenDSS_InsertEnergyMeter_Act.setEnabled(True)
             self.MainWindowToolBar.OpenDSS_InsertMonitor_Act.setEnabled(True)
             self.MainWindowToolBar.OpenDSS_InsertStorage_Act.setEnabled(True)
+            # Nyegirton
+            #self.MainWindowToolBar.OpenDSS_InsertMassivePV_Act.setEnabled(True)
             self.MainWindowToolBar.OpenDSS_Save_Act.setEnabled(True)
             self.MainWindowToolBar.OpenDSS_Create_Act.setEnabled(True)
             self.MainWindowToolBar.OpenDSS_View_Act.setEnabled(True)
             self.MainWindowToolBar.SCAnalyze_Config_Act.setEnabled(True)
             self.MainWindowToolBar.SCAnalyze_Run_Act.setEnabled(True)
+
         else:
             self.MainWindowToolBar.OpenDSS_InsertEnergyMeter_Act.setEnabled(False)
             self.MainWindowToolBar.OpenDSS_InsertMonitor_Act.setEnabled(False)
             self.MainWindowToolBar.OpenDSS_InsertStorage_Act.setEnabled(False)
+            #Nyegirton
+            #self.MainWindowToolBar.OpenDSS_InsertMassivePV_Act.setEnabled(False)
             self.MainWindowToolBar.OpenDSS_Save_Act.setEnabled(False)
             self.MainWindowToolBar.OpenDSS_Create_Act.setEnabled(False)
             self.MainWindowToolBar.OpenDSS_View_Act.setEnabled(False)
             self.MainWindowToolBar.SCAnalyze_Config_Act.setEnabled(False)
             self.MainWindowToolBar.SCAnalyze_Run_Act.setEnabled(False)
+
 
 
     #############################################
@@ -294,9 +300,10 @@ class C_MainActions():
         self.OpenDSS_DialogInsertInvControl.show()
 
     #Contribuição Nyegirton
-    def execInsertMassivePV(self):
-        self.OpenDSS_DialogInsertMassivePV.updateDialog()
-        self.OpenDSS_DialogMassivePV.show()
+    def exec_OpenDSS(self):
+        print('botão apertado')
+        #self.OpenDSS_DialogInsertMassivePV.updateDialog()
+        #self.OpenDSS_DialogMassivePV.show()
         #self.OpenDSS_DialogInsertStorage.DispModeActPowDialog.ConfigStorageController.updateDialog()
 
 

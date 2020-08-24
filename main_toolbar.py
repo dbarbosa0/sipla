@@ -157,12 +157,12 @@ class C_MenuToolBar(QDockWidget):
         self.OpenDSSActRef['OpenDSS_InsertStorage_Act'] = self.OpenDSS_InsertInvControl_Act
 
         # Contribuição Nyegirton
-        self.OpenDSS_InsertMassivePV_Act = QAction(QIcon('img/icon_opendss_storage.png'), 'PV Massivo', self)
+        self.OpenDSS_InsertMassivePV_Act = QAction(QIcon('img/icon_opendss_storage.png'), '&PV Massivo', self)
         self.OpenDSS_InsertMassivePV_Act.setShortcut("")
         self.OpenDSS_InsertMassivePV_Act.setStatusTip('Inserir PV Massivamente')
         self.OpenDSS_InsertMassivePV_Act.triggered.connect(self.exec_InsertMassivePV)
         self.OpenDSS_InsertMassivePV_Act.setObjectName('OpenDSS_InsertMassivePV_Act')
-        self.OpenDSSActRef['OpenDSS_InsertStorage_Act'] = self.OpenDSS_InsertMassivePV_Act
+        self.OpenDSSActRef['OpenDSS_InsertMassivePV_Act'] = self.OpenDSS_InsertMassivePV_Act
 
         # ******* Setup the OpenDSS Menu *******
         self.OpenDSSMenu.addAction(self.OpenDSS_Config_Act)
@@ -188,6 +188,9 @@ class C_MenuToolBar(QDockWidget):
                                                              'Short Circuit')
         self.OpenDSSMenuSubSCAnalyze.addAction(self.SCAnalyze_Config_Act)
         self.OpenDSSMenuSubSCAnalyze.addAction(self.SCAnalyze_Run_Act)
+
+        self.OpenDSSMenuSubInsertMassivePV = self.OpenDSSMenu.addMenu(QIcon(''), 'PV massivo')
+        self.OpenDSSMenuSubInsertMassivePV.addAction(self.OpenDSS_InsertMassivePV_Act)
 
         self.OpenDSSMenu.addSeparator()
         self.OpenDSSMenu.addAction(self.OpenDSS_View_Act)
@@ -399,7 +402,8 @@ class C_MenuToolBar(QDockWidget):
 
     # Contribuição Nyegirton
     def exec_InsertMassivePV(self):
-        self.Actions.execInsertMassivePV()
+        self.Actions.exec_OpenDSS()
+
     ####################################################################
 
     def exec_PlotMonitor(self):
