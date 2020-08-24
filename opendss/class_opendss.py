@@ -31,7 +31,7 @@ class C_OpenDSS(): # classe OpenDSSDirect
         self._StorageControllers = []
         ##SC Carvalho
         self._SCDataInfo = []
-        self.RECDataInfo = []
+        self._Devices = []
         ## FlagLoadData - Só roda se tiver alguma alteração nos alimentadores
         self.loadDataFlag = False
 
@@ -131,12 +131,12 @@ class C_OpenDSS(): # classe OpenDSSDirect
         self._SCDataInfo = value
 
     @property
-    def RECDataInfo(self):
-        return self._RECDataInfo
+    def Devices(self):
+        return self._Devices
 
-    @RECDataInfo.setter
-    def RECDataInfo(self, value):
-        self._RECDataInfo = value
+    @Devices.setter
+    def Devices(self, value):
+        self._Devices = value
 
     def loadData(self):
 
@@ -294,6 +294,11 @@ class C_OpenDSS(): # classe OpenDSSDirect
         if self.Monitors:
             tmpMonitors = {"Monitors": self.memoFileMonitors,}
             self.OpenDSSDataResult.update(tmpMonitors)
+
+        # print(f'devices : {self.Devices}')
+        if self.Devices:
+            tmpDevices = {"Devices": self.Devices,}
+            self.OpenDSSDataResult.update(tmpDevices)
 
         if not self.memoFileVoltageBase:
             self.exec_VoltageBase()

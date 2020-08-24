@@ -1,8 +1,9 @@
 # Carvalho Tag
 from PyQt5.QtGui import QIcon
-from PyQt5.QtWidgets import QStyleFactory, QDialog,QHBoxLayout, QPushButton, QVBoxLayout, QTabWidget
+from PyQt5.QtWidgets import QStyleFactory, QDialog, QHBoxLayout, QPushButton, QVBoxLayout, QTabWidget, QCheckBox
 from PyQt5.QtCore import Qt
 
+import opendss.class_opendss
 import protect.class_recloser
 import protect.class_fuse
 import protect.class_relay
@@ -23,6 +24,7 @@ class C_Devices_ConfigDialog(QDialog):
         self.ImportedCurvesMain = []
         # self.OpenDSS = opendss.class_opendss.C_OpenDSS()
 
+        self.OpenDSS = opendss.class_opendss.C_OpenDSS()
         self.InitUI()
 
     def InitUI(self):
@@ -39,6 +41,10 @@ class C_Devices_ConfigDialog(QDialog):
         self.TabFuse = protect.class_fuse.Fuse()
         self.TabRelay = protect.class_relay.Relay()
         self.TabSwtControl = protect.class_swtcontrol.SwtControl()
+
+        self.Devices_GlobalDisable_CheckBox = QCheckBox("Desabilitar todos os dispositivos")
+        self.Dialog_Layout.addWidget(self.Devices_GlobalDisable_CheckBox)
+
 
         self.TabWidget.addTab(self.TabRecloser, "Religador")
         self.TabWidget.addTab(self.TabFuse, "Fusível")
@@ -64,6 +70,7 @@ class C_Devices_ConfigDialog(QDialog):
         self.gen_devices()
         self.updateImportedCurves()
         self.exec_Devices()
+        self.OpenDSS.Devices = self.memoFileDevices
         self.close()
 
 
@@ -127,8 +134,14 @@ class C_Devices_ConfigDialog(QDialog):
         for ctd in self.addedDevices:
             tmp = "New " + ctd["Device"] + "." + ctd["Name"] + " "
             for key, value in ctd.items():
+
+                if key == 'Enabled' and self.Devices_GlobalDisable_CheckBox.isChecked():
+                    value = 'no'
+
                 if value != '' and value != 'None'and value is not None and key != 'Device' and key != 'Name':
                     tmp += key + "=" + value + " "
+
+
             print(f' Dispositivos adicionados : {tmp}')
 
             self.memoFileDevices.append(tmp)
@@ -136,6 +149,10 @@ class C_Devices_ConfigDialog(QDialog):
         for ctd in self.editedDevices:
             tmp = "Edit " + ctd["Device"] + "." + ctd["Name"] + " "
             for key, value in ctd.items():
+
+                if key == 'Enabled' and self.Devices_GlobalDisable_CheckBox.isChecked():
+                    value = 'no'
+
                 if value != '' and value != 'None'and value is not None and key != 'Device' and key != 'Name':
                     tmp += key + "=" + value + " "
             print(f' Dispositivos editados : {tmp}')
@@ -143,4 +160,3 @@ class C_Devices_ConfigDialog(QDialog):
             self.memoFileDevices.append(tmp)
 
         print(f' memo Devices : {self.memoFileDevices}')
-        return self.memoFileDevices
