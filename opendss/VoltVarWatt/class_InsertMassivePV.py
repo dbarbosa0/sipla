@@ -17,7 +17,7 @@ class C_Insert_MassivePV(C_OpenDSSDirect_Conn):
     def __init__(self):
          super().__init__()
          self.AllBusNames = self.engineCircuit.AllBusNames()
-         print(self.AllBusNames)
+
     def ImprimirNomesBus(self):
          print(self.AllBusNames)
 

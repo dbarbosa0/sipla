@@ -57,7 +57,7 @@ class C_MenuToolBar(QDockWidget):
                               'OpenDSS_InsertEnergyMeter_Act': 0, # Inserir o Energy Meter
                               'OpenDSS_InsertMonitor_Act': 0,  # Inserir o Energy Meter
                               'OpenDSS_InsertStorage_Act': 0, #Inserir o Storage
-                              'OpenDSS_InsertMassivePV_Act': 0, #
+                              'OpenDSS_InsertMassivePV_Act': 0, #Inserir PV massivamente
                               'OpenDSS_Create_Act': 0, # Criar Arquivo .DSS
                               'OpenDSS_Save_Act': 0,
                               'OpenDSS_View_Act': 0,
