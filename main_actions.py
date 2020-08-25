@@ -73,8 +73,7 @@ class C_MainActions():
         self.OpenDSS_DialogInsertInvControl = opendss.invcontrol.class_insert_invcontrol_dialog.C_Insert_InvControl_Dialog()
         self.OpenDSS_DialogInsertInvControl.OpenDSS = self.OpenDSS
         # Contribuição Nyegirton
-        self.OpenDSS_DialogInsertMassivePV = opendss.voltvarwatt.class_InsertMassivePV.C_Insert_MassivePV()
-        self.OpenDSS_DialogInsertMassivePV.OpenDSS = self.OpenDSS
+
 
 
     #############################################
@@ -301,7 +300,8 @@ class C_MainActions():
 
     #Contribuição Nyegirton
     def exec_OpenDSS(self):
-        print('botão apertado')
+        self.OpenDSS_DialogInsertMassivePV = opendss.voltvarwatt.class_InsertMassivePV.C_Insert_MassivePV()
+        self.OpenDSS_DialogInsertMassivePV.OpenDSS = self.OpenDSS
         #self.OpenDSS_DialogInsertMassivePV.updateDialog()
         #self.OpenDSS_DialogMassivePV.show()
         #self.OpenDSS_DialogInsertStorage.DispModeActPowDialog.ConfigStorageController.updateDialog()
