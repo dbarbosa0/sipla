@@ -65,6 +65,7 @@ class C_MainActions():
         self.SCAnalyze_DialogSettings = opendss.class_scan_config_dialog.C_SCAnalyze_ConfigDialog()
         self.SCAnalyze_DialogSettings.OpenDSS = self.OpenDSS #Apontando o ponteiro de OpenDSS C_MainActions
         self.Devices_DialogSettings = protect.class_devices.C_Devices_ConfigDialog()
+        self.Devices_DialogSettings.OpenDSS = self.OpenDSS #Apontando o ponteiro de OpenDSS C_MainActions
         self.Devices_DialogSettings.TabRecloser.OpenDSS = self.OpenDSS
         self.Devices_DialogSettings.TabFuse.OpenDSS = self.OpenDSS
         self.Devices_DialogSettings.TabRelay.OpenDSS = self.OpenDSS

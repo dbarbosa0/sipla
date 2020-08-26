@@ -282,6 +282,7 @@ class EditFuse(QDialog):
     def ImportCurve(self):
         try:
             dataCSV = {} #Dicionário para as variáveis
+            self.curvelist = [""]
             pointsXList = []
             pointsYList = []
             self.FuseCurve_ComboBox.clear()
