@@ -11,10 +11,12 @@ import opendss.storage.class_config_storagecontroller
 import opendss.class_energymeter_results_dialog
 import opendss.class_config_plot_monitor_dialog
 import opendss.class_scan_config_dialog
+import opendss.PSO.class_pso_dialog
 import protect.class_devices
 import protect.class_tcc_curves
 import database.class_base
 import database.class_config_dialog
+
 # import class_exception
 import maps.class_view
 import main_panels_dock
@@ -77,6 +79,10 @@ class C_MainActions():
         self.OpenDSS_DialogInsertStorage.DispModeActPowDialog.ConfigStorageController.OpenDSS = self.OpenDSS
         self.OpenDSS_DialogInsertStorage.DispModeActPowDialog.DialogActPowLoadShape.OpenDSS = self.OpenDSS
 
+        # Contribuição Brenda
+        self.OpenDSS_DialogPSO = opendss.PSO.class_pso_dialog.C_PSO_Dialog()
+        self.OpenDSS_DialogPSO.OpenDSS = self.OpenDSS  # Apontando o ponteiro de OpenDSS C_MainActions
+
 
     #############################################
 
@@ -113,8 +119,12 @@ class C_MainActions():
         ## Habilitar o Solve Apenas se puder visualizar, o que significa que está tudo certo
         if self.MainNetPanel.Deck_GroupBox_MapView_Btn.isEnabled():
             self.MainWindowToolBar.OpenDSS_Run_Act.setEnabled(True)
+            #brenda
+            self.MainWindowToolBar.OpenDSS_PSO_Act.setEnabled(True)
         else:
             self.MainWindowToolBar.OpenDSS_Run_Act.setEnabled(False)
+            #brenda
+            self.MainWindowToolBar.OpenDSS_PSO_Act.setEnabled(False)
 
         ##Funções que precisam do Load Data inpedentemente do Fluxo
         if self.OpenDSS.loadDataFlag:
@@ -123,6 +133,8 @@ class C_MainActions():
             self.MainWindowToolBar.OpenDSS_Save_Act.setEnabled(True)
             self.MainWindowToolBar.OpenDSS_Create_Act.setEnabled(True)
             self.MainWindowToolBar.OpenDSS_View_Act.setEnabled(True)
+            #Brenda
+            #self.MainWindowToolBar.OpenDSS_PSO_Act.setEnabled(True)
             #Jonas
             self.MainWindowToolBar.OpenDSS_InsertStorage_Act.setEnabled(True)
             #Carvalho
@@ -138,6 +150,8 @@ class C_MainActions():
             self.MainWindowToolBar.OpenDSS_View_Act.setEnabled(False)
             self.MainWindowToolBar.SCAnalyze_Config_Act.setEnabled(False)
             self.MainWindowToolBar.SCAnalyze_Run_Act.setEnabled(False)
+            #Brenda
+            #self.MainWindowToolBar.OpenDSS_PSO_Act.setEnabled(False)
             #Jonas
             self.MainWindowToolBar.OpenDSS_InsertStorage_Act.setEnabled(False)
             #Carvalho
@@ -305,6 +319,31 @@ class C_MainActions():
         self.OpenDSS_DialogInsertStorage.show()
         #self.OpenDSS_DialogInsertStorage.DispModeActPowDialog.ConfigStorageController.updateDialog()
 
+
+    #Contribuição Brenda
+    def execpso(self):
+        self.OpenDSS_DialogPSO = opendss.PSO.class_pso_dialog.C_PSO_Dialog()
+        self.OpenDSS_DialogPSO.teste_pso()
+        #self.OpenDSS_DialogPSO.OpenDSS = self.OpenDSS
+
+        #self.OpenDSS_DialogPSO.execpso2()
+        #self.OpenDSS_DialogPSO.exec_pso()
+        #self.OpenDSS_DialogPSO.updateDialog()
+        #self.OpenDSS_DialogPSO.show()
+        #print('ok2')
+       #self.OpenDSS_DialogPSO = opendss.PSO.class_pso_dialog.C_PSO_Dialog()
+
+            #= opendss.PSO.class_pso_dialog.C_PSO_ConfigDialog()
+        #self.OpenDSS_DialogPSO.OpenDSS = self.OpenDSS
+
+        #self.OpenDSS_DialogPSO.updateDialog()
+       # self.OpenDSS_DialogPSO.show()
+
+
+
+
+
+       # self.OpenDSS.exec_DynamicFlt()
 
 
 

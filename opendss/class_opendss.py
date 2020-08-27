@@ -115,6 +115,14 @@ class C_OpenDSS(): # classe OpenDSSDirect
         self._Storages = value
 
     @property
+    def PSO(self):
+        return self._PSO
+
+    @PSO.setter
+    def PSO(self, value):
+        self._PSO = value
+
+    @property
     def StorageControllers(self):
         return self._StorageControllers
 

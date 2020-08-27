@@ -97,7 +97,7 @@ class C_OpenDSSCOM_Conn(C_Conn):  # classe OpenDSSCOM
         self.engineMonitors = self.engineCircuit.Monitors
 
     def run(self, msg):
-        self.engine.Text.Command = unidecode.unidecode(msg)
+        self.engine.run_command(unidecode.unidecode(msg))
 
     def clear(self):
         self.run("clear")

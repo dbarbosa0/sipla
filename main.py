@@ -1,21 +1,20 @@
-import sys, time
+import sys
 
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QIcon, QPixmap
 from PyQt5.QtWidgets import QApplication, QMainWindow, QStyleFactory, QSplashScreen
 
-
-#import opendss.class_insert_dialog
+# import opendss.class_insert_dialog
 ###
 import config
-import maps.class_view
+import main_actions
+import main_panels
+import main_panels_dock
 ###################################
 # Classes de Construção da Interface Inicial
 import main_statusbar
 import main_toolbar
-import main_actions
-import main_panels
-import main_panels_dock
+import maps.class_view
 
 
 class mainWindow(QMainWindow):
