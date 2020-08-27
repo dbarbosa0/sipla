@@ -1,20 +1,21 @@
 import sys
 
 from PyQt5.QtCore import Qt
-from PyQt5.QtGui import QIcon, QPixmap
-from PyQt5.QtWidgets import QApplication, QMainWindow, QStyleFactory, QSplashScreen
+from PyQt5.QtGui import QIcon
+from PyQt5.QtWidgets import QApplication, QMainWindow, QStyleFactory
 
-# import opendss.class_insert_dialog
+
+#import opendss.class_insert_dialog
 ###
 import config
-import main_actions
-import main_panels
-import main_panels_dock
+import maps.class_view
 ###################################
 # Classes de Construção da Interface Inicial
 import main_statusbar
 import main_toolbar
-import maps.class_view
+import main_actions
+import main_panels
+import main_panels_dock
 
 
 class mainWindow(QMainWindow):
@@ -22,7 +23,7 @@ class mainWindow(QMainWindow):
         super(mainWindow, self).__init__(parent)
 
         self.titleWindow = config.__name__ + " - Version: " + config.__version__
-        self.iconWindow = config.sipla_icon
+        self.iconWindow = "img/logo.png"
         self.stylesheet = "fusion"
 
         self.setWindowTitle(self.titleWindow)
@@ -77,14 +78,7 @@ class mainWindow(QMainWindow):
 if __name__ == '__main__':
     siplaApp = QApplication(sys.argv)
 
-    # Create and display the splash screen
-    splash_pix = QPixmap('img/Logo_SIPLA.png')
-    splash = QSplashScreen(splash_pix, Qt.WindowStaysOnTopHint)
-    splash.setMask(splash_pix.mask())
-    splash.show()
-    siplaApp.processEvents()
-
     GUI = mainWindow()
     GUI.show()
-    splash.close()
+
     sys.exit(siplaApp.exec())

@@ -1,6 +1,6 @@
 from PyQt5.QtGui import QColor, QIcon
 from PyQt5.QtWidgets import QStyleFactory, QDialog, QGridLayout, QGroupBox, QHBoxLayout, QTreeWidgetItem, \
-    QPushButton, QTreeWidget, QFileDialog, QColorDialog, QMessageBox, QInputDialog, QLabel, QComboBox, QSpinBox
+    QPushButton, QTreeWidget, QFileDialog, QColorDialog, QMessageBox, QInputDialog, QCheckBox, QLabel, QComboBox, QSpinBox
 from PyQt5.QtCore import Qt
 
 import csv
@@ -11,6 +11,9 @@ import pyqtgraph
 import config as cfg
 import class_exception
 import unidecode
+import opendss.class_config_dialog
+
+
 
 class C_Config_DispCurve_Dialog(QDialog):
     def __init__(self):
@@ -20,7 +23,9 @@ class C_Config_DispCurve_Dialog(QDialog):
         self.iconWindow = cfg.sipla_icon
         self.stylesheet = cfg.sipla_stylesheet
 
-        self.dataDispCurve = {}
+        self.ConfigDialog = opendss.class_config_dialog.C_ConfigDialog()
+
+        self.dataDispCurve = []
 
         self.InitUI()
 
@@ -174,9 +179,6 @@ class C_Config_DispCurve_Dialog(QDialog):
         self.adjustSize()
 
     def CancelParameters(self):
-        self.Daily_GroupBox_Stepsize_ComboBox.setCurrentIndex(2)
-        self.Daily_GroupBox_Stepsize_SpinBox.setValue(1)
-        self.Daily_GroupBox_Number_SpinBox.setValue(24)
         self.close()
 
     def nPointsLoadDef(self):
@@ -199,7 +201,6 @@ class C_Config_DispCurve_Dialog(QDialog):
         self.Daily_GroupBox_Stepsize_ComboBox.setCurrentIndex(2)
         self.Daily_GroupBox_Stepsize_SpinBox.setValue(1)
         self.Daily_GroupBox_Number_SpinBox.setValue(24)
-        self.dataDispCurve = {}
         self.adjustSize()
 
     def Cancel(self):
@@ -217,14 +218,7 @@ class C_Config_DispCurve_Dialog(QDialog):
         self.close()
 
     def setDataDispCurve(self):
-        self.dataDispCurve = {}
-        self.dataDispCurve["npts"] = self.nPointsLoadDef()
-        if self.nStepSizeTimeDef() == "sec":
-            self.dataDispCurve["sinterval"] = self.nStepSizeDef()
-        elif self.nStepSizeTimeDef() == "min":
-            self.dataDispCurve["minterval"] = self.nStepSizeDef()
-        elif self.nStepSizeTimeDef() == "hr":
-            self.dataDispCurve["interval"] = self.nStepSizeDef()
+        self.dataDispCurve = []
 
         checkCont = 0
         try:
@@ -236,14 +230,9 @@ class C_Config_DispCurve_Dialog(QDialog):
                     if checkCont > 1:
                         raise class_exception.ExecConfigOpenDSS("Erro na seleção da Curva de Despacho ",
                                                                 "Selecione somente uma curva!")
-                    elif checkCont == 0:
-                        raise class_exception.ExecConfigOpenDSS("Erro na seleção da Curva de Despacho ",
-                                                                "Selecione ao menos uma curva!")
                     else:
                         if self.checkDispCurve(Item.name, Item.getPoints()):
-                            mult = Item.getPointsList()
-                            self.dataDispCurve["DispCurveName"] = Item.name
-                            self.dataDispCurve["mult"] = mult
+                            self.dataDispCurve = Item.getPointsList()
                         else:
                             raise class_exception.ExecConfigOpenDSS("Erro na verificação da Curva de Despacho " \
                                              + Item.name + " !","Verifique se todos os " + self.nPointsLoadDef() + " pontos estão presentes!")
@@ -282,7 +271,7 @@ class C_Config_DispCurve_Dialog(QDialog):
             dataCSV = {} #Dicionário para as variáveis
 
             fname = QFileDialog.getOpenFileName(self, 'Open CSV file',
-                                                "StorageCurves", "CSV files (*.csv)")
+                                                "DispatchCurve", "CSV files (*.csv)")
                                                 #str(pathlib.Path.home()), "CSV files (*.csv)")
 
             if platform.system() == "Windows":
@@ -292,6 +281,7 @@ class C_Config_DispCurve_Dialog(QDialog):
 
             with open(str(fname), 'r', newline='') as file:
                 csv_reader_object = csv.reader(file)
+                #if csv.Sniffer().has_header:
                 name_col = next(csv_reader_object)
 
                 for row in name_col:
@@ -321,7 +311,7 @@ class C_Config_DispCurve_Dialog(QDialog):
 
         contChecked = 0
         if retval == QMessageBox.Yes:
-            for ctd in range(self.DispCurve_GroupBox_TreeWidget.topLevelItemCount() - 1, -1, -1):
+            for ctd in range(self.DispCurve_GroupBox_TreeWidget.topLevelItemCount() -1 , -1, -1):
 
                 Item = self.DispCurve_GroupBox_TreeWidget.topLevelItem(ctd)
 

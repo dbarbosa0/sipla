@@ -11,17 +11,12 @@ import opendss.storage.class_config_storagecontroller
 import opendss.class_energymeter_results_dialog
 import opendss.class_config_plot_monitor_dialog
 import opendss.class_scan_config_dialog
-import opendss.PSO.class_pso_dialog
-import protect.class_devices
-import protect.class_tcc_curves
 import database.class_base
 import database.class_config_dialog
-
-# import class_exception
+import class_exception
 import maps.class_view
 import main_panels_dock
 import main_toolbar
-import class_about_dialog
 import datetime
 
 class C_MainActions():
@@ -34,7 +29,6 @@ class C_MainActions():
         self.MainNetPanel = main_panels_dock.C_NetPanel(self)
         self.MainResultsPanel = main_panels_dock.C_ResultsPanel(self)
         self.MainMapView = maps.class_view.C_Viewer()
-        self.About = class_about_dialog.C_AboutDialog()
 
         ###
 
@@ -66,22 +60,11 @@ class C_MainActions():
         # Contribuição Carvalho
         self.SCAnalyze_DialogSettings = opendss.class_scan_config_dialog.C_SCAnalyze_ConfigDialog()
         self.SCAnalyze_DialogSettings.OpenDSS = self.OpenDSS #Apontando o ponteiro de OpenDSS C_MainActions
-        self.Devices_DialogSettings = protect.class_devices.C_Devices_ConfigDialog()
-        self.Devices_DialogSettings.TabRecloser.OpenDSS = self.OpenDSS
-        self.Devices_DialogSettings.TabFuse.OpenDSS = self.OpenDSS
-        self.Devices_DialogSettings.TabRelay.OpenDSS = self.OpenDSS
-        self.Devices_DialogSettings.TabSwtControl.OpenDSS = self.OpenDSS
-        self.Curves_DialogSettings = protect.class_tcc_curves.C_Config_Curves_Dialog()
-
         # Contribuição Jonas
         self.OpenDSS_DialogInsertStorage = opendss.storage.class_insert_storage_dialog.C_Insert_Storage_Dialog()
         self.OpenDSS_DialogInsertStorage.OpenDSS = self.OpenDSS
         self.OpenDSS_DialogInsertStorage.DispModeActPowDialog.ConfigStorageController.OpenDSS = self.OpenDSS
         self.OpenDSS_DialogInsertStorage.DispModeActPowDialog.DialogActPowLoadShape.OpenDSS = self.OpenDSS
-
-        # Contribuição Brenda
-        self.OpenDSS_DialogPSO = opendss.PSO.class_pso_dialog.C_PSO_Dialog()
-        self.OpenDSS_DialogPSO.OpenDSS = self.OpenDSS  # Apontando o ponteiro de OpenDSS C_MainActions
 
 
     #############################################
@@ -89,10 +72,9 @@ class C_MainActions():
     def updateStatusBar(self):
 
         ##Verifica Conexão
-        if self.OpenDSS.DataBaseConn.testConn():
+        if (self.DataBase_DialogSettings.databaseInfo["Conn"] == "sqlite") and (
+                self.DataBase_DialogSettings.databaseInfo["DirDataBase"]):
             self.MainWindowStatusBar.StatusBar_Status.setText("On-Line")
-        else:
-            self.MainWindowStatusBar.StatusBar_Status.setText("Off-Line")
 
         ##Tipo de Fluxo
         self.MainWindowStatusBar.StatusBar_Fluxo.setText("Fluxo: " + self.OpenDSS_DialogSettings.dataInfo["Mode"])
@@ -119,64 +101,45 @@ class C_MainActions():
         ## Habilitar o Solve Apenas se puder visualizar, o que significa que está tudo certo
         if self.MainNetPanel.Deck_GroupBox_MapView_Btn.isEnabled():
             self.MainWindowToolBar.OpenDSS_Run_Act.setEnabled(True)
-            #brenda
-            self.MainWindowToolBar.OpenDSS_PSO_Act.setEnabled(True)
         else:
             self.MainWindowToolBar.OpenDSS_Run_Act.setEnabled(False)
-            #brenda
-            self.MainWindowToolBar.OpenDSS_PSO_Act.setEnabled(False)
 
         ##Funções que precisam do Load Data inpedentemente do Fluxo
         if self.OpenDSS.loadDataFlag:
             self.MainWindowToolBar.OpenDSS_InsertEnergyMeter_Act.setEnabled(True)
             self.MainWindowToolBar.OpenDSS_InsertMonitor_Act.setEnabled(True)
+            self.MainWindowToolBar.OpenDSS_InsertStorage_Act.setEnabled(True)
             self.MainWindowToolBar.OpenDSS_Save_Act.setEnabled(True)
             self.MainWindowToolBar.OpenDSS_Create_Act.setEnabled(True)
             self.MainWindowToolBar.OpenDSS_View_Act.setEnabled(True)
-            #Brenda
-            #self.MainWindowToolBar.OpenDSS_PSO_Act.setEnabled(True)
-            #Jonas
-            self.MainWindowToolBar.OpenDSS_InsertStorage_Act.setEnabled(True)
-            #Carvalho
             self.MainWindowToolBar.SCAnalyze_Config_Act.setEnabled(True)
             self.MainWindowToolBar.SCAnalyze_Run_Act.setEnabled(True)
-            self.MainWindowToolBar.Protect_Devices_Act.setEnabled(True)
-            #self.MainWindowToolBar.Protect_Curves_Act.setEnabled(True)
         else:
             self.MainWindowToolBar.OpenDSS_InsertEnergyMeter_Act.setEnabled(False)
             self.MainWindowToolBar.OpenDSS_InsertMonitor_Act.setEnabled(False)
+            self.MainWindowToolBar.OpenDSS_InsertStorage_Act.setEnabled(True)
             self.MainWindowToolBar.OpenDSS_Save_Act.setEnabled(False)
             self.MainWindowToolBar.OpenDSS_Create_Act.setEnabled(False)
             self.MainWindowToolBar.OpenDSS_View_Act.setEnabled(False)
             self.MainWindowToolBar.SCAnalyze_Config_Act.setEnabled(False)
             self.MainWindowToolBar.SCAnalyze_Run_Act.setEnabled(False)
-            #Brenda
-            #self.MainWindowToolBar.OpenDSS_PSO_Act.setEnabled(False)
-            #Jonas
-            self.MainWindowToolBar.OpenDSS_InsertStorage_Act.setEnabled(False)
-            #Carvalho
-            self.MainWindowToolBar.SCAnalyze_Config_Act.setEnabled(False)
-            self.MainWindowToolBar.SCAnalyze_Run_Act.setEnabled(False)
-            self.MainWindowToolBar.Protect_Devices_Act.setEnabled(False)
-            #self.MainWindowToolBar.Protect_Curves_Act.setEnabled(False)
 
 
     #############################################
 
     def connectDataBase(self):
-        self.DataBaseConn.DataBaseInfo = self.DataBase_DialogSettings.databaseInfo
-
-        if self.OpenDSS.DataBaseConn.testConn():
+        if (self.DataBase_DialogSettings.databaseInfo["Conn"] == "sqlite") and (
+        self.DataBase_DialogSettings.databaseInfo["DirDataBase"]):
+            self.DataBaseConn.DataBaseInfo = self.DataBase_DialogSettings.databaseInfo
             self.getSE_AT_DB()
             self.updateStatusBar()
         else:
             QMessageBox(QMessageBox.Warning, "DataBase Configuration", \
                         "A Conexão com o Banco de Dados deve ser configurada!", QMessageBox.Ok).exec()
 
+
     def configDataBase(self):
-        self.DataBase_DialogSettings.exec()
-        self.updateStatusBar()
-        self.MainNetPanel.setDisabled_NetPanel_Config_GroupBox_SEAT()
+        self.DataBase_DialogSettings.show()
 
     def getSE_AT_DB(self): ## Carregando as subestações de Alta tensão
         self.MainNetPanel.set_SEAT(self.DataBase.getSE_AT_DB())
@@ -200,10 +163,6 @@ class C_MainActions():
         else:
             self.MainResultsPanel.hide()
 
-    def execAbout(self):
-        self.About.show()
-
-
     ##### Visualizando no Mapa
     def execMapView(self):
 
@@ -218,8 +177,6 @@ class C_MainActions():
         self.MainMapView.createMap()
         self.MainMapView.viewMap()
 
-
-
     #################################################################################
     ##### VAI SER SUBSTITUIDO PELA INTERFACE DE SANDY
     #################################################################################
@@ -227,7 +184,7 @@ class C_MainActions():
     # Contribuição Sandy
     def exec_configOpenDSS_Settings(self):
         self.updateToobarMenu()
-        self.OpenDSS_DialogSettings.exec()
+        self.OpenDSS_DialogSettings.show()
 
     def execOpenDSS(self):
 
@@ -290,16 +247,9 @@ class C_MainActions():
     def exec_SCAnalyze(self):
         self.OpenDSS.exec_DynamicFlt()
 
-    def exec_Device_Settings(self):
-        self.Devices_DialogSettings.updateMainProtectDialog()
-        self.Devices_DialogSettings.show()
-
-    def exec_Curves_Settings(self):
-        self.Curves_DialogSettings.show()
-
     #################################################################################
 
-    def fieldsChangedDSS(self): # A alteração dos alimentadores implica em rodar o LoadData novamente
+    def fieldsChangedDSS(self): # A alteração dos alimnetadores implica em rodar o LoadData novamente
         self.OpenDSS.loadDataFlag = False
         self.updateToobarMenu()
         self.updateStatusBar()
@@ -319,31 +269,6 @@ class C_MainActions():
         self.OpenDSS_DialogInsertStorage.show()
         #self.OpenDSS_DialogInsertStorage.DispModeActPowDialog.ConfigStorageController.updateDialog()
 
-
-    #Contribuição Brenda
-    def execpso(self):
-        self.OpenDSS_DialogPSO = opendss.PSO.class_pso_dialog.C_PSO_Dialog()
-        self.OpenDSS_DialogPSO.teste_pso()
-        #self.OpenDSS_DialogPSO.OpenDSS = self.OpenDSS
-
-        #self.OpenDSS_DialogPSO.execpso2()
-        #self.OpenDSS_DialogPSO.exec_pso()
-        #self.OpenDSS_DialogPSO.updateDialog()
-        #self.OpenDSS_DialogPSO.show()
-        #print('ok2')
-       #self.OpenDSS_DialogPSO = opendss.PSO.class_pso_dialog.C_PSO_Dialog()
-
-            #= opendss.PSO.class_pso_dialog.C_PSO_ConfigDialog()
-        #self.OpenDSS_DialogPSO.OpenDSS = self.OpenDSS
-
-        #self.OpenDSS_DialogPSO.updateDialog()
-       # self.OpenDSS_DialogPSO.show()
-
-
-
-
-
-       # self.OpenDSS.exec_DynamicFlt()
 
 
 

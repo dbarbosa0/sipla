@@ -1,6 +1,6 @@
 from PyQt5.QtGui import QColor, QIcon
 from PyQt5.QtWidgets import QStyleFactory, QDialog, QGridLayout, QGroupBox, QHBoxLayout, QTreeWidgetItem, \
-    QPushButton, QTreeWidget, QFileDialog, QColorDialog, QMessageBox, QInputDialog, QLabel, QComboBox, QSpinBox
+    QPushButton, QTreeWidget, QFileDialog, QColorDialog, QMessageBox, QInputDialog, QCheckBox, QLabel, QComboBox, QSpinBox
 from PyQt5.QtCore import Qt
 
 import csv
@@ -11,6 +11,7 @@ import pyqtgraph
 import config as cfg
 import class_exception
 import unidecode
+import opendss.class_config_dialog
 
 
 
@@ -22,7 +23,9 @@ class C_Config_PriceCurve_Dialog(QDialog):
         self.iconWindow = cfg.sipla_icon
         self.stylesheet = cfg.sipla_stylesheet
 
-        self.dataPriceCurve = {}
+        self.ConfigDialog = opendss.class_config_dialog.C_ConfigDialog()
+
+        self.dataPriceCurve = []
 
         self.InitUI()
 
@@ -176,9 +179,6 @@ class C_Config_PriceCurve_Dialog(QDialog):
         self.adjustSize()
 
     def CancelParameters(self):
-        self.Daily_GroupBox_Stepsize_ComboBox.setCurrentIndex(2)
-        self.Daily_GroupBox_Stepsize_SpinBox.setValue(1)
-        self.Daily_GroupBox_Number_SpinBox.setValue(24)
         self.close()
 
     def nPointsLoadDef(self):
@@ -189,20 +189,6 @@ class C_Config_PriceCurve_Dialog(QDialog):
 
     def nStepSizeTimeDef(self):
         return self.Daily_GroupBox_Stepsize_ComboBox.currentText()
-
-    def restoreParameters(self):
-        self.PriceCurve_GroupBox_TreeWidget.clear()
-        self.graphWidget.clear()
-        self.PriceCurve_GroupBox.setVisible(False)
-        self.View_GroupBox.setVisible(False)
-        self.Dialog_Btns_Cancel_Btn.setVisible(False)
-        self.Dialog_Btns_Ok_Btn.setVisible(False)
-        self.Daily_GroupBox.setVisible(True)
-        self.Daily_GroupBox_Stepsize_ComboBox.setCurrentIndex(2)
-        self.Daily_GroupBox_Stepsize_SpinBox.setValue(1)
-        self.Daily_GroupBox_Number_SpinBox.setValue(24)
-        self.dataPriceCurve = {}
-        self.adjustSize()
 
     def Cancel(self):
         self.PriceCurve_GroupBox_TreeWidget.clear()
@@ -219,14 +205,7 @@ class C_Config_PriceCurve_Dialog(QDialog):
         self.close()
 
     def setDataPriceCurve(self):
-        self.dataPriceCurve = {}
-        self.dataPriceCurve["npts"] = self.nPointsLoadDef()
-        if self.nStepSizeTimeDef() == "sec":
-            self.dataPriceCurve["sinterval"] = self.nStepSizeDef()
-        elif self.nStepSizeTimeDef() == "min":
-            self.dataPriceCurve["minterval"] = self.nStepSizeDef()
-        elif self.nStepSizeTimeDef() == "hr":
-            self.dataPriceCurve["interval"] = self.nStepSizeDef()
+        self.dataPriceCurve = []
 
         checkCont = 0
         try:
@@ -238,14 +217,9 @@ class C_Config_PriceCurve_Dialog(QDialog):
                     if checkCont > 1:
                         raise class_exception.ExecConfigOpenDSS("Erro na seleção da Curva de Preço ",
                                                                 "Selecione somente uma curva!")
-                    elif checkCont == 0:
-                        raise class_exception.ExecConfigOpenDSS("Erro na seleção da Curva de Preço ",
-                                                                "Selecione ao menos uma curva!")
                     else:
                         if self.checkPriceCurve(Item.name, Item.getPoints()):
-                            price = Item.getPointsList()
-                            self.dataPriceCurve["PriceCurveName"] = Item.name
-                            self.dataPriceCurve["price"] = price
+                            self.dataPriceCurve = Item.getPointsList()
                         else:
                             raise class_exception.ExecConfigOpenDSS("Erro na verificação da Curva de Preço " \
                                              + Item.name + " !","Verifique se todos os " + self.nPointsLoadDef() + " pontos estão presentes!")
@@ -279,12 +253,14 @@ class C_Config_PriceCurve_Dialog(QDialog):
                     rowText.append(self.dataPriceCurve[dataShape][ctdPoints])
                 writer.writerow(rowText)
 
+
+
     def csvImport(self):
         try:
             dataCSV = {} #Dicionário para as variáveis
 
             fname = QFileDialog.getOpenFileName(self, 'Open CSV file',
-                                                "StorageCurves", "CSV files (*.csv)")
+                                                "PriceCurve", "CSV files (*.csv)")
                                                 #str(pathlib.Path.home()), "CSV files (*.csv)")
 
             if platform.system() == "Windows":

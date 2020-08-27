@@ -1,9 +1,8 @@
 from PyQt5.QtWidgets import QDockWidget, QAction, QMenuBar, QToolBar
 from PyQt5.QtGui import QIcon
 
-
 class C_MenuToolBar(QDockWidget):
-    def __init__(self, MainWin=None):
+    def __init__(self, MainWin = None):
 
         QDockWidget.__init__(self)
 
@@ -19,9 +18,9 @@ class C_MenuToolBar(QDockWidget):
 
         # ******* Actions the Power System Network Menu  *******
         self.NetActRef = {'Net_Select_Act': 0
-                          # 'OpnFileAct': 0,
-                          # 'SavFileAct': 0
-                          }
+                           #'OpnFileAct': 0,
+                           #'SavFileAct': 0
+                           }
 
         # ******* Create the Power System Network Menu *******
         self.NetMenu = self.MainMenu.addMenu('&Rede')
@@ -34,36 +33,35 @@ class C_MenuToolBar(QDockWidget):
         self.NetActRef['Net_Select_Act'] = self.Net_Select_Act
 
         # ******* Create File Menu Items *******
-        # self.OpnFileAct = QAction(QIcon('img/open.png'), 'Open File', self)
-        # self.OpnFileAct.setShortcut("Ctrl+O")
-        # self.OpnFileAct.setStatusTip('Open an Existing Project File')
-        # self.OpnFileAct.triggered.connect(self.OpenProjFile)
-        # self.Net_select_ActRef['OpnFileAct'] = self.OpnFileAct
+        #self.OpnFileAct = QAction(QIcon('img/open.png'), 'Open File', self)
+        #self.OpnFileAct.setShortcut("Ctrl+O")
+        #self.OpnFileAct.setStatusTip('Open an Existing Project File')
+        #self.OpnFileAct.triggered.connect(self.OpenProjFile)
+        #self.Net_select_ActRef['OpnFileAct'] = self.OpnFileAct
 
-        # self.SavFileAct = QAction(QIcon('img/save.png'), 'Save File', self)
-        # self.SavFileAct.setShortcut("Ctrl+S")
-        # self.SavFileAct.setStatusTip('Save Current Project File')
-        # self.SavFileAct.triggered.connect(self.SaveProjFile)
-        # self.Net_select_MenuActRef['SavFileAct'] = self.SavFileAct
-
+        #self.SavFileAct = QAction(QIcon('img/save.png'), 'Save File', self)
+        #self.SavFileAct.setShortcut("Ctrl+S")
+        #self.SavFileAct.setStatusTip('Save Current Project File')
+        #self.SavFileAct.triggered.connect(self.SaveProjFile)
+        #self.Net_select_MenuActRef['SavFileAct'] = self.SavFileAct
+        
         # ******* Setup the Configuration Menu *******
         self.NetMenu.addAction(self.Net_Select_Act)
 
         ########################################################################################################
-
+        
         # ******* Actions the OpenDSS Menu  *******
-        self.OpenDSSActRef = {'OpenDSS_Config_Act': 0,  # Configurar o OpenDSS
+        self.OpenDSSActRef = {'OpenDSS_Config_Act': 0, # Configurar o OpenDSS
                               'OpenDSS_Run_Act': 0,  # Configurar o OpenDSS
-                              'OpenDSS_Results_EnergyMeter_Act': 0,
-                              'OpenDSS_InsertEnergyMeter_Act': 0,  # Inserir o Energy Meter
+                              'OpenDSS_Results_EnergyMeter_Act':0,
+                              'OpenDSS_InsertEnergyMeter_Act': 0, # Inserir o Energy Meter
                               'OpenDSS_InsertMonitor_Act': 0,  # Inserir o Energy Meter
-                              'OpenDSS_InsertStorage_Act': 0,  # Inserir o Storage
-                              'OpenDSS_Create_Act': 0,  # Criar Arquivo .DSS
+                              'OpenDSS_InsertStorage_Act': 0, #Inserir o Storage
+                              'OpenDSS_Create_Act': 0, # Criar Arquivo .DSS
                               'OpenDSS_Save_Act': 0,
                               'OpenDSS_View_Act': 0,
                               'SCAnalyze_Config_Act': 0,  # Configurar SCAn
-                              'SCAnalyze_Run_Act': 0,  # Run SCAn
-                              'OpenDSS_PSO_Act': 0, }
+                              'SCAnalyze_Run_Act': 0, }  # Run SCAn
 
         # ******* Create the OpenDSSuration Menu *******
         self.OpenDSSMenu = self.MainMenu.addMenu('&OpenDSS')
@@ -89,7 +87,7 @@ class C_MenuToolBar(QDockWidget):
         self.OpenDSS_InsertEnergyMeter_Act.triggered.connect(self.exec_InsertEnergyMeter)
         self.OpenDSS_InsertEnergyMeter_Act.setObjectName('OpenDSS_InsertEnergyMeter_Act')
         self.OpenDSSActRef['OpenDSS_InsertEnergyMeter_Act'] = self.OpenDSS_InsertEnergyMeter_Act
-
+        
         self.OpenDSS_InsertMonitor_Act = QAction(QIcon('img/icon_opendss_energymeter.png'), 'Moni&tor', self)
         self.OpenDSS_InsertMonitor_Act.setShortcut("")
         self.OpenDSS_InsertMonitor_Act.setStatusTip('Inserir Monitor')
@@ -103,6 +101,7 @@ class C_MenuToolBar(QDockWidget):
         self.OpenDSS_Results_EnergyMeter_Act.triggered.connect(self.exec_ResultsEnergyMeter)
         self.OpenDSS_Results_EnergyMeter_Act.setObjectName('OpenDSS_Results_EnergyMeter_Act')
         self.OpenDSSActRef['OpenDSS_Results_EnergyMeter_Act'] = self.OpenDSS_Results_EnergyMeter_Act
+
 
         self.OpenDSS_Create_Act = QAction(QIcon('img/icon_opendss.png'), '&Gerar Arquivo .DSS', self)
         self.OpenDSS_Create_Act.setShortcut("Ctrl+Shift+G")
@@ -125,7 +124,7 @@ class C_MenuToolBar(QDockWidget):
         self.OpenDSS_View_Act.setObjectName('OpenDSS_View_Act')
         self.OpenDSSActRef['OpenDSS_View_Act'] = self.OpenDSS_View_Act
 
-        # Contribuição Carvalho
+        #Contribuição Carvalho
         self.SCAnalyze_Config_Act = QAction(QIcon('img/icon_opendss_sc_config.png'), '&Configure', self)
         self.SCAnalyze_Config_Act.setShortcut("Alt+1")
         self.SCAnalyze_Config_Act.setStatusTip('Configure Short Circuit Analyze')
@@ -140,6 +139,7 @@ class C_MenuToolBar(QDockWidget):
         self.SCAnalyze_Run_Act.setObjectName('SCAnalyze_Run_Act')
         self.OpenDSSActRef['SCAnalyze_Run_Act'] = self.SCAnalyze_Run_Act
 
+
         # Contribuição Jonas
         self.OpenDSS_InsertStorage_Act = QAction(QIcon('img/icon_opendss_storage.png'), 'Storage', self)
         self.OpenDSS_InsertStorage_Act.setShortcut("")
@@ -148,21 +148,13 @@ class C_MenuToolBar(QDockWidget):
         self.OpenDSS_InsertStorage_Act.setObjectName('OpenDSS_InsertStorage_Act')
         self.OpenDSSActRef['OpenDSS_InsertStorage_Act'] = self.OpenDSS_InsertStorage_Act
 
-        # Contribuição Brenda
-        self.OpenDSS_PSO_Act = QAction(QIcon('img/icon_opendss_sc_run.png'), '&PSO', self)
-        self.OpenDSS_PSO_Act.setShortcut("")
-        self.OpenDSS_PSO_Act.setStatusTip('Solve PSO')
-        self.OpenDSS_PSO_Act.triggered.connect(self.exec_pso)
-        #self.OpenDSS_PSO_Act.triggered.connect(self.exec_dynamicFlt)
-        self.OpenDSS_PSO_Act.setObjectName('OpenDSS_PSO_Act')
-        self.OpenDSSActRef['OpenDSS_PSO_Act'] = self.OpenDSS_PSO_Act
 
         # ******* Setup the OpenDSS Menu *******
         self.OpenDSSMenu.addAction(self.OpenDSS_Config_Act)
         self.OpenDSSMenu.addAction(self.OpenDSS_Run_Act)
         self.OpenDSSMenu.addSeparator()
         self.OpenDSSMenuSubInsert = self.OpenDSSMenu.addMenu(QIcon('img/icon_opendss_insert_equip.png'),
-                                                             'Insert ')
+                                                              'Insert ')
         self.OpenDSSMenuSubInsert.addAction(self.OpenDSS_InsertEnergyMeter_Act)
         self.OpenDSSMenuSubInsert.addAction(self.OpenDSS_InsertMonitor_Act)
 
@@ -177,45 +169,13 @@ class C_MenuToolBar(QDockWidget):
         self.OpenDSSMenuSubProcess.addAction(self.OpenDSS_Create_Act)
         self.OpenDSSMenuSubProcess.addAction(self.OpenDSS_Save_Act)
         self.OpenDSSMenuSubSCAnalyze = self.OpenDSSMenu.addMenu(QIcon('img/icon_opendss_sc.png'),
-                                                                'Short Circuit')
+                                                             'Short Circuit')
         self.OpenDSSMenuSubSCAnalyze.addAction(self.SCAnalyze_Config_Act)
         self.OpenDSSMenuSubSCAnalyze.addAction(self.SCAnalyze_Run_Act)
-        self.OpenDSSMenuSubPSO = self.OpenDSSMenu.addMenu(QIcon(''),
-                                                          'Otimização')
-        self.OpenDSSMenuSubPSO.addAction(self.OpenDSS_PSO_Act)
 
         self.OpenDSSMenu.addSeparator()
         self.OpenDSSMenu.addAction(self.OpenDSS_View_Act)
         self.OpenDSSMenu.addSeparator()
-
-        ####################################################################################
-        # ******* Actions the Window Menu  *******
-        self.ProtectActRef = {'Protect_Devices_Act': 0,
-                              'Protect_Curves_Act': 0
-                              }
-
-        # ******* Create the Protect Menu *******
-        self.ProtectMenu = self.MainMenu.addMenu('&Proteção')
-
-        self.Protect_Devices_Act = QAction(QIcon('img/Devices.png'), '&Dispositivos', self)
-        self.Protect_Devices_Act.setShortcut("Alt+Q")
-        self.Protect_Devices_Act.setStatusTip('Configurar dispositivos de proteção')
-        self.Protect_Devices_Act.triggered.connect(self.exec_configDevice)
-        self.Protect_Devices_Act.setObjectName('Protect_Devices_Act')
-        self.ProtectActRef['Protect_Devices_Act'] = self.Protect_Devices_Act
-
-        self.Protect_Curves_Act = QAction(QIcon('img/Devices.png'), '&Gerenciar Curvas TCC', self)
-        self.Protect_Curves_Act.setShortcut("Alt+W")
-        self.Protect_Curves_Act.setStatusTip('Gerenciar Curvas TCC')
-        self.Protect_Curves_Act.triggered.connect(self.exec_configCurves)
-        self.Protect_Devices_Act.setObjectName('Protect_Curves_Act')
-        self.ProtectActRef['Protect_Curves_Act'] = self.Protect_Curves_Act
-
-        # ******* Setup the Protect Menu *******
-        self.ProtectMenu.addAction(self.Protect_Devices_Act)
-        self.ProtectMenu.addAction(self.Protect_Curves_Act)
-
-        ##################################################################################
 
         # ******* Actions the Plot Menu  ******************************************************************************
         self.PlotActRef = {'Plot_Act': 0}
@@ -228,6 +188,7 @@ class C_MenuToolBar(QDockWidget):
         self.PlotActRef['Plot_Monitor_Act'] = self.Plot_Monitor_Act
 
         self.PlotMenu.addAction(self.Plot_Monitor_Act)
+
 
         ########################################################################################################
 
@@ -246,13 +207,14 @@ class C_MenuToolBar(QDockWidget):
         self.WindowActRef['Window_show_table_Act'] = self.Window_show_table_Act
 
         # ******* Create WindowMenu Items *******
-
+        
         self.Window_show_map_Act = QAction(QIcon('img/icon_map.png'), '&Visualizar Mapa', self)
         self.Window_show_map_Act.setShortcut("Ctrl+Alt+F")
         self.Window_show_map_Act.setStatusTip('Visualizar Mapa')
         self.Window_show_map_Act.triggered.connect(self.exec_showNetMap)
         self.Window_show_map_Act.setObjectName('Window_show_map_Act')
         self.WindowActRef['Window_show_map_Act'] = self.Window_show_map_Act
+
 
         # ******* Setup the Window Menu *******
         self.WindowMenu.addAction(self.Window_show_table_Act)
@@ -280,6 +242,8 @@ class C_MenuToolBar(QDockWidget):
         self.Connect_BDGD_Act.setObjectName('Connect_BDGD_Act')
         self.ConfigActRef['Connect_BDGD_Act'] = self.Connect_BDGD_Act
 
+
+
         # ******* Create Configuration Menu Items *******
 
         # ******* Setup the Configuration Menu *******
@@ -287,6 +251,7 @@ class C_MenuToolBar(QDockWidget):
         self.ConfigMenu.addAction(self.Config_BDGD_Act)
 
         #########################################################################################################
+
 
         # ******* Actions the Help Menu  *******
         self.HelpActRef = {'Help_About_Act': 0}
@@ -308,57 +273,60 @@ class C_MenuToolBar(QDockWidget):
         if MainWin != None:
             self.InitToolBar(MainWin)
 
-    def InitToolBar(self, MainWin=None):
+    def InitToolBar(self, MainWin = None):
 
-        # Dynamically Add Items to the Toolbar
+            # Dynamically Add Items to the Toolbar
 
-        self.mainToolBar = MainWin.addToolBar("Acesso Rápido")
+            self.mainToolBar = MainWin.addToolBar("Acesso Rápido")
 
-        self.mainToolBar.setObjectName("ToolBarApp")
+            self.mainToolBar.setObjectName("ToolBarApp")
 
-        # This represents reading these values in via a Query
-        toolBarNetworkLayout = {0: 'Net_Select_Act',
-                                1: 'Spacer'}
+            # This represents reading these values in via a Query
+            toolBarNetworkLayout =  {0: 'Net_Select_Act',
+                                     1: 'Spacer'}
 
-        for idx in toolBarNetworkLayout:
-            item = toolBarNetworkLayout[idx]
+            for idx in toolBarNetworkLayout:
+                item = toolBarNetworkLayout[idx]
 
-            if item == 'Spacer':
-                self.mainToolBar.addSeparator()
-            else:
-                self.mainToolBar.addAction(self.NetActRef[item])
+                if item == 'Spacer':
+                    self.mainToolBar.addSeparator()
+                else:
+                    self.mainToolBar.addAction(self.NetActRef[item])
 
-        # Dynamically Add Items to the Toolbar
 
-        # This represents reading these values in via a Query
-        toolBarOpenDSSLayout = {0: 'OpenDSS_Create_Act',
-                                1: 'Spacer',
-                                2: 'OpenDSS_Save_Act'}
+            # Dynamically Add Items to the Toolbar
 
-        for idx in toolBarOpenDSSLayout:
-            item = toolBarOpenDSSLayout[idx]
+            # This represents reading these values in via a Query
+            toolBarOpenDSSLayout =  {0: 'OpenDSS_Create_Act',
+                                     1: 'Spacer',
+                                     2: 'OpenDSS_Save_Act'}
 
-            if item == 'Spacer':
-                self.mainToolBar.addSeparator()
-            else:
-                self.mainToolBar.addAction(self.OpenDSSActRef[item])
+            for idx in toolBarOpenDSSLayout:
+                item = toolBarOpenDSSLayout[idx]
 
-        # Dynamically Add Items to the Toolbar
+                if item == 'Spacer':
+                    self.mainToolBar.addSeparator()
+                else:
+                    self.mainToolBar.addAction(self.OpenDSSActRef[item])
 
-        # This represents reading these values in via a Query
-        # toolBarInsertEquipamentLayout =  {0: 'OpenDSS_Create_Act',
-        #                         1: 'Spacer',
-        #                         }
+            # Dynamically Add Items to the Toolbar
 
-        # for idx in toolBarInsertEquipamentLayout :
-        #    item = toolBarInsertEquipamentLayout [idx]
+            # This represents reading these values in via a Query
+            #toolBarInsertEquipamentLayout =  {0: 'OpenDSS_Create_Act',
+            #                         1: 'Spacer',
+            #                         }
 
-        #    if item == 'Spacer':
-        #        self.mainToolBar.addSeparator()
-        #    else:
-        #        self.mainToolBar.addAction(self.OpenDSSActRef[item])
+            #for idx in toolBarInsertEquipamentLayout :
+            #    item = toolBarInsertEquipamentLayout [idx]
 
-    def exec_selectNet(self):  # self.metodo_CARREGAMENTO_DE_REDE
+            #    if item == 'Spacer':
+            #        self.mainToolBar.addSeparator()
+            #    else:
+            #        self.mainToolBar.addAction(self.OpenDSSActRef[item])
+
+
+
+    def exec_selectNet(self): #self.metodo_CARREGAMENTO_DE_REDE
         self.Actions.showDockNetPanel()
 
     def exec_configBDGD(self):
@@ -367,10 +335,10 @@ class C_MenuToolBar(QDockWidget):
     def exec_connBDGD(self):
         self.Actions.connectDataBase()
 
-    def exec_showTableResults(self):  # self.metodo_VISUALIZAR_RESULTADOS_POR_TABELA)
+    def exec_showTableResults(self): #self.metodo_VISUALIZAR_RESULTADOS_POR_TABELA)
         self.Actions.showDockResultsPanel()
 
-    def exec_showNetMap(self):  # self.metodo_VISUALIZADOR_DE_REDE_CARREGADA
+    def exec_showNetMap(self):  #  self.metodo_VISUALIZADOR_DE_REDE_CARREGADA
         print("Visualizar a Rede")
 
     ###################################################################
@@ -391,7 +359,7 @@ class C_MenuToolBar(QDockWidget):
 
     def exec_createFileDSS(self):
         self.Actions.execCreateDSS()
-
+        
     def exec_saveFileDSS(self):
         self.Actions.saveOpenDSS()
 
@@ -405,36 +373,9 @@ class C_MenuToolBar(QDockWidget):
     def exec_dynamicFlt(self):
         self.Actions.exec_SCAnalyze()
 
-    def exec_configDevice(self):
-        self.Actions.exec_Device_Settings()
-
-    def exec_configCurves(self):
-        self.Actions.exec_Curves_Settings()
-
     # Contribuição Jonas
     def exec_InsertStorage(self):
         self.Actions.execInsertStorage()
-
-    # Contribuição Brenda
-    def exec_pso(self):
-        self.Actions.execpso()
-
-
-
-
-        #self.Actions.execOpenDSS()
-        #self.Actions.showDockResultsPanel()
-        #print('ok1')
-
-
-
-
-
-
-
-
-    #def exec_dynamicFlt(self):
-        #self.Actions.execteste()
 
     ####################################################################
 
@@ -447,4 +388,8 @@ class C_MenuToolBar(QDockWidget):
     ####################################################################
 
     def exec_aboutSIPLA(self):
-        self.Actions.execAbout()
+        print("Sobre o SIPLA")
+
+
+
+

@@ -1,6 +1,6 @@
 from PyQt5.QtGui import QColor, QIcon
 from PyQt5.QtWidgets import QStyleFactory, QDialog, QGridLayout, QGroupBox, QHBoxLayout, QTreeWidgetItem, \
-    QPushButton, QTreeWidget, QColorDialog, QMessageBox, QInputDialog, QLabel
+    QPushButton, QTreeWidget, QFileDialog, QColorDialog, QMessageBox, QInputDialog, QCheckBox, QLineEdit, QLabel, QWidget
 from PyQt5.QtCore import Qt
 
 
@@ -11,7 +11,6 @@ import platform
 import pyqtgraph
 import config as cfg
 import class_exception
-import unidecode
 
 
 
@@ -23,21 +22,17 @@ class C_Config_EffCurve_Dialog(QDialog):
         self.iconWindow = cfg.sipla_icon
         self.stylesheet = cfg.sipla_stylesheet
 
-        self.dataEffCurve = {}
+        self._nPointsLoadDef = 0
+        self._nStepSizeDef = 0
+        self._nStepSizeTimeDef = ""
 
-        self._Storages = []
+        self._dataLoadShapes = {}
 
         self.InitUI()
 
-    @property
-    def Storages(self):
-        return self._Storages
-
-    @Storages.setter
-    def Storages(self, value):
-        self._Storages = value
-
     def InitUI(self):
+
+
         self.setWindowTitle(self.titleWindow)
         self.setWindowIcon(QIcon(self.iconWindow))  # ícone da janela
         self.setWindowModality(Qt.ApplicationModal)
@@ -61,9 +56,10 @@ class C_Config_EffCurve_Dialog(QDialog):
 
         ### Label
         self.EffCurve_GroupBox_Label = QLabel(
-            "Pontos X: Potência aparente (kVA) em p.u.\n\
-Pontos Y: Eficiência do inversor em p.u.")
+            "Pontos X: Eficiência do inversor em p.u.\n\
+Pontos Y: Potência aparente (kVA) em p.u.")
         self.EffCurve_GroupBox_Layout.addWidget(self.EffCurve_GroupBox_Label, 2, 1, 1, 2)
+
 
         ### Botões adicionar/remover curvas
         self.EffCurve_GroupBox_Remover_Btn = QPushButton("Remover")
@@ -125,10 +121,10 @@ Pontos Y: Eficiência do inversor em p.u.")
 
         self.setLayout(self.Dialog_Layout)
 
+
     def addEffCurve(self):
 
         inputLoadName, inputOk = QInputDialog.getText(self, 'Curvas de Eficiência','Entre com o nome da nova Curva de\nEficiência do Inversor:')
-        inputLoadName = unidecode.unidecode(inputLoadName.replace(" ", "_"))
 
         if inputOk:
             countName = 0
@@ -137,10 +133,6 @@ Pontos Y: Eficiência do inversor em p.u.")
                 Item = self.EffCurve_GroupBox_TreeWidget.topLevelItem(ctd)
 
                 if Item.name == str(inputLoadName):
-                    countName += 1
-
-            for i in self.Storages:
-                if i["EffCurve"]["EffCurveName"] == str(inputLoadName):
                     countName += 1
 
             if countName == 0:
@@ -194,8 +186,8 @@ Pontos Y: Eficiência do inversor em p.u.")
         # Add Background colour to white
         self.graphWidget.setBackground('w')
         #Add Axis Labels
-        self.graphWidget.setLabel('left', 'Eficiência (p.u.)', color='red', size=20)
-        self.graphWidget.setLabel('bottom', 'Pot. aparente (p.u.)', color='red', size=20)
+        self.graphWidget.setLabel('left', 'Pot. aparente (p.u.)', color='red', size=20)
+        self.graphWidget.setLabel('bottom', 'Eficiência (p.u.)', color='red', size=20)
         # Add legend
         self.graphWidget.addLegend()
         # Add grid
@@ -227,6 +219,7 @@ Pontos Y: Eficiência do inversor em p.u.")
 
     def Accept(self):
         self.setDataEffCurve()
+        self.close()
 
     def checkEffCurve(self, nameEffCurve, pointsXEffCurve, pointsYEffCurve):
 
@@ -257,9 +250,10 @@ Pontos Y: Eficiência do inversor em p.u.")
             return True
 
     def setDataEffCurve(self):
+
         self.EffCurveXarray = []
         self.EffCurveYarray = []
-        self.dataEffCurve = {}
+
         checkCont = 0
         try:
             for ctd in range(0, self.EffCurve_GroupBox_TreeWidget.topLevelItemCount()):
@@ -267,25 +261,16 @@ Pontos Y: Eficiência do inversor em p.u.")
                 Item = self.EffCurve_GroupBox_TreeWidget.topLevelItem(ctd)
                 if Item.checkState(0) == Qt.Checked:
                     checkCont += 1
-                if checkCont > 1:
-                    raise class_exception.ExecConfigOpenDSS("Erro na seleção da Curva de Eficiência ",
-                                                            "Selecione somente uma curva!")
-                elif checkCont == 0:
-                    raise class_exception.ExecConfigOpenDSS("Erro na seleção da Curva de Eficiência ",
-                                                            "Selecione ao menos uma curva!")
-                else:
-                    if self.checkEffCurve(Item.name, Item.getPointsX(), Item.getPointsY()):
-                        self.EffCurveXarray = Item.getPointsXList()
-                        self.EffCurveYarray = Item.getPointsYList()
-                        self.dataEffCurve["EffCurveName"] = Item.name
-                        self.dataEffCurve["npts"] = str(len(self.EffCurveXarray))
-                        self.dataEffCurve["Xarray"] = self.EffCurveXarray
-                        self.dataEffCurve["Yarray"] = self.EffCurveYarray
-                        self.close()
+                    if checkCont > 1:
+                        raise class_exception.ExecConfigOpenDSS("Erro na seleção da Curva de Eficiência ",
+                                                                "Selecione somente uma curva!")
                     else:
-                        raise class_exception.ExecConfigOpenDSS("Erro na verificação da Curva de Eficiência " \
-                                         + Item.name + " !","Verifique se todos os pontos estão presentes!")
-
+                        if self.checkEffCurve(Item.name, Item.getPointsX(), Item.getPointsY()):
+                            self.EffCurveXarray = Item.getPointsXList()
+                            self.EffCurveYarray = Item.getPointsYList()
+                        else:
+                            raise class_exception.ExecConfigOpenDSS("Erro na verificação da Curva de Eficiência " \
+                                             + Item.name + " !","Verifique se todos os pontos estão presentes!")
         except:
             pass
 
