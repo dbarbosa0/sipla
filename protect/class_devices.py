@@ -1,6 +1,6 @@
 # Carvalho Tag
 from PyQt5.QtGui import QIcon
-from PyQt5.QtWidgets import QStyleFactory, QDialog,QHBoxLayout, QPushButton, QVBoxLayout, QTabWidget
+from PyQt5.QtWidgets import QStyleFactory, QDialog,QHBoxLayout, QPushButton, QVBoxLayout, QTabWidget, QCheckBox
 from PyQt5.QtCore import Qt
 
 import opendss.class_opendss

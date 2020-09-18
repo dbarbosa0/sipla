@@ -7,6 +7,8 @@ import opendss.class_config_dialog
 import opendss.class_insert_energymeter_dialog
 import opendss.class_insert_monitor_dialog
 import opendss.storage.class_insert_storage_dialog
+import opendss.invcontrol.class_insert_invcontrol_dialog
+import opendss.invcontrol.class_config_voltvar_elementlist
 import opendss.storage.class_config_storagecontroller
 import opendss.class_energymeter_results_dialog
 import opendss.class_config_plot_monitor_dialog
@@ -77,7 +79,11 @@ class C_MainActions():
         self.OpenDSS_DialogInsertStorage.OpenDSS = self.OpenDSS
         self.OpenDSS_DialogInsertStorage.DispModeActPowDialog.ConfigStorageController.OpenDSS = self.OpenDSS
         self.OpenDSS_DialogInsertStorage.DispModeActPowDialog.DialogActPowLoadShape.OpenDSS = self.OpenDSS
-
+        # Contribuição Lenon
+        self.OpenDSS_DialogInsertInvControl = opendss.invcontrol.class_insert_invcontrol_dialog.C_Insert_InvControl_Dialog()
+        self.OpenDSS_DialogInsertInvControl.OpenDSS = self.OpenDSS
+        self.OpenDSS_DialogInsertInvControl.TabConfig.VV_ElementList.OpenDSS = self.OpenDSS
+        self.OpenDSS_DialogInsertInvControl.TabConfig.VW_ElementList.OpenDSS = self.OpenDSS
 
     #############################################
 
@@ -125,6 +131,8 @@ class C_MainActions():
         if self.OpenDSS.loadDataFlag:
             self.MainWindowToolBar.OpenDSS_InsertEnergyMeter_Act.setEnabled(True)
             self.MainWindowToolBar.OpenDSS_InsertMonitor_Act.setEnabled(True)
+            self.MainWindowToolBar.OpenDSS_InsertStorage_Act.setEnabled(True)
+            self.MainWindowToolBar.OpenDSS_InsertInvControl_Act.setEnabled(True)
             self.MainWindowToolBar.OpenDSS_Save_Act.setEnabled(True)
             self.MainWindowToolBar.OpenDSS_Create_Act.setEnabled(True)
             self.MainWindowToolBar.OpenDSS_View_Act.setEnabled(True)
@@ -138,6 +146,8 @@ class C_MainActions():
         else:
             self.MainWindowToolBar.OpenDSS_InsertEnergyMeter_Act.setEnabled(False)
             self.MainWindowToolBar.OpenDSS_InsertMonitor_Act.setEnabled(False)
+            self.MainWindowToolBar.OpenDSS_InsertStorage_Act.setEnabled(False)
+            self.MainWindowToolBar.OpenDSS_InsertInvControl_Act.setEnabled(False)
             self.MainWindowToolBar.OpenDSS_Save_Act.setEnabled(False)
             self.MainWindowToolBar.OpenDSS_Create_Act.setEnabled(False)
             self.MainWindowToolBar.OpenDSS_View_Act.setEnabled(False)
@@ -310,7 +320,10 @@ class C_MainActions():
         self.OpenDSS_DialogInsertStorage.show()
         #self.OpenDSS_DialogInsertStorage.DispModeActPowDialog.ConfigStorageController.updateDialog()
 
-
+    #Contribuição Lenon
+    def execInsertInvControl(self):
+        self.OpenDSS_DialogInsertInvControl.move(500, 90)
+        self.OpenDSS_DialogInsertInvControl.show()
 
 
 
