@@ -833,31 +833,37 @@ class C_Data():  # classe OpenDSS
 
                     nivel_de_tensao = tten.TTEN[dados_db[ctd].ten_forn]
 
-                    [num_de_fases, pac_1, pac_2] = self.getFasesConexao(dados_db[ctd].fas_con, dados_db[ctd].pac, None)
-
-                    if dados_db[ctd].fas_con == "ABC":
-                        conexao = "wye"
-                    if dados_db[ctd].fas_con == "ABCN":
-                        conexao = "wye"
-                    if dados_db[ctd].fas_con == "ABN":
-                        conexao = "wye"
-                    if dados_db[ctd].fas_con == "CAN":
-                        conexao = "wye"
-                    if dados_db[ctd].fas_con == "BCN":
-                        conexao = "wye"
-                    if dados_db[ctd].fas_con == "AN":
-                        conexao = "wye"
-                    if dados_db[ctd].fas_con == "BN":
-                        conexao = "wye"
-                    if dados_db[ctd].fas_con == "CN":
-                        conexao = "wye"
-
-
                     ######
+
                     if conBTTD == True:
-                        pac_1 = self.trafoDistUniCons[dados_db[ctd].uni_tr][-2]
+                        auxpac_1  = self.trafoDistUniCons[dados_db[ctd].uni_tr][-2]
                         memoFileUC.append("! Tranformador de Distribuicao: " + dados_db[ctd].uni_tr)
+                    else:
+                        auxpac_1 = dados_db[ctd].pac
                     ######
+
+                    pac_1r = dados_db[ctd].pac
+
+                    [num_de_fases, pac_1, pac_2] = self.getFasesConexao(dados_db[ctd].fas_con, auxpac_1, None)
+
+                    conexao = "wye"
+
+                    # if dados_db[ctd].fas_con == "ABC":
+                    #     conexao = "wye"
+                    # if dados_db[ctd].fas_con == "ABCN":
+                    #     conexao = "wye"
+                    # if dados_db[ctd].fas_con == "ABN":
+                    #     conexao = "wye"
+                    # if dados_db[ctd].fas_con == "CAN":
+                    #     conexao = "wye"
+                    # if dados_db[ctd].fas_con == "BCN":
+                    #     conexao = "wye"
+                    # if dados_db[ctd].fas_con == "AN":
+                    #     conexao = "wye"
+                    # if dados_db[ctd].fas_con == "BN":
+                    #     conexao = "wye"
+                    # if dados_db[ctd].fas_con == "CN":
+                    #     conexao = "wye"
 
                     tmp = "New Load.{0}".format(dados_db[ctd].objectid) + " Bus1={0}".format(
                         pac_1) + " Phases={0}".format(num_de_fases)
@@ -985,7 +991,7 @@ class C_Data():  # classe OpenDSS
                     memoFileTD.append(tmp)
 
                     ### trafo paras as cargas
-                    self.trafoDistUniCons[str(dados_db[ctd].cod_id)] = [pac_2, dados_db[ctd].pot_nom]
+                    self.trafoDistUniCons[str(dados_db[ctd].cod_id)] = [dados_db[ctd].pac_2, dados_db[ctd].pot_nom]
 
                     ##Buffer
                     self.insertBusList(dados_db[ctd].pac_1)
