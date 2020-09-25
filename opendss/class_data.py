@@ -834,7 +834,6 @@ class C_Data():  # classe OpenDSS
                     nivel_de_tensao = tten.TTEN[dados_db[ctd].ten_forn]
 
                     ######
-
                     if (conBTTD == True) and (tipoUniCons == "BT"):
                         auxpac_1  = self.trafoDistUniCons[dados_db[ctd].uni_tr][-2]
                         memoFileUC.append("! Tranformador de Distribuicao: " + dados_db[ctd].uni_tr)
@@ -842,11 +841,13 @@ class C_Data():  # classe OpenDSS
                         auxpac_1 = dados_db[ctd].pac
                     ######
 
-                    pac_1r = dados_db[ctd].pac
 
                     [num_de_fases, pac_1, pac_2] = self.getFasesConexao(dados_db[ctd].fas_con, auxpac_1, None)
 
-                    conexao = "wye"
+                    if tipoUniCons == "BT":
+                        conexao = "wye"
+                    if tipoUniCons == "MT":
+                        conexao = "delta"
 
                     # if dados_db[ctd].fas_con == "ABC":
                     #     conexao = "wye"
