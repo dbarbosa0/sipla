@@ -835,7 +835,7 @@ class C_Data():  # classe OpenDSS
 
                     ######
 
-                    if conBTTD == True:
+                    if (conBTTD == True) and (tipoUniCons == "BT"):
                         auxpac_1  = self.trafoDistUniCons[dados_db[ctd].uni_tr][-2]
                         memoFileUC.append("! Tranformador de Distribuicao: " + dados_db[ctd].uni_tr)
                     else:
