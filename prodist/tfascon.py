@@ -1,2 +1,0 @@
-TFASCON={}
-TFASCON[] =

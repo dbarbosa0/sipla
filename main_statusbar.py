@@ -23,13 +23,6 @@ class C_StatusBar(QStatusBar):
         self.MainStatusBar.addPermanentWidget(QFrame())
         self.MainStatusBar.addPermanentWidget(self.StatusBar_Status)
 
-        self.StatusBar_LoadData = QLabel("Data Not Loaded")
-        self.StatusBar_LoadData.setObjectName("StatusBarApp_LoadData")
-        # self.StatusBar_LoadData.setStyleSheet('border: 0; background-color: #DCDCDC;')
-        self.MainStatusBar.addPermanentWidget(QFrame())
-        self.MainStatusBar.addPermanentWidget(self.StatusBar_LoadData)
-
-
         self.StatusBar_Fluxo = QLabel(config['LoadFlow']['mode'])
         self.StatusBar_Fluxo.setObjectName("StatusBarApp_Fluxo")
         #self.StatusBar_Fluxo.setStyleSheet('border: 0; background-color: #DCDCDC;')

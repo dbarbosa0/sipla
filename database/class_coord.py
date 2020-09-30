@@ -1,6 +1,16 @@
+from typing import NamedTuple
+
 import database.class_conn
 import class_exception
 
+
+##Classes de Dados
+class dadosTrafoDist(NamedTuple):
+    cod_id: str
+    pot_nom:str
+    ctmt: str
+    x: str
+    y:str
 
 class C_DBaseCoord():
     def __init__(self):
@@ -23,13 +33,16 @@ class C_DBaseCoord():
 
             lista_de_identificadores_dos_alimentadores = []
 
-            ct_mt = self.DataBaseConn.getSQLDB("CTMT","SELECT DISTINCT cod_id, nom FROM ctmt ORDER BY nom")
+            ct_mt = self.DataBaseConn.getSQLDB("CTMT","SELECT DISTINCT cod_id, nom FROM ctmt;")
 
             for linha in ct_mt.fetchall():
-                if linha[1] in listaNomesAL_MT:
+                for i in range(0, len(listaNomesAL_MT) ):
+                    if linha[1] == listaNomesAL_MT[i]:
                         lista_de_identificadores_dos_alimentadores.append(linha[0])
 
-            return lista_de_identificadores_dos_alimentadores
+            lista_de_identificadores_dos_alimentadores_filtrados = (sorted(lista_de_identificadores_dos_alimentadores))
+
+            return lista_de_identificadores_dos_alimentadores_filtrados
         except:
             raise class_exception.ExecDataBaseError("Erro ao pegar os Códigos dos Alimentadores de Média Tensão!")
 
@@ -66,12 +79,12 @@ class C_DBaseCoord():
         except:
             raise class_exception.ExecDataBaseError("Erro ao pegar as Coordenadas dos Alimentadores de Média Tensão!")
 
-    def getData_TrafoDIST(self, nomeSE_MT, codField):  # Pega os reguladores de MT
+    def getData_TrafoDIST(self, nomeSE_MT):  # Pega os reguladores de MT
 
         try:
 
             sqlStrUNTRD = "SELECT cod_id, pot_nom, ctmt, x, y " \
-                          " FROM  untrd WHERE sub = '" + nomeSE_MT[0] + "' AND ctmt = '" + codField + "'"
+                          " FROM  untrd WHERE sub = '" + nomeSE_MT[0] + "'"
 
             lista_dados = []
 
@@ -79,10 +92,13 @@ class C_DBaseCoord():
 
 
             for lnhUNTRD in dadosUNTRD.fetchall():  # Pegando o Transformador
-
-                ##Verificar a questão do X e do Y
-
-                tmp_dados = [lnhUNTRD[4],lnhUNTRD[3],lnhUNTRD[0],lnhUNTRD[1]]
+                tmp_dados = dadosTrafoDist(
+                    lnhUNTRD[0],  # cod_id
+                    lnhUNTRD[1],  # pot_nom
+                    lnhUNTRD[2], #ctmt
+                    lnhUNTRD[3],  # x
+                    lnhUNTRD[4],  # y
+                )
 
                 lista_dados.append(tmp_dados)
 
@@ -91,53 +107,3 @@ class C_DBaseCoord():
         except:
             raise class_exception.ExecData(
                 "Erro no processamento do Banco de Dados para os Transformadores de Distribuição! ")
-
-
-    def getData_UniConsumidoraMT(self, nomeSE_MT, codField):
-
-        try:
-            lista_dados  = []
-
-            sqlStrSSDMT = "SELECT pn_con_1, pn_con_2, x, y" \
-                        " FROM  ssdmt WHERE sub = '" + nomeSE_MT[0] + "' AND ctmt = '" + codField + "'"
-
-            tmp_ssdmt = []
-
-            dadosSSDMT = self.DataBaseConn.getSQLDB("SSDMT", sqlStrSSDMT)
-
-            for lnhSSDMT in dadosSSDMT.fetchall():  # Pegando o Transformador
-
-                tmp_dados = [lnhSSDMT[0],lnhSSDMT[1],lnhSSDMT[2],lnhSSDMT[3]]
-
-                tmp_ssdmt.append(tmp_dados)
-
-
-            ######### Dados do Consumidor
-            sqlStrUCMT = "SELECT pn_con, brr, sit_ativ, car_inst, dat_con, ctmt" \
-                          " FROM  ucmt WHERE sub = '" + nomeSE_MT[0] + "' AND ctmt = '" + codField + "'"
-
-            dadosUCMT = self.DataBaseConn.getSQLDB("UCMT", sqlStrUCMT)
-
-
-            for lnhUCMT in dadosUCMT.fetchall():  # Pegando o Transformador
-
-                ##Verificar a questão do X e do Y
-
-                tmp_dados = []
-
-                for lnhSSDMT in tmp_ssdmt:
-
-                    if (lnhSSDMT[0] == lnhUCMT[0]) or (lnhSSDMT[1] == lnhUCMT[0]):
-
-                        tmp_dados = [lnhSSDMT[3], lnhSSDMT[2], lnhUCMT[1],lnhUCMT[2],lnhUCMT[3],lnhUCMT[4]]
-
-                        break
-
-                lista_dados.append(tmp_dados)
-
-
-            return lista_dados
-
-        except:
-            raise class_exception.ExecData(
-                "Erro no processamento do Banco de Dados para as Unidades Consumidoras de Média Tensão! ")

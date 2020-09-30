@@ -166,6 +166,18 @@ class C_Insert_PVSystem_Substation_Dialog(QDialog):
     def add_pvsystem(self):
         self.PVSystem_GroupBox_Substation_data.setVisible(True)
 
+    def add_eff_curve(self):
+        self.effcurve.show()
+
+    def add_irrad_curve(self):
+        self.irradcurve.show()
+
+    def add_pt_curve(self):
+        self.ptcurve.show()
+
+    def add_temp_curve(self):
+        self.tempcurve.show()
+
     def editPVSystem(self):
         pass
 

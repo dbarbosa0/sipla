@@ -272,7 +272,7 @@ class C_DBaseData():
             return lista_dados
 
         except:
-            raise class_exception.ExecOpenDSS("Erro no processamento do Banco de Dados para as Seccionadoras de AT")
+            raise class_exception.ExecOpenDSS("Erro no processamento do Banco de Dados para as Seccionadoras de AT: " + str(tipoSEC))
 
     def getData_SecMT(self, nomeSE_MT, tipoSEC):  # Pega as seccionadoras de MT
 

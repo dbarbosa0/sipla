@@ -1,7 +1,6 @@
 import class_exception
 
 import sqlite3
-import MySQLdb
 
 class C_DBaseConn(): #Classe de banco de dados
 
@@ -21,54 +20,23 @@ class C_DBaseConn(): #Classe de banco de dados
     def DataBaseInfo(self, nDataBaseInfo):
         self._DataBaseInfo = nDataBaseInfo
 
-    def getSQLDB(self,nomeBancoDados, strSQL):
+    def getSQLDB(self,nomeBancoDados,strSQL):
 
         try:
             #Conectando em apenas leitura!
             if self.DataBaseInfo["Conn"] == "sqlite":
 
-                connDB = sqlite3.connect('file:' + self.DataBaseInfo["Sqlite_DirDataBase"] + nomeBancoDados + '.sqlite?mode=ro', uri=True)
+                connDB = sqlite3.connect('file:' + self.DataBaseInfo["DirDataBase"] + nomeBancoDados + '.sqlite?mode=ro', uri=True)
 
                 cbanco = connDB.execute(strSQL)
 
             elif self.DataBaseInfo["Conn"] == "mysql":
-                connDB = MySQLdb.connect(self.databaseInfo['MySQL_Host'], self.databaseInfo['MySQL_User'],
-                                         self.databaseInfo['MySQL_Passwd'], self.databaseInfo['MySQL_db'])
-
-                cbanco = connDB.execute(strSQL)
+                pass
 
             return cbanco
 
         except:
             raise class_exception.ConnDataBaseError("Erro de conexão no Banco de Dados:" + nomeBancoDados)
-
-    def testConn(self):
-
-        try:
-            #Conectando em apenas leitura!
-            if self.DataBaseInfo["Conn"] == "sqlite":
-
-                connDB = sqlite3.connect('file:' + self.DataBaseInfo["Sqlite_DirDataBase"] + 'CTAT.sqlite?mode=ro', uri=True)
-
-                cbanco = connDB.execute('select sqlite_version();')
-
-            elif self.DataBaseInfo["Conn"] == "mysql":
-
-                connDB = MySQLdb.connect(self.databaseInfo['MySQL_Host'], self.databaseInfo['MySQL_User'], self.databaseInfo['MySQL_Passwd'], self.databaseInfo['MySQL_db'])
-
-                cursor = connDB.cursor()
-                cursor.execute('SELECT VERSION();')
-                results = cursor.fetchone()
-
-                if not results:
-                    return False
-
-            return True
-
-        except:
-                return False
-
-
 
                 
                 

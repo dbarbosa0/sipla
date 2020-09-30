@@ -1,6 +1,5 @@
 import io
 import folium
-import folium.plugins
 from PyQt5 import QtWebEngineWidgets
 
 import database.class_coord
@@ -128,7 +127,6 @@ class C_Viewer():
 
         #Transformador
         fieldsOptions = {"TrafoDIST":"Transformador(es) de Distribuição",
-                         "UniConsMT":"Unidade(s) Consumidora(s) de MT",
                          }
 
         for ctdOption in fieldsOptions:
@@ -139,79 +137,21 @@ class C_Viewer():
 
                 self.mapFields.add_child(fgTrafoDIST)
 
-                for ctdCodAl in self.ListFieldsID:
+                dados_db = self.DataBaseCoord.getData_TrafoDIST(self.nameSEMT)
 
-                    dados_db = self.DataBaseCoord.getData_TrafoDIST(self.nameSEMT, ctdCodAl)
+                for ctd in range(0, len(dados_db)):
 
-                    infoTextTrafo  = '<b>Trafo de Distribuição</b>'
-                    infoTextTrafo  += '<br> ID: ${cod_id.text}'
-                    infoTextTrafo  += '<br> ${pot_nom.text} kVA'
+                    if (dados_db[ctd].ctmt in self.ListFieldsID):
 
-                    callbackTrafo = ('function (row) {'
-                                    'var marker = L.marker(new L.LatLng(row[0], row[1]), {color: "red"});'
-                                    'var icon = L.AwesomeMarkers.icon({'
-                                    "icon: 'info-sign',"
-                                    "iconColor: 'white',"
-                                    "markerColor: 'red',"
-                                    "prefix: 'glyphicon',"
-                                    "extraClasses: 'fa-rotate-0'"
-                                    '});'
-                                    'marker.setIcon(icon);'
-                                    "var popup = L.popup({maxWidth: '300'});"
-                                    "const cod_id = {text: row[2]};"
-                                    "const pot_nom = {text: row[3]};"
-                                    "var textpopup = $(`<div id='mytext' class='display_text' style='width: 100.0%; height: 100.0%;'> " + infoTextTrafo  +"</div>`)[0];"
-                                    "popup.setContent(textpopup);"
-                                    "marker.bindPopup(popup);"
-                                    'return marker};')
-
-                    folium.plugins.FastMarkerCluster(
-                            data=dados_db,
-                            callback=callbackTrafo
-                        ).add_to(fgTrafoDIST)
-
-            if ctdOption == "UniConsMT":
-
-                fgUniConsMT = folium.FeatureGroup(name=fieldsOptions[ctdOption], show=False)
-
-                self.mapFields.add_child(fgUniConsMT)
-
-                for ctdCodAl in self.ListFieldsID:
-
-                    dados_db = self.DataBaseCoord.getData_UniConsumidoraMT(self.nameSEMT, ctdCodAl)
-
-                    [-13.001290677322856, -38.453707566151195, '9662200', 'PITUBA', 'AT', 8.0, '17/06/2015']
-
-                    infoTextUniConsMT  = '<b>Unidade Consumidora de Média Tensão</b>'
-                    infoTextUniConsMT += '<br> Situação: ${sit_ativ.text}'
-                    infoTextUniConsMT += '<br> Data de Conexão: ${dat_con.text}'
-                    infoTextUniConsMT += '<br> ${car_inst.text} kVA'
-                    infoTextUniConsMT += '<br> ${brr.text}'
-
-                    callbackUniConsMT  = ('function (row) {'
-                                    'var marker = L.marker(new L.LatLng(row[0], row[1]), {color: "red"});'
-                                    'var icon = L.AwesomeMarkers.icon({'
-                                    "icon: 'info-sign',"
-                                    "iconColor: 'white',"
-                                    "markerColor: 'green',"
-                                    "prefix: 'glyphicon',"
-                                    "extraClasses: 'fa-rotate-0'"
-                                    '});'
-                                    'marker.setIcon(icon);'
-                                    "var popup = L.popup({maxWidth: '300'});"
-                                    "const brr = {text: row[2]};"
-                                    "const sit_ativ = {text: row[3]};"
-                                    "const car_inst = {text: row[4]};"
-                                    "const dat_con = {text: row[5]};"
-                                    "var textpopup = $(`<div id='mytext' class='display_text' style='width: 100.0%; height: 100.0%;'> " + infoTextUniConsMT +"</div>`)[0];"
-                                    "popup.setContent(textpopup);"
-                                    "marker.bindPopup(popup);"
-                                    'return marker};')
-
-                    folium.plugins.FastMarkerCluster(
-                            data=dados_db,
-                            callback=callbackUniConsMT
-                        ).add_to(fgUniConsMT)
+                        infoText  = '<b>Trafo de Distribuição</b>'
+                        infoText += '<br> ID: ' + dados_db[ctd].cod_id
+                        infoText += '<br> ' + str(dados_db[ctd].pot_nom)  + ' kVA'
+                        folium.Marker(
+                                location = [dados_db[ctd].y, dados_db[ctd].x],
+                                popup = infoText,
+                                icon=folium.Icon(color='red', icon='info-sign'),
+                                control = True
+                            ).add_to(fgTrafoDIST)
 
         
         

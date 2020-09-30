@@ -6,6 +6,8 @@ import opendss.class_opendss
 import opendss.class_config_dialog
 import opendss.class_insert_energymeter_dialog
 import opendss.class_insert_monitor_dialog
+import opendss.class_config_pvsystem_dialog
+import opendss.class_insert_pvsystem_substation_dialog
 import opendss.class_config_plot_monitor_dialog
 import opendss.class_scan_config_dialog
 import database.class_base
@@ -56,7 +58,9 @@ class C_MainActions():
         # Contribuição Carvalho
         self.SCAnalyze_DialogSettings = opendss.class_scan_config_dialog.C_SCAnalyze_ConfigDialog()
         self.SCAnalyze_DialogSettings.OpenDSS = self.OpenDSS #Apontando o ponteiro de OpenDSS C_MainActions
-
+        # Contribuição Felipe
+        self.PVSystem_DialogSettings = opendss.class_config_pvsystem_dialog.C_Config_PVSystem_Dialog()
+        self.PVSystem_DialogInsert = opendss.class_insert_pvsystem_substation_dialog.C_Insert_PVSystem_Substation_Dialog()
 
     #############################################
 
@@ -219,6 +223,15 @@ class C_MainActions():
 
     def exec_SCAnalyze(self):
         self.OpenDSS.exec_DynamicFlt()
+
+    # Contribuição Felipe
+    def exec_PVSystem_Settings(self):
+        # self.PVSystem_DialogSettings.updateDialog()
+        self.PVSystem_DialogSettings.show()
+
+    def exec_PVSystem_Substation(self):
+        #self.exec_PVSystem()
+        self.PVSystem_DialogInsert.show()
 
 
 
