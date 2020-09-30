@@ -59,7 +59,7 @@ class C_MenuToolBar(QDockWidget):
                               'OpenDSS_Save_Act': 0,
                               'OpenDSS_View_Act': 0,
                               'PVSystem_Config_Act': 0,  # Configurar PVSystem
-                              'PVSystem_Run_Act': 0,   # Run PVsystem
+                              'PVSystem_Insert_Act': 0,   # Inserir PVsystem
                               'SCAnalyze_Config_Act': 0,  # Configurar SCAn
                               'SCAnalyze_Run_Act': 0, }  # Run SCAn
 
@@ -94,7 +94,6 @@ class C_MenuToolBar(QDockWidget):
         self.OpenDSS_InsertMonitor_Act.triggered.connect(self.exec_InsertMonitor)
         self.OpenDSS_InsertMonitor_Act.setObjectName('OpenDSS_InsertMonitor_Act')
         self.OpenDSSActRef['OpenDSS_InsertMonitor_Act'] = self.OpenDSS_InsertMonitor_Act
-
 
         self.OpenDSS_Create_Act = QAction(QIcon('img/icon_opendss.png'), '&Gerar Arquivo .DSS', self)
         self.OpenDSS_Create_Act.setShortcut("Ctrl+Shift+G")
@@ -132,28 +131,41 @@ class C_MenuToolBar(QDockWidget):
         self.SCAnalyze_Run_Act.setObjectName('SCAnalyze_Run_Act')
         self.OpenDSSActRef['SCAnalyze_Run_Act'] = self.SCAnalyze_Run_Act
 
-        #Contribuição Felipe
-        self.OpenDSS_InsertPVSystem_Act = QAction(QIcon(''), '&PVSystem', self)
-        self.OpenDSS_InsertPVSystem_Act.setShortcut("Ctrl+P")
-        self.OpenDSS_InsertPVSystem_Act.setStatusTip('Configurar PVSystem')
-        self.OpenDSS_InsertPVSystem_Act.triggered.connect(self.exec_insertPVSystem)
-        self.OpenDSS_InsertPVSystem_Act.setObjectName('PVSystem')
-        self.OpenDSSActRef['OpenDSS_InsertPVSystem_Act'] = self.OpenDSS_InsertPVSystem_Act
+        # Contribuição Felipe
+        self.OpenDSS_ConfigPVSystem_Act = QAction(QIcon(''), '&Configurar PVSystem', self)
+        self.OpenDSS_ConfigPVSystem_Act.setShortcut("Ctrl+P")
+        self.OpenDSS_ConfigPVSystem_Act.setStatusTip('Configurar PVSystem')
+        self.OpenDSS_ConfigPVSystem_Act.triggered.connect(self.exec_configPVSystem)
+        self.OpenDSS_ConfigPVSystem_Act.setObjectName('Config_PVSystem')
+        self.OpenDSSActRef['OpenDSS_ConfigPVSystem_Act'] = self.OpenDSS_ConfigPVSystem_Act
 
+        self.OpenDSS_InsertPVSystem_Act = QAction(QIcon(''), '&Inserir PVSystem', self)
+        self.OpenDSS_InsertPVSystem_Act.setShortcut("")
+        self.OpenDSS_InsertPVSystem_Act.setStatusTip('Inserir PVSystem')
+        self.OpenDSS_InsertPVSystem_Act.triggered.connect(self.exec_insertPVSystem)
+        self.OpenDSS_InsertPVSystem_Act.setObjectName('Insert_PVSystem')
+        self.OpenDSSActRef['OpenDSS_InsertPVSystem_Act'] = self.OpenDSS_InsertPVSystem_Act
 
         # ******* Setup the OpenDSS Menu *******
         self.OpenDSSMenu.addAction(self.OpenDSS_Config_Act)
         self.OpenDSSMenu.addAction(self.OpenDSS_Run_Act)
         self.OpenDSSMenu.addSeparator()
+
         self.OpenDSSMenuSubInsert = self.OpenDSSMenu.addMenu(QIcon('img/icon_opendss_insert_equip.png'),
                                                               'Insert ')
         self.OpenDSSMenuSubInsert.addAction(self.OpenDSS_InsertEnergyMeter_Act)
         self.OpenDSSMenuSubInsert.addAction(self.OpenDSS_InsertMonitor_Act)
-        self.OpenDSSMenuSubInsert.addAction(self.OpenDSS_InsertPVSystem_Act)
+
+        self.OpenDSSMenuSubInsert_SubPVSystem = self.OpenDSSMenuSubInsert.addMenu(QIcon(''),
+                                                              'PVSystem')
+        self.OpenDSSMenuSubInsert_SubPVSystem.addAction(self.OpenDSS_ConfigPVSystem_Act)
+        self.OpenDSSMenuSubInsert_SubPVSystem.addAction(self.OpenDSS_InsertPVSystem_Act)
+
         self.OpenDSSMenuSubProcess = self.OpenDSSMenu.addMenu(QIcon('img/icon_opendss_subprocess.png'),
                                                               'Sub-processos ')
         self.OpenDSSMenuSubProcess.addAction(self.OpenDSS_Create_Act)
         self.OpenDSSMenuSubProcess.addAction(self.OpenDSS_Save_Act)
+
         self.OpenDSSMenuSubSCAnalyze = self.OpenDSSMenu.addMenu(QIcon('img/icon_opendss_sc.png'),
                                                              'Short Circuit')
         self.OpenDSSMenuSubSCAnalyze.addAction(self.SCAnalyze_Config_Act)
@@ -360,8 +372,12 @@ class C_MenuToolBar(QDockWidget):
         self.Actions.exec_SCAnalyze()
 
     # Contribuição Felipe
-    def exec_insertPVSystem(self):
+    def exec_configPVSystem(self):
         self.Actions.exec_PVSystem_Settings()
+
+    def exec_insertPVSystem(self):
+        pass
+        #self.Actions.exec_PVSystem_Settings()
 
     ####################################################################
 

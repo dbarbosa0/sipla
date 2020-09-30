@@ -22,7 +22,7 @@ class C_Config_PVSystem_Dialog(QDialog):
     def __init__(self):
         super().__init__()
 
-        self.titleWindow = "PVSystem"
+        self.titleWindow = "PVSystem Config"
         self.iconWindow = cfg.sipla_icon
         self.stylesheet = cfg.sipla_stylesheet
         self.adjustSize()
@@ -82,7 +82,7 @@ class C_Config_PVSystem_Dialog(QDialog):
         self.PVSystem_Import_TempCurve_Btn.clicked.connect(self.tempcurve.show)
 
         # GroupBox PVSystem Config
-        self.PVSystem_GroupBox_PVconfig = QGroupBox("Inserindo PVSystem")
+        self.PVSystem_GroupBox_PVconfig = QGroupBox("Configurando PVSystem")
 
         self.PVSystem_GroupBox_PVconfig_Label = QLabel("Sistemas Fotovoltaicos Existentes")
         self.PVSystem_GroupBox_PVconfig_ComboBox = QComboBox()
@@ -225,6 +225,9 @@ class C_Config_PVSystem_Dialog(QDialog):
     # Gets
 
     def get_PVSystem_Name(self):
+        return self.PVSystem_PVdata_Name.text()
+
+    def get_Bus1_PVSystem(self):
         return self.PVSystem_PVdata_Name.text()
 
     def get_PTCurve(self):
