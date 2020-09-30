@@ -57,6 +57,7 @@ class C_MenuToolBar(QDockWidget):
                               'OpenDSS_InsertEnergyMeter_Act': 0, # Inserir o Energy Meter
                               'OpenDSS_InsertMonitor_Act': 0,  # Inserir o Energy Meter
                               'OpenDSS_InsertStorage_Act': 0, #Inserir o Storage
+                              'OpenDSS_InsertInvControl_Act': 0, #Inserir o InvControl
                               'OpenDSS_Create_Act': 0, # Criar Arquivo .DSS
                               'OpenDSS_Save_Act': 0,
                               'OpenDSS_View_Act': 0,
@@ -148,6 +149,14 @@ class C_MenuToolBar(QDockWidget):
         self.OpenDSS_InsertStorage_Act.setObjectName('OpenDSS_InsertStorage_Act')
         self.OpenDSSActRef['OpenDSS_InsertStorage_Act'] = self.OpenDSS_InsertStorage_Act
 
+        # Contribuição Lenon
+        self.OpenDSS_InsertInvControl_Act = QAction(QIcon('img/icon_opendss_invconfig.png'), 'Controle do Inversor', self)
+        self.OpenDSS_InsertInvControl_Act.setShortcut("")
+        self.OpenDSS_InsertInvControl_Act.setStatusTip('Inserir Controle do Inversor')
+        self.OpenDSS_InsertInvControl_Act.triggered.connect(self.exec_InsertInvControl)
+        self.OpenDSS_InsertInvControl_Act.setObjectName('OpenDSS_InsertInvControl_Act')
+        self.OpenDSSActRef['OpenDSS_InsertInvControl_Act'] = self.OpenDSS_InsertInvControl_Act
+
 
         # ******* Setup the OpenDSS Menu *******
         self.OpenDSSMenu.addAction(self.OpenDSS_Config_Act)
@@ -157,6 +166,7 @@ class C_MenuToolBar(QDockWidget):
                                                               'Insert ')
         self.OpenDSSMenuSubInsert.addAction(self.OpenDSS_InsertEnergyMeter_Act)
         self.OpenDSSMenuSubInsert.addAction(self.OpenDSS_InsertMonitor_Act)
+        self.OpenDSSMenuSubInsert.addAction(self.OpenDSS_InsertInvControl_Act)
 
         self.OpenDSSMenu.addSeparator()
         self.OpenDSSMenu.addAction(self.OpenDSS_Results_EnergyMeter_Act)
@@ -411,6 +421,10 @@ class C_MenuToolBar(QDockWidget):
     # Contribuição Jonas
     def exec_InsertStorage(self):
         self.Actions.execInsertStorage()
+
+    # Contribuição Lenon
+    def exec_InsertInvControl(self):
+        self.Actions.execInsertInvControl()
 
     ####################################################################
 
