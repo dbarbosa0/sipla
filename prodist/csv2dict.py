@@ -1,13 +1,14 @@
 import csv
 from sys import platform
 
-
 class c2d:
-    def csv2dict(self, csv_path):
+    def csv2dict(self,csv_path):
         fname = csv_path
         dataCSV = {}
+        if platform.system() == "Windows":
+            fname = csv_path.replace("/", "\\")
 
-        with open(str(fname), 'r', newline='') as file:
+        with open(fname, 'r', newline='') as file:
             csv_reader_object = csv.reader(file)
 
             name_col = next(csv_reader_object)
