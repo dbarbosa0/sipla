@@ -27,7 +27,9 @@ class C_Config_IrradCurve_Dialog(QDialog):
         self.irrad_xpoints = ''
         self.irrad_ypoints = ''
         self.irrad_import_ok = self.irradcurve_import.Irrad_Curve_Btns_Dialog_Ok_Btn
+        self.irrad_import_ok.clicked.connect(self.teste)
         self.dataIrradCurve = {}
+        self.list_curve_names = []
 
         self.InitUI()
 
@@ -108,7 +110,7 @@ Pontos Y: Irradiação (W/m²) em p.u.")
         self.Dialog_Btns_Next_Btn = QPushButton("Ok")
         self.Dialog_Btns_Next_Btn.setIcon(QIcon('img/icon_ok.png'))
         self.Dialog_Btns_Next_Btn.setFixedWidth(100)
-        self.Dialog_Btns_Next_Btn.clicked.connect(self.Next)
+        self.Dialog_Btns_Next_Btn.clicked.connect(self.Ok)
         self.Dialog_Btns_Layout.addWidget(self.Dialog_Btns_Next_Btn)
 
         self.Dialog_Layout.addLayout(self.Dialog_Btns_Layout, 2, 3, 1, 1)
@@ -117,29 +119,20 @@ Pontos Y: Irradiação (W/m²) em p.u.")
 
     def open_Irrad_import(self):
         self.irradcurve_import.show()
-        self.irrad_import_ok.clicked.connect(self.teste)
 
     def teste(self):
-        self.irradcurve_name = self.irradcurve_import.curve_name
-        self.irrad_xpoints = self.irradcurve_import.x_axys
-        self.irrad_ypoints = self.irradcurve_import.y_axys
+        print(self.list_curve_names)
+        if self.irradcurve_import.curve_name not in self.list_curve_names:
 
-        countName = 0
-        for ctd in range(0, self.IrradCurve_GroupBox_TreeWidget.topLevelItemCount()):
-
-            Item = self.IrradCurve_GroupBox_TreeWidget.topLevelItem(ctd)
-
-            if Item.name == str(self.irradcurve_name):
-                countName += 1
-
-        if countName == 0:
-            ptsX = self.irrad_xpoints
-            ptsY = self.irrad_ypoints
+            self.irradcurve_name = self.irradcurve_import.curve_name
+            self.list_curve_names.append(self.irradcurve_name)
+            self.irrad_xpoints = self.irradcurve_import.x_axys
+            self.irrad_ypoints = self.irradcurve_import.y_axys
 
             Config_IrradCurve_GroupBox_TreeWidget_Item(self.IrradCurve_GroupBox_TreeWidget,
                                                        self.irradcurve_name,
-                                                       ptsX,
-                                                       ptsY,
+                                                       self.irrad_xpoints,
+                                                       self.irrad_ypoints,
                                                        cfg.colorsList[random.randint(0, len(cfg.colorsList) - 1)])
         else:
             msg = QMessageBox()
@@ -162,6 +155,10 @@ Pontos Y: Irradiação (W/m²) em p.u.")
 
                 if Item.checkState(0) == Qt.Checked:
                     self.IrradCurve_GroupBox_TreeWidget.takeTopLevelItem(ctd - 1)
+                    for index, item in enumerate(self.list_curve_names):
+                        print(item, Item.name, index)
+                        if item == Item.name:
+                            self.list_curve_names.pop(index)
                     contChecked += 1
 
             if contChecked > 0:
@@ -212,9 +209,10 @@ Pontos Y: Irradiação (W/m²) em p.u.")
         self.graphWidget.clear()
         self.close()
 
-    def Next(self):
+    def Ok(self):
         self.setDataEffCurve()
         self.close()
+
 
     def checkEffCurve(self, nameEffCurve, pointsXEffCurve, pointsYEffCurve):
 
@@ -273,10 +271,8 @@ Pontos Y: Irradiação (W/m²) em p.u.")
                         raise class_exception.ExecConfigOpenDSS("Erro na verificação da Curva de Irradiação " \
                                                                 + Item.name + " !",
                                                                 "Verifique se todos os pontos estão presentes!")
-
         except:
             pass
-
 
 class Config_IrradCurve_GroupBox_TreeWidget_Item(QTreeWidgetItem):
     def __init__(self, parent, name, pointsX, pointsY, color):

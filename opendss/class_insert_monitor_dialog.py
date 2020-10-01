@@ -1,11 +1,12 @@
 from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import QStyleFactory, QDialog, QGridLayout, QGroupBox, \
-   QVBoxLayout, QTabWidget, QLabel, QComboBox, QWidget, QLineEdit, QPushButton, QHBoxLayout, QMessageBox
+   QVBoxLayout, QLabel, QComboBox, QLineEdit, QPushButton, QHBoxLayout, QMessageBox
 
 from PyQt5.QtCore import Qt
 
 import opendss.class_opendss
 import config as cfg
+import unidecode
 
 class C_Insert_Monitor_Dialog(QDialog): ## Classe Dialog principal
     def __init__(self):
@@ -249,7 +250,7 @@ class C_Insert_Monitor_Dialog(QDialog): ## Classe Dialog principal
     def AcceptAddEditMonitor(self): ## Dá para otimizar e muito // Somente um teste
         
         Monitor = {}
-        Monitor["Name"] = self.get_Monitor_Name()
+        Monitor["Name"] = unidecode.unidecode(self.get_Monitor_Name().replace(" ","_"))
         Monitor["Element"] = self.get_ElementMonitor()
         Monitor["Terminal"] = self.get_TerminalMonitor()
         Monitor["Mode"] = self.get_ModeMonitor()
@@ -307,7 +308,6 @@ class C_Insert_Monitor_Dialog(QDialog): ## Classe Dialog principal
             self.Dialog_Btns_Ok_Btn.setEnabled(True)
             self.Dialog_Btns_Cancel_Btn.setEnabled(True)
 
-
     def Accept(self):
         self.OpenDSS.Monitors = self.Monitors
         self.close()
@@ -315,10 +315,10 @@ class C_Insert_Monitor_Dialog(QDialog): ## Classe Dialog principal
     def updateDialog(self):
         self.Monitor_GroupBox_MEnergy_ComboBox.clear()
 
+
         for ctd in self.Monitors:
             self.Monitor_GroupBox_MEnergy_ComboBox.addItem(ctd["Name"])
 
         self.Monitor_Element_ComboBox.clear()
-        self.Monitor_Element_ComboBox.addItems(self.OpenDSS.getAllNamesElements())
 
-
+        self.Monitor_Element_ComboBox.addItems(self.OpenDSS.getElementList())

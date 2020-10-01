@@ -6,6 +6,7 @@ from PyQt5.QtCore import Qt
 
 import opendss.class_opendss
 import config as cfg
+import unidecode
 
 class C_Insert_EnergyMeter_Dialog(QDialog): ## Classe Dialog principal
     def __init__(self):
@@ -21,7 +22,7 @@ class C_Insert_EnergyMeter_Dialog(QDialog): ## Classe Dialog principal
         self.EnergyMeters = []
 
     def InitUI(self):
-        self.setWindowTitle(self.titleWindow)  # titulo janela
+        self.setWindowTitle(self.titleWindow) # titulo janela
         self.setWindowIcon(QIcon(self.iconWindow))  # ícone da janela
         self.setWindowModality(Qt.ApplicationModal)
         self.setStyle(QStyleFactory.create('Cleanlooks'))  # Estilo da Interface
@@ -159,7 +160,7 @@ class C_Insert_EnergyMeter_Dialog(QDialog): ## Classe Dialog principal
         #self.EnergyMeter_Btns_Ok_Btn.setFixedWidth(100)
         self.EnergyMeter_Btns_Ok_Btn.clicked.connect(self.AcceptAddEditEnergyMeter)
         self.EnergyMeter_Btns_Layout.addWidget(self.EnergyMeter_Btns_Ok_Btn)
-        self.EnergyMeter_Layout.addItem(self.EnergyMeter_Btns_Layout, 13, 0, 1, 2)
+        self.EnergyMeter_Layout.addItem(self.EnergyMeter_Btns_Layout,13, 0, 1, 2)
         ####
 
         self.EnergyMeter_GroupBox.setLayout(self.EnergyMeter_Layout)
@@ -290,7 +291,7 @@ class C_Insert_EnergyMeter_Dialog(QDialog): ## Classe Dialog principal
     def AcceptAddEditEnergyMeter(self): ## Dá para otimizar e muito // Somente um teste
         
         energyMeter = {}
-        energyMeter["Name"] = self.get_EnergyMeter_Name()
+        energyMeter["Name"] = unidecode.unidecode(self.get_EnergyMeter_Name().replace(" ","_")) # self.get_EnergyMeter_Name()
         energyMeter["Element"] = self.get_ElementEnergyMeter()
         energyMeter["Terminal"] = self.get_TerminalEnergyMeter()
         energyMeter["3phaseLosses"] = self.get_3phaseLossesEnergyMeter()
@@ -370,6 +371,7 @@ class C_Insert_EnergyMeter_Dialog(QDialog): ## Classe Dialog principal
             self.EnergyMeter_GroupBox_MEnergy_ComboBox.addItem(ctd["Name"])
 
         self.EnergyMeter_Element_ComboBox.clear()
-        self.EnergyMeter_Element_ComboBox.addItems(self.OpenDSS.getAllNamesElements())
+        #self.EnergyMeter_Element_ComboBox.addItems(self.OpenDSS.getAllNamesElements())
+        self.EnergyMeter_Element_ComboBox.addItems(self.OpenDSS.getElementList())
 
 

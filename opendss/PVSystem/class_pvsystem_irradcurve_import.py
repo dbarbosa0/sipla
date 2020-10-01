@@ -220,22 +220,17 @@ class C_Irrad_Curve_Import(QDialog):
             self.x_axys = ''
             self.y_axys = ''
             self.define_default_entries()
-            print('modo default')
 
         elif self.Irrad_Curve_Select_Manual_Btn.isChecked():
             self.curve_name = ''
             self.x_axys = ''
             self.y_axys = ''
             self.verify_manual_entries()
-            print('modo manual')
-            print(self.curve_name)
 
         elif self.Irrad_Curve_Select_Csv_Btn.isChecked():
             self.curve_name = ''
             self.x_axys = ''
             self.y_axys = ''
             self.verify_Csv_entries()
-            print('modo csv')
-            print(self.curve_name)
 
         self.close()

@@ -82,8 +82,7 @@ class C_NetPanel(QDockWidget):
         # self.NetPanel_Fields_GroupBox_TreeWidget.setColumnWidth(250,30)
         self.NetPanel_Fields_GroupBox_Select_TreeWidget.header().resizeSection(0, 190)
         self.NetPanel_Fields_GroupBox_Select_TreeWidget.header().resizeSection(1, 20)
-        self.NetPanel_Fields_GroupBox_Select_TreeWidget.itemClicked.connect(
-            self.setDisabled_NetPanel_Fields_GroupBox_Select_Btn)
+        self.NetPanel_Fields_GroupBox_Select_TreeWidget.itemClicked.connect(self.checkOnSelectAllFields)
 
         self.NetPanel_Fields_GroupBox_Select_Layout.addWidget(self.NetPanel_Fields_GroupBox_Select_TreeWidget)
 
@@ -213,6 +212,9 @@ class C_NetPanel(QDockWidget):
 
 
     ############# Configuração para aparecer ou não os botões ################
+    def setDisabled_NetPanel_Config_GroupBox_SEAT(self):
+        self.NetPanel_Config_GroupBox_SEAT_ComboBox.clear()
+        self.NetPanel_Config_GroupBox_SEAT_Btn.setEnabled(False)
 
     def setDisabled_NetPanel_Config_GroupBox_SEAT_Btn(self):
         self.NetPanel_Config_GroupBox_SEAT_Btn.setEnabled(True)
@@ -245,6 +247,10 @@ class C_NetPanel(QDockWidget):
 
             self.mainActions.updateToobarMenu()
 
+        ##Alteração dos alimentadores obriga rodar o LoadData
+
+            self.mainActions.fieldsChangedDSS()
+
     def onSelectAllFields(self):
 
         for ctd in range(0, self.NetPanel_Fields_GroupBox_Select_TreeWidget.topLevelItemCount()):
@@ -253,11 +259,29 @@ class C_NetPanel(QDockWidget):
 
         self.setDisabled_NetPanel_Fields_GroupBox_Select_Btn()
 
+    def checkOnSelectAllFields(self):
+
+        ctdChecked = True
+        for ctd in range(0, self.NetPanel_Fields_GroupBox_Select_TreeWidget.topLevelItemCount()):
+            Item = self.NetPanel_Fields_GroupBox_Select_TreeWidget.topLevelItem(ctd)
+            if Item.checkState(0) == Qt.Unchecked:
+                self.NetPanel_Fields_GroupBox_Select_Checkbox_SelectAll.setCheckState(Qt.Unchecked)
+                ctdChecked = False
+
+        if ctdChecked:
+            self.NetPanel_Fields_GroupBox_Select_Checkbox_SelectAll.setCheckState(Qt.Checked)
+
+        self.setDisabled_NetPanel_Fields_GroupBox_Select_Btn()
+
     #############################################
 
     ### Executa o Mapa e passa os parâmetros
     def execView(self):
         self.mainActions.execMapView()
+
+        ### Executa o LoadData para agilizar
+        self.mainActions.execLoadDataDSS()
+
 
 
 class NetPanel_Fields_GroupBox_Select_TreeWidget_Item(QTreeWidgetItem):
