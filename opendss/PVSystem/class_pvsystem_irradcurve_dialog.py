@@ -41,11 +41,9 @@ class C_Config_IrradCurve_Dialog(QDialog):
         self.setStyle(QStyleFactory.create('Cleanlooks'))  # Estilo da Interface
         self.resize(850, 475)
 
-        # self.setWindowFlags(self.windowFlags() | Qt.WindowMinMaxButtonsHint)
-
         self.Dialog_Layout = QGridLayout()  # Layout da Dialog
 
-        ### Curvas de Eficiências - TreeWidget
+        ### Curvas de Irradiação - TreeWidget
         self.IrradCurve_GroupBox = QGroupBox("Curvas de Irradiação")
         self.IrradCurve_GroupBox.setFixedWidth(450)
 
@@ -161,7 +159,7 @@ Pontos Y: Irradiação (W/m²) em p.u.")
                     contChecked += 1
 
             if contChecked > 0:
-                msg.information(self, 'Curvas de Irradiação', str(contChecked) + " curva(s) de eficiência removida(s)!")
+                msg.information(self, 'Curvas de Irradiação', str(contChecked) + " curva(s) de Irradiação removida(s)!")
             else:
                 msg.information(self, 'Curvas de Irradiação', "Nenhuma curva de carga selecionada!")
 
@@ -231,7 +229,6 @@ class Config_IrradCurve_GroupBox_TreeWidget_Item(QTreeWidgetItem):
         # Column 0 - Text:
 
         self.setText(0, name)
-        #self.setFlags(self.flags() | Qt.ItemIsUserCheckable | Qt.ItemIsEditable)
         self.setCheckState(0, Qt.Unchecked)
 
         self.color = color

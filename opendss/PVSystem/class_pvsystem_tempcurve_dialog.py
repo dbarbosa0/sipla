@@ -27,7 +27,10 @@ class C_Config_TempCurve_Dialog(QDialog):
         self.temp_xpoints = ''
         self.temp_ypoints = ''
         self.temp_import_ok = self.tempcurve_import.Temp_Curve_Btns_Dialog_Ok_Btn
-        self.datatempCurve = {}
+        self.temp_import_ok.clicked.connect(self.teste)
+        self.dataTempCurve = {}
+        self.list_curve_names = []
+        self.TempCurve_list = []
 
         self.InitUI()
 
@@ -38,11 +41,9 @@ class C_Config_TempCurve_Dialog(QDialog):
         self.setStyle(QStyleFactory.create('Cleanlooks'))  # Estilo da Interface
         self.resize(850, 475)
 
-        # self.setWindowFlags(self.windowFlags() | Qt.WindowMinMaxButtonsHint)
-
         self.Dialog_Layout = QGridLayout()  # Layout da Dialog
 
-        ### Curvas de Eficiências - TreeWidget
+        ### Curvas de Temperatura - TreeWidget
         self.TempCurve_GroupBox = QGroupBox("Curvas de Temperatura")
         self.TempCurve_GroupBox.setFixedWidth(450)
 
@@ -55,27 +56,27 @@ class C_Config_TempCurve_Dialog(QDialog):
         ### Label
         self.TempCurve_GroupBox_Label = QLabel(
             "Pontos X: número de amostras\n\
-Pontos Y: Temperatura °C")
+Pontos Y: Temperatura (°C)")
         self.TempCurve_GroupBox_Layout.addWidget(self.TempCurve_GroupBox_Label, 2, 1, 1, 2)
 
         ### Botões adicionar/remover/visualizar curvas
 
         self.TempCurve_GroupBox_Add_Btn = QPushButton("Adicionar")
         self.TempCurve_GroupBox_Add_Btn.setIcon(QIcon('img/icon_add.png'))
-        # self.EffCurve_GroupBox_Add_Btn.setFixedWidth(80)
-        self.TempCurve_GroupBox_Add_Btn.clicked.connect(self.open_Irrad_import)
+        # self.TempCurve_GroupBox_Add_Btn.setFixedWidth(80)
+        self.TempCurve_GroupBox_Add_Btn.clicked.connect(self.open_Temp_import)
         self.TempCurve_GroupBox_Layout.addWidget(self.TempCurve_GroupBox_Add_Btn, 3, 2, 1, 1)
 
         self.TempCurve_GroupBox_Remove_Btn = QPushButton("Remover")
         self.TempCurve_GroupBox_Remove_Btn.setIcon(QIcon('img/icon_remove.png'))
         # self.Shapes_GroupBox_Remove_Btn.setFixedWidth(80)
-        self.TempCurve_GroupBox_Remove_Btn.clicked.connect(self.removeEffCurve)
+        self.TempCurve_GroupBox_Remove_Btn.clicked.connect(self.removeTempCurve)
         self.TempCurve_GroupBox_Layout.addWidget(self.TempCurve_GroupBox_Remove_Btn, 3, 1, 1, 1)
 
         self.TempCurve_GroupBox_Show_Btn = QPushButton("Visualizar")
         self.TempCurve_GroupBox_Show_Btn.setIcon(QIcon('img/icon_line.png'))
         # self.Shapes_GroupBox_Show_Btn.setFixedWidth(100)
-        self.TempCurve_GroupBox_Show_Btn.clicked.connect(self.viewEffCurve)
+        self.TempCurve_GroupBox_Show_Btn.clicked.connect(self.viewTempCurve)
         self.TempCurve_GroupBox_Layout.addWidget(self.TempCurve_GroupBox_Show_Btn, 4, 1, 1, 2)
 
         self.TempCurve_GroupBox.setLayout(self.TempCurve_GroupBox_Layout)
@@ -83,7 +84,7 @@ Pontos Y: Temperatura °C")
 
         #########################################################
 
-        # Curvas de Eficiência - Groupbox Plot
+        # Curvas de Temperatura - Groupbox Plot
         self.TempCurve_View_GroupBox = QGroupBox("Visualizar a(s) Curva(s) de Temperatura")
         self.TempCurve_View_GroupBox_Layout = QHBoxLayout()
 
@@ -105,48 +106,38 @@ Pontos Y: Temperatura °C")
         self.Dialog_Btns_Cancel_Btn.clicked.connect(self.Cancel)
         self.Dialog_Btns_Layout.addWidget(self.Dialog_Btns_Cancel_Btn)
 
-        self.Dialog_Btns_Next_Btn = QPushButton("Ok")
-        self.Dialog_Btns_Next_Btn.setIcon(QIcon('img/icon_ok.png'))
-        self.Dialog_Btns_Next_Btn.setFixedWidth(100)
-        self.Dialog_Btns_Next_Btn.clicked.connect(self.Next)
-        self.Dialog_Btns_Layout.addWidget(self.Dialog_Btns_Next_Btn)
+        self.Dialog_Btns_Ok_Btn = QPushButton("Ok")
+        self.Dialog_Btns_Ok_Btn.setIcon(QIcon('img/icon_ok.png'))
+        self.Dialog_Btns_Ok_Btn.setFixedWidth(100)
+        self.Dialog_Btns_Ok_Btn.clicked.connect(self.Ok)
+        self.Dialog_Btns_Layout.addWidget(self.Dialog_Btns_Ok_Btn)
 
         self.Dialog_Layout.addLayout(self.Dialog_Btns_Layout, 2, 3, 1, 1)
 
         self.setLayout(self.Dialog_Layout)
 
-    def open_Irrad_import(self):
+    def open_Temp_import(self):
         self.tempcurve_import.show()
-        self.temp_import_ok.clicked.connect(self.teste)
 
     def teste(self):
-        self.tempcurve_name = self.tempcurve_import.curve_name
-        self.temp_xpoints = self.tempcurve_import.x_axys
-        self.temp_ypoints = self.tempcurve_import.y_axys
+        if self.tempcurve_import.curve_name not in self.list_curve_names and self.tempcurve_import.curve_name != '':
 
-        countName = 0
-        for ctd in range(0, self.TempCurve_GroupBox_TreeWidget.topLevelItemCount()):
-
-            Item = self.TempCurve_GroupBox_TreeWidget.topLevelItem(ctd)
-
-            if Item.name == str(self.tempcurve_name):
-                countName += 1
-
-        if countName == 0:
-            ptsX = self.temp_xpoints
-            ptsY = self.temp_ypoints
+            self.tempcurve_name = self.tempcurve_import.curve_name
+            self.list_curve_names.append(self.tempcurve_name)
+            self.temp_xpoints = self.tempcurve_import.x_axys
+            self.temp_ypoints = self.tempcurve_import.y_axys
 
             Config_TempCurve_GroupBox_TreeWidget_Item(self.TempCurve_GroupBox_TreeWidget,
-                                                      self.tempcurve_name,
-                                                      ptsX,
-                                                      ptsY,
-                                                      cfg.colorsList[random.randint(0, len(cfg.colorsList) - 1)])
+                                                       self.tempcurve_name,
+                                                       self.temp_xpoints,
+                                                       self.temp_ypoints,
+                                                       cfg.colorsList[random.randint(0, len(cfg.colorsList) - 1)])
         else:
             msg = QMessageBox()
             msg.information(self, 'Curvas de Temperatura',
-                            "Não foi possível adicionar a curva de Temperatura!\nCurva já existente!")
+                            "Não foi possível adicionar a curva de Temperatura!\nCurva já existente ou dados inválidos!")
 
-    def removeEffCurve(self):
+    def removeTempCurve(self):
         msg = QMessageBox()
         msg.setIcon(QMessageBox.Question)
         msg.setText("Você deseja remover a(s) curva(s) selecionada(s)?")
@@ -162,17 +153,20 @@ Pontos Y: Temperatura °C")
 
                 if Item.checkState(0) == Qt.Checked:
                     self.TempCurve_GroupBox_TreeWidget.takeTopLevelItem(ctd - 1)
+                    for index, item in enumerate(self.list_curve_names):
+                        if item == Item.name:
+                            self.list_curve_names.pop(index)
                     contChecked += 1
 
             if contChecked > 0:
-                msg.information(self, 'Curvas de Temperatura', str(contChecked) + " curva(s) de temperatura removida(s)!")
+                msg.information(self, 'Curvas de Temperatura', str(contChecked) + " curva(s) de Temperatura removida(s)!")
             else:
                 msg.information(self, 'Curvas de Temperatura', "Nenhuma curva de carga selecionada!")
 
         else:
             msg.information(self, 'Curvas de Temperatura', "Nenhuma curva de Temperatura foi removida!")
 
-    def viewEffCurve(self):
+    def viewTempCurve(self):
 
         # Limpando
         self.graphWidget.clear()
@@ -180,7 +174,7 @@ Pontos Y: Temperatura °C")
         # Add Background colour to white
         self.graphWidget.setBackground('w')
         # Add Axis Labels
-        self.graphWidget.setLabel('left', 'Irradiação (p.u.)', color='red', size=20)
+        self.graphWidget.setLabel('left', 'Temperatura (p.u.)', color='red', size=20)
         self.graphWidget.setLabel('bottom', 'Amostras', color='red', size=20)
         # Add legend
         self.graphWidget.addLegend()
@@ -188,105 +182,53 @@ Pontos Y: Temperatura °C")
         self.graphWidget.showGrid(x=True, y=True)
 
         countSelected = 0
-        for ctd in range(0, self.TempCurve_GroupBox_TreeWidget.topLevelItemCount()):
 
+        for ctd in range(0, self.TempCurve_GroupBox_TreeWidget.topLevelItemCount()):
             Item = self.TempCurve_GroupBox_TreeWidget.topLevelItem(ctd)
 
             if Item.checkState(0) == Qt.Checked:
-                if self.checkEffCurve(Item.name, Item.getPointsX(), Item.getPointsY()):
-                    pen = pyqtgraph.mkPen(color=Item.getColorRGB())
-
-                    pointsXList = Item.getPointsXList()
-                    pointsYList = Item.getPointsYList()
-                    self.graphWidget.plot(pointsXList, pointsYList, name=Item.name, pen=pen, symbol='o', symbolSize=10,
-                                          symbolBrush=Item.getColorRGB())
-
-                    countSelected += 1
+                pen = pyqtgraph.mkPen(color=Item.getColorRGB())
+                pointsXList = Item.getPointsXList()
+                pointsYList = Item.getPointsYList()
+                self.graphWidget.plot(pointsXList, pointsYList, name=Item.name, pen=pen, symbol='o', symbolSize=10,
+                                      symbolBrush=Item.getColorRGB())
+                countSelected += 1
 
         if countSelected == 0:
             msg = QMessageBox()
             msg.information(self, 'Curvas de Temperatura', "Nenhuma curva selecionada para visualização!")
 
     def Cancel(self):
-        self.TempCurve_GroupBox_TreeWidget.clear()
         self.graphWidget.clear()
         self.close()
 
-    def Next(self):
-        self.setDataEffCurve()
+    def Ok(self):
+        self.setDataTempCurve()
         self.close()
 
-    def checkEffCurve(self, nameEffCurve, pointsXEffCurve, pointsYEffCurve):
-
-        msgText = ''
-        pointsXEffCurve = pointsXEffCurve.split(',')
-        pointsYEffCurve = pointsYEffCurve.split(',')
-
-        if len(pointsXEffCurve) != len(pointsYEffCurve):
-            msgText += "Erro na curva " + nameEffCurve + ". O número de pontos do eixo das coordenadas está diferente do eixo das abcissas! \n"
-        else:
-            for ctd in pointsXEffCurve:
-                try:
-                    float(ctd)
-                except:
-                    msgText += "O item: " + ctd + " não é float! Verifique a curva de Irradiação!"
-            for ctd in pointsYEffCurve:
-                try:
-                    float(ctd)
-                except:
-                    msgText += "O item: " + ctd + " não é float! Verifique a curva de Irradiação!"
-
-        if msgText != "":
-            msg = QMessageBox()
-            msg.information(self, 'Curvas de Irradiação',
-                            "Não foi possível adicionar a curva de Irradiação:\n" + msgText)
-            return False
-        else:
-            return True
-
-    def setDataEffCurve(self):
-        self.IrradCurveXarray = []
-        self.IrradCurveYarray = []
-        self.datatempCurve = {}
-        checkCont = 0
+    def setDataTempCurve(self):
         try:
             for ctd in range(0, self.TempCurve_GroupBox_TreeWidget.topLevelItemCount()):
 
                 Item = self.TempCurve_GroupBox_TreeWidget.topLevelItem(ctd)
-                if Item.checkState(0) == Qt.Checked:
-                    checkCont += 1
-                if checkCont > 1:
-                    raise class_exception.ExecConfigOpenDSS("Erro na seleção da Curva de Irradiação ",
-                                                            "Selecione somente uma curva!")
-                elif checkCont == 0:
-                    raise class_exception.ExecConfigOpenDSS("Erro na seleção da Curva de Irradiação ",
-                                                            "Selecione ao menos uma curva!")
-                else:
-                    if self.checkEffCurve(Item.name, Item.getPointsX(), Item.getPointsY()):
-                        self.IrradCurveXarray = Item.getPointsXList()
-                        self.IrradCurveYarray = Item.getPointsYList()
-                        self.datatempCurve["EffCurveName"] = Item.name
-                        self.datatempCurve["npts"] = str(len(self.IrradCurveXarray))
-                        self.datatempCurve["Xarray"] = self.IrradCurveXarray
-                        self.datatempCurve["Yarray"] = self.IrradCurveYarray
-                    else:
-                        raise class_exception.ExecConfigOpenDSS("Erro na verificação da Curva de Irradiação " \
-                                                                + Item.name + " !",
-                                                                "Verifique se todos os pontos estão presentes!")
 
+                self.dataTempCurve["TempCurveName"] = Item.name
+                self.dataTempCurve["npts"] = str(len(Item.getPointsXList()))
+                self.dataTempCurve["Xarray"] = Item.getPointsXList()
+                self.dataTempCurve["Yarray"] = Item.getPointsYList()
+                self.TempCurve_list.append(self.dataTempCurve.copy())
         except:
             pass
-
+        print(self.TempCurve_list)
 
 class Config_TempCurve_GroupBox_TreeWidget_Item(QTreeWidgetItem):
     def __init__(self, parent, name, pointsX, pointsY, color):
-        ## Init super class ( QtGui.QTreeWidgetItem )
         super(Config_TempCurve_GroupBox_TreeWidget_Item, self).__init__(parent)
-        self.Config_EffCurve = C_Config_TempCurve_Dialog()
-        ## Column 0 - Text:
+        self.Config_TempCurve = C_Config_TempCurve_Dialog()
+
+        # Column 0 - Text:
 
         self.setText(0, name)
-        self.setFlags(self.flags() | Qt.ItemIsUserCheckable | Qt.ItemIsEditable)
         self.setCheckState(0, Qt.Unchecked)
 
         self.color = color
