@@ -1,8 +1,8 @@
 from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import QStyleFactory, QRadioButton, QDialog, QGridLayout, QGroupBox, \
-    QVBoxLayout, QTabWidget, QLabel, QComboBox, QWidget, QLineEdit, QPushButton, QHBoxLayout, QMessageBox
+    QVBoxLayout, QTabWidget, QLabel, QComboBox, QDesktopWidget, QLineEdit, QPushButton, QHBoxLayout, QMessageBox
 from PyQt5.QtCore import Qt
-import sys
+import copy
 import opendss.class_opendss
 import config as cfg
 from opendss.PVSystem.class_pvsystem_effcurve_dialog import C_Config_EffCurve_Dialog
@@ -17,16 +17,18 @@ from opendss.PVSystem.class_pvsystem_ptcurve_import import C_PT_Curve_Import
 from opendss.PVSystem.class_pvsystem_tempcurve_dialog import C_Config_TempCurve_Dialog
 from opendss.PVSystem.class_pvsystem_tempcurve_import import C_Temp_Curve_Import
 
+from opendss.class_insert_pvsystem_substation_dialog import C_Insert_PVSystem_Substation_Dialog
 
 class C_Config_PVSystem_Dialog(QDialog):
     def __init__(self):
         super().__init__()
-
+        self.pvsubstation_parents = C_Insert_PVSystem_Substation_Dialog(self)
         self.titleWindow = "PVSystem Config"
         self.iconWindow = cfg.sipla_icon
         self.stylesheet = cfg.sipla_stylesheet
         self.adjustSize()
         self.OpenDSS = opendss.class_opendss.C_OpenDSS()
+        #self.pvsubstation = C_Insert_PVSystem_Substation_Dialog()
 
         self.effcurve = C_Config_EffCurve_Dialog()
         self.irradcurve = C_Config_IrradCurve_Dialog()
@@ -39,7 +41,7 @@ class C_Config_PVSystem_Dialog(QDialog):
         self.select_tempcurve = C_Temp_Curve_Import()
 
         self.PVSystem_List = []
-
+        self.Exist_PV_Names = []
 
         self.InitUI()
 
@@ -216,6 +218,7 @@ class C_Config_PVSystem_Dialog(QDialog):
         else:
             self.update_dialog()
             self.PVSystem_GroupBox_PVdata.setVisible(True)
+            self.centralize()
 
     def add_eff_curve(self):
         self.effcurve.show()
@@ -237,20 +240,39 @@ class C_Config_PVSystem_Dialog(QDialog):
 
     def Accept(self):
         self.close()
+        self.loadPVSystem()
+        self.update_dialog()
         self.PVSystem_GroupBox_PVdata.setVisible(False)
+        self.adjustSize()
+        self.clearPVConfigParameters()
+
         
     def Cancel(self):
         self.close()
+        self.clearPVConfigParameters()
         self.PVSystem_GroupBox_PVdata.setVisible(False)
 
     def Apply(self):
         self.loadPVSystem()
+        self.update_dialog()
+        self.PVSystem_GroupBox_PVdata.setVisible(False)
+        self.adjustSize()
+        self.clearPVConfigParameters()
 
     def update_dialog(self):
         self.PVSystem_PVdata_PTCurve_ComboBox.addItems(self.ptcurve.list_curve_names)
         self.PVSystem_PVdata_EffCurve_ComboBox.addItems(self.effcurve.list_curve_names)
         self.PVSystem_PVdata_IrradCurve_ComboBox.addItems(self.irradcurve.list_curve_names)
         self.PVSystem_PVdata_TempCurve_ComboBox.addItems(self.tempcurve.list_curve_names)
+        if self.PVSystem_List:
+            self.PVSystem_GroupBox_PVconfig_ComboBox.clear()
+            lista_aux = []
+            for index, pvs_dict in enumerate(self.PVSystem_List):
+                for key, value in pvs_dict.items():
+                    if key == 'Name':
+                        lista_aux.append(value)
+            self.PVSystem_GroupBox_PVconfig_ComboBox.addItems(lista_aux)
+
 
     # Gets
 
@@ -259,28 +281,24 @@ class C_Config_PVSystem_Dialog(QDialog):
 
     def get_PTCurve(self):
         for index, pt_dict in enumerate(self.ptcurve.PTCurve_list):
-            print(index, pt_dict)
             for key, value in pt_dict.items():
                 if value == self.PVSystem_PVdata_PTCurve_ComboBox.currentText():
                     return self.ptcurve.PTCurve_list[index]
 
     def get_EffCurve(self):
         for index, eff_dict in enumerate(self.effcurve.EffCurve_list):
-            print(index, eff_dict)
             for key, value in eff_dict.items():
                 if value == self.PVSystem_PVdata_EffCurve_ComboBox.currentText():
                     return self.effcurve.EffCurve_list[index]
 
     def get_IrradCurve(self):
         for index, irrad_dict in enumerate(self.irradcurve.IrradCurve_list):
-            print(index, irrad_dict)
             for key, value in irrad_dict.items():
                 if value == self.PVSystem_PVdata_IrradCurve_ComboBox.currentText():
                     return self.irradcurve.IrradCurve_list[index]
 
     def get_TempCurve(self):
         for index, temp_dict in enumerate(self.tempcurve.TempCurve_list):
-            print(index, temp_dict)
             for key, value in temp_dict.items():
                 if value == self.PVSystem_PVdata_TempCurve_ComboBox.currentText():
                     return self.tempcurve.TempCurve_list[index]
@@ -325,7 +343,36 @@ class C_Config_PVSystem_Dialog(QDialog):
         self.PVSystem_Data["p-tcurve"] = self.get_PTCurve()
         self.PVSystem_Data["daily"] = self.get_IrradCurve()
         self.PVSystem_Data["tdaily"] = self.get_TempCurve()
-        print(self.PVSystem_Data)
+
+        if self.PVSystem_PVdata_Name.text() not in self.Exist_PV_Names and not self.PVSystem_PVdata_Name.text().isspace() and self.PVSystem_PVdata_Name.text() != '':
+            self.PVSystem_List.append(self.PVSystem_Data.copy())
+            self.Exist_PV_Names.append(self.get_PVSystem_Name())
+            print(self.Exist_PV_Names, hex(id(self.Exist_PV_Names)))
+        else:
+            msg = QMessageBox()
+            msg.information(self, 'Valores inválidos',
+                            "Preencha todos os campos!\n Os valores estão inválidos ou não foram preenchidos")
+        return self.Exist_PV_Names
+
+    def clearPVConfigParameters(self):
+        self.PVSystem_PVdata_Name.clear()
+        self.PVSystem_PVdata_Voltage.clear()
+        self.PVSystem_PVdata_Irrad.clear()
+        self.PVSystem_PVdata_Ppmp.clear()
+        self.PVSystem_PVdata_Temp.clear()
+        self.PVSystem_PVdata_PF.clear()
+        self.PVSystem_PVdata_Cutin.clear()
+        self.PVSystem_PVdata_Cutout.clear()
+        self.PVSystem_PVdata_PTCurve_ComboBox.clear()
+        self.PVSystem_PVdata_EffCurve_ComboBox.clear()
+        self.PVSystem_PVdata_IrradCurve_ComboBox.clear()
+        self.PVSystem_PVdata_TempCurve_ComboBox.clear()
+        self.PVSystem_PVdata_Phases_ComboBox.setCurrentIndex(1)
+
+    def centralize(self):
+        qr = self.frameGeometry()
+        centerpoint = QDesktopWidget().availableGeometry().center()
+        qr.moveCenter(centerpoint)
+        self.move(qr.topLeft())
 
 
-# self.loadDefaultParameters()

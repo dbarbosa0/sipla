@@ -78,7 +78,9 @@ class C_MainActions():
 
         # Contribuição Felipe
         self.PVSystem_DialogSettings = opendss.class_insert_pvsystem_config_dialog.C_Config_PVSystem_Dialog()
-        self.PVSystem_DialogInsert = opendss.class_insert_pvsystem_substation_dialog.C_Insert_PVSystem_Substation_Dialog()
+        self.PVSystem_DialogInsert = opendss.class_insert_pvsystem_substation_dialog.C_Insert_PVSystem_Substation_Dialog(self.PVSystem_DialogSettings)
+        self.PVSystem_DialogSettings.OpenDSS = self.OpenDSS
+        self.PVSystem_DialogInsert.OpenDSS = self.OpenDSS
 
         # Contribuição Jonas
         self.OpenDSS_DialogInsertStorage = opendss.storage.class_insert_storage_dialog.C_Insert_Storage_Dialog()

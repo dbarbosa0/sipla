@@ -1,23 +1,26 @@
 from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import QStyleFactory, QRadioButton, QDialog, QGridLayout, QGroupBox, \
-    QVBoxLayout, QTabWidget, QLabel, QComboBox, QWidget, QLineEdit, QPushButton, QHBoxLayout, QMessageBox
+    QVBoxLayout, QTabWidget, QLabel, QComboBox, QDesktopWidget, QLineEdit, QPushButton, QHBoxLayout, QMessageBox
 from PyQt5.QtCore import Qt
 import sys
 import opendss.class_opendss
 import config as cfg
-
+#from opendss.class_insert_pvsystem_config_dialog import C_Config_PVSystem_Dialog
 
 class C_Insert_PVSystem_Substation_Dialog(QDialog):
-    def __init__(self):
+    def __init__(self, pvsubs_parents):
         super().__init__()
 
         self.titleWindow = "PVSystem Substation"
         self.iconWindow = cfg.sipla_icon
         self.stylesheet = cfg.sipla_stylesheet
         self.adjustSize()
+        self.substation_parents = pvsubs_parents
         self.OpenDSS = opendss.class_opendss.C_OpenDSS()
 
-        self.PVSystem_List = []
+        self.Exist_Subs_Names = []
+        self.Subs_List = []
+
 
         self.InitUI()
 
@@ -27,8 +30,9 @@ class C_Insert_PVSystem_Substation_Dialog(QDialog):
         self.setWindowModality(Qt.ApplicationModal)
         self.setStyle(QStyleFactory.create('Cleanlooks'))  # Estilo da Interface
         self.adjustSize()
-        self.Dialog_Layout = QVBoxLayout()  # Layout da Dialog
+        self.Dialog_Layout = QVBoxLayout()# Layout da Dialog
 
+        #print(self._teste)
         # GroupBox Substation Config
         self.PVSystem_GroupBox_Substation = QGroupBox("Informações do Transformador")
 
@@ -45,17 +49,17 @@ class C_Insert_PVSystem_Substation_Dialog(QDialog):
         # Btns - GroupBox PVSystem Config
         self.PVSystem_GroupBox_Substation_Remove_Btn = QPushButton("Remover")
         self.PVSystem_GroupBox_Substation_Remove_Btn.setIcon(QIcon('img/icon_remove.png'))
-        self.PVSystem_GroupBox_Substation_Remove_Btn.clicked.connect(self.removePVSystem)
+        self.PVSystem_GroupBox_Substation_Remove_Btn.clicked.connect(self.remove_substation)
         self.PVSystem_GroupBox_Substation_Layout.addWidget(self.PVSystem_GroupBox_Substation_Remove_Btn, 1, 1, 1, 1)
 
         self.PVSystem_GroupBox_Substation_Edit_Btn = QPushButton("Editar")
         self.PVSystem_GroupBox_Substation_Edit_Btn.setIcon(QIcon('img/icon_edit.png'))
-        self.PVSystem_GroupBox_Substation_Edit_Btn.clicked.connect(self.editPVSystem)
+        self.PVSystem_GroupBox_Substation_Edit_Btn.clicked.connect(self.edit_substation)
         self.PVSystem_GroupBox_Substation_Layout.addWidget(self.PVSystem_GroupBox_Substation_Edit_Btn, 1, 2, 1, 1)
 
         self.PVSystem_GroupBox_Substation_Add_Btn = QPushButton("Adicionar")
         self.PVSystem_GroupBox_Substation_Add_Btn.setIcon(QIcon('img/icon_add.png'))
-        self.PVSystem_GroupBox_Substation_Add_Btn.clicked.connect(self.add_pvsystem)
+        self.PVSystem_GroupBox_Substation_Add_Btn.clicked.connect(self.add_substation)
         self.PVSystem_GroupBox_Substation_Layout.addWidget(self.PVSystem_GroupBox_Substation_Add_Btn, 1, 3, 1, 1)
 
         # Substation Data
@@ -93,18 +97,13 @@ class C_Insert_PVSystem_Substation_Dialog(QDialog):
         self.PVSystem_Substation_Transf_Primary_ComboBox = QComboBox()
         self.PVSystem_Substation_Transf_Primary_ComboBox.addItems(["1"])
         self.PVSystem_Substation_Transf_Bus1_ComboBox = QComboBox()
-        self.PVSystem_Substation_Transf_Bus1_ComboBox.addItems(["Listar Barras PVSystem"])
         self.PVSystem_Substation_Transf_ConnPrimary_ComboBox = QComboBox()
         self.PVSystem_Substation_Transf_ConnPrimary_ComboBox.addItems(["wye", "delta"])
         self.PVSystem_Substation_Transf_Second_ComboBox = QComboBox()
         self.PVSystem_Substation_Transf_Second_ComboBox.addItems(["2"])
         self.PVSystem_Substation_Transf_Bus2_ComboBox = QComboBox()
-        self.PVSystem_Substation_Transf_Bus2_ComboBox.addItems(["Listar Barras PVSystem"])
         self.PVSystem_Substation_Transf_ConnSecond_ComboBox = QComboBox()
         self.PVSystem_Substation_Transf_ConnSecond_ComboBox.addItems(["wye", "delta"])
-
-
-
 
         # Add Widgets and Layouts
         self.PVSystem_GroupBox_Substation_data_Layout.addWidget(self.PVSystem_Substation_Transf_Name_Label, 0, 0, 1, 1)
@@ -134,7 +133,6 @@ class C_Insert_PVSystem_Substation_Dialog(QDialog):
         self.PVSystem_GroupBox_Substation_data_Layout.addWidget(self.PVSystem_Substation_Transf_ConnSecond_Label, 12, 0, 1, 1)
         self.PVSystem_GroupBox_Substation_data_Layout.addWidget(self.PVSystem_Substation_Transf_ConnSecond_ComboBox, 12, 1, 1, 1)
 
-
         self.PVSystem_GroupBox_Substation_data.setLayout(self.PVSystem_GroupBox_Substation_data_Layout)
         self.Dialog_Layout.addWidget(self.PVSystem_GroupBox_Substation_data)
         self.Dialog_Layout.addLayout(QVBoxLayout())
@@ -160,64 +158,119 @@ class C_Insert_PVSystem_Substation_Dialog(QDialog):
 
         self.setLayout(self.Dialog_Layout)
 
-    def removePVSystem(self):
+    def add_substation(self):
+        self.update_dialog()
+        self.PVSystem_GroupBox_Substation_data.setVisible(True)
+        self.centralize()
+
+    def edit_substation(self):
         pass
 
-    def add_pvsystem(self):
-        self.PVSystem_GroupBox_Substation_data.setVisible(True)
-
-    def add_eff_curve(self):
-        self.effcurve.show()
-
-    def add_irrad_curve(self):
-        self.irradcurve.show()
-
-    def add_pt_curve(self):
-        self.ptcurve.show()
-
-    def add_temp_curve(self):
-        self.tempcurve.show()
-
-    def editPVSystem(self):
+    def remove_substation(self):
         pass
 
     def Accept(self):
+        self.loadPVSystem()
         self.PVSystem_GroupBox_Substation_data.setVisible(False)
+        self.adjustSize()
+        self.close()
+        self.clearPVConfigParameters()
+
+    def update_dialog(self):
+        self.getallbusnames()
+        #self.PVSystem_Substation_Transf_Bus1_ComboBox.addItems(self.getallbusnames)
+        self.PVSystem_Substation_Transf_Bus2_ComboBox.addItems(self.substation_parents.Exist_PV_Names)
 
     # Gets
 
-    def get_PVSystem_Name(self):
-        return self.PVSystem_PVdata_Name.text()
+    def getallbusnames(self):
+        print(self.OpenDSS.getAllBusNames())
+        return self.OpenDSS.getAllBusNames()
 
-    def get_PTCurve(self):
-        return self.PVSystem_PVdata_PTCurve_ComboBox.currentText()
+    def get_Substation_Name(self):
+        return self.PVSystem_Substation_Transf_Name.text()
 
-    def get_EffCurve(self):
-        return self.PVSystem_PVdata_EffCurve_ComboBox.currentText()
+    def get_XHL(self):
+        return self.PVSystem_Substation_Transf_XHL.text()
 
-    def get_IrradCurve(self):
-        return self.PVSystem_PVdata_IrradCurve_ComboBox.currentText()
+    def get_VPrimary(self):
+        return self.PVSystem_Substation_Transf_VPrimary.text()
 
-    def get_TempCurve(self):
-        return self.PVSystem_PVdata_TempCurve_ComboBox.currentText()
+    def get_KVAPrimary(self):
+        return self.PVSystem_Substation_Transf_KVAPrimary.text()
 
-    def get_Phases(self):
-        return self.PVSystem_PVdata_Phases_ComboBox.currentText()
+    def get_VSecond(self):
+        return self.PVSystem_Substation_Transf_VSecond.text()
 
-    def get_Nominal_Voltage(self):
-        return self.PVSystem_PVdata_Voltage.text()
+    def get_KVASecond(self):
+        return self.PVSystem_Substation_Transf_KVASecond.text()
 
-    def get_Nominal_Irradiance(self):
-        return self.PVSystem_PVdata_Irrad.text()
+    def get_Trafo_Phases(self):
+        return self.PVSystem_Substation_Transf_Phases_ComboBox.currentText()
 
-    def get_Nominal_Power(self):
-        return self.PVSystem_PVdata_Ppmp.text()
+    def get_Primary(self):
+        return self.PVSystem_Substation_Transf_Primary_ComboBox.currentText()
 
-    def get_Nominal_Temp(self):
-        return self.PVSystem_PVdata_Temp.text()
+    def get_Bus1(self):
+        return self.PVSystem_Substation_Transf_Bus1_ComboBox.currentText()
 
-    def get_Power_Factor(self):
-        return self.PVSystem_PVdata_PF.text()
+    def get_ConnPrimary(self):
+        return self.PVSystem_Substation_Transf_ConnPrimary_ComboBox.currentText()
+
+    def get_Second(self):
+        return self.PVSystem_Substation_Transf_Second_ComboBox.currentText()
+
+    def get_Bus2(self):
+        return self.PVSystem_Substation_Transf_Bus2_ComboBox.currentText()
+
+    def get_ConnSecond(self):
+        return self.PVSystem_Substation_Transf_ConnSecond_ComboBox.currentText()
+
+    def loadPVSystem(self):
+        self.Substation_Data = {}
+        self.Substation_Data['Name'] = self.get_Substation_Name()
+        self.Substation_Data['Phases'] = self.get_Trafo_Phases()
+        self.Substation_Data['Xhl'] = self.get_XHL()
+        self.Substation_Data['wdg1'] = self.get_Primary()
+        self.Substation_Data['bus1'] = self.get_Bus1()
+        self.Substation_Data['kv1'] = self.get_VPrimary()
+        self.Substation_Data['kva1'] = self.get_KVAPrimary()
+        self.Substation_Data['conn1'] = self.get_ConnPrimary()
+        self.Substation_Data['wdg2'] = self.get_Second()
+        self.Substation_Data['bus2'] = self.get_Bus2()
+        self.Substation_Data['kv2'] = self.get_VSecond()
+        self.Substation_Data['kva2'] = self.get_KVASecond()
+        self.Substation_Data['conn2'] = self.get_ConnSecond()
+
+        if self.PVSystem_Substation_Transf_Name.text() not in self.Exist_Subs_Names and not self.PVSystem_Substation_Transf_Name.text().isspace() and self.PVSystem_Substation_Transf_Name.text() != '':
+            self.Subs_List.append(self.Substation_Data.copy())
+            self.Exist_Subs_Names.append(self.get_Substation_Name())
+        else:
+            msg = QMessageBox()
+            msg.information(self, 'Valores inválidos',
+                            "Preencha todos os campos!\n Os valores estão inválidos ou não foram preenchidos")
+        return self.Exist_Subs_Names
+
+    def clearPVConfigParameters(self):
+        self.PVSystem_Substation_Transf_Name.clear()
+        self.PVSystem_Substation_Transf_XHL.clear()
+        self.PVSystem_Substation_Transf_VPrimary.clear()
+        self.PVSystem_Substation_Transf_KVAPrimary.clear()
+        self.PVSystem_Substation_Transf_VSecond.clear()
+        self.PVSystem_Substation_Transf_KVASecond.clear()
+        self.PVSystem_Substation_Transf_Phases_ComboBox.clear()
+        self.PVSystem_Substation_Transf_Primary_ComboBox.clear()
+        self.PVSystem_Substation_Transf_Bus1_ComboBox.clear()
+        self.PVSystem_Substation_Transf_ConnPrimary_ComboBox.clear()
+        self.PVSystem_Substation_Transf_Second_ComboBox.clear()
+        self.PVSystem_Substation_Transf_Bus2_ComboBox.clear()
+        self.PVSystem_Substation_Transf_ConnSecond_ComboBox.clear()
+
+    def centralize(self):
+        qr = self.frameGeometry()
+        centerpoint = QDesktopWidget().availableGeometry().center()
+        qr.moveCenter(centerpoint)
+        self.move(qr.topLeft())
 
 
 # self.loadDefaultParameters()
