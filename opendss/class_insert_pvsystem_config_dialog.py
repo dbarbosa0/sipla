@@ -347,7 +347,6 @@ class C_Config_PVSystem_Dialog(QDialog):
         if self.PVSystem_PVdata_Name.text() not in self.Exist_PV_Names and not self.PVSystem_PVdata_Name.text().isspace() and self.PVSystem_PVdata_Name.text() != '':
             self.PVSystem_List.append(self.PVSystem_Data.copy())
             self.Exist_PV_Names.append(self.get_PVSystem_Name())
-            print(self.Exist_PV_Names, hex(id(self.Exist_PV_Names)))
         else:
             msg = QMessageBox()
             msg.information(self, 'Valores inválidos',

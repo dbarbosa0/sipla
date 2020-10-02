@@ -175,17 +175,14 @@ class C_Insert_PVSystem_Substation_Dialog(QDialog):
         self.adjustSize()
         self.close()
         self.clearPVConfigParameters()
+        print(self.substation_parents.PVSystem_List)
 
     def update_dialog(self):
-        self.getallbusnames()
-        #self.PVSystem_Substation_Transf_Bus1_ComboBox.addItems(self.getallbusnames)
+        self.AllBus = self.OpenDSS.getBusList()
+        self.PVSystem_Substation_Transf_Bus1_ComboBox.addItems(self.AllBus)
         self.PVSystem_Substation_Transf_Bus2_ComboBox.addItems(self.substation_parents.Exist_PV_Names)
 
     # Gets
-
-    def getallbusnames(self):
-        print(self.OpenDSS.getAllBusNames())
-        return self.OpenDSS.getAllBusNames()
 
     def get_Substation_Name(self):
         return self.PVSystem_Substation_Transf_Name.text()
@@ -273,4 +270,7 @@ class C_Insert_PVSystem_Substation_Dialog(QDialog):
         self.move(qr.topLeft())
 
 
-# self.loadDefaultParameters()
+    def exec_pvsystem(self):
+        self.memoFileDevices = []
+        for ctd in self.substation_parents.PVSystem_List:
+            print(ctd)
