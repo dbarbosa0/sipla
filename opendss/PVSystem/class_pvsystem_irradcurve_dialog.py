@@ -30,6 +30,7 @@ class C_Config_IrradCurve_Dialog(QDialog):
         self.irrad_import_ok.clicked.connect(self.teste)
         self.dataIrradCurve = {}
         self.list_curve_names = []
+        self.IrradCurve_list = []
 
         self.InitUI()
 
@@ -64,20 +65,20 @@ Pontos Y: Irradiação (W/m²) em p.u.")
 
         self.IrradCurve_GroupBox_Add_Btn = QPushButton("Adicionar")
         self.IrradCurve_GroupBox_Add_Btn.setIcon(QIcon('img/icon_add.png'))
-        # self.EffCurve_GroupBox_Add_Btn.setFixedWidth(80)
+        # self.IrradCurve_GroupBox_Add_Btn.setFixedWidth(80)
         self.IrradCurve_GroupBox_Add_Btn.clicked.connect(self.open_Irrad_import)
         self.IrradCurve_GroupBox_Layout.addWidget(self.IrradCurve_GroupBox_Add_Btn, 3, 2, 1, 1)
 
         self.IrradCurve_GroupBox_Remove_Btn = QPushButton("Remover")
         self.IrradCurve_GroupBox_Remove_Btn.setIcon(QIcon('img/icon_remove.png'))
         # self.Shapes_GroupBox_Remove_Btn.setFixedWidth(80)
-        self.IrradCurve_GroupBox_Remove_Btn.clicked.connect(self.removeEffCurve)
+        self.IrradCurve_GroupBox_Remove_Btn.clicked.connect(self.removeIrradCurve)
         self.IrradCurve_GroupBox_Layout.addWidget(self.IrradCurve_GroupBox_Remove_Btn, 3, 1, 1, 1)
 
         self.IrradCurve_GroupBox_Show_Btn = QPushButton("Visualizar")
         self.IrradCurve_GroupBox_Show_Btn.setIcon(QIcon('img/icon_line.png'))
         # self.Shapes_GroupBox_Show_Btn.setFixedWidth(100)
-        self.IrradCurve_GroupBox_Show_Btn.clicked.connect(self.viewEffCurve)
+        self.IrradCurve_GroupBox_Show_Btn.clicked.connect(self.viewIrradCurve)
         self.IrradCurve_GroupBox_Layout.addWidget(self.IrradCurve_GroupBox_Show_Btn, 4, 1, 1, 2)
 
         self.IrradCurve_GroupBox.setLayout(self.IrradCurve_GroupBox_Layout)
@@ -85,7 +86,7 @@ Pontos Y: Irradiação (W/m²) em p.u.")
 
         #########################################################
 
-        # Curvas de Eficiência - Groupbox Plot
+        # Curvas de Irradiação - Groupbox Plot
         self.IrradCurve_View_GroupBox = QGroupBox("Visualizar a(s) Curva(s) de Irradiação")
         self.IrradCurve_View_GroupBox_Layout = QHBoxLayout()
 
@@ -107,11 +108,11 @@ Pontos Y: Irradiação (W/m²) em p.u.")
         self.Dialog_Btns_Cancel_Btn.clicked.connect(self.Cancel)
         self.Dialog_Btns_Layout.addWidget(self.Dialog_Btns_Cancel_Btn)
 
-        self.Dialog_Btns_Next_Btn = QPushButton("Ok")
-        self.Dialog_Btns_Next_Btn.setIcon(QIcon('img/icon_ok.png'))
-        self.Dialog_Btns_Next_Btn.setFixedWidth(100)
-        self.Dialog_Btns_Next_Btn.clicked.connect(self.Ok)
-        self.Dialog_Btns_Layout.addWidget(self.Dialog_Btns_Next_Btn)
+        self.Dialog_Btns_Ok_Btn = QPushButton("Ok")
+        self.Dialog_Btns_Ok_Btn.setIcon(QIcon('img/icon_ok.png'))
+        self.Dialog_Btns_Ok_Btn.setFixedWidth(100)
+        self.Dialog_Btns_Ok_Btn.clicked.connect(self.Ok)
+        self.Dialog_Btns_Layout.addWidget(self.Dialog_Btns_Ok_Btn)
 
         self.Dialog_Layout.addLayout(self.Dialog_Btns_Layout, 2, 3, 1, 1)
 
@@ -121,8 +122,7 @@ Pontos Y: Irradiação (W/m²) em p.u.")
         self.irradcurve_import.show()
 
     def teste(self):
-        print(self.list_curve_names)
-        if self.irradcurve_import.curve_name not in self.list_curve_names:
+        if self.irradcurve_import.curve_name not in self.list_curve_names and self.irradcurve_import.curve_name != '':
 
             self.irradcurve_name = self.irradcurve_import.curve_name
             self.list_curve_names.append(self.irradcurve_name)
@@ -137,9 +137,9 @@ Pontos Y: Irradiação (W/m²) em p.u.")
         else:
             msg = QMessageBox()
             msg.information(self, 'Curvas de Irradiação',
-                            "Não foi possível adicionar a curva de Irradiação!\nCurva já existente!")
+                            "Não foi possível adicionar a curva de Irradiação!\nCurva já existente ou dados inválidos!")
 
-    def removeEffCurve(self):
+    def removeIrradCurve(self):
         msg = QMessageBox()
         msg.setIcon(QMessageBox.Question)
         msg.setText("Você deseja remover a(s) curva(s) selecionada(s)?")
@@ -156,7 +156,6 @@ Pontos Y: Irradiação (W/m²) em p.u.")
                 if Item.checkState(0) == Qt.Checked:
                     self.IrradCurve_GroupBox_TreeWidget.takeTopLevelItem(ctd - 1)
                     for index, item in enumerate(self.list_curve_names):
-                        print(item, Item.name, index)
                         if item == Item.name:
                             self.list_curve_names.pop(index)
                     contChecked += 1
@@ -169,7 +168,7 @@ Pontos Y: Irradiação (W/m²) em p.u.")
         else:
             msg.information(self, 'Curvas de Irradiação', "Nenhuma curva de Irradiação foi removida!")
 
-    def viewEffCurve(self):
+    def viewIrradCurve(self):
 
         # Limpando
         self.graphWidget.clear()
@@ -185,104 +184,54 @@ Pontos Y: Irradiação (W/m²) em p.u.")
         self.graphWidget.showGrid(x=True, y=True)
 
         countSelected = 0
-        for ctd in range(0, self.IrradCurve_GroupBox_TreeWidget.topLevelItemCount()):
 
+        for ctd in range(0, self.IrradCurve_GroupBox_TreeWidget.topLevelItemCount()):
             Item = self.IrradCurve_GroupBox_TreeWidget.topLevelItem(ctd)
 
             if Item.checkState(0) == Qt.Checked:
-                if self.checkEffCurve(Item.name, Item.getPointsX(), Item.getPointsY()):
-                    pen = pyqtgraph.mkPen(color=Item.getColorRGB())
-
-                    pointsXList = Item.getPointsXList()
-                    pointsYList = Item.getPointsYList()
-                    self.graphWidget.plot(pointsXList, pointsYList, name=Item.name, pen=pen, symbol='o', symbolSize=10,
-                                          symbolBrush=Item.getColorRGB())
-
-                    countSelected += 1
+                pen = pyqtgraph.mkPen(color=Item.getColorRGB())
+                pointsXList = Item.getPointsXList()
+                pointsYList = Item.getPointsYList()
+                self.graphWidget.plot(pointsXList, pointsYList, name=Item.name, pen=pen, symbol='o', symbolSize=10,
+                                      symbolBrush=Item.getColorRGB())
+                countSelected += 1
 
         if countSelected == 0:
             msg = QMessageBox()
             msg.information(self, 'Curvas de Irradiação', "Nenhuma curva selecionada para visualização!")
 
     def Cancel(self):
-        self.IrradCurve_GroupBox_TreeWidget.clear()
         self.graphWidget.clear()
         self.close()
 
     def Ok(self):
-        self.setDataEffCurve()
+        self.setDataIrradCurve()
         self.close()
 
-
-    def checkEffCurve(self, nameEffCurve, pointsXEffCurve, pointsYEffCurve):
-
-        msgText = ''
-        pointsXEffCurve = pointsXEffCurve.split(',')
-        pointsYEffCurve = pointsYEffCurve.split(',')
-
-        if len(pointsXEffCurve) != len(pointsYEffCurve):
-            msgText += "Erro na curva " + nameEffCurve + ". O número de pontos do eixo das coordenadas está diferente do eixo das abcissas! \n"
-        else:
-            for ctd in pointsXEffCurve:
-                try:
-                    float(ctd)
-                except:
-                    msgText += "O item: " + ctd + " não é float! Verifique a curva de Irradiação!"
-            for ctd in pointsYEffCurve:
-                try:
-                    float(ctd)
-                except:
-                    msgText += "O item: " + ctd + " não é float! Verifique a curva de Irradiação!"
-
-        if msgText != "":
-            msg = QMessageBox()
-            msg.information(self, 'Curvas de Irradiação',
-                            "Não foi possível adicionar a curva de Irradiação:\n" + msgText)
-            return False
-        else:
-            return True
-
-    def setDataEffCurve(self):
-        self.IrradCurveXarray = []
-        self.IrradCurveYarray = []
-        self.dataIrradCurve = {}
-        checkCont = 0
+    def setDataIrradCurve(self):
         try:
             for ctd in range(0, self.IrradCurve_GroupBox_TreeWidget.topLevelItemCount()):
 
                 Item = self.IrradCurve_GroupBox_TreeWidget.topLevelItem(ctd)
-                if Item.checkState(0) == Qt.Checked:
-                    checkCont += 1
-                if checkCont > 1:
-                    raise class_exception.ExecConfigOpenDSS("Erro na seleção da Curva de Irradiação ",
-                                                            "Selecione somente uma curva!")
-                elif checkCont == 0:
-                    raise class_exception.ExecConfigOpenDSS("Erro na seleção da Curva de Irradiação ",
-                                                            "Selecione ao menos uma curva!")
-                else:
-                    if self.checkEffCurve(Item.name, Item.getPointsX(), Item.getPointsY()):
-                        self.IrradCurveXarray = Item.getPointsXList()
-                        self.IrradCurveYarray = Item.getPointsYList()
-                        self.dataIrradCurve["EffCurveName"] = Item.name
-                        self.dataIrradCurve["npts"] = str(len(self.IrradCurveXarray))
-                        self.dataIrradCurve["Xarray"] = self.IrradCurveXarray
-                        self.dataIrradCurve["Yarray"] = self.IrradCurveYarray
-                    else:
-                        raise class_exception.ExecConfigOpenDSS("Erro na verificação da Curva de Irradiação " \
-                                                                + Item.name + " !",
-                                                                "Verifique se todos os pontos estão presentes!")
+
+                self.dataIrradCurve["IrradCurveName"] = Item.name
+                self.dataIrradCurve["npts"] = str(len(Item.getPointsXList()))
+                self.dataIrradCurve["Xarray"] = Item.getPointsXList()
+                self.dataIrradCurve["Yarray"] = Item.getPointsYList()
+                self.IrradCurve_list.append(self.dataIrradCurve.copy())
         except:
             pass
+        print(self.IrradCurve_list)
 
 class Config_IrradCurve_GroupBox_TreeWidget_Item(QTreeWidgetItem):
     def __init__(self, parent, name, pointsX, pointsY, color):
-        ## Init super class ( QtGui.QTreeWidgetItem )
         super(Config_IrradCurve_GroupBox_TreeWidget_Item, self).__init__(parent)
-        self.Config_EffCurve = C_Config_IrradCurve_Dialog()
-        ## Column 0 - Text:
+        self.Config_IrradCurve = C_Config_IrradCurve_Dialog()
+
+        # Column 0 - Text:
 
         self.setText(0, name)
-        self.setFlags(self.flags() | Qt.ItemIsUserCheckable | Qt.ItemIsEditable)
+        #self.setFlags(self.flags() | Qt.ItemIsUserCheckable | Qt.ItemIsEditable)
         self.setCheckState(0, Qt.Unchecked)
 
         self.color = color
