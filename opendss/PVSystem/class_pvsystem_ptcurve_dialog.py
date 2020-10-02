@@ -216,7 +216,7 @@ Pontos Y: Potência em p.u.")
                 self.PTCurve_list.append(self.dataPTCurve.copy())
         except:
             pass
-        print(self.PTCurve_list)
+        #print(self.PTCurve_list)
 
 class Config_PTCurve_GroupBox_TreeWidget_Item(QTreeWidgetItem):
     def __init__(self, parent, name, pointsX, pointsY, color):

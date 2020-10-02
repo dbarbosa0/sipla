@@ -219,7 +219,7 @@ Pontos Y: Irradiação (W/m²) em p.u.")
                 self.IrradCurve_list.append(self.dataIrradCurve.copy())
         except:
             pass
-        print(self.IrradCurve_list)
+        #print(self.IrradCurve_list)
 
 class Config_IrradCurve_GroupBox_TreeWidget_Item(QTreeWidgetItem):
     def __init__(self, parent, name, pointsX, pointsY, color):

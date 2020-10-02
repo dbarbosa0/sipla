@@ -66,12 +66,12 @@ class C_Eff_Curve_Import(QDialog):
         self.Eff_Curve_Xdata = QLineEdit()
         self.Eff_Curve_Xdata.setToolTip('Preencha este campo somente com números, usando ponto (.) para \n'
                                        'determinar as casas decimais e separando cada valor com vírgula (,) \n'
-                                       'EX: 0.6 0.7 0.8 0.9 1')
+                                       'EX: 0.6, 0.7, 0.8, 0.9, 1')
         self.Eff_Curve_Ydata_Label = QLabel("Pontos do eixo Y:")
         self.Eff_Curve_Ydata = QLineEdit()
         self.Eff_Curve_Ydata.setToolTip('Preencha este campo somente com números, usando ponto (.) para \n'
                                        'determinar as casas decimais e separando cada valor com vírgula (,) \n'
-                                       'EX: 0.6 0.7 0.8 0.9 1')
+                                       'EX: 0.6, 0.7, 0.8, 0.9, 1')
 
         self.Eff_Curve_Manual_Mode_GroupBox_Layout.addWidget(self.Eff_Curve_Manual_Name_Label, 0, 0, 1, 1)
         self.Eff_Curve_Manual_Mode_GroupBox_Layout.addWidget(self.Eff_Curve_Xdata_Label, 1, 0, 1, 1)
@@ -144,7 +144,7 @@ class C_Eff_Curve_Import(QDialog):
         self.adjustSize()
 
     def define_default_entries(self):
-        self.curve_name = 'Default'
+        self.curve_name = 'Eff_Default'
         self.x_axys = str([0.1, 0.2, 0.4, 1.0]).strip('[]').replace("'", "")
         self.y_axys = str([0.86, 0.9, 0.93, 0.97]).strip('[]').replace("'", "")
 
@@ -232,3 +232,10 @@ class C_Eff_Curve_Import(QDialog):
             self.verify_Csv_entries()
 
         self.close()
+        self.cleareffcurveParameters()
+
+    def cleareffcurveParameters(self):
+        self.Eff_Curve_Csv_Name.setText("")
+        self.Eff_Curve_Manual_Name.setText("")
+        self.Eff_Curve_Xdata.setText("")
+        self.Eff_Curve_Ydata.setText("")

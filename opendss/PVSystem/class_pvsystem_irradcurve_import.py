@@ -144,7 +144,7 @@ class C_Irrad_Curve_Import(QDialog):
         self.adjustSize()
 
     def define_default_entries(self):
-        self.curve_name = 'Default'
+        self.curve_name = 'Irrad_Default'
         default_y_axys = [0, 0, 0, 0, 0, 0, .1, .2, .3, .5, .8, .9, 1.0, 1.0, .99, .9, .7, .4, .1, 0, 0, 0, 0, 0]
         default_x_axys = [x for x in range(1, len(default_y_axys)+1)]
         self.y_axys = str(default_y_axys).strip('[]').replace("'", "")
@@ -234,3 +234,10 @@ class C_Irrad_Curve_Import(QDialog):
             self.verify_Csv_entries()
 
         self.close()
+        self.clearirradcurveParameters()
+
+    def clearirradcurveParameters(self):
+        self.Irrad_Curve_Csv_Name.setText("")
+        self.Irrad_Curve_Manual_Name.setText("")
+        self.Irrad_Curve_Xdata.setText("")
+        self.Irrad_Curve_Ydata.setText("")

@@ -40,6 +40,7 @@ class C_Config_PVSystem_Dialog(QDialog):
 
         self.PVSystem_List = []
 
+
         self.InitUI()
 
     def InitUI(self):
@@ -125,9 +126,11 @@ class C_Config_PVSystem_Dialog(QDialog):
         self.PVSystem_PVdata_Phases_Label = QLabel("Nº Fases:")
         self.PVSystem_PVdata_Voltage_Label = QLabel("Tensão do Painel (kV):")
         self.PVSystem_PVdata_Irrad_Label = QLabel("Irradiação Nominal (normalizada):")
-        self.PVSystem_PVdata_Ppmp_Label = QLabel("Máxima Potência (kVA):")
+        self.PVSystem_PVdata_Ppmp_Label = QLabel("Potência MPPT (W):")
         self.PVSystem_PVdata_Temp_Label = QLabel("Temperatura de Operação:")
         self.PVSystem_PVdata_PF_Label = QLabel("Fator de Potência:")
+        self.PVSystem_PVdata_Cutin_Label = QLabel("%Cutin")
+        self.PVSystem_PVdata_Cutout_Label = QLabel("%Cutout")
 
         # LineEdits
         self.PVSystem_PVdata_Name = QLineEdit()
@@ -136,16 +139,14 @@ class C_Config_PVSystem_Dialog(QDialog):
         self.PVSystem_PVdata_Ppmp = QLineEdit()
         self.PVSystem_PVdata_Temp = QLineEdit()
         self.PVSystem_PVdata_PF = QLineEdit()
+        self.PVSystem_PVdata_Cutin = QLineEdit()
+        self.PVSystem_PVdata_Cutout = QLineEdit()
 
         # Comboboxs
         self.PVSystem_PVdata_PTCurve_ComboBox = QComboBox()
-        self.PVSystem_PVdata_PTCurve_ComboBox.addItems(["Default"])
         self.PVSystem_PVdata_EffCurve_ComboBox = QComboBox()
-        self.PVSystem_PVdata_EffCurve_ComboBox.addItems(["Default"])
         self.PVSystem_PVdata_IrradCurve_ComboBox = QComboBox()
-        self.PVSystem_PVdata_IrradCurve_ComboBox.addItems(["Default"])
         self.PVSystem_PVdata_TempCurve_ComboBox = QComboBox()
-        self.PVSystem_PVdata_TempCurve_ComboBox.addItems(["Default"])
         self.PVSystem_PVdata_Phases_ComboBox = QComboBox()
         self.PVSystem_PVdata_Phases_ComboBox.addItems(["1", "3"])
 
@@ -172,20 +173,24 @@ class C_Config_PVSystem_Dialog(QDialog):
         self.PVSystem_GroupBox_PVdata_Layout.addWidget(self.PVSystem_PVdata_Temp, 9, 1, 1, 1)
         self.PVSystem_GroupBox_PVdata_Layout.addWidget(self.PVSystem_PVdata_PF_Label, 10, 0, 1, 1)
         self.PVSystem_GroupBox_PVdata_Layout.addWidget(self.PVSystem_PVdata_PF, 10, 1, 1, 1)
+        self.PVSystem_GroupBox_PVdata_Layout.addWidget(self.PVSystem_PVdata_Cutin_Label, 11, 0, 1, 1)
+        self.PVSystem_GroupBox_PVdata_Layout.addWidget(self.PVSystem_PVdata_Cutin, 11, 1, 1, 1)
+        self.PVSystem_GroupBox_PVdata_Layout.addWidget(self.PVSystem_PVdata_Cutout_Label, 12, 0, 1, 1)
+        self.PVSystem_GroupBox_PVdata_Layout.addWidget(self.PVSystem_PVdata_Cutout, 12, 1, 1, 1)
 
         self.PVSystem_GroupBox_PVdata.setLayout(self.PVSystem_GroupBox_PVdata_Layout)
         self.Dialog_Layout.addWidget(self.PVSystem_GroupBox_PVdata)
         self.Dialog_Layout.addLayout(QVBoxLayout())
         self.setLayout(self.Dialog_Layout)
 
-        # Buttons Ok and Cancel
+        # Buttons Ok, Cancel and Apply
         self.Dialog_Btns_Layout = QHBoxLayout()
         self.Dialog_Btns_Layout.setAlignment(Qt.AlignRight)
 
         self.Dialog_Btns_Cancel_Btn = QPushButton("Cancelar")
         self.Dialog_Btns_Cancel_Btn.setIcon(QIcon('img/icon_cancel.png'))
         self.Dialog_Btns_Cancel_Btn.setFixedWidth(100)
-        self.Dialog_Btns_Cancel_Btn.clicked.connect(self.reject)
+        self.Dialog_Btns_Cancel_Btn.clicked.connect(self.Cancel)
         self.Dialog_Btns_Layout.addWidget(self.Dialog_Btns_Cancel_Btn)
 
         self.Dialog_Btns_Ok_Btn = QPushButton("OK")
@@ -193,16 +198,24 @@ class C_Config_PVSystem_Dialog(QDialog):
         self.Dialog_Btns_Ok_Btn.setFixedWidth(100)
         self.Dialog_Btns_Ok_Btn.clicked.connect(self.Accept)
         self.Dialog_Btns_Layout.addWidget(self.Dialog_Btns_Ok_Btn)
+        
+        self.Dialog_Btns_Apply_Btn = QPushButton("Aplicar")
+        self.Dialog_Btns_Apply_Btn.setIcon(QIcon('img/icon_ok.png'))
+        self.Dialog_Btns_Apply_Btn.setFixedWidth(100)
+        self.Dialog_Btns_Apply_Btn.clicked.connect(self.Apply)
+        self.Dialog_Btns_Layout.addWidget(self.Dialog_Btns_Apply_Btn)
 
         self.Dialog_Layout.addLayout(self.Dialog_Btns_Layout)
 
         self.setLayout(self.Dialog_Layout)
 
-    def removePVSystem(self):
-        pass
-
     def add_pvsystem(self):
-        self.PVSystem_GroupBox_PVdata.setVisible(True)
+        if not (self.effcurve.list_curve_names and self.irradcurve.list_curve_names and self.ptcurve.list_curve_names and self.tempcurve.list_curve_names):
+            QMessageBox(QMessageBox.Warning, "Curvas", "Todas as curvas precisam ser carregadas",
+                        QMessageBox.Ok).exec()
+        else:
+            self.update_dialog()
+            self.PVSystem_GroupBox_PVdata.setVisible(True)
 
     def add_eff_curve(self):
         self.effcurve.show()
@@ -219,28 +232,58 @@ class C_Config_PVSystem_Dialog(QDialog):
     def editPVSystem(self):
         pass
 
+    def removePVSystem(self):
+        pass
+
     def Accept(self):
+        self.close()
         self.PVSystem_GroupBox_PVdata.setVisible(False)
+        
+    def Cancel(self):
+        self.close()
+        self.PVSystem_GroupBox_PVdata.setVisible(False)
+
+    def Apply(self):
+        self.loadPVSystem()
+
+    def update_dialog(self):
+        self.PVSystem_PVdata_PTCurve_ComboBox.addItems(self.ptcurve.list_curve_names)
+        self.PVSystem_PVdata_EffCurve_ComboBox.addItems(self.effcurve.list_curve_names)
+        self.PVSystem_PVdata_IrradCurve_ComboBox.addItems(self.irradcurve.list_curve_names)
+        self.PVSystem_PVdata_TempCurve_ComboBox.addItems(self.tempcurve.list_curve_names)
 
     # Gets
 
     def get_PVSystem_Name(self):
         return self.PVSystem_PVdata_Name.text()
 
-    def get_Bus1_PVSystem(self):
-        return self.PVSystem_PVdata_Name.text()
-
     def get_PTCurve(self):
-        return self.PVSystem_PVdata_PTCurve_ComboBox.currentText()
+        for index, pt_dict in enumerate(self.ptcurve.PTCurve_list):
+            print(index, pt_dict)
+            for key, value in pt_dict.items():
+                if value == self.PVSystem_PVdata_PTCurve_ComboBox.currentText():
+                    return self.ptcurve.PTCurve_list[index]
 
     def get_EffCurve(self):
-        return self.PVSystem_PVdata_EffCurve_ComboBox.currentText()
+        for index, eff_dict in enumerate(self.effcurve.EffCurve_list):
+            print(index, eff_dict)
+            for key, value in eff_dict.items():
+                if value == self.PVSystem_PVdata_EffCurve_ComboBox.currentText():
+                    return self.effcurve.EffCurve_list[index]
 
     def get_IrradCurve(self):
-        return self.PVSystem_PVdata_IrradCurve_ComboBox.currentText()
+        for index, irrad_dict in enumerate(self.irradcurve.IrradCurve_list):
+            print(index, irrad_dict)
+            for key, value in irrad_dict.items():
+                if value == self.PVSystem_PVdata_IrradCurve_ComboBox.currentText():
+                    return self.irradcurve.IrradCurve_list[index]
 
     def get_TempCurve(self):
-        return self.PVSystem_PVdata_TempCurve_ComboBox.currentText()
+        for index, temp_dict in enumerate(self.tempcurve.TempCurve_list):
+            print(index, temp_dict)
+            for key, value in temp_dict.items():
+                if value == self.PVSystem_PVdata_TempCurve_ComboBox.currentText():
+                    return self.tempcurve.TempCurve_list[index]
 
     def get_Phases(self):
         return self.PVSystem_PVdata_Phases_ComboBox.currentText()
@@ -259,6 +302,30 @@ class C_Config_PVSystem_Dialog(QDialog):
 
     def get_Power_Factor(self):
         return self.PVSystem_PVdata_PF.text()
+
+    def get_cutin(self):
+        return self.PVSystem_PVdata_Cutin.text()
+
+    def get_cutout(self):
+        return self.PVSystem_PVdata_Cutout.text()
+
+    def loadPVSystem(self):
+        self.PVSystem_Data = {}
+        self.PVSystem_Data["Name"] = self.get_PVSystem_Name()
+        self.PVSystem_Data["Bus1"] = self.get_PVSystem_Name()
+        self.PVSystem_Data["Phases"] = self.get_Phases()
+        self.PVSystem_Data["kV"] = self.get_Nominal_Voltage()
+        self.PVSystem_Data["Irrad"] = self.get_Nominal_Irradiance()
+        self.PVSystem_Data["ppmp"] = self.get_Nominal_Power()
+        self.PVSystem_Data["temperature"] = self.get_Nominal_Temp()
+        self.PVSystem_Data["pf"] = self.get_Power_Factor()
+        self.PVSystem_Data["%cutin"] = self.get_cutin()
+        self.PVSystem_Data["%cutout"] = self.get_cutout()
+        self.PVSystem_Data["effcurve"] = self.get_EffCurve()
+        self.PVSystem_Data["p-tcurve"] = self.get_PTCurve()
+        self.PVSystem_Data["daily"] = self.get_IrradCurve()
+        self.PVSystem_Data["tdaily"] = self.get_TempCurve()
+        print(self.PVSystem_Data)
 
 
 # self.loadDefaultParameters()

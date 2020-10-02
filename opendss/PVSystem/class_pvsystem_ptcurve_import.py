@@ -144,7 +144,7 @@ class C_PT_Curve_Import(QDialog):
         self.adjustSize()
 
     def define_default_entries(self):
-        self.curve_name = 'Default'
+        self.curve_name = 'PT_Default'
         self.x_axys = str([0, 25, 75, 100]).strip('[]').replace("'", "")
         self.y_axys = str([1.2, 1.0, 0.8, 0.6]).strip('[]').replace("'", "")
 
@@ -232,3 +232,10 @@ class C_PT_Curve_Import(QDialog):
             self.verify_Csv_entries()
 
         self.close()
+        self.clearptcurveParameters()
+
+    def clearptcurveParameters(self):
+        self.PT_Curve_Csv_Name.setText("")
+        self.PT_Curve_Manual_Name.setText("")
+        self.PT_Curve_Xdata.setText("")
+        self.PT_Curve_Ydata.setText("")

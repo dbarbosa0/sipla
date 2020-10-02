@@ -217,7 +217,7 @@ Pontos Y: Eficiência do inversor em p.u.")
                 self.EffCurve_list.append(self.dataEffCurve.copy())
         except:
             pass
-        print(self.EffCurve_list)
+        #print(self.EffCurve_list)
 
 class Config_EffCurve_GroupBox_TreeWidget_Item(QTreeWidgetItem):
     def __init__(self, parent, name, pointsX, pointsY, color):

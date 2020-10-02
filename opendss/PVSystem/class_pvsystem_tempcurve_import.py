@@ -144,7 +144,7 @@ class C_Temp_Curve_Import(QDialog):
         self.adjustSize()
 
     def define_default_entries(self):
-        self.curve_name = 'Default'
+        self.curve_name = 'Temp_Default'
         default_y_axys = [25, 25, 25, 25, 25, 25, 25, 25, 35, 40, 45, 50, 60, 60, 55, 40, 35, 30, 25, 25, 25, 25, 25, 25]
         default_x_axys = [x for x in range(1, len(default_y_axys)+1)]
         self.y_axys = str(default_y_axys).strip('[]').replace("'", "")
@@ -234,3 +234,10 @@ class C_Temp_Curve_Import(QDialog):
             self.verify_Csv_entries()
 
         self.close()
+        self.cleartempcurveParameters()
+
+    def cleartempcurveParameters(self):
+        self.Temp_Curve_Csv_Name.setText("")
+        self.Temp_Curve_Manual_Name.setText("")
+        self.Temp_Curve_Xdata.setText("")
+        self.Temp_Curve_Ydata.setText("")

@@ -219,7 +219,7 @@ Pontos Y: Temperatura (°C)")
                 self.TempCurve_list.append(self.dataTempCurve.copy())
         except:
             pass
-        print(self.TempCurve_list)
+        #print(self.TempCurve_list)
 
 class Config_TempCurve_GroupBox_TreeWidget_Item(QTreeWidgetItem):
     def __init__(self, parent, name, pointsX, pointsY, color):
