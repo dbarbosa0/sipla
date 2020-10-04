@@ -205,10 +205,11 @@ class C_OpenDSS(): # classe OpenDSSDirect
 
             for ctd in self.execOpenDSSFunc:
                 msg = self.execOpenDSSFunc[ctd][-2]
+                #print(msg)
+
                 # Executando a função
                 ### Verificando o modo de operação
                 self.execOpenDSSFunc[ctd][-1]()
-                    #print(msg)
 
                 ## Setando a Flag
         self.loadDataFlag = True

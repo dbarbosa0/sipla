@@ -205,6 +205,7 @@ class C_Data():  # classe OpenDSS
             dados_eqth = self.DataBase.getData_EqThevenin(self.nCircuitoAT_MT)
 
             memoFileEqTh = []
+            memoFileEqTh.append("!Barramento Infinito")
 
             for ctd in range(0, len(dados_eqth)):
                 tmp = ''
@@ -1099,8 +1100,6 @@ class C_Data():  # classe OpenDSS
                         ##Buffer
                         self.insertElementList("Capacitor.{0}".format(dados_db[ctd].cod_id))
                         self.insertBusList(dados_db[ctd].pac_1)
-
-
 
             return memoFileComp
 
