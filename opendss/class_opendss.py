@@ -10,6 +10,10 @@ import opendss.class_data
 import class_exception
 import time
 
+####Teste Thread
+import queue
+import threading
+
 class C_OpenDSS(): # classe OpenDSSDirect
 
     def __init__(self):
@@ -31,6 +35,9 @@ class C_OpenDSS(): # classe OpenDSSDirect
         self._StorageControllers = []
         #### InvControl
         self._InvControl = []
+        # PVSystem
+        self._PVSystem_Data = []
+        self._PVSystem_Subs = []
         ##SC Carvalho
         self._SCDataInfo = []
         self._Devices = []
@@ -133,6 +140,22 @@ class C_OpenDSS(): # classe OpenDSSDirect
         self._InvControl = value
 
     @property
+    def PVSystem_Data(self):
+        return self._PVSystem_Data
+
+    @PVSystem_Data.setter
+    def PVSystem_Data(self, value):
+        self._PVSystem_Data = value
+
+    @property
+    def PVSystem_Subs(self):
+        return self._PVSystem_Subs
+
+    @PVSystem_Subs.setter
+    def PVSystem_Subs(self, value):
+        self._PVSystem_Subs = value
+
+    @property
     def SCDataInfo(self):
         return self._SCDataInfo
 
@@ -204,18 +227,20 @@ class C_OpenDSS(): # classe OpenDSSDirect
                           }
 
             for ctd in self.execOpenDSSFunc:
-                msg = self.execOpenDSSFunc[ctd][-2]
+            #    msg = self.execOpenDSSFunc[ctd][-2]
                 #print(msg)
 
                 # Executando a função
                 ### Verificando o modo de operação
                 self.execOpenDSSFunc[ctd][-1]()
 
-                ## Setando a Flag
+        ## Setando a Flag
+
         self.loadDataFlag = True
 
 
-    def loadData_All(self): #Sempre que o fluxo rodar
+
+    def loadData_Solve(self): #Sempre que o fluxo rodar
         self.execOpenDSSFuncAll= {
                 "UConMT": ["Unidades Consumidoras MT ...", self.dataOpenDSS.exec_UNID_CONSUMIDORAS_MT], # Cargas
                 "UConBTTD": ["Unidades Consumidoras BT no Transformador de Distribuição ...",self.dataOpenDSS.exec_UNID_CONSUMIDORAS_BT_TD],
@@ -223,6 +248,7 @@ class C_OpenDSS(): # classe OpenDSSDirect
                 "UConMTLoadShapes": ["Unidades Consumidoras MT - Curvas de Carga ...",self.dataOpenDSS.exec_UNID_CONSUMIDORAS_LOADSHAPES_MT],
                 "UConBTLoadShapes": ["Unidades Consumidoras BT - Curvas de Carga ...",self.dataOpenDSS.exec_UNID_CONSUMIDORAS_LOADSHAPES_BT],
                 #
+                "PVSystem": ["Inserindo os PVSystems ...", self.exec_pvsystem],
                 "Storages": ["Inserindo os Storages ...", self.exec_Storages],
                 "InvControl": ["Inserindo os Controles dos Inversores ...", self.exec_InvControl],
                 "EnergyMeters": ["Inserindo os Energy Meters ...", self.exec_EnergyMeters],
@@ -460,10 +486,10 @@ class C_OpenDSS(): # classe OpenDSSDirect
         #Executa as consultas no Banco de Dados
         self.loadData()
         #Executa os Monitores e cargas a depender das Flags
-        self.loadData_All()
+        self.loadData_Solve()
         #Pega os Memo
         self.loadDataResult()
-
+        #Limpa o Buffer do OpenDSS
         self.OpenDSSEngine.clear()
 
         for ctd in self.OpenDSSDataResult:
@@ -960,10 +986,72 @@ class C_OpenDSS(): # classe OpenDSSDirect
 
     def exec_ProtectEdit(self):
         self.memoFileDevices = ''
+    ########
 
+    ############## PV SYSTEM ####################
 
+    def exec_subs_pvsystem(self):
+        for ctd in self.PVSystem_Subs:
+            tmp = 'New transformer.' + ctd['name'] + \
+                  ' phases=' + ctd['phases'] + \
+                  ' xhl=' + ctd['xhl'] + \
+                  ' wdg=' + ctd['wdg1'] + \
+                  ' bus=' + ctd['bus1'] + \
+                  ' kv=' + ctd['kv1'] + \
+                  ' kva=' + ctd['kva1'] + \
+                  ' conn=' + ctd['conn1'] + \
+                  ' wdg=' + ctd['wdg2'] + \
+                  ' bus=' + ctd['bus2'] + \
+                  ' kv=' + ctd['kv2'] + \
+                  ' kva=' + ctd['kva2'] + \
+                  ' conn=' + ctd['conn2']
 
-    ##
+            self.memoFilePVs.append(tmp)
+
+    def exec_pvsystem(self):
+
+        self.memoFilePVs = []
+
+        for ctd in self.PVSystem_Data:
+            tmp = 'New XYCurve.' + ctd['effcurve']['EffCurveName'] + \
+                  ' npts=' + ctd['effcurve']['npts'] + \
+                  ' xarray=' + str(ctd['effcurve']['Xarray']).replace(',', '') + \
+                  ' yarray=' + str(ctd['effcurve']['Yarray']).replace(',', '') + \
+                  ' New XYCurve.' + ctd['p-tcurve']['PTCurveName'] + \
+                  ' npts=' + ctd['p-tcurve']['npts'] + \
+                  ' xarray=' + str(ctd['p-tcurve']['Xarray']).replace(',', '') + \
+                  ' yarray=' + str(ctd['p-tcurve']['Yarray']).replace(',', '') + \
+                  ' New loadshape.' + ctd['daily']['IrradCurveName'] + \
+                  ' npts=' + ctd['daily']['npts'] + \
+                  ' interval=' + ctd['daily']['interval'] + \
+                  ' xarray=' + str(ctd['daily']['Xarray']).replace(',', '') + \
+                  ' yarray=' + str(ctd['daily']['Yarray']).replace(',', '') + \
+                  ' Action=' + ctd['daily']['Action'] + \
+                  ' New Tshape.' + ctd['tdaily']['TempCurveName'] + \
+                  ' npts=' + ctd['tdaily']['npts'] + \
+                  ' interval=' + ctd['tdaily']['interval'] + \
+                  ' xarray=' + str(ctd['tdaily']['Xarray']).replace(',', '') + \
+                  ' yarray=' + str(ctd['tdaily']['Yarray']).replace(',', '') + \
+                  ' New pvsystem2.' + ctd['name'] + \
+                  ' phases=' + ctd['phases'] + \
+                  ' bus1=' + ctd['bus1'] + \
+                  ' kv=' + ctd['kv'] + \
+                  ' irrad=' + ctd['irrad'] + \
+                  ' pmpp=' + ctd['pmpp'] + \
+                  ' temperature=' + ctd['temperature'] + \
+                  ' %cutin=' + ctd['%cutin'] + \
+                  ' %cutout=' + ctd['%cutout'] + \
+                  ' effcurve=' + ctd['effcurve']['EffCurveName'] + \
+                  ' p-tcurve=' + ctd['p-tcurve']['PTCurveName'] + \
+                  ' daily=' + ctd['daily']['IrradCurveName'] + \
+                  ' tdaily=' + ctd['tdaily']['TempCurveName']
+
+            self.memoFilePVs.append(tmp)
+        self.exec_subs_pvsystem()
+
+        self.memoFilePVs = []
+
+    #########################
     def getBusList(self):
         return self.dataOpenDSS.busList
 
