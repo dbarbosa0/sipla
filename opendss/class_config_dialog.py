@@ -244,7 +244,7 @@ class LoadFlow(QWidget):
         self.LoadFlow_GroupBox_Layout.addWidget(self.LoadFlow_GroupBox_VoltageBase_LineEdit, 0, 1, 1, 1)
 
         ##
-        self.LoadFlow_GroupBox_UNCMT_CheckBox = QCheckBox("Considerar Cargas de Média Tensão")
+        self.LoadFlow_GroupBox_UNCMT_CheckBox = QCheckBox("Considerar Cargas de Média Tensão (Delta - Primário do Trafo)")
         self.LoadFlow_GroupBox_UNCBT_TD_CheckBox = QCheckBox("Considerar Cargas de Baixa Tensão no Transformador de Distribuição")
 
         self.LoadFlow_GroupBox_Layout.addWidget(self.LoadFlow_GroupBox_UNCMT_CheckBox, 1, 0, 1, 2)
