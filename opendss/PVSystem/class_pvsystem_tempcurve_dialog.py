@@ -216,6 +216,7 @@ Pontos Y: Temperatura (°C)")
                 self.dataTempCurve["npts"] = str(len(Item.getPointsXList()))
                 self.dataTempCurve["Xarray"] = Item.getPointsXList()
                 self.dataTempCurve["Yarray"] = Item.getPointsYList()
+                self.dataTempCurve["interval"] = '1'
                 self.TempCurve_list.append(self.dataTempCurve.copy())
         except:
             pass

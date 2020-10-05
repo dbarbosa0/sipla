@@ -15,7 +15,7 @@ class C_Insert_PVSystem_Substation_Dialog(QDialog):
         self.iconWindow = cfg.sipla_icon
         self.stylesheet = cfg.sipla_stylesheet
         self.adjustSize()
-        self.substation_parents = pvsubs_parents
+        self.pvconfig = pvsubs_parents
         self.OpenDSS = opendss.class_opendss.C_OpenDSS()
 
         self.Exist_Subs_Names = []
@@ -172,15 +172,17 @@ class C_Insert_PVSystem_Substation_Dialog(QDialog):
     def Accept(self):
         self.loadPVSystem()
         self.PVSystem_GroupBox_Substation_data.setVisible(False)
+        self.OpenDSS.PVSystem_Subs = self.Subs_List
+        self.OpenDSS.PVSystem_Data = self.pvconfig.PVSystem_List
         self.adjustSize()
         self.close()
         self.clearPVConfigParameters()
-        print(self.substation_parents.PVSystem_List)
 
     def update_dialog(self):
         self.AllBus = self.OpenDSS.getBusList()
+        self.PVSystem_Substation_Transf_Bus1_ComboBox.setEditable(True)
         self.PVSystem_Substation_Transf_Bus1_ComboBox.addItems(self.AllBus)
-        self.PVSystem_Substation_Transf_Bus2_ComboBox.addItems(self.substation_parents.Exist_PV_Names)
+        self.PVSystem_Substation_Transf_Bus2_ComboBox.addItems(self.pvconfig.Exist_PV_Names)
 
     # Gets
 
@@ -225,9 +227,9 @@ class C_Insert_PVSystem_Substation_Dialog(QDialog):
 
     def loadPVSystem(self):
         self.Substation_Data = {}
-        self.Substation_Data['Name'] = self.get_Substation_Name()
-        self.Substation_Data['Phases'] = self.get_Trafo_Phases()
-        self.Substation_Data['Xhl'] = self.get_XHL()
+        self.Substation_Data['name'] = self.get_Substation_Name()
+        self.Substation_Data['phases'] = self.get_Trafo_Phases()
+        self.Substation_Data['xhl'] = self.get_XHL()
         self.Substation_Data['wdg1'] = self.get_Primary()
         self.Substation_Data['bus1'] = self.get_Bus1()
         self.Substation_Data['kv1'] = self.get_VPrimary()
@@ -270,7 +272,3 @@ class C_Insert_PVSystem_Substation_Dialog(QDialog):
         self.move(qr.topLeft())
 
 
-    def exec_pvsystem(self):
-        self.memoFileDevices = []
-        for ctd in self.substation_parents.PVSystem_List:
-            print(ctd)

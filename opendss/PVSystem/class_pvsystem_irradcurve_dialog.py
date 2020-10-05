@@ -216,6 +216,8 @@ Pontos Y: Irradiação (W/m²) em p.u.")
                 self.dataIrradCurve["npts"] = str(len(Item.getPointsXList()))
                 self.dataIrradCurve["Xarray"] = Item.getPointsXList()
                 self.dataIrradCurve["Yarray"] = Item.getPointsYList()
+                self.dataIrradCurve["interval"] = '1'  # MUDAR DEPOIS DA DIALOG
+                self.dataIrradCurve["Action"] = 'Normalize'  # MUDAR DEPOIS DA DIALOG
                 self.IrradCurve_list.append(self.dataIrradCurve.copy())
         except:
             pass

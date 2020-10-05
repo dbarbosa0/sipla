@@ -190,10 +190,11 @@ class C_MenuToolBar(QDockWidget):
         self.OpenDSSMenuSubInsert_SubPVSystem.addAction(self.OpenDSS_ConfigPVSystem_Act)
         self.OpenDSSMenuSubInsert_SubPVSystem.addAction(self.OpenDSS_InsertPVSystem_Act)
         self.OpenDSSMenu.addSeparator()
+
         self.OpenDSSMenu.addAction(self.OpenDSS_Results_EnergyMeter_Act)
         self.OpenDSSMenu.addSeparator()
-
         self.OpenDSSMenuSubInsert.addAction(self.OpenDSS_InsertStorage_Act)
+
         self.OpenDSSMenuSubProcess = self.OpenDSSMenu.addMenu(QIcon('img/icon_opendss_subprocess.png'),
                                                               'Sub-processos ')
 
@@ -446,7 +447,6 @@ class C_MenuToolBar(QDockWidget):
 
     def exec_insertPVSystem(self):
         self.Actions.exec_PVSystem_Substation()
-        #self.Actions.exec_PVSystem_Settings()
 
     # Contribuição Jonas
     def exec_InsertStorage(self):

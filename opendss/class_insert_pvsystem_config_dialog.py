@@ -2,9 +2,11 @@ from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import QStyleFactory, QRadioButton, QDialog, QGridLayout, QGroupBox, \
     QVBoxLayout, QTabWidget, QLabel, QComboBox, QDesktopWidget, QLineEdit, QPushButton, QHBoxLayout, QMessageBox
 from PyQt5.QtCore import Qt
-import copy
+
 import opendss.class_opendss
 import config as cfg
+import main_toolbar
+
 from opendss.PVSystem.class_pvsystem_effcurve_dialog import C_Config_EffCurve_Dialog
 from opendss.PVSystem.class_pvsystem_effcurve_import import C_Eff_Curve_Import
 
@@ -19,6 +21,7 @@ from opendss.PVSystem.class_pvsystem_tempcurve_import import C_Temp_Curve_Import
 
 from opendss.class_insert_pvsystem_substation_dialog import C_Insert_PVSystem_Substation_Dialog
 
+
 class C_Config_PVSystem_Dialog(QDialog):
     def __init__(self):
         super().__init__()
@@ -28,7 +31,7 @@ class C_Config_PVSystem_Dialog(QDialog):
         self.stylesheet = cfg.sipla_stylesheet
         self.adjustSize()
         self.OpenDSS = opendss.class_opendss.C_OpenDSS()
-        #self.pvsubstation = C_Insert_PVSystem_Substation_Dialog()
+        self.Main_Toolbar = main_toolbar.C_MenuToolBar()
 
         self.effcurve = C_Config_EffCurve_Dialog()
         self.irradcurve = C_Config_IrradCurve_Dialog()
@@ -244,6 +247,10 @@ class C_Config_PVSystem_Dialog(QDialog):
         self.update_dialog()
         self.PVSystem_GroupBox_PVdata.setVisible(False)
         self.adjustSize()
+        if not self.PVSystem_List:
+            self.Main_Toolbar.OpenDSS_InsertPVSystem_Act.setEnabled(False)
+        else:
+            self.Main_Toolbar.OpenDSS_InsertPVSystem_Act.setEnabled(False)
         self.clearPVConfigParameters()
 
         
@@ -329,12 +336,12 @@ class C_Config_PVSystem_Dialog(QDialog):
 
     def loadPVSystem(self):
         self.PVSystem_Data = {}
-        self.PVSystem_Data["Name"] = self.get_PVSystem_Name()
-        self.PVSystem_Data["Bus1"] = self.get_PVSystem_Name()
-        self.PVSystem_Data["Phases"] = self.get_Phases()
-        self.PVSystem_Data["kV"] = self.get_Nominal_Voltage()
-        self.PVSystem_Data["Irrad"] = self.get_Nominal_Irradiance()
-        self.PVSystem_Data["ppmp"] = self.get_Nominal_Power()
+        self.PVSystem_Data["name"] = self.get_PVSystem_Name()
+        self.PVSystem_Data["bus1"] = self.get_PVSystem_Name()
+        self.PVSystem_Data["phases"] = self.get_Phases()
+        self.PVSystem_Data["kv"] = self.get_Nominal_Voltage()
+        self.PVSystem_Data["irrad"] = self.get_Nominal_Irradiance()
+        self.PVSystem_Data["pmpp"] = self.get_Nominal_Power()
         self.PVSystem_Data["temperature"] = self.get_Nominal_Temp()
         self.PVSystem_Data["pf"] = self.get_Power_Factor()
         self.PVSystem_Data["%cutin"] = self.get_cutin()
@@ -351,7 +358,7 @@ class C_Config_PVSystem_Dialog(QDialog):
             msg = QMessageBox()
             msg.information(self, 'Valores inválidos',
                             "Preencha todos os campos!\n Os valores estão inválidos ou não foram preenchidos")
-        return self.Exist_PV_Names
+        #return self.Exist_PV_Names
 
     def clearPVConfigParameters(self):
         self.PVSystem_PVdata_Name.clear()
