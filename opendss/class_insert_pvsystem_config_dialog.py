@@ -203,12 +203,6 @@ class C_Config_PVSystem_Dialog(QDialog):
         self.Dialog_Btns_Ok_Btn.setFixedWidth(100)
         self.Dialog_Btns_Ok_Btn.clicked.connect(self.Accept)
         self.Dialog_Btns_Layout.addWidget(self.Dialog_Btns_Ok_Btn)
-        
-        self.Dialog_Btns_Apply_Btn = QPushButton("Aplicar")
-        self.Dialog_Btns_Apply_Btn.setIcon(QIcon('img/icon_ok.png'))
-        self.Dialog_Btns_Apply_Btn.setFixedWidth(100)
-        self.Dialog_Btns_Apply_Btn.clicked.connect(self.Apply)
-        self.Dialog_Btns_Layout.addWidget(self.Dialog_Btns_Apply_Btn)
 
         self.Dialog_Layout.addLayout(self.Dialog_Btns_Layout)
 
@@ -250,7 +244,7 @@ class C_Config_PVSystem_Dialog(QDialog):
         if not self.PVSystem_List:
             self.Main_Toolbar.OpenDSS_InsertPVSystem_Act.setEnabled(False)
         else:
-            self.Main_Toolbar.OpenDSS_InsertPVSystem_Act.setEnabled(False)
+            self.Main_Toolbar.OpenDSS_InsertPVSystem_Act.setEnabled(True)
         self.clearPVConfigParameters()
 
         
@@ -259,12 +253,6 @@ class C_Config_PVSystem_Dialog(QDialog):
         self.clearPVConfigParameters()
         self.PVSystem_GroupBox_PVdata.setVisible(False)
 
-    def Apply(self):
-        self.loadPVSystem()
-        self.update_dialog()
-        self.PVSystem_GroupBox_PVdata.setVisible(False)
-        self.adjustSize()
-        self.clearPVConfigParameters()
 
     def update_dialog(self):
         self.PVSystem_PVdata_PTCurve_ComboBox.addItems(self.ptcurve.list_curve_names)
