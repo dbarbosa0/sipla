@@ -32,10 +32,16 @@ class C_DBaseConn(): #Classe de banco de dados
                 cbanco = connDB.execute(strSQL)
 
             elif self.DataBaseInfo["Conn"] == "mysql":
-                connDB = MySQLdb.connect(self.databaseInfo['MySQL_Host'], self.databaseInfo['MySQL_User'],
-                                         self.databaseInfo['MySQL_Passwd'], self.databaseInfo['MySQL_db'])
 
-                cbanco = connDB.execute(strSQL)
+                strSQL = strSQL.lower() #Apenas para compatibilizar, depois verificar
+
+                connDB = MySQLdb.connect(self.DataBaseInfo['MySQL_Host'], self.DataBaseInfo['MySQL_User'],
+                                         self.DataBaseInfo['MySQL_Passwd'], self.DataBaseInfo['MySQL_db'])
+
+                cbanco = connDB.cursor()
+                cbanco.execute(strSQL)
+
+                connDB.close()
 
             return cbanco
 
@@ -54,11 +60,13 @@ class C_DBaseConn(): #Classe de banco de dados
 
             elif self.DataBaseInfo["Conn"] == "mysql":
 
-                connDB = MySQLdb.connect(self.databaseInfo['MySQL_Host'], self.databaseInfo['MySQL_User'], self.databaseInfo['MySQL_Passwd'], self.databaseInfo['MySQL_db'])
+                connDB = MySQLdb.connect(self.DataBaseInfo['MySQL_Host'], self.DataBaseInfo['MySQL_User'], self.DataBaseInfo['MySQL_Passwd'], self.DataBaseInfo['MySQL_db'])
 
                 cursor = connDB.cursor()
                 cursor.execute('SELECT VERSION();')
                 results = cursor.fetchone()
+
+                connDB.close()
 
                 if not results:
                     return False

@@ -43,7 +43,7 @@ class C_ConfigDialog(QDialog):
         self.Conn_GroupBox_Radio_Sqlite.setChecked(True)
         self.Conn_GroupBox_Layout.addWidget(self.Conn_GroupBox_Radio_Sqlite)
 
-        self.Conn_GroupBox_Radio_Mysql = QRadioButton("MySQL")
+        self.Conn_GroupBox_Radio_Mysql = QRadioButton("MariaDB / MySQL")
         self.Conn_GroupBox_Radio_Mysql.setChecked(False)
         #self.Conn_GroupBox_Radio_Mysql.setEnabled(False)
         self.Conn_GroupBox_Layout.addWidget(self.Conn_GroupBox_Radio_Mysql)

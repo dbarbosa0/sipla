@@ -28,10 +28,10 @@ pip install pywin32
 **Recomendação**: Verifique a instalação utilizando o _script_ _dssvplot35.py_ na pasta "Examples" do OpenDSS.
 
 ### GNU Linux
-Para utilização no GNU Linux, verifique se os pacotes não podem ser instalados via gerenciador de pacotes ao invés do pip, visto que assim evita-se erros posteriores
+Para utilização no GNU Linux, verifique se os pacotes não podem ser instalados via gerenciador de pacotes ao invés do pip, visto que assim evita-se erros posteriores.
 
 ## Desenvolvimento 
-O desenvolvimento é coordenado pela [LigaSEPi](https://www.ligasep.eng.ufba.br/) da [UFBA](https://www.ufba.br/)
+O desenvolvimento é coordenado pela [G-SEPi](https://www.ligasep.eng.ufba.br/) da [UFBA](https://www.ufba.br/)
 
 ### Agradecimentos
 Agradecimentos especiais a Sandy Aquino, Felipe Bomfim e Matheus Carvalho pelas importantes contribuições
