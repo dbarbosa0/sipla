@@ -183,12 +183,13 @@ class BasicTab(QWidget):
             self.FltType_GroupBox_ComboBox.addItem(item,self.typelist_data[index])
 
         ##### Fault Phases
-        self.phaseslist = ['1 phase', '3 phases']
-        self.phaseslist_data = ['1', '3']
+        self.phaseslist = ['1 phase','2 phases', '3 phases']
+        self.phaseslist_data = ['1','2','3']
         self.FltPhases_GroupBox = QGroupBox("Fault Phases")
         self.FltPhases_GroupBox_Layout = QHBoxLayout()
         self.FltPhases_GroupBox_ComboBox = QComboBox()
         self.FltPhases_GroupBox_ComboBox.setMaximumWidth(150)
+        # self.FltPhases_GroupBox_ComboBox.setEditable(True)
         self.FltPhases_GroupBox_Layout.addWidget(self.FltPhases_GroupBox_ComboBox)
         self.FltPhases_GroupBox.setLayout(self.FltPhases_GroupBox_Layout)
         #Adicionando itens ao combobox com suas respectivas tags(data)
@@ -219,6 +220,7 @@ class BasicTab(QWidget):
         self.FltBus_GroupBox_ComboBox = QComboBox()
         self.FltBus_GroupBox_ComboBox.currentIndexChanged.connect(self.addBusesFltBus2)
         self.FltBus_GroupBox_ComboBox.setMaximumWidth(150)
+        self.FltBus_GroupBox_ComboBox.setEditable(True)
         self.FltBus_GroupBox_Layout.addWidget(self.FltBus_GroupBox_ComboBox)
         self.FltBus_GroupBox.setLayout(self.FltBus_GroupBox_Layout)
 
@@ -227,6 +229,7 @@ class BasicTab(QWidget):
         self.FltBus2_GroupBox_Layout = QHBoxLayout()
         self.FltBus2_GroupBox_ComboBox = QComboBox()
         self.FltBus2_GroupBox_ComboBox.setMaximumWidth(150)
+        self.FltBus2_GroupBox_ComboBox.setEditable(True)
         self.FltBus2_GroupBox_Layout.addWidget(self.FltBus2_GroupBox_ComboBox)
         self.FltBus2_GroupBox.setLayout(self.FltBus2_GroupBox_Layout)
 
@@ -247,7 +250,9 @@ class BasicTab(QWidget):
         self.FltBus2_GroupBox_ComboBox.clear()
         self.FltBus2_GroupBox_ComboBox.addItem("")
         listBus = [self.FltBus_GroupBox_ComboBox.itemText(i) for i in range(0, self.FltBus_GroupBox_ComboBox.count())]
-        listBus.remove(self.FltBus_GroupBox_ComboBox.currentText())
+
+        # listBus.remove(self.FltBus_GroupBox_ComboBox.currentText())
+
         for index, item in enumerate(listBus):
             self.FltBus2_GroupBox_ComboBox.addItem(item, item)
 
