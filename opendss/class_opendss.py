@@ -181,6 +181,7 @@ class C_OpenDSS(): # classe OpenDSSDirect
             self.dataOpenDSS.nSE_MT_Selecionada = self.nSE_MT_Selecionada
             ##Zerando a lista de barras
             self.dataOpenDSS.busList = []
+            self.dataOpenDSS.busListdict = {}
             self.dataOpenDSS.elementList = []
             self.dataOpenDSS.recloserList = []
             self.dataOpenDSS.fuseList = []

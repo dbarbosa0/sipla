@@ -19,6 +19,7 @@ class C_Data():  # classe OpenDSS
         self._nFieldsMT = ''
         ##Lista com o nome das Barras
         self.busList = []
+        self.busListdict = {}
         self.elementList = []
         self.recloserList = []
         self.fuseList = []
@@ -504,14 +505,14 @@ class C_Data():  # classe OpenDSS
 
                             ##Buffer
                             self.insertElementList("Line.{0}".format(dados_sec[ctd].cod_id))
-                            self.insertBusList(dados_sec[ctd].pac_1)
-                            self.insertBusList(dados_sec[ctd].pac_2)
+                            self.insertBusList(pac_1)
+                            self.insertBusList(pac_2)
                 else:  # AT
                     memoFileSEC.append(temp_memoFileSEC)
                     ##Buffer
                     self.insertElementList("Line.{0}".format(dados_sec[ctd].cod_id))
-                    self.insertBusList(dados_sec[ctd].pac_1)
-                    self.insertBusList(dados_sec[ctd].pac_2)
+                    self.insertBusList(pac_1)
+                    self.insertBusList(pac_2)
 
             return memoFileSEC
 

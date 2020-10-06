@@ -15,7 +15,7 @@ class C_SCAnalyze_ConfigDialog(QDialog):
     def __init__(self):
         super().__init__()
 
-        self.titleWindow = "Short Circuit Settings"
+        self.titleWindow = "Configurar curto circuito"
         self.iconWindow = cfg.sipla_icon
         self.stylesheet = cfg.sipla_stylesheet
 
@@ -36,10 +36,10 @@ class C_SCAnalyze_ConfigDialog(QDialog):
         self.Dialog_Layout = QVBoxLayout()  # Layout da Dialog
 
         self.TabWidget = QTabWidget()
-        self.TabBasic = BasicTab()  # QWidget
+        self.TabBasic = BasicTab(self)  # QWidget
         self.TabAdvanced = AdvancedTab()  # QWidget
-        self.TabWidget.addTab(self.TabBasic, "Basic")
-        self.TabWidget.addTab(self.TabAdvanced, "Advanced")
+        self.TabWidget.addTab(self.TabBasic, "Básico")
+        self.TabWidget.addTab(self.TabAdvanced, "Avançado")
         self.Dialog_Layout.addWidget(self.TabWidget)
 
         ###### Botões
@@ -150,6 +150,7 @@ class C_SCAnalyze_ConfigDialog(QDialog):
     def Accept(self):
         self.loadParameters()
         self.OpenDSS.SCDataInfo = self.SCDataInfo
+        print(self.SCDataInfo)
         self.close()
 
     def updateDialog(self):
@@ -163,16 +164,16 @@ class C_SCAnalyze_ConfigDialog(QDialog):
 
 
 class BasicTab(QWidget):
-    def __init__(self):
+    def __init__(self,parent):
         super().__init__()
-
+        self.parent = parent
         self.InitUIBasicTab()
 
     def InitUIBasicTab(self):
-        self.typelist = ['Temporary', 'Permanent']
+        self.typelist = ['Temporária', 'Permanente']
         self.typelist_data = ['yes', 'no']
 
-        self.FltType_GroupBox = QGroupBox("Fault Type")
+        self.FltType_GroupBox = QGroupBox("Tipo")
         self.FltType_GroupBox_Layout = QHBoxLayout()
         self.FltType_GroupBox_ComboBox = QComboBox()
         self.FltType_GroupBox_ComboBox.setMaximumWidth(150)
@@ -183,13 +184,13 @@ class BasicTab(QWidget):
             self.FltType_GroupBox_ComboBox.addItem(item,self.typelist_data[index])
 
         ##### Fault Phases
-        self.phaseslist = ['1 phase','2 phases', '3 phases']
+        self.phaseslist = ['1 fase','2 fases', '3 fases']
         self.phaseslist_data = ['1','2','3']
-        self.FltPhases_GroupBox = QGroupBox("Fault Phases")
+        self.FltPhases_GroupBox = QGroupBox("Número de fases")
         self.FltPhases_GroupBox_Layout = QHBoxLayout()
         self.FltPhases_GroupBox_ComboBox = QComboBox()
         self.FltPhases_GroupBox_ComboBox.setMaximumWidth(150)
-        # self.FltPhases_GroupBox_ComboBox.setEditable(True)
+        self.FltPhases_GroupBox_ComboBox.currentIndexChanged.connect(self.hideBus2)
         self.FltPhases_GroupBox_Layout.addWidget(self.FltPhases_GroupBox_ComboBox)
         self.FltPhases_GroupBox.setLayout(self.FltPhases_GroupBox_Layout)
         #Adicionando itens ao combobox com suas respectivas tags(data)
@@ -197,25 +198,25 @@ class BasicTab(QWidget):
             self.FltPhases_GroupBox_ComboBox.addItem(item,self.phaseslist_data[index])
 
         ##### Fault Resistance
-        self.FltResistance_GroupBox = QGroupBox("Fault Resistance (Ω)")
+        self.FltResistance_GroupBox = QGroupBox("Resistência de curto (Ω)")
         self.FltResistance_GroupBox_Layout = QHBoxLayout()
         self.FltResistance_GroupBox_LineEdit = QLineEdit()
-        self.FltResistance_GroupBox_LineEdit.setPlaceholderText('Ex: 0.0001')
+        self.FltResistance_GroupBox_LineEdit.setPlaceholderText('Ex: 40')
         self.FltResistance_GroupBox_LineEdit.setMaximumWidth(150)
         self.FltResistance_GroupBox_Layout.addWidget(self.FltResistance_GroupBox_LineEdit)
         self.FltResistance_GroupBox.setLayout(self.FltResistance_GroupBox_Layout)
 
         ##### Fault Insert Time
-        self.FltTime_GroupBox = QGroupBox("Fault On - time (s)")
+        self.FltTime_GroupBox = QGroupBox("Tempo de aplicação(s)")
         self.FltTime_GroupBox_Layout = QHBoxLayout()
         self.FltTime_GroupBox_LineEdit = QLineEdit()
-        self.FltTime_GroupBox_LineEdit.setPlaceholderText('Ex: 1')
+        self.FltTime_GroupBox_LineEdit.setPlaceholderText('Ex: 10')
         self.FltTime_GroupBox_LineEdit.setMaximumWidth(150)
         self.FltTime_GroupBox_Layout.addWidget(self.FltTime_GroupBox_LineEdit)
         self.FltTime_GroupBox.setLayout(self.FltTime_GroupBox_Layout)
 
         ##### Fault Bus 1
-        self.FltBus_GroupBox = QGroupBox("Fault Bus")
+        self.FltBus_GroupBox = QGroupBox("Barra 1")
         self.FltBus_GroupBox_Layout = QHBoxLayout()
         self.FltBus_GroupBox_ComboBox = QComboBox()
         self.FltBus_GroupBox_ComboBox.currentIndexChanged.connect(self.addBusesFltBus2)
@@ -225,11 +226,12 @@ class BasicTab(QWidget):
         self.FltBus_GroupBox.setLayout(self.FltBus_GroupBox_Layout)
 
         ##### Fault Bus 2 (Optional)
-        self.FltBus2_GroupBox = QGroupBox("Fault Bus 2 (Optional)")
+        self.FltBus2_GroupBox = QGroupBox("Barra 2")
         self.FltBus2_GroupBox_Layout = QHBoxLayout()
         self.FltBus2_GroupBox_ComboBox = QComboBox()
         self.FltBus2_GroupBox_ComboBox.setMaximumWidth(150)
         self.FltBus2_GroupBox_ComboBox.setEditable(True)
+        self.FltBus2_GroupBox.setHidden(True)
         self.FltBus2_GroupBox_Layout.addWidget(self.FltBus2_GroupBox_ComboBox)
         self.FltBus2_GroupBox.setLayout(self.FltBus2_GroupBox_Layout)
 
@@ -258,6 +260,21 @@ class BasicTab(QWidget):
 
         if self.FltBus_GroupBox_ComboBox.currentText() != tmpFltBus2:
             self.FltBus2_GroupBox_ComboBox.setCurrentText(tmpFltBus2)
+
+    def hideBus2(self):
+        try:
+            if self.parent.get_combobox(self.FltPhases_GroupBox_ComboBox) == '2':
+                self.FltBus2_GroupBox.setHidden(False)
+                self.parent.adjustSize()
+                self.parent.resize(200,200)
+            else:
+                self.FltBus2_GroupBox.setHidden(True)
+                self.parent.adjustSize()
+                self.parent.resize(200,200)
+        except AttributeError:
+            pass
+
+
 
 class AdvancedTab(QWidget):
     def __init__(self):
