@@ -213,7 +213,8 @@ class C_Data():  # classe OpenDSS
 
                 basekv = tten.TTEN[dados_eqth[ctd].ten_nom]
 
-                self.insertBusList(dados_eqth[ctd].nome)
+                # self.insertBusList(dados_eqth[ctd].nome)
+                self.insertBusList(dados_eqth[ctd].nome + ".1.2.3.0")
 
                 self.insertElementList("Vsource.source")
 
@@ -247,7 +248,7 @@ class C_Data():  # classe OpenDSS
             for ctd in range(0, len(dados_eqth)):
                 if dados_eqth[ctd].nome in self.nFieldsMT:
 
-                    self.insertBusList(dados_eqth[ctd].nome)
+                    self.insertBusList(dados_eqth[ctd].nome + ".1.2.3.0")
                     self.insertElementList("Circuit.{0}".format(dados_eqth[ctd].nome))
 
                     basekv = tten.TTEN[dados_eqth[ctd].ten_nom]
@@ -337,8 +338,8 @@ class C_Data():  # classe OpenDSS
                     memoFileSECEQTH.append(temp_memoFileSEC)
 
                     ###Buffer
-                    self.insertBusList(dados_sec[ctd].pac_1)
-                    self.insertBusList(dados_sec[ctd].pac_2)
+                    self.insertBusList(pac_1)
+                    self.insertBusList(pac_2)
                     self.insertElementList("Line.{0}".format(dados_sec[ctd].cod_id)+ "EQTH")
 
             return memoFileSECEQTH
@@ -381,8 +382,9 @@ class C_Data():  # classe OpenDSS
 
                 ##Buffer
                 self.insertElementList("Transformer.{0}".format(dados_trafo[ctd].cod_id))
+                # Flag - Não foi possível adicionar pac por enquanto
                 self.insertBusList(dados_trafo[ctd].pac_1)
-                self.insertBusList(dados_trafo[ctd].pac_2)
+                self.insertBusList(dados_trafo[ctd].pac_2 + ".1.2.3.0")
 
             return memoFileTrafoATMT
 
@@ -764,8 +766,8 @@ class C_Data():  # classe OpenDSS
 
                         ##Buffer
                         self.insertElementList("Line.{0}".format(dados_db[ctd].cod_id))
-                        self.insertBusList(dados_db[ctd].pac_1)
-                        self.insertBusList(dados_db[ctd].pac_2)
+                        self.insertBusList(pac_1)
+                        self.insertBusList(pac_2)
 
                 elif tipoSEG_REG == "REG":  # Regulador de Média
                     if (dados_db[ctd].ctmt in lista_de_identificadores_dos_alimentadores):
@@ -784,8 +786,8 @@ class C_Data():  # classe OpenDSS
                         ##Buffer
                         self.insertElementList("Transformer.{0}".format(dados_db[ctd].cod_id))
                         self.insertElementList("RegControl.{0}".format('c' + dados_db[ctd].cod_id))
-                        self.insertBusList(dados_db[ctd].pac_1)
-                        self.insertBusList(dados_db[ctd].pac_2)
+                        self.insertBusList(pac_1)
+                        self.insertBusList(pac_2)
                 else:
                     raise class_exception.ExecOpenDSS(
                         "Erro ao carregar as informações dos Segmentos de Linha ou Regulador, pois o tipo não foi especificado! \n" + tipoSEG_REG)
@@ -878,7 +880,7 @@ class C_Data():  # classe OpenDSS
 
                     self.loadShapeUniCons[tipoUniCons].append([dados_db[ctd].objectid, str(dados_db[ctd].tip_cc.replace(' ', ""))])
                     ##Buffer
-                    self.insertBusList(dados_db[ctd].pac)
+                    self.insertBusList(pac_1)
                     self.insertElementList("Load.{0}".format(dados_db[ctd].objectid))
 
 
@@ -997,8 +999,8 @@ class C_Data():  # classe OpenDSS
                     self.trafoDistUniCons[str(dados_db[ctd].cod_id)] = [dados_db[ctd].pac_2, dados_db[ctd].pot_nom]
 
                     ##Buffer
-                    self.insertBusList(dados_db[ctd].pac_1)
-                    self.insertBusList(dados_db[ctd].pac_2)
+                    self.insertBusList(pac_1)
+                    self.insertBusList(pac_2)
                     self.insertElementList("Transformer.{0}".format(dados_db[ctd].cod_id))
 
             return memoFileTD
@@ -1048,8 +1050,8 @@ class C_Data():  # classe OpenDSS
 
                         ##Buffer
                         self.insertElementList("Line.{0}".format(dados_db[ctd].cod_id))
-                        self.insertBusList(dados_db[ctd].pac_1)
-                        self.insertBusList(dados_db[ctd].pac_2)
+                        self.insertBusList(pac_1)
+                        self.insertBusList(pac_2)
 
             return memoFileLinha
 
@@ -1100,7 +1102,7 @@ class C_Data():  # classe OpenDSS
 
                         ##Buffer
                         self.insertElementList("Capacitor.{0}".format(dados_db[ctd].cod_id))
-                        self.insertBusList(dados_db[ctd].pac_1)
+                        self.insertBusList(pac_1)
 
             return memoFileComp
 
@@ -1190,8 +1192,14 @@ class C_Data():  # classe OpenDSS
         return resultfase
 
     def insertBusList(self, pac):
-        if pac.replace('-', "") not in self.busList:
-            self.busList.append(pac.replace('-', ""))
+        # if pac.replace('-', "") not in self.busList:
+        #     self.busList.append(pac.replace('-', ""))
+
+        if pac.split(".", 1)[0] not in self.busListdict.keys():
+            try:
+                self.busListdict[pac.split(".", 1)[0]] = pac.split(".", 1)[1]
+            except:
+                pass
 
     def insertElementList(self, name):
         if str(name) not in self.elementList:

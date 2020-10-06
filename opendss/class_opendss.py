@@ -1054,7 +1054,17 @@ class C_OpenDSS(): # classe OpenDSSDirect
 
     #########################
     def getBusList(self):
-        return self.dataOpenDSS.busList
+        # print(f'tamanho buslist {len(self.dataOpenDSS.busList)}')
+        # print(f'tamanho buslistdict {len(self.dataOpenDSS.busListdict.keys())}')
+        return self.dataOpenDSS.busListdict.keys()
+
+    def getBusPhasesList(self):
+        busphaseslist = []
+        for key,value in self.dataOpenDSS.busListdict.items():
+            busphaseslist.append(key + "." + value)
+        # print(f'teste {self.dataOpenDSS.busListdict.keys()}')
+        # print(f'teste buslist {self.dataOpenDSS.busList}')
+        return busphaseslist
 
     def getElementList(self):
 
