@@ -1060,7 +1060,7 @@ class C_OpenDSS(): # classe OpenDSSDirect
     def getBusListDict(self):
         return self.dataOpenDSS.busListDict
 
-    def getBusListDictFases(self, nameBus): ##Devolve o vetor com as fases disponíveis
+    def getBusListDictPhases(self, nameBus): ##Devolve o vetor com as fases disponíveis
         return self.dataOpenDSS.busListDict[nameBus].split(".")[1:]
 
     def getElementList(self):

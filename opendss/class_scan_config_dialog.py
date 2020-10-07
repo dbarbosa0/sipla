@@ -155,7 +155,7 @@ class C_SCAnalyze_ConfigDialog(QDialog):
 
     def updateDialog(self):
         self.TabBasic.FltBus_GroupBox_ComboBox.clear()
-        buslist = self.OpenDSS.getBusPhasesList()
+        buslist = self.OpenDSS.getBusListDict()
         for index, item in enumerate(buslist):
             self.TabBasic.FltBus_GroupBox_ComboBox.addItem(item, item)
 

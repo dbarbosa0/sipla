@@ -85,7 +85,7 @@ class C_NetPanel(QDockWidget):
         self.NetPanel_Fields_GroupBox_Select_TreeWidget.itemClicked.connect(self.checkOnSelectAllFields)
 
 
-        self.NetPanel_Fields_GroupBox_Select_Checkbox_SelectAll = QCheckBox("Selecionar todos os alimentadores")
+        self.NetPanel_Fields_GroupBox_Select_Checkbox_SelectAll = QCheckBox("Selecionar todos")
         self.NetPanel_Fields_GroupBox_Select_Checkbox_SelectAll.clicked.connect(self.onSelectAllFields)
         self.NetPanel_Fields_GroupBox_Select_Layout.addWidget(self.NetPanel_Fields_GroupBox_Select_Checkbox_SelectAll)
         self.NetPanel_Fields_GroupBox_Select_Layout.addWidget(self.NetPanel_Fields_GroupBox_Select_TreeWidget)
