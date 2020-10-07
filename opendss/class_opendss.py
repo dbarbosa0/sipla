@@ -180,8 +180,8 @@ class C_OpenDSS(): # classe OpenDSSDirect
             self.dataOpenDSS.nCircuitoAT_MT = self.nCircuitoAT_MT
             self.dataOpenDSS.nSE_MT_Selecionada = self.nSE_MT_Selecionada
             ##Zerando a lista de barras
-            self.dataOpenDSS.busList = []
-            self.dataOpenDSS.busListdict = {}
+            #self.dataOpenDSS.busList = []
+            self.dataOpenDSS.busListDict = {}
             self.dataOpenDSS.elementList = []
             self.dataOpenDSS.recloserList = []
             self.dataOpenDSS.fuseList = []
@@ -1054,17 +1054,14 @@ class C_OpenDSS(): # classe OpenDSSDirect
 
     #########################
     def getBusList(self):
-        # print(f'tamanho buslist {len(self.dataOpenDSS.busList)}')
-        # print(f'tamanho buslistdict {len(self.dataOpenDSS.busListdict.keys())}')
-        return self.dataOpenDSS.busListdict.keys()
+        #return self.dataOpenDSS.busList
+        return self.dataOpenDSS.busListDict.keys()
 
-    def getBusPhasesList(self):
-        busphaseslist = []
-        for key,value in self.dataOpenDSS.busListdict.items():
-            busphaseslist.append(key + "." + value)
-        # print(f'teste {self.dataOpenDSS.busListdict.keys()}')
-        # print(f'teste buslist {self.dataOpenDSS.busList}')
-        return busphaseslist
+    def getBusListDict(self):
+        return self.dataOpenDSS.busListDict
+
+    def getBusListDictFases(self, nameBus): ##Devolve o vetor com as fases disponíveis
+        return self.dataOpenDSS.busListDict[nameBus].split(".")[1:]
 
     def getElementList(self):
 
