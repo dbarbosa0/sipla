@@ -101,7 +101,7 @@ class C_Viewer():
             #Pegando as coordenadas do Alimentador
 
             coordAlimentMT = self.DataBaseCoord.getCoord_AL_SE_MT_DB( self.ListFields[contadorAL] ) # Pegando os códigos dos Alimentadores [NomAL CodAL x y]
-            
+
             if not self.mapFields : #Melhorar essa criação aqui
                self.mapFields = folium.Map(coordAlimentMT [0][0] ,zoom_start=13, name = "Alimentadores")
             
@@ -179,8 +179,6 @@ class C_Viewer():
                 for ctdCodAl in self.ListFieldsID:
 
                     dados_db = self.DataBaseCoord.getData_UniConsumidoraMT(self.nameSEMT, ctdCodAl)
-
-                    [-13.001290677322856, -38.453707566151195, '9662200', 'PITUBA', 'AT', 8.0, '17/06/2015']
 
                     infoTextUniConsMT  = '<b>Unidade Consumidora de Média Tensão</b>'
                     infoTextUniConsMT += '<br> Situação: ${sit_ativ.text}'

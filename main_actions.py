@@ -7,10 +7,16 @@ import opendss.class_config_dialog
 import opendss.class_insert_energymeter_dialog
 import opendss.class_insert_monitor_dialog
 import opendss.storage.class_insert_storage_dialog
+import opendss.invcontrol.class_insert_invcontrol_dialog
+import opendss.invcontrol.class_config_voltvar_elementlist
 import opendss.storage.class_config_storagecontroller
+import opendss.class_insert_pvsystem_config_dialog
+import opendss.class_insert_pvsystem_substation_dialog
 import opendss.class_energymeter_results_dialog
 import opendss.class_config_plot_monitor_dialog
 import opendss.class_scan_config_dialog
+import protect.class_devices
+import protect.class_tcc_curves
 import database.class_base
 import database.class_config_dialog
 # import class_exception
@@ -62,12 +68,30 @@ class C_MainActions():
         # Contribuição Carvalho
         self.SCAnalyze_DialogSettings = opendss.class_scan_config_dialog.C_SCAnalyze_ConfigDialog()
         self.SCAnalyze_DialogSettings.OpenDSS = self.OpenDSS #Apontando o ponteiro de OpenDSS C_MainActions
+        self.Devices_DialogSettings = protect.class_devices.C_Devices_ConfigDialog()
+        self.Devices_DialogSettings.OpenDSS = self.OpenDSS #Apontando o ponteiro de OpenDSS C_MainActions
+        self.Devices_DialogSettings.TabRecloser.OpenDSS = self.OpenDSS
+        self.Devices_DialogSettings.TabFuse.OpenDSS = self.OpenDSS
+        self.Devices_DialogSettings.TabRelay.OpenDSS = self.OpenDSS
+        self.Devices_DialogSettings.TabSwtControl.OpenDSS = self.OpenDSS
+        self.Curves_DialogSettings = protect.class_tcc_curves.C_Config_Curves_Dialog()
+
+        # Contribuição Felipe
+        self.OpenDSS_PVSystem_DialogSettings = opendss.class_insert_pvsystem_config_dialog.C_Config_PVSystem_Dialog()
+        self.OpenDSS_PVSystem_DialogInsert = opendss.class_insert_pvsystem_substation_dialog.C_Insert_PVSystem_Substation_Dialog(self.OpenDSS_PVSystem_DialogSettings)
+        self.OpenDSS_PVSystem_DialogSettings.OpenDSS = self.OpenDSS
+        self.OpenDSS_PVSystem_DialogInsert.OpenDSS = self.OpenDSS
+
         # Contribuição Jonas
         self.OpenDSS_DialogInsertStorage = opendss.storage.class_insert_storage_dialog.C_Insert_Storage_Dialog()
         self.OpenDSS_DialogInsertStorage.OpenDSS = self.OpenDSS
         self.OpenDSS_DialogInsertStorage.DispModeActPowDialog.ConfigStorageController.OpenDSS = self.OpenDSS
         self.OpenDSS_DialogInsertStorage.DispModeActPowDialog.DialogActPowLoadShape.OpenDSS = self.OpenDSS
-
+        # Contribuição Lenon
+        self.OpenDSS_DialogInsertInvControl = opendss.invcontrol.class_insert_invcontrol_dialog.C_Insert_InvControl_Dialog()
+        self.OpenDSS_DialogInsertInvControl.OpenDSS = self.OpenDSS
+        self.OpenDSS_DialogInsertInvControl.TabConfig.VV_ElementList.OpenDSS = self.OpenDSS
+        self.OpenDSS_DialogInsertInvControl.TabConfig.VW_ElementList.OpenDSS = self.OpenDSS
 
     #############################################
 
@@ -97,9 +121,13 @@ class C_MainActions():
         if self.OpenDSS.StatusSolutionProcessTime > 0:
             self.MainWindowToolBar.Plot_Monitor_Act.setEnabled(True)
             self.MainWindowToolBar.OpenDSS_Results_EnergyMeter_Act.setEnabled(True)
+            self.MainWindowToolBar.OpenDSS_Save_Act.setEnabled(True)
+            self.MainWindowToolBar.OpenDSS_Create_Act.setEnabled(True)
         else:
             self.MainWindowToolBar.Plot_Monitor_Act.setEnabled(False)
             self.MainWindowToolBar.OpenDSS_Results_EnergyMeter_Act.setEnabled(False)
+            self.MainWindowToolBar.OpenDSS_Save_Act.setEnabled(False)
+            self.MainWindowToolBar.OpenDSS_Create_Act.setEnabled(False)
 
         ## Habilitar o Solve Apenas se puder visualizar, o que significa que está tudo certo
         if self.MainNetPanel.Deck_GroupBox_MapView_Btn.isEnabled():
@@ -112,20 +140,41 @@ class C_MainActions():
             self.MainWindowToolBar.OpenDSS_InsertEnergyMeter_Act.setEnabled(True)
             self.MainWindowToolBar.OpenDSS_InsertMonitor_Act.setEnabled(True)
             self.MainWindowToolBar.OpenDSS_InsertStorage_Act.setEnabled(True)
+            self.MainWindowToolBar.OpenDSS_InsertInvControl_Act.setEnabled(True)
             self.MainWindowToolBar.OpenDSS_Save_Act.setEnabled(True)
             self.MainWindowToolBar.OpenDSS_Create_Act.setEnabled(True)
             self.MainWindowToolBar.OpenDSS_View_Act.setEnabled(True)
+            #Jonas
+            self.MainWindowToolBar.OpenDSS_InsertStorage_Act.setEnabled(True)
+            #Carvalho
             self.MainWindowToolBar.SCAnalyze_Config_Act.setEnabled(True)
             self.MainWindowToolBar.SCAnalyze_Run_Act.setEnabled(True)
+            self.MainWindowToolBar.Protect_Devices_Act.setEnabled(True)
+            #self.MainWindowToolBar.Protect_Curves_Act.setEnabled(True)
+
+            #Felipe
+            self.MainWindowToolBar.OpenDSSMenuSubInsert_SubPVSystem.setEnabled(True)
+            #self.MainWindowToolBar.OpenDSS_ConfigPVSystem_Act.setEnabled(True)
         else:
             self.MainWindowToolBar.OpenDSS_InsertEnergyMeter_Act.setEnabled(False)
             self.MainWindowToolBar.OpenDSS_InsertMonitor_Act.setEnabled(False)
             self.MainWindowToolBar.OpenDSS_InsertStorage_Act.setEnabled(False)
+            self.MainWindowToolBar.OpenDSS_InsertInvControl_Act.setEnabled(False)
             self.MainWindowToolBar.OpenDSS_Save_Act.setEnabled(False)
             self.MainWindowToolBar.OpenDSS_Create_Act.setEnabled(False)
             self.MainWindowToolBar.OpenDSS_View_Act.setEnabled(False)
             self.MainWindowToolBar.SCAnalyze_Config_Act.setEnabled(False)
             self.MainWindowToolBar.SCAnalyze_Run_Act.setEnabled(False)
+            #Jonas
+            self.MainWindowToolBar.OpenDSS_InsertStorage_Act.setEnabled(False)
+            #Carvalho
+            self.MainWindowToolBar.SCAnalyze_Config_Act.setEnabled(False)
+            self.MainWindowToolBar.SCAnalyze_Run_Act.setEnabled(False)
+            self.MainWindowToolBar.Protect_Devices_Act.setEnabled(False)
+            #self.MainWindowToolBar.Protect_Curves_Act.setEnabled(False)
+
+            # Felipe
+            self.MainWindowToolBar.OpenDSSMenuSubInsert_SubPVSystem.setEnabled(False)
 
 
     #############################################
@@ -257,6 +306,20 @@ class C_MainActions():
     def exec_SCAnalyze(self):
         self.OpenDSS.exec_DynamicFlt()
 
+    # Contribuição Felipe
+    def exec_PVSystem_Settings(self):
+        self.OpenDSS_PVSystem_DialogSettings.show()
+
+    def exec_PVSystem_Substation(self):
+        self.OpenDSS_PVSystem_DialogInsert.show()
+
+    def exec_Device_Settings(self):
+        self.Devices_DialogSettings.updateMainProtectDialog()
+        self.Devices_DialogSettings.show()
+
+    def exec_Curves_Settings(self):
+        self.Curves_DialogSettings.show()
+
     #################################################################################
 
     def fieldsChangedDSS(self): # A alteração dos alimentadores implica em rodar o LoadData novamente
@@ -279,7 +342,10 @@ class C_MainActions():
         self.OpenDSS_DialogInsertStorage.show()
         #self.OpenDSS_DialogInsertStorage.DispModeActPowDialog.ConfigStorageController.updateDialog()
 
-
+    #Contribuição Lenon
+    def execInsertInvControl(self):
+        self.OpenDSS_DialogInsertInvControl.move(500, 90)
+        self.OpenDSS_DialogInsertInvControl.show()
 
 
 
