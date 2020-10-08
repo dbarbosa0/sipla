@@ -139,7 +139,6 @@ class C_MainActions():
         if self.OpenDSS.loadDataFlag:
             self.MainWindowToolBar.OpenDSS_InsertEnergyMeter_Act.setEnabled(True)
             self.MainWindowToolBar.OpenDSS_InsertMonitor_Act.setEnabled(True)
-            self.MainWindowToolBar.OpenDSS_InsertStorage_Act.setEnabled(True)
             self.MainWindowToolBar.OpenDSS_InsertInvControl_Act.setEnabled(True)
             self.MainWindowToolBar.OpenDSS_Save_Act.setEnabled(True)
             self.MainWindowToolBar.OpenDSS_Create_Act.setEnabled(True)
@@ -158,7 +157,6 @@ class C_MainActions():
         else:
             self.MainWindowToolBar.OpenDSS_InsertEnergyMeter_Act.setEnabled(False)
             self.MainWindowToolBar.OpenDSS_InsertMonitor_Act.setEnabled(False)
-            self.MainWindowToolBar.OpenDSS_InsertStorage_Act.setEnabled(False)
             self.MainWindowToolBar.OpenDSS_InsertInvControl_Act.setEnabled(False)
             self.MainWindowToolBar.OpenDSS_Save_Act.setEnabled(False)
             self.MainWindowToolBar.OpenDSS_Create_Act.setEnabled(False)
@@ -344,7 +342,6 @@ class C_MainActions():
 
     #Contribuição Lenon
     def execInsertInvControl(self):
-        self.OpenDSS_DialogInsertInvControl.move(500, 90)
         self.OpenDSS_DialogInsertInvControl.show()
 
 

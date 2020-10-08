@@ -75,9 +75,9 @@ class C_Config_ElementList_Dialog(QDialog):
                 checkCont += 1
 
         if checkCont == 0:
-            QMessageBox(QMessageBox.Warning, "Lista de Elementos",
-                        "Nenhum elemento selecionado",
-                        QMessageBox.Ok).exec()
+            msg = QMessageBox()
+            msg.information(self, "Lista de Elementos", "Nenhum elemento selecionado")
+
         else:
             for ctd in range(0, self.ElementList_GroupBox_TreeWidget.topLevelItemCount()):
                 Item = self.ElementList_GroupBox_TreeWidget.topLevelItem(ctd)

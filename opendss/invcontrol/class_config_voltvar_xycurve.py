@@ -214,13 +214,12 @@ class C_Config_VoltVar_XYCurve_Dialog(QDialog):
                 Item = self.XYCurve_GroupBox_TreeWidget.topLevelItem(ctd)
 
         if checkCont > 1:
-            QMessageBox(QMessageBox.Warning, "Curva XY",
-                        "Erro na seleção da Curva XY\nSelecione somente uma curva!",
-                        QMessageBox.Ok).exec()
+            msg = QMessageBox()
+            msg.information(self, 'Curva XY', "Erro na seleção da Curva XY.\nSelecione somente uma curva!")
         elif checkCont == 0:
-            QMessageBox(QMessageBox.Warning, "Curva XY",
-                        "Erro na seleção da Curva XY\nSelecione ao menos uma curva!",
-                        QMessageBox.Ok).exec()
+            msg = QMessageBox()
+            msg.information(self, 'Curva XY', "Erro na seleção da Curva XY.\nSelecione ao menos uma curva!")
+
         else:
             if self.checkXYCurve(Item.name, Item.getPointsX(), Item.getPointsY()):
                 self.XYCurveXarray = Item.getPointsXList()
@@ -243,13 +242,13 @@ class C_Config_VoltVar_XYCurve_Dialog(QDialog):
         YpointsXYCurve = YpointsXYCurve.split(',')
 
         if len(XpointsXYCurve) != len(YpointsXYCurve):
-            msgText += "Erro na curva " + nameXYCurve + ". O número de pontos do eixo das coordenadas está diferente do eixo das abcissas! \n"
+            msgText += "Erro na curva '" + nameXYCurve + "'. O número de pontos do eixo das coordenadas está diferente do eixo das abcissas! \n"
         else:
             for ctd in XpointsXYCurve:
                 try:
                     float(ctd)
                 except:
-                    msgText += "O item: " + ctd + " não é um número\n"
+                    msgText += "O item '" + ctd + "' não é um número\n"
             for ctd in YpointsXYCurve:
                 try:
                     float(ctd)
