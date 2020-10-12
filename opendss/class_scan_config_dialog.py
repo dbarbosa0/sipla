@@ -1,7 +1,7 @@
 # Carvalho Tag
 from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import QStyleFactory, QDialog, QGroupBox, QHBoxLayout, \
-    QPushButton, QVBoxLayout, QTabWidget, QComboBox, QLineEdit,  QWidget, QMessageBox
+    QPushButton, QVBoxLayout, QTabWidget, QComboBox, QLineEdit, QWidget, QMessageBox, QCheckBox
 from PyQt5.QtCore import Qt
 
 import configparser
@@ -156,6 +156,7 @@ class C_SCAnalyze_ConfigDialog(QDialog):
     def updateDialog(self):
         self.TabBasic.FltBus_GroupBox_ComboBox.clear()
         buslist = self.OpenDSS.getBusListDict()
+        print(buslist)
         for index, item in enumerate(buslist):
             self.TabBasic.FltBus_GroupBox_ComboBox.addItem(item, item)
 
@@ -202,12 +203,13 @@ class BasicTab(QWidget):
         self.FltResistance_GroupBox_Layout = QHBoxLayout()
         self.FltResistance_GroupBox_LineEdit = QLineEdit()
         self.FltResistance_GroupBox_LineEdit.setPlaceholderText('Ex: 40')
+        self.FltResistance_GroupBox_LineEdit.setText('40')
         self.FltResistance_GroupBox_LineEdit.setMaximumWidth(150)
         self.FltResistance_GroupBox_Layout.addWidget(self.FltResistance_GroupBox_LineEdit)
         self.FltResistance_GroupBox.setLayout(self.FltResistance_GroupBox_Layout)
 
         ##### Fault Insert Time
-        self.FltTime_GroupBox = QGroupBox("Tempo de aplicação(s)")
+        self.FltTime_GroupBox = QGroupBox("Tempo de aplicação (s)")
         self.FltTime_GroupBox_Layout = QHBoxLayout()
         self.FltTime_GroupBox_LineEdit = QLineEdit()
         self.FltTime_GroupBox_LineEdit.setPlaceholderText('Ex: 10')
@@ -220,19 +222,55 @@ class BasicTab(QWidget):
         self.FltBus_GroupBox_Layout = QHBoxLayout()
         self.FltBus_GroupBox_ComboBox = QComboBox()
         self.FltBus_GroupBox_ComboBox.currentIndexChanged.connect(self.addBusesFltBus2)
-        self.FltBus_GroupBox_ComboBox.setMaximumWidth(150)
+        self.FltBus_GroupBox_ComboBox.setFixedWidth(150)
         self.FltBus_GroupBox_ComboBox.setEditable(True)
         self.FltBus_GroupBox_Layout.addWidget(self.FltBus_GroupBox_ComboBox)
+
+        self.FltBus_GroupBox_CheckBox_1 = QCheckBox('1')
+        self.FltBus_GroupBox_CheckBox_2 = QCheckBox('2')
+        self.FltBus_GroupBox_CheckBox_3 = QCheckBox('3')
+        self.FltBus_GroupBox_CheckBox_0 = QCheckBox('0')
+        self.FltBus_GroupBox_CheckBox_1.setHidden(True)
+        self.FltBus_GroupBox_CheckBox_2.setHidden(True)
+        self.FltBus_GroupBox_CheckBox_3.setHidden(True)
+        self.FltBus_GroupBox_CheckBox_0.setHidden(True)
+        self.FltBus_GroupBox_Layout.addWidget(self.FltBus_GroupBox_CheckBox_1)
+        self.FltBus_GroupBox_Layout.addWidget(self.FltBus_GroupBox_CheckBox_2)
+        self.FltBus_GroupBox_Layout.addWidget(self.FltBus_GroupBox_CheckBox_3)
+        self.FltBus_GroupBox_Layout.addWidget(self.FltBus_GroupBox_CheckBox_0)
+
+        self.FltBus_GroupBox_ComboBox.currentIndexChanged.connect(
+            self.availablePhases(self.FltBus_GroupBox_ComboBox,self.FltBus_GroupBox_CheckBox_1,
+            self.FltBus_GroupBox_CheckBox_2,
+            self.FltBus_GroupBox_CheckBox_3,
+            self.FltBus_GroupBox_CheckBox_0))
+
         self.FltBus_GroupBox.setLayout(self.FltBus_GroupBox_Layout)
 
         ##### Fault Bus 2 (Optional)
         self.FltBus2_GroupBox = QGroupBox("Barra 2")
         self.FltBus2_GroupBox_Layout = QHBoxLayout()
         self.FltBus2_GroupBox_ComboBox = QComboBox()
-        self.FltBus2_GroupBox_ComboBox.setMaximumWidth(150)
+        self.FltBus2_GroupBox_ComboBox.setFixedWidth(150)
         self.FltBus2_GroupBox_ComboBox.setEditable(True)
         self.FltBus2_GroupBox.setHidden(True)
         self.FltBus2_GroupBox_Layout.addWidget(self.FltBus2_GroupBox_ComboBox)
+
+        self.FltBus2_GroupBox_CheckBox_1 = QCheckBox('1')
+        self.FltBus2_GroupBox_CheckBox_2 = QCheckBox('2')
+        self.FltBus2_GroupBox_CheckBox_3 = QCheckBox('3')
+        self.FltBus2_GroupBox_CheckBox_0 = QCheckBox('0')
+        self.FltBus2_GroupBox_Layout.addWidget(self.FltBus2_GroupBox_CheckBox_1)
+        self.FltBus2_GroupBox_Layout.addWidget(self.FltBus2_GroupBox_CheckBox_2)
+        self.FltBus2_GroupBox_Layout.addWidget(self.FltBus2_GroupBox_CheckBox_3)
+        self.FltBus2_GroupBox_Layout.addWidget(self.FltBus2_GroupBox_CheckBox_0)
+        
+        self.FltBus2_GroupBox_ComboBox.currentIndexChanged.connect(
+            self.availablePhases(self.FltBus2_GroupBox_ComboBox,self.FltBus2_GroupBox_CheckBox_1,
+            self.FltBus2_GroupBox_CheckBox_2,
+            self.FltBus2_GroupBox_CheckBox_3,
+            self.FltBus2_GroupBox_CheckBox_0))
+
         self.FltBus2_GroupBox.setLayout(self.FltBus2_GroupBox_Layout)
 
         ## Layout da TAB1
@@ -265,16 +303,64 @@ class BasicTab(QWidget):
         try:
             if self.parent.get_combobox(self.FltPhases_GroupBox_ComboBox) == '2':
                 self.FltBus2_GroupBox.setHidden(False)
+                self.FltBus_GroupBox_CheckBox_1.setHidden(False)
+                self.FltBus_GroupBox_CheckBox_2.setHidden(False)
+                self.FltBus_GroupBox_CheckBox_3.setHidden(False)
+                self.FltBus_GroupBox_CheckBox_0.setHidden(False)
+                self.FltBus2_GroupBox_CheckBox_1.setHidden(False)
+                self.FltBus2_GroupBox_CheckBox_2.setHidden(False)
+                self.FltBus2_GroupBox_CheckBox_3.setHidden(False)
+                self.FltBus2_GroupBox_CheckBox_0.setHidden(False)
                 self.parent.adjustSize()
                 self.parent.resize(200,200)
             else:
                 self.FltBus2_GroupBox.setHidden(True)
+                self.FltBus_GroupBox_CheckBox_1.setHidden(True)
+                self.FltBus_GroupBox_CheckBox_2.setHidden(True)
+                self.FltBus_GroupBox_CheckBox_3.setHidden(True)
+                self.FltBus_GroupBox_CheckBox_0.setHidden(True)
+                self.FltBus2_GroupBox_CheckBox_1.setHidden(True)
+                self.FltBus2_GroupBox_CheckBox_2.setHidden(True)
+                self.FltBus2_GroupBox_CheckBox_3.setHidden(True)
+                self.FltBus2_GroupBox_CheckBox_0.setHidden(True)
                 self.parent.adjustSize()
                 self.parent.resize(200,200)
         except AttributeError:
             pass
 
+    def availablePhases(self,combobox,checkbox1,checkbox2,checkbox3,checkbox0):
+        def process():
+            try:
+                checkbox1.setChecked(False)
+                checkbox2.setChecked(False)
+                checkbox3.setChecked(False)
+                checkbox0.setChecked(False)
+                phases = self.parent.OpenDSS.getBusListDictPhases(self.parent.get_combobox(combobox))
+                print(phases)
+                for phase in phases:
+                    if phase== '1':
+                        checkbox1.setHidden(False)
 
+                    if phase== '2':
+                        checkbox2.setHidden(False)
+
+                    if phase== '3':
+                        checkbox3.setHidden(False)
+
+                    if phase== '0':
+                        checkbox0.setHidden(False)
+
+                if '1' not in phases:
+                  checkbox1.setHidden(True)
+                if '2' not in phases:
+                  checkbox2.setHidden(True)
+                if '3' not in phases:
+                  checkbox3.setHidden(True)
+                if '0' not in phases:
+                  checkbox0.setHidden(True)
+            except KeyError:
+                pass
+        return process
 
 class AdvancedTab(QWidget):
     def __init__(self):
