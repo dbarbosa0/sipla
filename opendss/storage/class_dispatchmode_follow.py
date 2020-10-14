@@ -1,5 +1,5 @@
 from PyQt5.QtGui import QIcon
-from PyQt5.QtWidgets import QStyleFactory, QDialog, QGridLayout, QPushButton, QCheckBox, QLabel, QLineEdit
+from PyQt5.QtWidgets import QStyleFactory, QDialog, QGridLayout, QPushButton, QCheckBox, QLabel, QDoubleSpinBox
 from PyQt5.QtCore import Qt
 
 import opendss.class_opendss
@@ -34,10 +34,13 @@ class C_ActPow_Follow_DispMode_Dialog(QDialog): ## Classe Dialog Despacho Follow
         self.TimeTrigger_CheckBox = QCheckBox("Time Charge Trigger")
         self.TimeTrigger_CheckBox.clicked.connect(self.EnableDisableTimeTrigger)
         self.Dialog_Layout.addWidget(self.TimeTrigger_CheckBox, 2, 1, 1, 1)
-        self.TimeTrigger_LineEdit = QLineEdit()
-        self.TimeTrigger_LineEdit.setText("2.00")
-        self.TimeTrigger_LineEdit.setEnabled(False)
-        self.Dialog_Layout.addWidget(self.TimeTrigger_LineEdit, 2, 2, 1, 1)
+        self.TimeTrigger_DoubleSpinBox = QDoubleSpinBox()
+        self.TimeTrigger_DoubleSpinBox.setRange(0.0, 1000.0)
+        self.TimeTrigger_DoubleSpinBox.setDecimals(3)
+        self.TimeTrigger_DoubleSpinBox.setValue(2.00)
+        self.TimeTrigger_DoubleSpinBox.setButtonSymbols(2)
+        self.TimeTrigger_DoubleSpinBox.setEnabled(False)
+        self.Dialog_Layout.addWidget(self.TimeTrigger_DoubleSpinBox, 2, 2, 1, 1)
         self.DispatchCurve_Btn = QPushButton("Selecionar curva de despacho")
         self.DispatchCurve_Btn.clicked.connect(self.selectDispCurve)
         self.Dialog_Layout.addWidget(self.DispatchCurve_Btn, 3, 1, 1, 2)
@@ -56,9 +59,9 @@ class C_ActPow_Follow_DispMode_Dialog(QDialog): ## Classe Dialog Despacho Follow
 
     def EnableDisableTimeTrigger(self):
         if self.TimeTrigger_CheckBox.isChecked():
-            self.TimeTrigger_LineEdit.setEnabled(True)
+            self.TimeTrigger_DoubleSpinBox.setEnabled(True)
         else:
-            self.TimeTrigger_LineEdit.setEnabled(False)
+            self.TimeTrigger_DoubleSpinBox.setEnabled(False)
 
     def selectDispCurve(self):
         self.Select_DispCurve.show()
@@ -66,8 +69,8 @@ class C_ActPow_Follow_DispMode_Dialog(QDialog): ## Classe Dialog Despacho Follow
     def acceptFollow(self):
         self.FollowParameters = {}
         self.FollowParameters.update(self.Select_DispCurve.dataDispCurve)
-        if self.TimeTrigger_LineEdit.isEnabled():
-            self.FollowParameters["TimeChargeTrigger"] = self.TimeTrigger_LineEdit.text()
+        if self.TimeTrigger_DoubleSpinBox.isEnabled():
+            self.FollowParameters["TimeChargeTrigger"] = self.TimeTrigger_DoubleSpinBox.text().replace(",", ".")
         self.close()
 
     def cancelFollow(self):
@@ -76,5 +79,5 @@ class C_ActPow_Follow_DispMode_Dialog(QDialog): ## Classe Dialog Despacho Follow
 
     def clearParameters(self):
         self.TimeTrigger_CheckBox.setChecked(False)
-        self.TimeTrigger_LineEdit.setEnabled(False)
-        self.TimeTrigger_LineEdit.setText("2.00")
+        self.TimeTrigger_DoubleSpinBox.setEnabled(False)
+        self.TimeTrigger_DoubleSpinBox.setValue(2.00)

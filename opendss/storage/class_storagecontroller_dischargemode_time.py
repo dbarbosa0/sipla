@@ -1,6 +1,6 @@
 from PyQt5.QtGui import  QIcon, QDoubleValidator
 from PyQt5.QtWidgets import QStyleFactory, QDialog, QGridLayout, \
-    QPushButton, QMessageBox, QLabel, QLineEdit, QHBoxLayout
+    QPushButton, QMessageBox, QLabel, QLineEdit, QHBoxLayout, QDoubleSpinBox
 from PyQt5.QtCore import Qt
 
 import config as cfg
@@ -47,16 +47,18 @@ class C_ActPow_Discharge_Time_DispMode_Dialog(QDialog): ## Classe Dialog Despach
 
         self.timeDischargeTrigger = QLabel("Discharge Trigger:")
         self.Dialog_Layout.addWidget(self.timeDischargeTrigger, 2, 1, 1, 1)
-        self.timeDischargeTrigger_LineEdit = QLineEdit()
-        self.LineEditsValidos = QDoubleValidator()
-        self.LineEditsValidos.setBottom(0.1)
-        self.timeDischargeTrigger_LineEdit.setValidator(self.LineEditsValidos)
-        self.Dialog_Layout.addWidget(self.timeDischargeTrigger_LineEdit, 2, 2, 1, 1)
+        self.timeDischargeTrigger_DoubleSpinBox = QDoubleSpinBox()
+        self.timeDischargeTrigger_DoubleSpinBox.setButtonSymbols(2)
+        self.timeDischargeTrigger_DoubleSpinBox.setDecimals(3)
+        self.timeDischargeTrigger_DoubleSpinBox.setRange(0.001, 999999999)
+        self.Dialog_Layout.addWidget(self.timeDischargeTrigger_DoubleSpinBox, 2, 2, 1, 1)
         self.RateDischarge_Label = QLabel("Taxa de descarregamento (%):")
         self.Dialog_Layout.addWidget(self.RateDischarge_Label, 3, 1, 1, 1)
-        self.RateDischarge_LineEdit = QLineEdit()
-        self.RateDischarge_LineEdit.setValidator(self.LineEditsValidos)
-        self.Dialog_Layout.addWidget(self.RateDischarge_LineEdit, 3, 2, 1, 1)
+        self.RateDischarge_DoubleSpinBox = QDoubleSpinBox()
+        self.RateDischarge_DoubleSpinBox.setButtonSymbols(2)
+        self.RateDischarge_DoubleSpinBox.setDecimals(3)
+        self.RateDischarge_DoubleSpinBox.setRange(0.001, 999999999)
+        self.Dialog_Layout.addWidget(self.RateDischarge_DoubleSpinBox, 3, 2, 1, 1)
         ### Botões
         self.Dialog_Btns_Layout = QHBoxLayout()
 
@@ -72,43 +74,31 @@ class C_ActPow_Discharge_Time_DispMode_Dialog(QDialog): ## Classe Dialog Despach
 
         self.Dialog_Layout.addLayout(self.Dialog_Btns_Layout, 4, 1, 1, 3)
         self.setLayout(self.Dialog_Layout)
+        self.setFixedWidth(400)
+        self.setFixedHeight(140)
 
     def gettimeDischargeTrigger(self):
-        return self.timeDischargeTrigger_LineEdit.text()
+        return self.timeDischargeTrigger_DoubleSpinBox.text().replace(",", ".")
     def getRateDischarge(self):
-        return self.RateDischarge_LineEdit.text()
-
-    def verificaLineEdits(self):
-        if not self.timeDischargeTrigger_LineEdit.hasAcceptableInput():
-            QMessageBox(QMessageBox.Warning, "Storage Controller",
-                        "O valor para o Discharge Trigger não é um valor válido!",
-                        QMessageBox.Ok).exec()
-            return False
-        elif not self.RateDischarge_LineEdit.hasAcceptableInput():
-            QMessageBox(QMessageBox.Warning, "Storage Controller",
-                        "O valor para da a Taxa de descarregamento não é um valor válido!",
-                        QMessageBox.Ok).exec()
-            return False
-        else:
-            return True
+        return self.RateDischarge_DoubleSpinBox.text().replace(",", ".")
 
     def acceptTime(self):
-        if self.verificaLineEdits():
-            self.DischargeMode["DischargeMode"] = "Time"
-            self.DischargeMode["timeDischargeTrigger"] = self.gettimeDischargeTrigger()
-            self.DischargeMode["%RatekW"] = self.getRateDischarge()
-            self.close()
+        self.DischargeMode["DischargeMode"] = "Time"
+        self.DischargeMode["timeDischargeTrigger"] = self.gettimeDischargeTrigger()
+        self.DischargeMode["%RatekW"] = self.getRateDischarge()
+        self.close()
+
     def cancelTime(self):
         self.close()
 
     def clearParameters(self):
-        self.timeDischargeTrigger_LineEdit.setText("")
-        self.RateDischarge_LineEdit.setText("")
+        self.timeDischargeTrigger_DoubleSpinBox.setValue(0)
+        self.RateDischarge_DoubleSpinBox.setValue(0)
 
     def updateDialog(self):
         self.clearParameters()
         for ctd in self.StorageControllersTemporario:
             if ctd["StorageControllerName"] == self.StorControl_GroupBox_Selection_ComboBox.currentText():
                 if "timeDischargeTrigger" in ctd:
-                    self.timeDischargeTrigger_LineEdit.setText(ctd["timeDischargeTrigger"])
-                    self.RateDischarge_LineEdit.setText(ctd["%RatekW"])
+                    self.timeDischargeTrigger_DoubleSpinBox.setValue(float(ctd["timeDischargeTrigger"]))
+                    self.RateDischarge_DoubleSpinBox.setValue(float(ctd["%RatekW"]))

@@ -1,6 +1,6 @@
 from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import QStyleFactory, QDialog, QGridLayout, QGroupBox, QVBoxLayout, \
-    QPushButton, QLabel, QRadioButton, QButtonGroup
+    QPushButton, QLabel, QRadioButton, QButtonGroup, QDesktopWidget
 from PyQt5.QtCore import Qt
 
 import opendss.class_opendss
@@ -318,3 +318,9 @@ class C_Active_Pow_DispMode_Dialog(QDialog): ## Classe Dialog Despacho da Potenc
     def disableDispSinc(self):
         self.DispSinc_GroupBox.setEnabled(False)
         self.DispIndep_GroupBox.setEnabled(True)
+
+    def centralize(self):
+        qr = self.frameGeometry()
+        centerpoint = QDesktopWidget().availableGeometry().center()
+        qr.moveCenter(centerpoint)
+        self.move(qr.topLeft())

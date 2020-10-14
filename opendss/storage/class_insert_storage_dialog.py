@@ -1,7 +1,7 @@
 from PyQt5.QtGui import QIcon, QDoubleValidator
 from PyQt5.QtWidgets import QStyleFactory, QDialog, QGridLayout, QGroupBox, QVBoxLayout, QTreeWidgetItem, \
-    QPushButton, QTreeWidget, QMessageBox, QLabel, QLineEdit, QRadioButton, \
-    QComboBox, QTabWidget, QWidget, QHBoxLayout
+    QPushButton, QTreeWidget, QMessageBox, QLabel, QLineEdit, \
+    QComboBox, QTabWidget, QWidget, QHBoxLayout, QDesktopWidget, QDoubleSpinBox
 from PyQt5.QtCore import Qt
 
 import random
@@ -143,6 +143,7 @@ class C_Insert_Storage_Dialog(QDialog):  ## Classe Dialog principal
         self.Dialog_Layout.addWidget(self.StorageEInvConfig_GroupBox)  # adiciona a GroupBox das Configurações ao Dialog
 
         self.setLayout(self.Dialog_Layout)
+        self.setMaximumWidth(330)
 
     def get_StorageName(self):
         return unidecode.unidecode(self.TabConfig.StorageConfig_GroupBox_Nome_LineEdit.text().replace(" ", "_"))
@@ -168,8 +169,8 @@ class C_Insert_Storage_Dialog(QDialog):  ## Classe Dialog principal
         self.DispModeActPowDialog.clearRadioBtns()
         self.EnableDisableParameters(True)
         self.DefaultConfigParameters()
-        self.updateDialog()
         self.adjustSize()
+        self.updateDialog()
 
         self.TabInversorConfig.EffCurve.Storages = self.Storages  # Getter/Setter para o class_config_eff_curve.py
 
@@ -187,43 +188,43 @@ class C_Insert_Storage_Dialog(QDialog):  ## Classe Dialog principal
                         self.TabConfig.StorageConfig_GroupBox_Nome_LineEdit.setText(i["StorageName"])
                         self.TabConfig.StorageConfig_GroupBox_conn_ComboBox.setCurrentText(i["Conn"])
                         self.TabConfig.StorageConfig_GroupBox_Bus_ComboBox.setCurrentText(i["Bus"])
-                        self.TabConfig.StorageConfig_GroupBox_kW_LineEdit.setText(i["kW"])
-                        self.TabConfig.StorageConfig_GroupBox_kv_LineEdit.setText(i["kV"])
-                        self.TabConfig.StorageConfig_GroupBox_kWhrated_LineEdit.setText(i["kWhrated"])
-                        self.TabConfig.StorageConfig_GroupBox_kWhstored_LineEdit.setText(i["%stored"])
-                        self.TabConfig.StorageConfig_GroupBox_PercentageReserve_LineEdit.setText(i["%reserve"])
-                        self.TabConfig.StorageConfig_GroupBox_IdlingkW_LineEdit.setText(i["%IdlingkW"])
-                        self.TabConfig.StorageConfig_GroupBox_Per100Charge_LineEdit.setText(i["%Charge"])
-                        self.TabConfig.StorageConfig_GroupBox_Per100Discharge_LineEdit.setText(i["%Discharge"])
-                        self.TabConfig.StorageConfig_GroupBox_EffCharge_LineEdit.setText(i["%EffCharge"])
-                        self.TabConfig.StorageConfig_GroupBox_EffDischarge_LineEdit.setText(i["%EffDischarge"])
+                        self.TabConfig.StorageConfig_GroupBox_kW_DoubleSpinBox.setValue(float(i["kW"]))
+                        self.TabConfig.StorageConfig_GroupBox_kv_DoubleSpinBox.setValue(float(i["kV"]))
+                        self.TabConfig.StorageConfig_GroupBox_kWhrated_DoubleSpinBox.setValue(float(i["kWhrated"]))
+                        self.TabConfig.StorageConfig_GroupBox_kWhstored_DoubleSpinBox.setValue(float(i["%stored"]))
+                        self.TabConfig.StorageConfig_GroupBox_PercentageReserve_DoubleSpinBox.setValue(float(i["%reserve"]))
+                        self.TabConfig.StorageConfig_GroupBox_IdlingkW_DoubleSpinBox.setValue(float(i["%IdlingkW"]))
+                        self.TabConfig.StorageConfig_GroupBox_Per100Charge_DoubleSpinBox.setValue(float(i["%Charge"]))
+                        self.TabConfig.StorageConfig_GroupBox_Per100Discharge_DoubleSpinBox.setValue(float(i["%Discharge"]))
+                        self.TabConfig.StorageConfig_GroupBox_EffCharge_DoubleSpinBox.setValue(float(i["%EffCharge"]))
+                        self.TabConfig.StorageConfig_GroupBox_EffDischarge_DoubleSpinBox.setValue(float(i["%EffDischarge"]))
                         if i["state"] == "Idling":
                             self.TabConfig.StorageConfig_GroupBox_state_ComboBox.setCurrentText("Ocioso")
                         elif i["state"] == "Charging":
                             self.TabConfig.StorageConfig_GroupBox_state_ComboBox.setCurrentText("Carregando")
                         else:
                             self.TabConfig.StorageConfig_GroupBox_state_ComboBox.setCurrentText("Descarregando")
-                        self.TabConfig.StorageConfig_GroupBox_vMinPu_LineEdit.setText(i["vMinpu"])
-                        self.TabConfig.StorageConfig_GroupBox_vMaxPu_LineEdit.setText(i["vMaxpu"])
-                        self.TabConfig.StorageConfig_GroupBox_R_LineEdit.setText(i["%R"])
-                        self.TabConfig.StorageConfig_GroupBox_X_LineEdit.setText(i["%X"])
+                        self.TabConfig.StorageConfig_GroupBox_vMinPu_DoubleSpinBox.setValue(float(i["vMinpu"]))
+                        self.TabConfig.StorageConfig_GroupBox_vMaxPu_DoubleSpinBox.setValue(float(i["vMaxpu"]))
+                        self.TabConfig.StorageConfig_GroupBox_R_DoubleSpinBox.setValue(float(i["%R"]))
+                        self.TabConfig.StorageConfig_GroupBox_X_DoubleSpinBox.setValue(float(i["%X"]))
                         self.TabConfig.StorageConfig_GroupBox_model_ComboBox.setCurrentText(i["model"])
                         self.TabConfig.StorageConfig_GroupBox_phases_ComboBox.setCurrentText(i["phases"])
 
-                        self.TabInversorConfig.InversorConfig_GroupBox_kVA_LineEdit.setText(i["kVA"])
-                        self.TabInversorConfig.InversorConfig_GroupBox_kWrated_LineEdit.setText(i["kWrated"])
+                        self.TabInversorConfig.InversorConfig_GroupBox_kVA_DoubleSpinBox.setValue(float(i["kVA"]))
+                        self.TabInversorConfig.InversorConfig_GroupBox_kWrated_DoubleSpinBox.setValue(float(i["kWrated"]))
                         if i["varFollowInverter"] == "Yes":
                             self.TabInversorConfig.InversorConfig_GroupBox_varFollowInverter_ComboBox.setCurrentText(
                                 "Ativa CutIn/CutOut")
                         else:
                             self.TabInversorConfig.InversorConfig_GroupBox_varFollowInverter_ComboBox.setCurrentText(
                                 "Desativa CutIn/CutOut")
-                        self.TabInversorConfig.InversorConfig_GroupBox_CutIn_LineEdit.setText(i["%CutIn"])
-                        self.TabInversorConfig.InversorConfig_GroupBox_CutOut_LineEdit.setText(i["%CutOut"])
-                        self.TabInversorConfig.InversorConfig_GroupBox_kvarMax_LineEdit.setText(i["kvarMax"])
-                        self.TabInversorConfig.InversorConfig_GroupBox_kvarMaxAbs_LineEdit.setText(i["kvarMaxAbs"])
-                        self.TabInversorConfig.InversorConfig_GroupBox_PminNoVars_LineEdit.setText(i["%PminNoVars"])
-                        self.TabInversorConfig.InversorConfig_GroupBox_PminkvarMax_LineEdit.setText(i["%PminkvarMax"])
+                        self.TabInversorConfig.InversorConfig_GroupBox_CutIn_DoubleSpinBox.setValue(float(i["%CutIn"]))
+                        self.TabInversorConfig.InversorConfig_GroupBox_CutOut_DoubleSpinBox.setValue(float(i["%CutOut"]))
+                        self.TabInversorConfig.InversorConfig_GroupBox_kvarMax_DoubleSpinBox.setValue(float(i["kvarMax"]))
+                        self.TabInversorConfig.InversorConfig_GroupBox_kvarMaxAbs_DoubleSpinBox.setValue(float(i["kvarMaxAbs"]))
+                        self.TabInversorConfig.InversorConfig_GroupBox_PminNoVars_DoubleSpinBox.setValue(float(i["%PminNoVars"]))
+                        self.TabInversorConfig.InversorConfig_GroupBox_PminkvarMax_DoubleSpinBox.setValue(float(i["%PminkvarMax"]))
                         if i["PFPriority"] == "True":
                             self.TabInversorConfig.InversorConfig_GroupBox_PFPriority_ComboBox.setCurrentText("Sim")
                         else:
@@ -235,12 +236,12 @@ class C_Insert_Storage_Dialog(QDialog):  ## Classe Dialog principal
 
                         if 'FP' in i['ReactPow']:
                             self.DispModeReactPowDialog.FPConst_RadioBtn.setChecked(True)
-                            self.DispModeReactPowDialog.FPConst_LineEdit.setEnabled(True)
-                            self.DispModeReactPowDialog.FPConst_LineEdit.setText(i['ReactPow']['FP'])
+                            self.DispModeReactPowDialog.FPConst_DoubleSpinBox.setEnabled(True)
+                            self.DispModeReactPowDialog.FPConst_DoubleSpinBox.setText(i['ReactPow']['FP'])
                         elif 'kvar' in i['ReactPow']:
                             self.DispModeReactPowDialog.kvarConst_RadioBtn.setChecked(True)
-                            self.DispModeReactPowDialog.kvarConst_LineEdit.setEnabled(True)
-                            self.DispModeReactPowDialog.kvarConst_LineEdit.setText(i['ReactPow']['kvar'])
+                            self.DispModeReactPowDialog.kvarConst_DoubleSpinBox.setEnabled(True)
+                            self.DispModeReactPowDialog.kvarConst_DoubleSpinBox.setText(i['ReactPow']['kvar'])
 
                         self.TabInversorConfig.EffCurveFile.Config_EffCurve_GroupBox_TreeWidget_Item(
                             self.TabInversorConfig.EffCurve.EffCurve_GroupBox_TreeWidget,
@@ -256,13 +257,13 @@ class C_Insert_Storage_Dialog(QDialog):  ## Classe Dialog principal
                             if i['ModoCarga/Descarga'] == 'Default':
                                 self.DispModeActPowDialog.DispSinc_GroupBox_AutoDespacho_GroupBox_Layout_Default_RadioBtn.setChecked(
                                     True)
-                                self.DispModeActPowDialog.DialogActPowDefault.ChargeTrigger_LineEdit.setText(
+                                self.DispModeActPowDialog.DialogActPowDefault.ChargeTrigger_DoubleSpinBox.setText(
                                     i["ActPow"]["ChargeTrigger"])
-                                self.DispModeActPowDialog.DialogActPowDefault.DischargeTrigger_LineEdit.setText(
+                                self.DispModeActPowDialog.DialogActPowDefault.DischargeTrigger_DoubleSpinBox.setText(
                                     i["ActPow"]["DischargeTrigger"])
                                 if 'TimeChargeTrigger' in i["ActPow"]:
-                                    self.DispModeActPowDialog.DialogActPowDefault.TimeTrigger_LineEdit.setEnabled(True)
-                                    self.DispModeActPowDialog.DialogActPowDefault.TimeTrigger_LineEdit.setText(
+                                    self.DispModeActPowDialog.DialogActPowDefault.TimeTrigger_DoubleSpinBox.setEnabled(True)
+                                    self.DispModeActPowDialog.DialogActPowDefault.TimeTrigger_DoubleSpinBox.setText(
                                         i["ActPow"]['TimeChargeTrigger'])
                                     self.DispModeActPowDialog.DialogActPowDefault.TimeTrigger_CheckBox.setChecked(True)
                                 pts = str(i["ActPow"]["mult"]).strip('[]').replace("'", "")
@@ -293,8 +294,8 @@ class C_Insert_Storage_Dialog(QDialog):  ## Classe Dialog principal
                                 self.DispModeActPowDialog.DispSinc_GroupBox_AutoDespacho_GroupBox_Layout_Follow_RadioBtn.setChecked(
                                     True)
                                 if 'TimeChargeTrigger' in i["ActPow"]:
-                                    self.DispModeActPowDialog.DialogActPowFollow.TimeTrigger_LineEdit.setEnabled(True)
-                                    self.DispModeActPowDialog.DialogActPowFollow.TimeTrigger_LineEdit.setText(
+                                    self.DispModeActPowDialog.DialogActPowFollow.TimeTrigger_DoubleSpinBox.setEnabled(True)
+                                    self.DispModeActPowDialog.DialogActPowFollow.TimeTrigger_DoubleSpinBox.setText(
                                         i["ActPow"]['TimeChargeTrigger'])
                                     self.DispModeActPowDialog.DialogActPowFollow.TimeTrigger_CheckBox.setChecked(True)
                                 pts = str(i["ActPow"]["mult"]).strip('[]').replace("'", "")
@@ -324,14 +325,14 @@ class C_Insert_Storage_Dialog(QDialog):  ## Classe Dialog principal
                             elif i['ModoCarga/Descarga'] == 'LoadLevel':
                                 self.DispModeActPowDialog.DispSinc_GroupBox_AutoDespacho_GroupBox_Layout_LoadLevel_RadioBtn.setChecked(
                                     True)
-                                self.DispModeActPowDialog.DialogActPowLoadLevel.ChargeTrigger_LineEdit.setText(
+                                self.DispModeActPowDialog.DialogActPowLoadLevel.ChargeTrigger_DoubleSpinBox.setText(
                                     i["ActPow"]["ChargeTrigger"])
-                                self.DispModeActPowDialog.DialogActPowLoadLevel.DischargeTrigger_LineEdit.setText(
+                                self.DispModeActPowDialog.DialogActPowLoadLevel.DischargeTrigger_DoubleSpinBox.setText(
                                     i["ActPow"]["DischargeTrigger"])
                                 if 'TimeChargeTrigger' in i["ActPow"]:
-                                    self.DispModeActPowDialog.DialogActPowLoadLevel.TimeTrigger_LineEdit.setEnabled(
+                                    self.DispModeActPowDialog.DialogActPowLoadLevel.TimeTrigger_DoubleSpinBox.setEnabled(
                                         True)
-                                    self.DispModeActPowDialog.DialogActPowLoadLevel.TimeTrigger_LineEdit.setText(
+                                    self.DispModeActPowDialog.DialogActPowLoadLevel.TimeTrigger_DoubleSpinBox.setText(
                                         i["ActPow"]['TimeChargeTrigger'])
                                     self.DispModeActPowDialog.DialogActPowLoadLevel.TimeTrigger_CheckBox.setChecked(
                                         True)
@@ -362,13 +363,13 @@ class C_Insert_Storage_Dialog(QDialog):  ## Classe Dialog principal
                             elif i['ModoCarga/Descarga'] == 'Price':
                                 self.DispModeActPowDialog.DispSinc_GroupBox_AutoDespacho_GroupBox_Layout_Price_RadioBtn.setChecked(
                                     True)
-                                self.DispModeActPowDialog.DialogActPowPrice.ChargeTrigger_LineEdit.setText(
+                                self.DispModeActPowDialog.DialogActPowPrice.ChargeTrigger_DoubleSpinBox.setText(
                                     i["ActPow"]["ChargeTrigger"])
-                                self.DispModeActPowDialog.DialogActPowPrice.DischargeTrigger_LineEdit.setText(
+                                self.DispModeActPowDialog.DialogActPowPrice.DischargeTrigger_DoubleSpinBox.setText(
                                     i["ActPow"]["DischargeTrigger"])
                                 if 'TimeChargeTrigger' in i["ActPow"]:
-                                    self.DispModeActPowDialog.DialogActPowPrice.TimeTrigger_LineEdit.setEnabled(True)
-                                    self.DispModeActPowDialog.DialogActPowPrice.TimeTrigger_LineEdit.setText(
+                                    self.DispModeActPowDialog.DialogActPowPrice.TimeTrigger_DoubleSpinBox.setEnabled(True)
+                                    self.DispModeActPowDialog.DialogActPowPrice.TimeTrigger_DoubleSpinBox.setText(
                                         i["ActPow"]['TimeChargeTrigger'])
                                     self.DispModeActPowDialog.DialogActPowPrice.TimeTrigger_CheckBox.setChecked(True)
                                 pts = str(i["ActPow"]["price"]).strip('[]').replace("'", "")
@@ -473,34 +474,35 @@ class C_Insert_Storage_Dialog(QDialog):  ## Classe Dialog principal
 
     def DispModeActPow(self):
         if self.get_StorageName() == "":
-            QMessageBox(QMessageBox.Information, "Storage",
-                        "Antes de configurar o Despacho da Potência Ativa, escolha\num nome para o Storage!",
-                        QMessageBox.Ok).exec()
+            msg = QMessageBox()
+            msg.information(self, 'Storage',
+                            "Antes de configurar o Despacho da Potência Ativa, escolha\num nome para o Storage!")
         else:
             self.DispModeActPowDialog.ConfigStorageController.StorageConfig_GroupBox_Nome_LineEdit = self.TabConfig.StorageConfig_GroupBox_Nome_LineEdit
             self.DispModeActPowDialog.DialogActPowLoadShape.StorageConfig_GroupBox_Nome_LineEdit = self.TabConfig.StorageConfig_GroupBox_Nome_LineEdit
-            self.DispModeActPowDialog.ConfigStorageController.StorageConfig_GroupBox_PercentageReserve_LineEdit = self.TabConfig.StorageConfig_GroupBox_PercentageReserve_LineEdit
-            self.DispModeActPowDialog.DialogActPowLoadShape.StorageConfig_GroupBox_PercentageReserve_LineEdit = self.TabConfig.StorageConfig_GroupBox_PercentageReserve_LineEdit
+            self.DispModeActPowDialog.ConfigStorageController.StorageConfig_GroupBox_PercentageReserve_DoubleSpinBox  = self.TabConfig.StorageConfig_GroupBox_PercentageReserve_DoubleSpinBox
+            self.DispModeActPowDialog.DialogActPowLoadShape.StorageConfig_GroupBox_PercentageReserve_DoubleSpinBox = self.TabConfig.StorageConfig_GroupBox_PercentageReserve_DoubleSpinBox
 
             self.DispModeActPowDialog.exec()
+            self.DispModeActPowDialog.centralize()
 
             self.TabConfig.StorageConfig_GroupBox_Nome_LineEdit.setReadOnly(True)
 
     def DispModeReactPow(self):
         if self.get_StorageName() == "":
-            QMessageBox(QMessageBox.Information, "Storage",
-                        "Antes de configurar o Despacho da Potência Reativa, escolha\num nome para o Storage!",
-                        QMessageBox.Ok).exec()
+            msg = QMessageBox()
+            msg.information(self, 'Storage',
+                            "Antes de configurar o Despacho da Potência Reativa, escolha\num nome para o Storage!")
         else:
             self.DispModeReactPowDialog.exec()
+            self.DispModeReactPowDialog.centralize()
 
     def AcceptAddEditStorage(self):
-        if self.TabConfig.verificaLineEdits() and self.TabInversorConfig.verificaLineEdits():
+        if self.verificaBusCombobox():
 
             if self.TabInversorConfig.EffCurve.dataEffCurve == {}:
-                    QMessageBox(QMessageBox.Information, "Insert Storage",
-                                "Selecione uma curva de eficiência do Inversor!",
-                                QMessageBox.Ok).exec()
+                msg = QMessageBox()
+                msg.information(self, "Insert Storage", "Selecione uma curva de eficiência do Inversor!")
 
             elif self.DispModeActPowDialog.None_Radio_Btn.isChecked():
                 QMessageBox(QMessageBox.Information, "Insert Storage",
@@ -519,41 +521,41 @@ class C_Insert_Storage_Dialog(QDialog):  ## Classe Dialog principal
                 Storage["StorageName"] = self.get_StorageName()
                 Storage["Conn"] = self.TabConfig.StorageConfig_GroupBox_conn_ComboBox.currentText()
                 Storage["Bus"] = self.TabConfig.StorageConfig_GroupBox_Bus_ComboBox.currentText()
-                Storage["kW"] = self.TabConfig.StorageConfig_GroupBox_kW_LineEdit.text()
-                Storage["kV"] = self.TabConfig.StorageConfig_GroupBox_kv_LineEdit.text()
-                Storage["kWhrated"] = self.TabConfig.StorageConfig_GroupBox_kWhrated_LineEdit.text()
-                Storage["%stored"] = self.TabConfig.StorageConfig_GroupBox_kWhstored_LineEdit.text()
-                Storage["%reserve"] = self.TabConfig.StorageConfig_GroupBox_PercentageReserve_LineEdit.text()
-                Storage["%IdlingkW"] = self.TabConfig.StorageConfig_GroupBox_IdlingkW_LineEdit.text()
-                Storage["%Charge"] = self.TabConfig.StorageConfig_GroupBox_Per100Charge_LineEdit.text()
-                Storage["%Discharge"] = self.TabConfig.StorageConfig_GroupBox_Per100Discharge_LineEdit.text()
-                Storage["%EffCharge"] = self.TabConfig.StorageConfig_GroupBox_EffCharge_LineEdit.text()
-                Storage["%EffDischarge"] = self.TabConfig.StorageConfig_GroupBox_EffDischarge_LineEdit.text()
+                Storage["kW"] = self.TabConfig.StorageConfig_GroupBox_kW_DoubleSpinBox.text().replace(",", ".")
+                Storage["kV"] = self.TabConfig.StorageConfig_GroupBox_kv_DoubleSpinBox.text().replace(",", ".")
+                Storage["kWhrated"] = self.TabConfig.StorageConfig_GroupBox_kWhrated_DoubleSpinBox.text().replace(",", ".")
+                Storage["%stored"] = self.TabConfig.StorageConfig_GroupBox_kWhstored_DoubleSpinBox.text().replace(",", ".")
+                Storage["%reserve"] = self.TabConfig.StorageConfig_GroupBox_PercentageReserve_DoubleSpinBox.text().replace(",", ".")
+                Storage["%IdlingkW"] = self.TabConfig.StorageConfig_GroupBox_IdlingkW_DoubleSpinBox.text().replace(",", ".")
+                Storage["%Charge"] = self.TabConfig.StorageConfig_GroupBox_Per100Charge_DoubleSpinBox.text().replace(",", ".")
+                Storage["%Discharge"] = self.TabConfig.StorageConfig_GroupBox_Per100Discharge_DoubleSpinBox.text().replace(",", ".")
+                Storage["%EffCharge"] = self.TabConfig.StorageConfig_GroupBox_EffCharge_DoubleSpinBox.text().replace(",", ".")
+                Storage["%EffDischarge"] = self.TabConfig.StorageConfig_GroupBox_EffDischarge_DoubleSpinBox.text().replace(",", ".")
                 if self.TabConfig.StorageConfig_GroupBox_state_ComboBox.currentText() == "Ocioso":
                     Storage["state"] = "Idling"
                 if self.TabConfig.StorageConfig_GroupBox_state_ComboBox.currentText() == "Carregando":
                     Storage["state"] = "Charging"
                 if self.TabConfig.StorageConfig_GroupBox_state_ComboBox.currentText() == "Descarregando":
                     Storage["state"] = "Discharging"
-                Storage["vMinpu"] = self.TabConfig.StorageConfig_GroupBox_vMinPu_LineEdit.text()
-                Storage["vMaxpu"] = self.TabConfig.StorageConfig_GroupBox_vMaxPu_LineEdit.text()
-                Storage["%R"] = self.TabConfig.StorageConfig_GroupBox_R_LineEdit.text()
-                Storage["%X"] = self.TabConfig.StorageConfig_GroupBox_X_LineEdit.text()
+                Storage["vMinpu"] = self.TabConfig.StorageConfig_GroupBox_vMinPu_DoubleSpinBox.text().replace(",", ".")
+                Storage["vMaxpu"] = self.TabConfig.StorageConfig_GroupBox_vMaxPu_DoubleSpinBox.text().replace(",", ".")
+                Storage["%R"] = self.TabConfig.StorageConfig_GroupBox_R_DoubleSpinBox.text().replace(",", ".")
+                Storage["%X"] = self.TabConfig.StorageConfig_GroupBox_X_DoubleSpinBox.text().replace(",", ".")
                 Storage["model"] = self.TabConfig.StorageConfig_GroupBox_model_ComboBox.currentText()
                 Storage["phases"] = self.TabConfig.StorageConfig_GroupBox_phases_ComboBox.currentText()
                 ############# seta data das configurações do inversor
-                Storage["kVA"] = self.TabInversorConfig.InversorConfig_GroupBox_kVA_LineEdit.text()
-                Storage["kWrated"] = self.TabInversorConfig.InversorConfig_GroupBox_kWrated_LineEdit.text()
+                Storage["kVA"] = self.TabInversorConfig.InversorConfig_GroupBox_kVA_DoubleSpinBox.text().replace(",", ".")
+                Storage["kWrated"] = self.TabInversorConfig.InversorConfig_GroupBox_kWrated_DoubleSpinBox.text().replace(",", ".")
                 if self.TabInversorConfig.InversorConfig_GroupBox_varFollowInverter_ComboBox.currentText() == "Ativa CutIn/CutOut":
                     Storage["varFollowInverter"] = "Yes"
                 else:
                     Storage["varFollowInverter"] = "No"
-                Storage["%CutIn"] = self.TabInversorConfig.InversorConfig_GroupBox_CutIn_LineEdit.text()
-                Storage["%CutOut"] = self.TabInversorConfig.InversorConfig_GroupBox_CutOut_LineEdit.text()
-                Storage["kvarMax"] = self.TabInversorConfig.InversorConfig_GroupBox_kvarMax_LineEdit.text()
-                Storage["kvarMaxAbs"] = self.TabInversorConfig.InversorConfig_GroupBox_kvarMaxAbs_LineEdit.text()
-                Storage["%PminNoVars"] = self.TabInversorConfig.InversorConfig_GroupBox_PminNoVars_LineEdit.text()
-                Storage["%PminkvarMax"] = self.TabInversorConfig.InversorConfig_GroupBox_PminkvarMax_LineEdit.text()
+                Storage["%CutIn"] = self.TabInversorConfig.InversorConfig_GroupBox_CutIn_DoubleSpinBox.text().replace(",", ".")
+                Storage["%CutOut"] = self.TabInversorConfig.InversorConfig_GroupBox_CutOut_DoubleSpinBox.text().replace(",", ".")
+                Storage["kvarMax"] = self.TabInversorConfig.InversorConfig_GroupBox_kvarMax_DoubleSpinBox.text().replace(",", ".")
+                Storage["kvarMaxAbs"] = self.TabInversorConfig.InversorConfig_GroupBox_kvarMaxAbs_DoubleSpinBox.text().replace(",", ".")
+                Storage["%PminNoVars"] = self.TabInversorConfig.InversorConfig_GroupBox_PminNoVars_DoubleSpinBox.text().replace(",", ".")
+                Storage["%PminkvarMax"] = self.TabInversorConfig.InversorConfig_GroupBox_PminkvarMax_DoubleSpinBox.text().replace(",", ".")
                 if self.TabInversorConfig.InversorConfig_GroupBox_PFPriority_ComboBox.currentText() == "Sim":
                     Storage["PFPriority"] = "True"
                 else:
@@ -655,9 +657,9 @@ class C_Insert_Storage_Dialog(QDialog):  ## Classe Dialog principal
                                 self.StorageControllers.remove(e)
 
                     else:
-                        QMessageBox(QMessageBox.Warning, "Insert Storage",
-                                    "Não foi possível adicionar, pois já existe um Storage com esse nome.",
-                                    QMessageBox.Ok).exec()
+                        msg = QMessageBox()
+                        msg.information(self, 'Insert Storage',
+                                        "Não foi possível adicionar, pois já existe um Storage com esse nome.")
 
                 else:  # Se estiver editando um Storage
                     for ctd in self.Storages:
@@ -764,18 +766,19 @@ class C_Insert_Storage_Dialog(QDialog):  ## Classe Dialog principal
                     for ctd in listRemove:
                         self.StorageControllers.remove(ctd)
 
+                self.adjustSize()
                 self.updateDialog()
                 self.TabConfig.StorageConfig_GroupBox_Nome_LineEdit.setEnabled(True)
                 self.clearStorageParameters()
                 self.DefaultConfigParameters()
                 self.EnableDisableParameters(False)
-                self.adjustSize()
 
     def CancelAddEditStorage(self):
         self.TabConfig.StorageConfig_GroupBox_Nome_LineEdit.setEnabled(True)
         self.TabConfig.StorageConfig_GroupBox_Nome_LineEdit.setReadOnly(False)
         self.EnableDisableParameters(False)
         self.adjustSize()
+        self.centralize()
 
     def acceptInsertStorage(self):
         self.OpenDSS.Storages = self.Storages
@@ -800,75 +803,45 @@ class C_Insert_Storage_Dialog(QDialog):  ## Classe Dialog principal
     def updateDialog(self):
         self.TabConfig.StorageConfig_GroupBox_Bus_ComboBox.clear()
         self.TabConfig.StorageConfig_GroupBox_Bus_ComboBox.addItems(self.OpenDSS.getBusList())
+        self.centralize()
 
     def DefaultConfigParameters(self):
         self.TabConfig.StorageConfig_GroupBox_Nome_LineEdit.setText("")
         self.TabConfig.StorageConfig_GroupBox_conn_ComboBox.setCurrentText("Wye")
         self.TabConfig.StorageConfig_GroupBox_Bus_ComboBox.setCurrentIndex(0)
-        self.TabConfig.StorageConfig_GroupBox_kW_LineEdit.setText("")
-        self.TabConfig.StorageConfig_GroupBox_kv_LineEdit.setText("")
-        self.TabConfig.StorageConfig_GroupBox_kWhrated_LineEdit.setText("50")
-        self.TabConfig.StorageConfig_GroupBox_kWhstored_LineEdit.setText("100")
-        self.TabConfig.StorageConfig_GroupBox_PercentageReserve_LineEdit.setText("20")
-        self.TabConfig.StorageConfig_GroupBox_IdlingkW_LineEdit.setText("1")
-        self.TabConfig.StorageConfig_GroupBox_Per100Charge_LineEdit.setText("100")
-        self.TabConfig.StorageConfig_GroupBox_Per100Discharge_LineEdit.setText("100")
-        self.TabConfig.StorageConfig_GroupBox_EffCharge_LineEdit.setText("90")
-        self.TabConfig.StorageConfig_GroupBox_EffDischarge_LineEdit.setText("90")
+        self.TabConfig.StorageConfig_GroupBox_kW_DoubleSpinBox.setValue(0.1)
+        self.TabConfig.StorageConfig_GroupBox_kv_DoubleSpinBox.setValue(0.1)
+        self.TabConfig.StorageConfig_GroupBox_kWhrated_DoubleSpinBox.setValue(50.0)
+        self.TabConfig.StorageConfig_GroupBox_kWhstored_DoubleSpinBox.setValue(100.0)
+        self.TabConfig.StorageConfig_GroupBox_PercentageReserve_DoubleSpinBox.setValue(20.0)
+        self.TabConfig.StorageConfig_GroupBox_IdlingkW_DoubleSpinBox.setValue(1.0)
+        self.TabConfig.StorageConfig_GroupBox_Per100Charge_DoubleSpinBox.setValue(100.0)
+        self.TabConfig.StorageConfig_GroupBox_Per100Discharge_DoubleSpinBox.setValue(100.0)
+        self.TabConfig.StorageConfig_GroupBox_EffCharge_DoubleSpinBox.setValue(90.0)
+        self.TabConfig.StorageConfig_GroupBox_EffDischarge_DoubleSpinBox.setValue(90.0)
         self.TabConfig.StorageConfig_GroupBox_state_ComboBox.setCurrentText("Ocioso")
-        self.TabConfig.StorageConfig_GroupBox_vMinPu_LineEdit.setText("0.9")
-        self.TabConfig.StorageConfig_GroupBox_vMaxPu_LineEdit.setText("1.1")
-        self.TabConfig.StorageConfig_GroupBox_R_LineEdit.setText("0")
-        self.TabConfig.StorageConfig_GroupBox_X_LineEdit.setText("50")
+        self.TabConfig.StorageConfig_GroupBox_vMinPu_DoubleSpinBox.setValue(0.9)
+        self.TabConfig.StorageConfig_GroupBox_vMaxPu_DoubleSpinBox.setValue(1.1)
+        self.TabConfig.StorageConfig_GroupBox_R_DoubleSpinBox.setValue(0)
+        self.TabConfig.StorageConfig_GroupBox_X_DoubleSpinBox.setValue(50)
         self.TabConfig.StorageConfig_GroupBox_model_ComboBox.setCurrentIndex(0)
         self.TabConfig.StorageConfig_GroupBox_phases_ComboBox.setCurrentIndex(0)
 
-        self.TabInversorConfig.InversorConfig_GroupBox_kVA_LineEdit.setText("")
-        self.TabInversorConfig.InversorConfig_GroupBox_kWrated_LineEdit.setText("25")
+        self.TabInversorConfig.InversorConfig_GroupBox_kVA_DoubleSpinBox.setValue(0.1)
+        self.TabInversorConfig.InversorConfig_GroupBox_kWrated_DoubleSpinBox.setValue(25.0)
         self.TabInversorConfig.InversorConfig_GroupBox_varFollowInverter_ComboBox.setCurrentText("Desativa CutIn/CutOut")
-        self.TabInversorConfig.InversorConfig_GroupBox_CutIn_LineEdit.setText("0")
-        self.TabInversorConfig.InversorConfig_GroupBox_CutOut_LineEdit.setText("0")
-        self.TabInversorConfig.InversorConfig_GroupBox_kvarMax_LineEdit.setText("999999")
-        self.TabInversorConfig.InversorConfig_GroupBox_kvarMaxAbs_LineEdit.setText("999999")
-        self.TabInversorConfig.InversorConfig_GroupBox_PminNoVars_LineEdit.setText("0")
-        self.TabInversorConfig.InversorConfig_GroupBox_PminkvarMax_LineEdit.setText("0")
+        self.TabInversorConfig.InversorConfig_GroupBox_CutIn_DoubleSpinBox.setValue(0)
+        self.TabInversorConfig.InversorConfig_GroupBox_CutOut_DoubleSpinBox.setValue(0)
+        self.TabInversorConfig.InversorConfig_GroupBox_kvarMax_DoubleSpinBox.setValue(999999.0)
+        self.TabInversorConfig.InversorConfig_GroupBox_kvarMaxAbs_DoubleSpinBox.setValue(999999.0)
+        self.TabInversorConfig.InversorConfig_GroupBox_PminNoVars_DoubleSpinBox.setValue(0)
+        self.TabInversorConfig.InversorConfig_GroupBox_PminkvarMax_DoubleSpinBox.setValue(0)
         self.TabInversorConfig.InversorConfig_GroupBox_PFPriority_ComboBox.setCurrentText("Não")
         self.TabInversorConfig.InversorConfig_GroupBox_WattPriority_ComboBox.setCurrentText("Pot. Reativa")
 
     def clearStorageParameters(self):
         self.TabConfig.StorageConfig_GroupBox_Nome_LineEdit.setReadOnly(False)
-
-        self.TabConfig.StorageConfig_GroupBox_Nome_LineEdit.setText("")
-        self.TabConfig.StorageConfig_GroupBox_conn_ComboBox.setCurrentIndex(0)
-        self.TabConfig.StorageConfig_GroupBox_Bus_ComboBox.setCurrentIndex(0)
-        self.TabConfig.StorageConfig_GroupBox_kW_LineEdit.setText("")
-        self.TabConfig.StorageConfig_GroupBox_kv_LineEdit.setText("")
-        self.TabConfig.StorageConfig_GroupBox_kWhrated_LineEdit.setText("")
-        self.TabConfig.StorageConfig_GroupBox_kWhstored_LineEdit.setText("")
-        self.TabConfig.StorageConfig_GroupBox_PercentageReserve_LineEdit.setText("")
-        self.TabConfig.StorageConfig_GroupBox_IdlingkW_LineEdit.setText("")
-        self.TabConfig.StorageConfig_GroupBox_Per100Charge_LineEdit.setText("")
-        self.TabConfig.StorageConfig_GroupBox_Per100Discharge_LineEdit.setText("")
-        self.TabConfig.StorageConfig_GroupBox_EffCharge_LineEdit.setText("")
-        self.TabConfig.StorageConfig_GroupBox_EffDischarge_LineEdit.setText("")
-        self.TabConfig.StorageConfig_GroupBox_state_ComboBox.setCurrentIndex(0)
-        self.TabConfig.StorageConfig_GroupBox_vMinPu_LineEdit.setText("")
-        self.TabConfig.StorageConfig_GroupBox_vMaxPu_LineEdit.setText("")
-        self.TabConfig.StorageConfig_GroupBox_R_LineEdit.setText("")
-        self.TabConfig.StorageConfig_GroupBox_X_LineEdit.setText("")
-        self.TabConfig.StorageConfig_GroupBox_model_ComboBox.setCurrentIndex(0)
-        self.TabConfig.StorageConfig_GroupBox_phases_ComboBox.setCurrentIndex(0)
-
-        self.TabInversorConfig.InversorConfig_GroupBox_kVA_LineEdit.setText("")
-        self.TabInversorConfig.InversorConfig_GroupBox_kWrated_LineEdit.setText("")
-        self.TabInversorConfig.InversorConfig_GroupBox_varFollowInverter_ComboBox.setCurrentIndex(0)
-        self.TabInversorConfig.InversorConfig_GroupBox_CutIn_LineEdit.setText("")
-        self.TabInversorConfig.InversorConfig_GroupBox_CutOut_LineEdit.setText("")
-        self.TabInversorConfig.InversorConfig_GroupBox_kvarMax_LineEdit.setText("")
-        self.TabInversorConfig.InversorConfig_GroupBox_kvarMaxAbs_LineEdit.setText("")
-        self.TabInversorConfig.InversorConfig_GroupBox_PminNoVars_LineEdit.setText("")
-        self.TabInversorConfig.InversorConfig_GroupBox_PminkvarMax_LineEdit.setText("")
-        self.TabInversorConfig.InversorConfig_GroupBox_PFPriority_ComboBox.setCurrentIndex(0)
+        self.DefaultConfigParameters()
 
         self.TabInversorConfig.EffCurve.EffCurve_GroupBox_TreeWidget.clear()  # Limpa o TreeWidget e o plot da Curva de Eficiencia
         self.TabInversorConfig.EffCurve.graphWidget.clear()
@@ -882,20 +855,36 @@ class C_Insert_Storage_Dialog(QDialog):  ## Classe Dialog principal
         self.DispModeActPowDialog.DialogActPowLoadLevel.clearParameters()
         self.DispModeActPowDialog.DialogActPowPrice.clearParameters()
 
+    def centralize(self):
+        qr = self.frameGeometry()
+        centerpoint = QDesktopWidget().availableGeometry().center()
+        qr.moveCenter(centerpoint)
+        self.move(qr.topLeft())
+
+    def verificaBusCombobox(self):
+        ctd = 0
+        for i in self.OpenDSS.getBusList():
+            if self.TabConfig.StorageConfig_GroupBox_Bus_ComboBox.currentText() == i:
+                ctd += 1
+
+        if ctd == 0:
+            msg = QMessageBox()
+            msg.information(self, "Configuração do Storage", "Barra selecionada inexistente!")
+            return False
+        else:
+            return True
+
 class StorageConfig(QWidget):
     def __init__(self):
         super().__init__()
+
+        self.OpenDSS = opendss.class_opendss.C_OpenDSS()
 
         self.InitUIStorageConfig()
 
     def InitUIStorageConfig(self):
 
         self.ConfigStorageController = opendss.storage.class_config_storagecontroller.C_ActPow_Config_StorageController_Dialog()
-        ### Valida as entradas dos LineEdits
-        self.LineEditsValidos = QDoubleValidator()
-        self.LineEditsValidos.setBottom(0.1)
-        self.LineEditsValidos0 = QDoubleValidator()
-        self.LineEditsValidos0.setBottom(0.0)
 
         ###################### GroupBox StorageConfig #######################################################
         self.StorageConfig_GroupBox = QGroupBox()  # Criando a GroupBox StorageConfig
@@ -903,90 +892,113 @@ class StorageConfig(QWidget):
         # Configurar nome do elemento Storage
         self.StorageConfig_GroupBox_Nome_Label = QLabel("Nome")
         self.StorageConfig_GroupBox_Nome_LineEdit = QLineEdit()
+        self.StorageConfig_GroupBox_Nome_LineEdit.setFixedWidth(120)
         self.StorageConfig_GroupBox_Layout.addWidget(self.StorageConfig_GroupBox_Nome_Label, 0, 0, 1, 1)
         self.StorageConfig_GroupBox_Layout.addWidget(self.StorageConfig_GroupBox_Nome_LineEdit, 0, 1, 1, 1)
         # Configurar propriedade "conn"
         self.StorageConfig_GroupBox_conn_Label = QLabel("Tipo de conexão")
         self.StorageConfig_GroupBox_conn_ComboBox = QComboBox()
+        self.StorageConfig_GroupBox_conn_ComboBox.setFixedWidth(120)
         self.StorageConfig_GroupBox_conn_ComboBox.addItems(["Wye", "LN", "Delta", "LN"])
         self.StorageConfig_GroupBox_Layout.addWidget(self.StorageConfig_GroupBox_conn_Label, 0, 2, 1, 1)
         self.StorageConfig_GroupBox_Layout.addWidget(self.StorageConfig_GroupBox_conn_ComboBox, 0, 3, 1, 1)
         # Configurar propriedade "Bus"
         self.StorageConfig_GroupBox_Bus_Label = QLabel("Barra de conexão")
         self.StorageConfig_GroupBox_Bus_ComboBox = QComboBox()
+        self.StorageConfig_GroupBox_Bus_ComboBox.setEditable(True)
         self.StorageConfig_GroupBox_Layout.addWidget(self.StorageConfig_GroupBox_Bus_Label, 1, 0, 1, 1)
         self.StorageConfig_GroupBox_Layout.addWidget(self.StorageConfig_GroupBox_Bus_ComboBox, 1, 1, 1, 1)
         # Configurar propriedade "kW" (potência de saída)
         self.StorageConfig_GroupBox_kW_Label = QLabel("Potência nominal de saída (kW)")
-        self.StorageConfig_GroupBox_kW_LineEdit = QLineEdit()
-        self.StorageConfig_GroupBox_kW_LineEdit.setValidator(self.LineEditsValidos)
+        self.StorageConfig_GroupBox_kW_DoubleSpinBox = QDoubleSpinBox()
+        self.StorageConfig_GroupBox_kW_DoubleSpinBox.setRange(0.1, 999999999)
+        self.StorageConfig_GroupBox_kW_DoubleSpinBox.setDecimals(3)
+        self.StorageConfig_GroupBox_kW_DoubleSpinBox.setButtonSymbols(2)
         self.StorageConfig_GroupBox_Layout.addWidget(self.StorageConfig_GroupBox_kW_Label, 2, 0, 1, 1)
-        self.StorageConfig_GroupBox_Layout.addWidget(self.StorageConfig_GroupBox_kW_LineEdit, 2, 1, 1, 1)
+        self.StorageConfig_GroupBox_Layout.addWidget(self.StorageConfig_GroupBox_kW_DoubleSpinBox, 2, 1, 1, 1)
         # Configurar propriedade "kv" (tensão de saída)
         self.StorageConfig_GroupBox_kv_Label = QLabel("Tensão de saída (kV)")
-        self.StorageConfig_GroupBox_kv_LineEdit = QLineEdit()
-        self.StorageConfig_GroupBox_kv_LineEdit.setValidator(self.LineEditsValidos)
+        self.StorageConfig_GroupBox_kv_DoubleSpinBox = QDoubleSpinBox()
+        self.StorageConfig_GroupBox_kv_DoubleSpinBox.setButtonSymbols(2)
+        self.StorageConfig_GroupBox_kv_DoubleSpinBox.setDecimals(3)
+        self.StorageConfig_GroupBox_kv_DoubleSpinBox.setRange(0.1, 999999999)
         self.StorageConfig_GroupBox_Layout.addWidget(self.StorageConfig_GroupBox_kv_Label, 1, 2, 1, 1)
-        self.StorageConfig_GroupBox_Layout.addWidget(self.StorageConfig_GroupBox_kv_LineEdit, 1, 3, 1, 1)
+        self.StorageConfig_GroupBox_Layout.addWidget(self.StorageConfig_GroupBox_kv_DoubleSpinBox, 1, 3, 1, 1)
         # Configurar propriedade "kWhrated" (capacidade nominal do Storage em kWh)
         self.StorageConfig_GroupBox_kWhrated_Label = QLabel("Capacidade Nominal (kWh)")
-        self.StorageConfig_GroupBox_kWhrated_LineEdit = QLineEdit()
-        self.StorageConfig_GroupBox_kWhrated_LineEdit.setValidator(self.LineEditsValidos)
+        self.StorageConfig_GroupBox_kWhrated_DoubleSpinBox = QDoubleSpinBox()
+        self.StorageConfig_GroupBox_kWhrated_DoubleSpinBox.setButtonSymbols(2)
+        self.StorageConfig_GroupBox_kWhrated_DoubleSpinBox.setDecimals(3)
+        self.StorageConfig_GroupBox_kWhrated_DoubleSpinBox.setRange(0.1, 999999999)
         self.StorageConfig_GroupBox_Layout.addWidget(self.StorageConfig_GroupBox_kWhrated_Label, 2, 2, 1, 1)
-        self.StorageConfig_GroupBox_Layout.addWidget(self.StorageConfig_GroupBox_kWhrated_LineEdit, 2, 3, 1, 1)
+        self.StorageConfig_GroupBox_Layout.addWidget(self.StorageConfig_GroupBox_kWhrated_DoubleSpinBox, 2, 3, 1, 1)
         # Configurar propriedade "%stored" (porcentagem atual de energia armazenada)
         self.StorageConfig_GroupBox_kWhstored_Label = QLabel("Energia armazenada atual (%)")
         self.StorageConfig_GroupBox_kWhstored_Label.setToolTip("Energia Armazenada atual em % da capacidade nominal.")
-        self.StorageConfig_GroupBox_kWhstored_LineEdit = QLineEdit()
-        self.StorageConfig_GroupBox_kWhstored_LineEdit.setValidator(self.LineEditsValidos)
+        self.StorageConfig_GroupBox_kWhstored_DoubleSpinBox = QDoubleSpinBox()
+        self.StorageConfig_GroupBox_kWhstored_DoubleSpinBox.setButtonSymbols(2)
+        self.StorageConfig_GroupBox_kWhstored_DoubleSpinBox.setDecimals(3)
+        self.StorageConfig_GroupBox_kWhstored_DoubleSpinBox.setRange(0.0, 100.0)
         self.StorageConfig_GroupBox_Layout.addWidget(self.StorageConfig_GroupBox_kWhstored_Label, 3, 2, 1, 1)
-        self.StorageConfig_GroupBox_Layout.addWidget(self.StorageConfig_GroupBox_kWhstored_LineEdit, 3, 3, 1, 1)
+        self.StorageConfig_GroupBox_Layout.addWidget(self.StorageConfig_GroupBox_kWhstored_DoubleSpinBox, 3, 3, 1, 1)
         # Configurar propriedade "%reserve" (quantidade de energia para ser deixada como reserva em %)
         self.StorageConfig_GroupBox_PercentageReserve_Label = QLabel("Energia reserva (%)")
         self.StorageConfig_GroupBox_PercentageReserve_Label.setToolTip(
             "Percentual da capacidade de armazenamento nominal (kWh)\npara ser mantida em reserva. É tratado como nível mínimo de\ndescarregamento, em situações normais")
-        self.StorageConfig_GroupBox_PercentageReserve_LineEdit = QLineEdit()
-        self.StorageConfig_GroupBox_PercentageReserve_LineEdit.setValidator(self.LineEditsValidos)
+        self.StorageConfig_GroupBox_PercentageReserve_DoubleSpinBox = QDoubleSpinBox()
+        self.StorageConfig_GroupBox_PercentageReserve_DoubleSpinBox.setButtonSymbols(2)
+        self.StorageConfig_GroupBox_PercentageReserve_DoubleSpinBox.setDecimals(3)
+        self.StorageConfig_GroupBox_PercentageReserve_DoubleSpinBox.setRange(0.0, 100.0)
         self.StorageConfig_GroupBox_Layout.addWidget(self.StorageConfig_GroupBox_PercentageReserve_Label, 3, 0, 1, 1)
-        self.StorageConfig_GroupBox_Layout.addWidget(self.StorageConfig_GroupBox_PercentageReserve_LineEdit, 3, 1, 1, 1)
+        self.StorageConfig_GroupBox_Layout.addWidget(self.StorageConfig_GroupBox_PercentageReserve_DoubleSpinBox , 3, 1, 1, 1)
         # Configurar propriedade "%IdlingkW" (kW consumida por perdas por inatividade)
         self.StorageConfig_GroupBox_IdlingkW_Label = QLabel("Perdas por inatividade (%)")
         self.StorageConfig_GroupBox_IdlingkW_Label.setToolTip(
             "Percentual de potência ativa nominal (kW)\nconsumida por perdas por inatividade.")
-        self.StorageConfig_GroupBox_IdlingkW_LineEdit = QLineEdit()
-        self.StorageConfig_GroupBox_IdlingkW_LineEdit.setValidator(self.LineEditsValidos0)
+        self.StorageConfig_GroupBox_IdlingkW_DoubleSpinBox = QDoubleSpinBox()
+        self.StorageConfig_GroupBox_IdlingkW_DoubleSpinBox.setButtonSymbols(2)
+        self.StorageConfig_GroupBox_IdlingkW_DoubleSpinBox.setDecimals(3)
+        self.StorageConfig_GroupBox_IdlingkW_DoubleSpinBox.setRange(0.0, 99.999)
         self.StorageConfig_GroupBox_Layout.addWidget(self.StorageConfig_GroupBox_IdlingkW_Label, 4, 2, 1, 1)
-        self.StorageConfig_GroupBox_Layout.addWidget(self.StorageConfig_GroupBox_IdlingkW_LineEdit, 4, 3, 1, 1)
+        self.StorageConfig_GroupBox_Layout.addWidget(self.StorageConfig_GroupBox_IdlingkW_DoubleSpinBox, 4, 3, 1, 1)
         # Configurar propriedade "%Charge" (Taxa de carregamento em % da potencia nominal)
         self.StorageConfig_GroupBox_Per100Charge_Label = QLabel("Taxa de carregamento (%)")
         self.StorageConfig_GroupBox_Per100Charge_Label.setToolTip(
             "Taxa de carregamento em percentual da\npotência ativa nominal (kW).")
-        self.StorageConfig_GroupBox_Per100Charge_LineEdit = QLineEdit()
-        self.StorageConfig_GroupBox_Per100Charge_LineEdit.setValidator(self.LineEditsValidos)
+        self.StorageConfig_GroupBox_Per100Charge_DoubleSpinBox = QDoubleSpinBox()
+        self.StorageConfig_GroupBox_Per100Charge_DoubleSpinBox.setDecimals(3)
+        self.StorageConfig_GroupBox_Per100Charge_DoubleSpinBox.setButtonSymbols(2)
+        self.StorageConfig_GroupBox_Per100Charge_DoubleSpinBox.setRange(0.1, 100.0)
         self.StorageConfig_GroupBox_Layout.addWidget(self.StorageConfig_GroupBox_Per100Charge_Label, 4, 0, 1, 1)
-        self.StorageConfig_GroupBox_Layout.addWidget(self.StorageConfig_GroupBox_Per100Charge_LineEdit, 4, 1, 1, 1)
+        self.StorageConfig_GroupBox_Layout.addWidget(self.StorageConfig_GroupBox_Per100Charge_DoubleSpinBox, 4, 1, 1, 1)
         # Configurar propriedade "%Discharge" (Taxa de descarregamento em % da potencia nominal)
         self.StorageConfig_GroupBox_Per100Discharge_Label = QLabel("Taxa de descarregamento (%)")
         self.StorageConfig_GroupBox_Per100Discharge_Label.setToolTip(
             "Taxa de descarregamento em percentual da\npotência ativa nominal (kW).")
-        self.StorageConfig_GroupBox_Per100Discharge_LineEdit = QLineEdit()
-        self.StorageConfig_GroupBox_Per100Discharge_LineEdit.setValidator(self.LineEditsValidos)
+        self.StorageConfig_GroupBox_Per100Discharge_DoubleSpinBox = QDoubleSpinBox()
+        self.StorageConfig_GroupBox_Per100Discharge_DoubleSpinBox.setRange(0.1, 100.0)
+        self.StorageConfig_GroupBox_Per100Discharge_DoubleSpinBox.setDecimals(3)
+        self.StorageConfig_GroupBox_Per100Discharge_DoubleSpinBox.setButtonSymbols(2)
         self.StorageConfig_GroupBox_Layout.addWidget(self.StorageConfig_GroupBox_Per100Discharge_Label, 5, 2, 1, 1)
-        self.StorageConfig_GroupBox_Layout.addWidget(self.StorageConfig_GroupBox_Per100Discharge_LineEdit, 5, 3, 1, 1)
+        self.StorageConfig_GroupBox_Layout.addWidget(self.StorageConfig_GroupBox_Per100Discharge_DoubleSpinBox, 5, 3, 1, 1)
         # Configurar propriedade "%EffCharge" (% de eficiencia ao carregar o Storage)
         self.StorageConfig_GroupBox_EffCharge_Label = QLabel("Eficiência do carregamento (%) ")
         self.StorageConfig_GroupBox_EffCharge_Label.setToolTip("Percentual de eficiência para o carregamento")
-        self.StorageConfig_GroupBox_EffCharge_LineEdit = QLineEdit()
-        self.StorageConfig_GroupBox_EffCharge_LineEdit.setValidator(self.LineEditsValidos)
+        self.StorageConfig_GroupBox_EffCharge_DoubleSpinBox = QDoubleSpinBox()
+        self.StorageConfig_GroupBox_EffCharge_DoubleSpinBox.setButtonSymbols(2)
+        self.StorageConfig_GroupBox_EffCharge_DoubleSpinBox.setDecimals(3)
+        self.StorageConfig_GroupBox_EffCharge_DoubleSpinBox.setRange(0.1, 100.0)
         self.StorageConfig_GroupBox_Layout.addWidget(self.StorageConfig_GroupBox_EffCharge_Label, 5, 0, 1, 1)
-        self.StorageConfig_GroupBox_Layout.addWidget(self.StorageConfig_GroupBox_EffCharge_LineEdit, 5, 1, 1, 1)
+        self.StorageConfig_GroupBox_Layout.addWidget(self.StorageConfig_GroupBox_EffCharge_DoubleSpinBox, 5, 1, 1, 1)
         # Configurar propriedade "%EffDischarge" (% de eficiencia ao descarregar o Storage)
         self.StorageConfig_GroupBox_EffDischarge_Label = QLabel("Eficiência do descarregamento (%)")
         self.StorageConfig_GroupBox_EffDischarge_Label.setToolTip("Percentual de eficiência para o carregamento")
-        self.StorageConfig_GroupBox_EffDischarge_LineEdit = QLineEdit()
-        self.StorageConfig_GroupBox_EffDischarge_LineEdit.setValidator(self.LineEditsValidos)
+        self.StorageConfig_GroupBox_EffDischarge_DoubleSpinBox = QDoubleSpinBox()
+        self.StorageConfig_GroupBox_EffDischarge_DoubleSpinBox.setButtonSymbols(2)
+        self.StorageConfig_GroupBox_EffDischarge_DoubleSpinBox.setDecimals(3)
+        self.StorageConfig_GroupBox_EffDischarge_DoubleSpinBox.setRange(0.1, 100.0)
         self.StorageConfig_GroupBox_Layout.addWidget(self.StorageConfig_GroupBox_EffDischarge_Label, 6, 2, 1, 1)
-        self.StorageConfig_GroupBox_Layout.addWidget(self.StorageConfig_GroupBox_EffDischarge_LineEdit, 6, 3, 1, 1)
+        self.StorageConfig_GroupBox_Layout.addWidget(self.StorageConfig_GroupBox_EffDischarge_DoubleSpinBox, 6, 3, 1, 1)
         # Configurar propriedade "state" (seta o estado de operação)
         self.StorageConfig_GroupBox_state_Label = QLabel("Estado de operação")
         self.StorageConfig_GroupBox_state_ComboBox = QComboBox()
@@ -997,32 +1009,40 @@ class StorageConfig(QWidget):
         self.StorageConfig_GroupBox_vMinPu_Label = QLabel("Tensão mínima (p.u.)")
         self.StorageConfig_GroupBox_vMinPu_Label.setToolTip(
             "Tensão mínima em p.u. para a qual o modelo se aplica. Abaixo\ndesse valor,o modelo da carga se torna um modelo de impedância constante.")
-        self.StorageConfig_GroupBox_vMinPu_LineEdit = QLineEdit()
-        self.StorageConfig_GroupBox_vMinPu_LineEdit.setValidator(self.LineEditsValidos)
+        self.StorageConfig_GroupBox_vMinPu_DoubleSpinBox = QDoubleSpinBox()
+        self.StorageConfig_GroupBox_vMinPu_DoubleSpinBox.setButtonSymbols(2)
+        self.StorageConfig_GroupBox_vMinPu_DoubleSpinBox.setDecimals(3)
+        self.StorageConfig_GroupBox_vMinPu_DoubleSpinBox.setRange(0.001, 100)
         self.StorageConfig_GroupBox_Layout.addWidget(self.StorageConfig_GroupBox_vMinPu_Label, 7, 0, 1, 1)
-        self.StorageConfig_GroupBox_Layout.addWidget(self.StorageConfig_GroupBox_vMinPu_LineEdit, 7, 1, 1, 1)
+        self.StorageConfig_GroupBox_Layout.addWidget(self.StorageConfig_GroupBox_vMinPu_DoubleSpinBox, 7, 1, 1, 1)
         # Configurar propriedade "vmaxpu" (tensão maxima, em pu, para a qual o modelo se aplica)
         self.StorageConfig_GroupBox_vMaxPu_Label = QLabel("Tensão máxima (p.u.)")
         self.StorageConfig_GroupBox_vMaxPu_Label.setToolTip(
             "Tensão máxima em p.u. para a qual o modelo se aplica. Abaixo\ndesse valor,o modelo da carga se torna um modelo de impedância constante.")
-        self.StorageConfig_GroupBox_vMaxPu_LineEdit = QLineEdit()
-        self.StorageConfig_GroupBox_vMaxPu_LineEdit.setValidator(self.LineEditsValidos)
+        self.StorageConfig_GroupBox_vMaxPu_DoubleSpinBox = QDoubleSpinBox()
+        self.StorageConfig_GroupBox_vMaxPu_DoubleSpinBox.setDecimals(3)
+        self.StorageConfig_GroupBox_vMaxPu_DoubleSpinBox.setButtonSymbols(2)
+        self.StorageConfig_GroupBox_vMaxPu_DoubleSpinBox.setRange(0.001, 100)
         self.StorageConfig_GroupBox_Layout.addWidget(self.StorageConfig_GroupBox_vMaxPu_Label, 7, 2, 1, 1)
-        self.StorageConfig_GroupBox_Layout.addWidget(self.StorageConfig_GroupBox_vMaxPu_LineEdit, 7, 3, 1, 1)
+        self.StorageConfig_GroupBox_Layout.addWidget(self.StorageConfig_GroupBox_vMaxPu_DoubleSpinBox, 7, 3, 1, 1)
         # Configurar propriedade "%R" (resistência interna equivalente percentual)
         self.StorageConfig_GroupBox_R_Label = QLabel("Resistência interna (%)")
         self.StorageConfig_GroupBox_R_Label.setToolTip("Percentual da resistência interna equivalente")
-        self.StorageConfig_GroupBox_R_LineEdit = QLineEdit()
-        self.StorageConfig_GroupBox_R_LineEdit.setValidator(self.LineEditsValidos0)
+        self.StorageConfig_GroupBox_R_DoubleSpinBox = QDoubleSpinBox()
+        self.StorageConfig_GroupBox_R_DoubleSpinBox.setRange(0.0, 999999999)
+        self.StorageConfig_GroupBox_R_DoubleSpinBox.setDecimals(3)
+        self.StorageConfig_GroupBox_R_DoubleSpinBox.setButtonSymbols(2)
         self.StorageConfig_GroupBox_Layout.addWidget(self.StorageConfig_GroupBox_R_Label, 8, 0, 1, 1)
-        self.StorageConfig_GroupBox_Layout.addWidget(self.StorageConfig_GroupBox_R_LineEdit, 8, 1, 1, 1)
+        self.StorageConfig_GroupBox_Layout.addWidget(self.StorageConfig_GroupBox_R_DoubleSpinBox, 8, 1, 1, 1)
         # Configurar propriedade "%X" (reatância interna equivalente percentual)
         self.StorageConfig_GroupBox_X_Label = QLabel("Reatância interna (%)")
         self.StorageConfig_GroupBox_X_Label.setToolTip("Percentual da reatância interna equivalente")
-        self.StorageConfig_GroupBox_X_LineEdit = QLineEdit()
-        self.StorageConfig_GroupBox_X_LineEdit.setValidator(self.LineEditsValidos0)
+        self.StorageConfig_GroupBox_X_DoubleSpinBox = QDoubleSpinBox()
+        self.StorageConfig_GroupBox_X_DoubleSpinBox.setDecimals(3)
+        self.StorageConfig_GroupBox_X_DoubleSpinBox.setButtonSymbols(2)
+        self.StorageConfig_GroupBox_X_DoubleSpinBox.setRange(0.0, 999999999)
         self.StorageConfig_GroupBox_Layout.addWidget(self.StorageConfig_GroupBox_X_Label, 8, 2, 1, 1)
-        self.StorageConfig_GroupBox_Layout.addWidget(self.StorageConfig_GroupBox_X_LineEdit, 8, 3, 1, 1)
+        self.StorageConfig_GroupBox_Layout.addWidget(self.StorageConfig_GroupBox_X_DoubleSpinBox, 8, 3, 1, 1)
         # Configurar propriedade "model" (modelo de saída da potência)
         self.StorageConfig_GroupBox_model_Label = QLabel("Modelo do Storage")
         self.StorageConfig_GroupBox_model_Label.setToolTip("1: Storage injeta/absorve potência constante.\n2: Storage é modelado como uma impedância constante.")
@@ -1046,31 +1066,6 @@ class StorageConfig(QWidget):
 
         self.setLayout(self.Tab_layout)
 
-    def verificaLineEdits(self):
-        for i in [
-            self.StorageConfig_GroupBox_kW_LineEdit,
-            self.StorageConfig_GroupBox_kv_LineEdit,
-            self.StorageConfig_GroupBox_kWhrated_LineEdit,
-            self.StorageConfig_GroupBox_kWhstored_LineEdit,
-            self.StorageConfig_GroupBox_PercentageReserve_LineEdit,
-            self.StorageConfig_GroupBox_Per100Charge_LineEdit,
-            self.StorageConfig_GroupBox_IdlingkW_LineEdit,
-            self.StorageConfig_GroupBox_Per100Discharge_LineEdit,
-            self.StorageConfig_GroupBox_EffCharge_LineEdit,
-            self.StorageConfig_GroupBox_EffDischarge_LineEdit,
-            self.StorageConfig_GroupBox_vMinPu_LineEdit,
-            self.StorageConfig_GroupBox_vMaxPu_LineEdit,
-            self.StorageConfig_GroupBox_R_LineEdit,
-            self.StorageConfig_GroupBox_X_LineEdit,
-        ]:
-            if not i.hasAcceptableInput():
-                QMessageBox(QMessageBox.Warning, "Insert Storage",
-                            "Algum valor inserido nas Configurações Gerais não é válido!\n Verifique os valores inseridos!",
-                            QMessageBox.Ok).exec()
-                return False
-            else:
-                return True
-
 class InversorConfig(QWidget):
     def __init__(self):
         super().__init__()
@@ -1093,16 +1088,20 @@ class InversorConfig(QWidget):
         self.InversorConfig_GroupBox_Layout = QGridLayout()  # Layout da GroupBox do InversorConfig é em Grid
         # Configurar propriedade "kVA"
         self.InversorConfig_GroupBox_kVA_Label = QLabel("Pot. aparente máxima (kVA)")
-        self.InversorConfig_GroupBox_kVA_LineEdit = QLineEdit()
-        self.InversorConfig_GroupBox_kVA_LineEdit.setValidator(self.LineEditsValidos)
+        self.InversorConfig_GroupBox_kVA_DoubleSpinBox = QDoubleSpinBox()
+        self.InversorConfig_GroupBox_kVA_DoubleSpinBox.setRange(0.1, 999999999)
+        self.InversorConfig_GroupBox_kVA_DoubleSpinBox.setButtonSymbols(2)
+        self.InversorConfig_GroupBox_kVA_DoubleSpinBox.setDecimals(3)
         self.InversorConfig_GroupBox_Layout.addWidget(self.InversorConfig_GroupBox_kVA_Label, 0, 0, 1, 1)
-        self.InversorConfig_GroupBox_Layout.addWidget(self.InversorConfig_GroupBox_kVA_LineEdit, 0, 1, 1, 1)
+        self.InversorConfig_GroupBox_Layout.addWidget(self.InversorConfig_GroupBox_kVA_DoubleSpinBox, 0, 1, 1, 1)
         # Configurar propriedade "kWrated" (Pot. ativa máxima de saída do inversor)
-        self.InversorConfig_GroupBox_kWrated_Label = QLabel("Pot. ativa máxima (kW)")
-        self.InversorConfig_GroupBox_kWrated_LineEdit = QLineEdit()
-        self.InversorConfig_GroupBox_kWrated_LineEdit.setValidator(self.LineEditsValidos)
+        self.InversorConfig_GroupBox_kWrated_Label = QLabel("kWrated")
+        self.InversorConfig_GroupBox_kWrated_DoubleSpinBox = QDoubleSpinBox()
+        self.InversorConfig_GroupBox_kWrated_DoubleSpinBox.setDecimals(3)
+        self.InversorConfig_GroupBox_kWrated_DoubleSpinBox.setButtonSymbols(2)
+        self.InversorConfig_GroupBox_kWrated_DoubleSpinBox.setRange(0.1, 999999999)
         self.InversorConfig_GroupBox_Layout.addWidget(self.InversorConfig_GroupBox_kWrated_Label, 0, 2, 1, 1)
-        self.InversorConfig_GroupBox_Layout.addWidget(self.InversorConfig_GroupBox_kWrated_LineEdit, 0, 3, 1, 1)
+        self.InversorConfig_GroupBox_Layout.addWidget(self.InversorConfig_GroupBox_kWrated_DoubleSpinBox, 0, 3, 1, 1)
         # Configurar propriedade "%varFollowInverter" (True ativa %CutIn %CutOut False desativa %CutIn %CutOut)
         self.InversorConfig_GroupBox_varFollowInverter_Label = QLabel("Seta status do CutIn/CutOut")
         self.InversorConfig_GroupBox_varFollowInverter_Label.setToolTip("Quando desativado, o inversor gera/absorve \
@@ -1114,7 +1113,7 @@ começar novamente quando a potência\nDC estiver acima de CutIn")
             ["Ativa CutIn/CutOut", "Desativa CutIn/CutOut"])
         self.InversorConfig_GroupBox_Layout.addWidget(self.InversorConfig_GroupBox_varFollowInverter_Label, 1, 0, 1, 1)
         self.InversorConfig_GroupBox_Layout.addWidget(self.InversorConfig_GroupBox_varFollowInverter_ComboBox, 1, 1, 1,
-                                                      1)
+1)
         # Configurar propriedade "EffCurve" (True ativa %CutIn %CutOut False desativa %CutIn %CutOut)
         self.InversorConfig_GroupBox_EffCurve_Btn = QPushButton("Selecionar curva de Eficiência")
         self.InversorConfig_GroupBox_EffCurve_Btn.clicked.connect(self.EffCurveConfig)
@@ -1123,48 +1122,60 @@ começar novamente quando a potência\nDC estiver acima de CutIn")
         self.InversorConfig_GroupBox_CutIn_Label = QLabel("CutIn (%)")
         self.InversorConfig_GroupBox_CutIn_Label.setToolTip("Potência CutIn em percentual da potência aparente (kVA) do\
  inversor.\nÉ a potência DC mínima para ligar o inversor quando ele está desligado.\nPrecisa ser igual ou maior que CutOut")
-        self.InversorConfig_GroupBox_CutIn_LineEdit = QLineEdit()
-        self.InversorConfig_GroupBox_CutIn_LineEdit.setValidator(self.LineEditsValidos0)
+        self.InversorConfig_GroupBox_CutIn_DoubleSpinBox = QDoubleSpinBox()
+        self.InversorConfig_GroupBox_CutIn_DoubleSpinBox.setRange(0.0, 100.0)
+        self.InversorConfig_GroupBox_CutIn_DoubleSpinBox.setButtonSymbols(2)
+        self.InversorConfig_GroupBox_CutIn_DoubleSpinBox.setDecimals(3)
         self.InversorConfig_GroupBox_Layout.addWidget(self.InversorConfig_GroupBox_CutIn_Label, 2, 0, 1, 1)
-        self.InversorConfig_GroupBox_Layout.addWidget(self.InversorConfig_GroupBox_CutIn_LineEdit, 2, 1, 1, 1)
+        self.InversorConfig_GroupBox_Layout.addWidget(self.InversorConfig_GroupBox_CutIn_DoubleSpinBox, 2, 1, 1, 1)
         # Configurar propriedade "CutOut" (Pot. ativa máxima de saída do inversor)
         self.InversorConfig_GroupBox_CutOut_Label = QLabel("CutOut (%)")
         self.InversorConfig_GroupBox_CutOut_Label.setToolTip("Potência CutOut em percentual da potência aparente (kVA) do\
 inversor.\nÉ a potência DC mínima para manter o inversor ligado. Precisa ser\nigual ou menor que CutIn")
-        self.InversorConfig_GroupBox_CutOut_LineEdit = QLineEdit()
-        self.InversorConfig_GroupBox_CutOut_LineEdit.setValidator(self.LineEditsValidos0)
+        self.InversorConfig_GroupBox_CutOut_DoubleSpinBox = QDoubleSpinBox()
+        self.InversorConfig_GroupBox_CutOut_DoubleSpinBox.setRange(0.0, 100.0)
+        self.InversorConfig_GroupBox_CutOut_DoubleSpinBox.setDecimals(3)
+        self.InversorConfig_GroupBox_CutOut_DoubleSpinBox.setButtonSymbols(2)
         self.InversorConfig_GroupBox_Layout.addWidget(self.InversorConfig_GroupBox_CutOut_Label, 2, 2, 1, 1)
-        self.InversorConfig_GroupBox_Layout.addWidget(self.InversorConfig_GroupBox_CutOut_LineEdit, 2, 3, 1, 1)
+        self.InversorConfig_GroupBox_Layout.addWidget(self.InversorConfig_GroupBox_CutOut_DoubleSpinBox, 2, 3, 1, 1)
         # Configurar propriedade "kvarMax" (máximo geração de kvar aceita pelo inversor)
-        self.InversorConfig_GroupBox_kvarMax_Label = QLabel("Máxima Geração de kvar")
-        self.InversorConfig_GroupBox_kvarMax_LineEdit = QLineEdit()
-        self.InversorConfig_GroupBox_kvarMax_LineEdit.setValidator(self.LineEditsValidos)
+        self.InversorConfig_GroupBox_kvarMax_Label = QLabel("kvarMax")
+        self.InversorConfig_GroupBox_kvarMax_DoubleSpinBox = QDoubleSpinBox()
+        self.InversorConfig_GroupBox_kvarMax_DoubleSpinBox.setButtonSymbols(2)
+        self.InversorConfig_GroupBox_kvarMax_DoubleSpinBox.setDecimals(3)
+        self.InversorConfig_GroupBox_kvarMax_DoubleSpinBox.setRange(0.0, 999999999)
         self.InversorConfig_GroupBox_Layout.addWidget(self.InversorConfig_GroupBox_kvarMax_Label, 3, 0, 1, 1)
-        self.InversorConfig_GroupBox_Layout.addWidget(self.InversorConfig_GroupBox_kvarMax_LineEdit, 3, 1, 1, 1)
+        self.InversorConfig_GroupBox_Layout.addWidget(self.InversorConfig_GroupBox_kvarMax_DoubleSpinBox, 3, 1, 1, 1)
         # Configurar propriedade "kvarMaxAbs" (máximo absorção de kvar aceita pelo inversor)
-        self.InversorConfig_GroupBox_kvarMaxAbs_Label = QLabel("Máxima Absorção de kvar")
-        self.InversorConfig_GroupBox_kvarMaxAbs_LineEdit = QLineEdit()
-        self.InversorConfig_GroupBox_kvarMaxAbs_LineEdit.setValidator(self.LineEditsValidos)
+        self.InversorConfig_GroupBox_kvarMaxAbs_Label = QLabel("kvarMaxAbs")
+        self.InversorConfig_GroupBox_kvarMaxAbs_DoubleSpinBox = QDoubleSpinBox()
+        self.InversorConfig_GroupBox_kvarMaxAbs_DoubleSpinBox.setButtonSymbols(2)
+        self.InversorConfig_GroupBox_kvarMaxAbs_DoubleSpinBox.setDecimals(3)
+        self.InversorConfig_GroupBox_kvarMaxAbs_DoubleSpinBox.setRange(0.0, 999999999)
         self.InversorConfig_GroupBox_Layout.addWidget(self.InversorConfig_GroupBox_kvarMaxAbs_Label, 3, 2, 1, 1)
-        self.InversorConfig_GroupBox_Layout.addWidget(self.InversorConfig_GroupBox_kvarMaxAbs_LineEdit, 3, 3, 1, 1)
+        self.InversorConfig_GroupBox_Layout.addWidget(self.InversorConfig_GroupBox_kvarMaxAbs_DoubleSpinBox, 3, 3, 1, 1)
         # Configurar propriedade "%PminNoVars" (pot. ativa mínima na qual o inversor nao produz/absorve pot. reativa)
-        self.InversorConfig_GroupBox_PminNoVars_Label = QLabel("Pot. mín. s/ despacho de reativo (%)")
+        self.InversorConfig_GroupBox_PminNoVars_Label = QLabel("%PminNoVars")
         self.InversorConfig_GroupBox_PminNoVars_Label.setToolTip("Potência ativa mínima, em percentual da potência ativa \
 máxima (kW),\nna qual não há produção/absorção de reativo")
-        self.InversorConfig_GroupBox_PminNoVars_LineEdit = QLineEdit()
-        self.InversorConfig_GroupBox_PminNoVars_LineEdit.setValidator(self.LineEditsValidos0)
+        self.InversorConfig_GroupBox_PminNoVars_DoubleSpinBox = QDoubleSpinBox()
+        self.InversorConfig_GroupBox_PminNoVars_DoubleSpinBox.setRange(0.0, 100.0)
+        self.InversorConfig_GroupBox_PminNoVars_DoubleSpinBox.setButtonSymbols(2)
+        self.InversorConfig_GroupBox_PminNoVars_DoubleSpinBox.setDecimals(3)
         self.InversorConfig_GroupBox_Layout.addWidget(self.InversorConfig_GroupBox_PminNoVars_Label, 4, 0, 1, 1)
-        self.InversorConfig_GroupBox_Layout.addWidget(self.InversorConfig_GroupBox_PminNoVars_LineEdit, 4, 1, 1, 1)
+        self.InversorConfig_GroupBox_Layout.addWidget(self.InversorConfig_GroupBox_PminNoVars_DoubleSpinBox, 4, 1, 1, 1)
         # Configurar propriedade "%PminkvarMax" (pot. ativa mínima que permite o inversor produzir/absorver pot. reativa)
-        self.InversorConfig_GroupBox_PminkvarMax_Label = QLabel("Pot. mín. c/ despacho de reativo (%)")
+        self.InversorConfig_GroupBox_PminkvarMax_Label = QLabel("%PminkvarMax")
         self.InversorConfig_GroupBox_PminkvarMax_Label.setToolTip("Potência ativa mínima, em percentual da potência ativa \
 máxima (kW), que permite\no inversor produzir/absorver potencia reativa até um valor máximo")
-        self.InversorConfig_GroupBox_PminkvarMax_LineEdit = QLineEdit()
-        self.InversorConfig_GroupBox_PminkvarMax_LineEdit.setValidator(self.LineEditsValidos0)
+        self.InversorConfig_GroupBox_PminkvarMax_DoubleSpinBox = QDoubleSpinBox()
+        self.InversorConfig_GroupBox_PminkvarMax_DoubleSpinBox.setRange(0.0, 100.0)
+        self.InversorConfig_GroupBox_PminkvarMax_DoubleSpinBox.setDecimals(3)
+        self.InversorConfig_GroupBox_PminkvarMax_DoubleSpinBox.setButtonSymbols(2)
         self.InversorConfig_GroupBox_Layout.addWidget(self.InversorConfig_GroupBox_PminkvarMax_Label, 4, 2, 1, 1)
-        self.InversorConfig_GroupBox_Layout.addWidget(self.InversorConfig_GroupBox_PminkvarMax_LineEdit, 4, 3, 1, 1)
+        self.InversorConfig_GroupBox_Layout.addWidget(self.InversorConfig_GroupBox_PminkvarMax_DoubleSpinBox, 4, 3, 1, 1)
         # Configurar propriedade "PFPriority" (True: seta PF para seu valor quando kVA excedido)
-        self.InversorConfig_GroupBox_PFPriority_Label = QLabel("FP prioridade")
+        self.InversorConfig_GroupBox_PFPriority_Label = QLabel("PFPriority")
         self.InversorConfig_GroupBox_PFPriority_Label.setToolTip("Se ativada, é dada prioridade ao fator de potência e \
 a prioridade\nda potência é negligenciada. Só funciona se estiver operando nos\nmodos de despacho PF ou Kvar constantes")
         self.InversorConfig_GroupBox_PFPriority_ComboBox = QComboBox()
@@ -1188,25 +1199,7 @@ a prioridade\nda potência é negligenciada. Só funciona se estiver operando no
 
     def EffCurveConfig(self):
         self.EffCurve.exec()
-
-    def verificaLineEdits(self):
-        for i in [
-            self.InversorConfig_GroupBox_kVA_LineEdit,
-            self.InversorConfig_GroupBox_kWrated_LineEdit,
-            self.InversorConfig_GroupBox_CutIn_LineEdit,
-            self.InversorConfig_GroupBox_CutOut_LineEdit,
-            self.InversorConfig_GroupBox_kvarMax_LineEdit,
-            self.InversorConfig_GroupBox_kvarMaxAbs_LineEdit,
-            self.InversorConfig_GroupBox_PminNoVars_LineEdit,
-            self.InversorConfig_GroupBox_PminkvarMax_LineEdit
-        ]:
-            if not i.hasAcceptableInput():
-                QMessageBox(QMessageBox.Warning, "Insert Storage",
-                            "Algum valor inserido nas Configurações do Inversor não é válido!\n Verifique os valores inseridos!",
-                            QMessageBox.Ok).exec()
-                return False
-            else:
-                return True
+        self.EffCurve.centralize()
 
 
 class Storage_TreeWidget_Item(QTreeWidgetItem):
