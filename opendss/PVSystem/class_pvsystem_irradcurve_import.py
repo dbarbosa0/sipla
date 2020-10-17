@@ -66,12 +66,12 @@ class C_Irrad_Curve_Import(QDialog):
         self.Irrad_Curve_Xdata = QLineEdit()
         self.Irrad_Curve_Xdata.setToolTip('Preencha este campo somente com números, usando ponto (.) para \n'
                                        'determinar as casas decimais e separando cada valor com vírgula (,) \n'
-                                       'EX: 0.6 0.7 0.8 0.9 1')
+                                       'EX: 0.6, 0.7, 0.8, 0.9, 1')
         self.Irrad_Curve_Ydata_Label = QLabel("Pontos do eixo Y:")
         self.Irrad_Curve_Ydata = QLineEdit()
         self.Irrad_Curve_Ydata.setToolTip('Preencha este campo somente com números, usando ponto (.) para \n'
                                        'determinar as casas decimais e separando cada valor com vírgula (,) \n'
-                                       'EX: 0.6 0.7 0.8 0.9 1')
+                                       'EX: 0.6, 0.7, 0.8, 0.9, 1')
 
         self.Irrad_Curve_Manual_Mode_GroupBox_Layout.addWidget(self.Irrad_Curve_Manual_Name_Label, 0, 0, 1, 1)
         self.Irrad_Curve_Manual_Mode_GroupBox_Layout.addWidget(self.Irrad_Curve_Xdata_Label, 1, 0, 1, 1)
