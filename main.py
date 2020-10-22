@@ -1,7 +1,7 @@
 import sys, time
 
 from PyQt5.QtCore import Qt
-from PyQt5.QtGui import QIcon, QPixmap
+from PyQt5.QtGui import QIcon, QPixmap, QPalette, QColor
 from PyQt5.QtWidgets import QApplication, QMainWindow, QStyleFactory, QSplashScreen
 
 
@@ -85,6 +85,7 @@ if __name__ == '__main__':
     splash.setMask(splash_pix.mask())
     splash.show()
     siplaApp.processEvents()
+    siplaApp.setStyle('Fusion')
 
     GUI = mainWindow()
     GUI.show()
