@@ -1,8 +1,8 @@
 import csv
 import os
 import re
-
-
+from scipy.interpolate import interp1d
+import matplotlib.pyplot as plt
 arr = os.listdir('.')
 fuselinkDir = {}
 curveList = []
@@ -94,7 +94,25 @@ def exportCSV():
                     rowText.append('')
             writer.writerow(rowText)
 
-exportCSV()
+def interpolPoints():
+    x = []
+    y = []
+    for info in minCurve:
+        if float(info.split(';')[0]) not in x and float(info.split(';')[1]) not in y:
+            x.append(float(info.split(';')[0]))
+            y.append(float(info.split(';')[1]))
+    # print(x,y)
+
+    f2 = interp1d(x,y,kind='cubic')
+
+    plt.loglog(x, y, 'o', x, f2(x), '-')
+    plt.legend(['data', 'cubic'], loc='best')
+    plt.show()
+
+
+# exportCSV()
+interpolPoints()
+
 
 # print(list(fuselinkDir.keys()))
 # print(fuselinkDir)
