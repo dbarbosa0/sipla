@@ -95,23 +95,47 @@ def exportCSV():
             writer.writerow(rowText)
 
 def interpolPoints():
-    x = []
-    y = []
+    xmin = []
+    ymin = []
+    xmax = []
+    ymax = []
     for info in minCurve:
-        if float(info.split(';')[0]) not in x and float(info.split(';')[1]) not in y:
-            x.append(float(info.split(';')[0]))
-            y.append(float(info.split(';')[1]))
-    # print(x,y)
+        if float(info.split(';')[0]) not in xmin and float(info.split(';')[1]) not in ymin:
+            xmin.append(float(info.split(';')[0]))
+            ymin.append(float(info.split(';')[1]))
 
-    f2 = interp1d(x,y,kind='cubic')
+    for info in maxCurve:
+        if float(info.split(';')[0]) not in xmax and float(info.split(';')[1]) not in ymax:
+            xmax.append(float(info.split(';')[0]))
+            ymax.append(float(info.split(';')[1]))
+    # print(xmin,ymin)
 
-    plt.loglog(x, y, 'o', x, f2(x), '-')
-    plt.legend(['data', 'cubic'], loc='best')
+    fmin = interp1d(xmin,ymin,kind='cubic',fill_value="extrapolate",axis=0)
+    fmax = interp1d(xmax,ymax,kind='cubic',fill_value="extrapolate",axis=0)
+
+    # plt.loglog(xmin, ymin, 'o', xmin, fmin(xmin), '-',xmax, ymax, 'o', xmin, fmax(xmin), '-')
+
+    xmed = []
+    ymed = []
+    if len(xmin) < len(xmax):
+        for xaxis in xmin:
+            xmed.append(xaxis)
+            ymed.append((fmin(xaxis) + fmax(xaxis))/2)
+    else:
+        for xaxis in xmax:
+            xmed.append(xaxis)
+            ymed.append((fmin(xaxis) + fmax(xaxis))/2)
+
+    print(ymed)
+
+    plt.loglog(xmin, fmin(xmin), '-', xmax, fmax(xmax), '--',xmed, ymed,'-')
+    plt.legend(['MinCurve', 'MaxCurve', 'MedCurve'], loc='best')
     plt.show()
 
-
-# exportCSV()
+exportCSV()
 interpolPoints()
+
+
 
 
 # print(list(fuselinkDir.keys()))
