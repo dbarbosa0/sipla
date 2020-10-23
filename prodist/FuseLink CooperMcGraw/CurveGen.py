@@ -2,7 +2,6 @@ import csv
 import os
 import re
 
-from PyQt5.QtWidgets import QFileDialog
 
 arr = os.listdir('.')
 fuselinkDir = {}
@@ -11,7 +10,7 @@ tipos = []
 
 items = []
 types = []
-
+maxlen = 0
 for file in arr:
     if file.split('.')[1] == 'csv':
         match = re.match(r"([0-9]+)([a-z]+)", file.split('.')[0], re.I)
@@ -66,26 +65,39 @@ for fuse in curveList:
         if maxAmp[i] and maxTime[i]:
             maxCurve.append(maxAmp[i] + ';' + maxTime[i])
 
-    # print(minCurve)
-    # print(maxCurve)
+    fuselinkDir[fuse.split('.')[0]] = maxCurve +  list(reversed(minCurve))
 
-    fuselinkDir[fuse.split('.')[0]] =  [minCurve,maxCurve].copy()
+    if len(maxCurve) + len(minCurve) > maxlen:
+        maxlen = len(maxCurve) + len(minCurve)
 
-    writer = csv.writer(file, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
 
-    rowText = []
-    for nameCurve in fuselinkDir.keys():
-        rowText.append(nameCurve)
+def exportCSV():
+    with open('../FuseLink_CooperMcGraw.csv', 'w' , newline='') as csvfile:
 
-    writer.writerow(rowText)
+        writer = csv.writer(csvfile, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
 
-    for ctdPoints in range(0, len(fuselinkDir)):
-        rowText.clear()
-        for dataShape in self.dataDispCurve:
-            rowText.append(self.dataDispCurve[dataShape][ctdPoints])
+        rowText = []
+        for nameCurve in fuselinkDir:
+            rowText.append(nameCurve)
+
         writer.writerow(rowText)
 
-print(fuselinkDir.keys())
-print(fuselinkDir)
+        for ctdPoints in range(0, maxlen):
+
+            rowText.clear()
+
+            for data in fuselinkDir:
+                try:
+
+                    rowText.append(fuselinkDir[data][ctdPoints])
+                except IndexError:
+                    rowText.append('')
+            writer.writerow(rowText)
+
+exportCSV()
+
+# print(list(fuselinkDir.keys()))
+# print(fuselinkDir)
+
 
 

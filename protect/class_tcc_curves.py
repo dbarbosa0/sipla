@@ -297,7 +297,7 @@ class C_Config_Curves_Dialog(QDialog):
                 pointsXList = Item.getPointsList(2)
                 pointsYList = Item.getPointsList(3)
 
-                self.graphWidget.plot(pointsXList, pointsYList, name=Item.name, pen=pen, symbol='o', symbolSize=10, symbolBrush=Item.getColorRGB())
+                self.graphWidget.plot(pointsXList, pointsYList, name=Item.name, pen=pen, symbol='o', symbolSize=1, symbolBrush=Item.getColorRGB())
                 countSelected += 1
 
         if countSelected == 0:
@@ -337,12 +337,16 @@ class C_Config_Curves_Dialog(QDialog):
             writer.writerow(rowText)
 
             for ctdPoints in range(0, self.nPoints):
+
                 # region Description
                 rowText.clear()
                 # endregion
+
                 for dataShape in self.dataPointsX:
+
                     try:
                         m = str(self.dataPointsX[dataShape][ctdPoints]) + ";" + str(self.dataPointsY[dataShape][ctdPoints])
+                        print(f'm : ${m}')
                         rowText.append(m)
                     except:
                         rowText.append('')
