@@ -172,7 +172,7 @@ class C_MainActions():
             self.MainWindowToolBar.Protect_Devices_Act.setEnabled(False)
 
             #Felipe
-            self.MainWindowToolBar.OpenDSSMenuSubInsert_SubPVSystem.setEnabled(False)
+            self.MainWindowToolBar.OpenDSSMenuSubInsert_SubPVSystem.setEnabled(True)
 
 
     #############################################

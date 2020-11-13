@@ -1,5 +1,5 @@
 from PyQt5.QtGui import QIcon
-from PyQt5.QtWidgets import QStyleFactory, QRadioButton, QDialog, QGridLayout, QGroupBox, \
+from PyQt5.QtWidgets import QStyleFactory, QCheckBox, QDialog, QGridLayout, QGroupBox, \
     QVBoxLayout, QTabWidget, QLabel, QComboBox, QDesktopWidget, QLineEdit, QPushButton, QHBoxLayout, QMessageBox
 from PyQt5.QtCore import Qt
 
@@ -122,6 +122,11 @@ class C_Config_PVSystem_Dialog(QDialog):
         self.PVSystem_GroupBox_PVdata.setVisible(False)
 
         #  GroupBox PVSystem Data
+
+        #  Buttons
+        self.PVSystem_PVdata_Multi_Button = QCheckBox("")
+        self.PVSystem_PVdata_Multi_Button.stateChanged.connect(self.MultiPVs)
+
         #  Labels
         self.PVSystem_PVdata_Name_Label = QLabel("Nome:")
         self.PVSystem_PVdata_PTCurve_Label = QLabel("Curva P-t:")
@@ -137,6 +142,9 @@ class C_Config_PVSystem_Dialog(QDialog):
         self.PVSystem_PVdata_Cutin_Label = QLabel("%Cutin")
         self.PVSystem_PVdata_Cutout_Label = QLabel("%Cutout")
 
+        self.PVSystem_PVdata_Multi_Button_Label = QLabel("Marque para inserir multiplos PVSystems com a mesma configuração")
+        self.PVSystem_PVdata_Multi_Number_Label = QLabel("Informe a qtd de copias")
+
         # LineEdits
         self.PVSystem_PVdata_Name = QLineEdit()
         self.PVSystem_PVdata_Voltage = QLineEdit()
@@ -146,6 +154,9 @@ class C_Config_PVSystem_Dialog(QDialog):
         self.PVSystem_PVdata_PF = QLineEdit()
         self.PVSystem_PVdata_Cutin = QLineEdit()
         self.PVSystem_PVdata_Cutout = QLineEdit()
+
+        self.PVSystem_PVdata_Multi_Number = QLineEdit()
+        self.PVSystem_PVdata_Multi_Number.setEnabled(False)
 
         # Comboboxs
         self.PVSystem_PVdata_PTCurve_ComboBox = QComboBox()
@@ -182,6 +193,11 @@ class C_Config_PVSystem_Dialog(QDialog):
         self.PVSystem_GroupBox_PVdata_Layout.addWidget(self.PVSystem_PVdata_Cutin, 11, 1, 1, 1)
         self.PVSystem_GroupBox_PVdata_Layout.addWidget(self.PVSystem_PVdata_Cutout_Label, 12, 0, 1, 1)
         self.PVSystem_GroupBox_PVdata_Layout.addWidget(self.PVSystem_PVdata_Cutout, 12, 1, 1, 1)
+
+        self.PVSystem_GroupBox_PVdata_Layout.addWidget(self.PVSystem_PVdata_Multi_Button, 13, 0, 1, 1)
+        self.PVSystem_GroupBox_PVdata_Layout.addWidget(self.PVSystem_PVdata_Multi_Button_Label, 13, 1, 1, 1)
+        self.PVSystem_GroupBox_PVdata_Layout.addWidget(self.PVSystem_PVdata_Multi_Number_Label, 14, 0, 1, 1)
+        self.PVSystem_GroupBox_PVdata_Layout.addWidget(self.PVSystem_PVdata_Multi_Number, 14, 1, 1, 1)
 
         self.PVSystem_GroupBox_PVdata.setLayout(self.PVSystem_GroupBox_PVdata_Layout)
         self.Dialog_Layout.addWidget(self.PVSystem_GroupBox_PVdata)
@@ -253,6 +269,11 @@ class C_Config_PVSystem_Dialog(QDialog):
         self.clearPVConfigParameters()
         self.PVSystem_GroupBox_PVdata.setVisible(False)
 
+    def MultiPVs(self):
+        if self.PVSystem_PVdata_Multi_Button.isChecked():
+            self.PVSystem_PVdata_Multi_Number.setEnabled(True)
+        else:
+            self.PVSystem_PVdata_Multi_Number.setEnabled(False)
 
     def update_dialog(self):
         self.PVSystem_PVdata_PTCurve_ComboBox.addItems(self.ptcurve.list_curve_names)
@@ -260,11 +281,12 @@ class C_Config_PVSystem_Dialog(QDialog):
         self.PVSystem_PVdata_IrradCurve_ComboBox.addItems(self.irradcurve.list_curve_names)
         self.PVSystem_PVdata_TempCurve_ComboBox.addItems(self.tempcurve.list_curve_names)
         if self.PVSystem_List:
+            print('blabla')
             self.PVSystem_GroupBox_PVconfig_ComboBox.clear()
             lista_aux = []
             for index, pvs_dict in enumerate(self.PVSystem_List):
                 for key, value in pvs_dict.items():
-                    if key == 'Name':
+                    if key == 'name':
                         lista_aux.append(value)
             self.PVSystem_GroupBox_PVconfig_ComboBox.addItems(lista_aux)
 
@@ -323,30 +345,43 @@ class C_Config_PVSystem_Dialog(QDialog):
         return self.PVSystem_PVdata_Cutout.text()
 
     def loadPVSystem(self):
-        self.PVSystem_Data = {}
-        self.PVSystem_Data["name"] = self.get_PVSystem_Name()
-        self.PVSystem_Data["bus1"] = self.get_PVSystem_Name()
-        self.PVSystem_Data["phases"] = self.get_Phases()
-        self.PVSystem_Data["kv"] = self.get_Nominal_Voltage()
-        self.PVSystem_Data["irrad"] = self.get_Nominal_Irradiance()
-        self.PVSystem_Data["pmpp"] = self.get_Nominal_Power()
-        self.PVSystem_Data["temperature"] = self.get_Nominal_Temp()
-        self.PVSystem_Data["pf"] = self.get_Power_Factor()
-        self.PVSystem_Data["%cutin"] = self.get_cutin()
-        self.PVSystem_Data["%cutout"] = self.get_cutout()
-        self.PVSystem_Data["effcurve"] = self.get_EffCurve()
-        self.PVSystem_Data["p-tcurve"] = self.get_PTCurve()
-        self.PVSystem_Data["daily"] = self.get_IrradCurve()
-        self.PVSystem_Data["tdaily"] = self.get_TempCurve()
+        print('sss')
+        PVSystem_Data = {}
+        PVSystem_Data["name"] = self.get_PVSystem_Name()
+        PVSystem_Data["bus1"] = self.get_PVSystem_Name()
+        PVSystem_Data["phases"] = self.get_Phases()
+        PVSystem_Data["kv"] = self.get_Nominal_Voltage()
+        PVSystem_Data["irrad"] = self.get_Nominal_Irradiance()
+        PVSystem_Data["pmpp"] = self.get_Nominal_Power()
+        PVSystem_Data["temperature"] = self.get_Nominal_Temp()
+        PVSystem_Data["pf"] = self.get_Power_Factor()
+        PVSystem_Data["%cutin"] = self.get_cutin()
+        PVSystem_Data["%cutout"] = self.get_cutout()
+        PVSystem_Data["effcurve"] = self.get_EffCurve()
+        PVSystem_Data["p-tcurve"] = self.get_PTCurve()
+        PVSystem_Data["daily"] = self.get_IrradCurve()
+        PVSystem_Data["tdaily"] = self.get_TempCurve()
 
         if self.PVSystem_PVdata_Name.text() not in self.Exist_PV_Names and not self.PVSystem_PVdata_Name.text().isspace() and self.PVSystem_PVdata_Name.text() != '':
-            self.PVSystem_List.append(self.PVSystem_Data.copy())
-            self.Exist_PV_Names.append(self.get_PVSystem_Name())
+            if self.PVSystem_PVdata_Multi_Button.isChecked():
+                num_copias = int(self.PVSystem_PVdata_Multi_Number.text())
+                print(num_copias)
+                for i in range(1, num_copias+1):
+                    print(i)
+                    PVSystem_Data["name"] = self.get_PVSystem_Name() + str(i)
+                    PVSystem_Data["bus1"] = self.get_PVSystem_Name() + str(i)
+                    self.PVSystem_List.append(PVSystem_Data.copy())
+                    self.Exist_PV_Names.append(self.get_PVSystem_Name()+str(i))
+            else:
+                self.PVSystem_List.append(PVSystem_Data.copy())
+                self.Exist_PV_Names.append(self.get_PVSystem_Name())
+
+            print(self.PVSystem_List)
         else:
             msg = QMessageBox()
             msg.information(self, 'Valores inválidos',
                             "Preencha todos os campos!\n Os valores estão inválidos ou não foram preenchidos")
-        #return self.Exist_PV_Names
+
 
     def clearPVConfigParameters(self):
         self.PVSystem_PVdata_Name.clear()
@@ -362,6 +397,8 @@ class C_Config_PVSystem_Dialog(QDialog):
         self.PVSystem_PVdata_IrradCurve_ComboBox.clear()
         self.PVSystem_PVdata_TempCurve_ComboBox.clear()
         self.PVSystem_PVdata_Phases_ComboBox.setCurrentIndex(1)
+        self.PVSystem_PVdata_Multi_Number.clear()
+        self.PVSystem_PVdata_Multi_Button.setCheckState(False)
 
     def centralize(self):
         qr = self.frameGeometry()
