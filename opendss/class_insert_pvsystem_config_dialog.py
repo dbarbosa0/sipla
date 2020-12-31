@@ -281,7 +281,6 @@ class C_Config_PVSystem_Dialog(QDialog):
         self.PVSystem_PVdata_IrradCurve_ComboBox.addItems(self.irradcurve.list_curve_names)
         self.PVSystem_PVdata_TempCurve_ComboBox.addItems(self.tempcurve.list_curve_names)
         if self.PVSystem_List:
-            print('blabla')
             self.PVSystem_GroupBox_PVconfig_ComboBox.clear()
             lista_aux = []
             for index, pvs_dict in enumerate(self.PVSystem_List):
@@ -345,7 +344,6 @@ class C_Config_PVSystem_Dialog(QDialog):
         return self.PVSystem_PVdata_Cutout.text()
 
     def loadPVSystem(self):
-        print('sss')
         PVSystem_Data = {}
         PVSystem_Data["name"] = self.get_PVSystem_Name()
         PVSystem_Data["bus1"] = self.get_PVSystem_Name()
@@ -365,9 +363,7 @@ class C_Config_PVSystem_Dialog(QDialog):
         if self.PVSystem_PVdata_Name.text() not in self.Exist_PV_Names and not self.PVSystem_PVdata_Name.text().isspace() and self.PVSystem_PVdata_Name.text() != '':
             if self.PVSystem_PVdata_Multi_Button.isChecked():
                 num_copias = int(self.PVSystem_PVdata_Multi_Number.text())
-                print(num_copias)
                 for i in range(1, num_copias+1):
-                    print(i)
                     PVSystem_Data["name"] = self.get_PVSystem_Name() + str(i)
                     PVSystem_Data["bus1"] = self.get_PVSystem_Name() + str(i)
                     self.PVSystem_List.append(PVSystem_Data.copy())
@@ -376,7 +372,6 @@ class C_Config_PVSystem_Dialog(QDialog):
                 self.PVSystem_List.append(PVSystem_Data.copy())
                 self.Exist_PV_Names.append(self.get_PVSystem_Name())
 
-            print(self.PVSystem_List)
         else:
             msg = QMessageBox()
             msg.information(self, 'Valores inválidos',
