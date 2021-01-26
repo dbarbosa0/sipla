@@ -515,7 +515,7 @@ class C_DBaseData():
 
                 lista_dados.append(tmp_dados)
 
-            return set(lista_dados)
+            return lista_dados
 
         except:
             raise class_exception.ExecOpenDSS("Erro no processamento do Banco de Dados das Linhas de BT e Ramais de Ligação!\n" + tipoLinha)

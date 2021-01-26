@@ -66,6 +66,40 @@ class C_DBaseCoord():
         except:
             raise class_exception.ExecDataBaseError("Erro ao pegar as Coordenadas dos Alimentadores de Média Tensão!")
 
+    def getCoord_AL_SE_MT_BT_DB(self, nomeAL_MT): #Pega as coordenadas dos circuitos de baixa de um alimentador
+
+        try:
+            nomeAL_MTS = []
+            nomeAL_MTS.append(str(nomeAL_MT))
+
+            codAlimentador = self.getCods_AL_SE_MT_DB(nomeAL_MTS)
+
+            lista_de_coordenadas_do_alimentador = []
+
+            sqlStr = "SELECT DISTINCT ctmt,x,y,vertex_index,objectid FROM ssdbt WHERE ctmt ='" + str(codAlimentador[0]) + "' ORDER BY objectid"
+
+            cod_al = self.DataBaseConn.getSQLDB("SSDBT", sqlStr)
+
+            dadosCoord =[]
+            dadosCoordInicio = []
+            dadosCoordFim = []
+
+            for linha in cod_al.fetchall():
+                    if linha[3] == 0:
+                        dadosCoordInicio = [linha[2], linha[1]]
+                    if linha[3] == 1:
+                        dadosCoordFim = [linha[2], linha[1]]
+
+                        dadosCoord = [dadosCoordInicio, dadosCoordFim]
+
+                        lista_de_coordenadas_do_alimentador.append(dadosCoord)
+
+            return lista_de_coordenadas_do_alimentador
+
+        except:
+            raise class_exception.ExecDataBaseError("Erro ao pegar as Coordenadas dos Alimentadores de Baixa Tensão!")
+
+
     def getData_TrafoDIST(self, nomeSE_MT, codField):  # Pega os reguladores de MT
 
         try:

@@ -100,12 +100,14 @@ class C_Viewer():
         for contadorAL in range(0, len(self.ListFields) ):
             #Pegando as coordenadas do Alimentador
 
-            coordAlimentMT = self.DataBaseCoord.getCoord_AL_SE_MT_DB( self.ListFields[contadorAL] ) # Pegando os códigos dos Alimentadores [NomAL CodAL x y]
+            coordAlimentMT = self.DataBaseCoord.getCoord_AL_SE_MT_DB(self.ListFields[contadorAL]) # Pegando os códigos dos Alimentadores [NomAL CodAL x y]
+            coordAlimentBT = self.DataBaseCoord.getCoord_AL_SE_MT_BT_DB(self.ListFields[contadorAL])
 
             if not self.mapFields : #Melhorar essa criação aqui
                self.mapFields = folium.Map(coordAlimentMT [0][0] ,zoom_start=13, name = "Alimentadores")
             
             folium.PolyLine( coordAlimentMT , color = self.ListFieldsColors[contadorAL] , weight=3.0, opacity=1, smooth_factor=0, control = False).add_to(self.mapFields)
+            folium.PolyLine( coordAlimentBT , color = self.ListFieldsColors[contadorAL] , weight=1.0, opacity=1, smooth_factor=0, control = False).add_to(self.mapFields)
 
         self.execOptionsMap()
     

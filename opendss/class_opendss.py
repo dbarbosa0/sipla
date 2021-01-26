@@ -197,8 +197,8 @@ class C_OpenDSS(): # classe OpenDSSDirect
                           "SecEqThAT_SecAT": ["Chaves entre o Equivalente e a SecAT ...", self.dataOpenDSS.exec_SEC_EQTHAT_SECAT],
                           "TrafoATMT": ["Trafo AT - MT...", self.dataOpenDSS.exec_TRANSFORMADORES_DE_ALTA_PARA_MEDIA],
                           "CondMT": ["Condutores MT...", self.dataOpenDSS.exec_CONDUTORES_DE_MEDIA_TENSAO],
-                          # "CondBT":["Condutores de BT...",self.dataOpenDSS.exec_CONDUTORES_DE_BAIXA_TENSAO],
-                          #"CondRamais": ["Condutores de Ramais ...", self.dataOpenDSS.exec_CONDUTORES_DE_RAMAL],
+                          "CondBT":["Condutores de BT...",self.dataOpenDSS.exec_CONDUTORES_DE_BAIXA_TENSAO],
+                          "CondRamais": ["Condutores de Ramais ...", self.dataOpenDSS.exec_CONDUTORES_DE_RAMAL],
                           "SecAT": ["Seccionadoras de AT...", self.dataOpenDSS.exec_SEC_DE_ALTA_TENSAO],
                           "SecATControl": ["Controle Seccionadoras de AT...",self.dataOpenDSS.exec_CONTROLE_SEC_DE_ALTA_TENSAO],
                           "SecOleoMT": ["Chave a óleo de MT ...", self.dataOpenDSS.exec_SEC_CHAVE_A_OLEO_DE_MEDIA_TENSAO],
@@ -220,20 +220,21 @@ class C_OpenDSS(): # classe OpenDSSDirect
                           #"Reg":["Regulador MT ...",self.dataOpenDSS.exec_REGULADORES_DE_MEDIA_TENSAO],
                           "SegMT": ["Segmentos de Linhas MT ...", self.dataOpenDSS.exec_SEG_LINHAS_DE_MEDIA_TENSAO],
                           "TrafoDist":["Trafos de Distribuição ...",self.dataOpenDSS.exec_TRANSFORMADORES_DE_DISTRIBUICAO],
-                          # "SegBT":["Segmentos de Linhas BT ...",self.dataOpenDSS.exec_SEG_LINHAS_DE_BAIXA_TENSAO],
-                          #"UConBT":["Unidades Consumidoras BT ...",self.dataOpenDSS.exec_UNID_CONSUMIDORAS_BT],
-                          # "RamLig":["Ramais de Ligação  ...",self.dataOpenDSS.exec_RAMAL_DE_LIGACAO,self.dataOpenDSS.memoFileRamaisLigBT],
-                          "CompMT": ["Unidades Compensadoras de MT ...",self.dataOpenDSS.exec_UNID_COMPENSADORAS_DE_REATIVO_DE_MEDIA_TENSAO],
-                          # "CompBT":["Unidades Compensadoras de BT ...",self.dataOpenDSS.exec_UNID_COMPENSADORAS_DE_REATIVO_DE_BAIXA_TENSAO],
+                          "SegBT":["Segmentos de Linhas BT ...",self.dataOpenDSS.exec_SEG_LINHAS_DE_BAIXA_TENSAO],
+                          "UConBT":["Unidades Consumidoras BT ...",self.dataOpenDSS.exec_UNID_CONSUMIDORAS_BT],
+                          "RamLig":["Ramais de Ligação  ...",self.dataOpenDSS.exec_RAMAL_DE_LIGACAO],
+                          "CompMT":["Unidades Compensadoras de MT ...",self.dataOpenDSS.exec_UNID_COMPENSADORAS_DE_REATIVO_DE_MEDIA_TENSAO],
+                          "CompBT":["Unidades Compensadoras de BT ...",self.dataOpenDSS.exec_UNID_COMPENSADORAS_DE_REATIVO_DE_BAIXA_TENSAO]
                           }
 
             for ctd in self.execOpenDSSFunc:
-            #    msg = self.execOpenDSSFunc[ctd][-2]
-                #print(msg)
+                msg = self.execOpenDSSFunc[ctd][-2]
 
                 # Executando a função
                 ### Verificando o modo de operação
                 self.execOpenDSSFunc[ctd][-1]()
+                print(msg)
+
 
         ## Setando a Flag
 
@@ -244,7 +245,8 @@ class C_OpenDSS(): # classe OpenDSSDirect
     def loadData_Solve(self): #Sempre que o fluxo rodar
         self.execOpenDSSFuncAll= {
                 "UConMT": ["Unidades Consumidoras MT ...", self.dataOpenDSS.exec_UNID_CONSUMIDORAS_MT], # Cargas
-                "UConBTTD": ["Unidades Consumidoras BT no Transformador de Distribuição ...",self.dataOpenDSS.exec_UNID_CONSUMIDORAS_BT_TD],
+                # "UConBTTD": ["Unidades Consumidoras BT no Transformador de Distribuição ...",self.dataOpenDSS.exec_UNID_CONSUMIDORAS_BT_TD],
+                "UConBT": ["Unidades Consumidoras BT ...",self.dataOpenDSS.exec_UNID_CONSUMIDORAS_BT],
                 "LoadShapes": ["Curvas de Carga ...", self.exec_LOADSHAPES],
                 "UConMTLoadShapes": ["Unidades Consumidoras MT - Curvas de Carga ...",self.dataOpenDSS.exec_UNID_CONSUMIDORAS_LOADSHAPES_MT],
                 "UConBTLoadShapes": ["Unidades Consumidoras BT - Curvas de Carga ...",self.dataOpenDSS.exec_UNID_CONSUMIDORAS_LOADSHAPES_BT],
@@ -288,7 +290,7 @@ class C_OpenDSS(): # classe OpenDSSDirect
                       "SecEqThAT_SecAT": self.dataOpenDSS.memoFileSecAT_EqThAT,
                       "TrafoATMT": self.dataOpenDSS.memoFileTrafoATMT,
                       "CondMT": self.dataOpenDSS.memoFileCondMT,
-                      # "CondBT": self.dataOpenDSS.memoFileCondBT,
+                      "CondBT": self.dataOpenDSS.memoFileCondBT,
                       "CondRamais": self.dataOpenDSS.memoFileCondRamal,
                       "SecAT": self.dataOpenDSS.memoFileSecAT ,
                       "SecATControl":  self.dataOpenDSS.memoFileSecAT_Control,
@@ -313,13 +315,13 @@ class C_OpenDSS(): # classe OpenDSSDirect
                       "UConMT":self.dataOpenDSS.memoFileUniConsumidoraMT,
                       "UConMTLoadShapes": self.dataOpenDSS.memoFileUniConsumidoraLoadShapesMT,
                       "TrafoDist":self.dataOpenDSS.memoFileTrafoDist,
-                      # "SegBT":self.dataOpenDSS.memoFileSegLinhasBT,
-                      #"UConBT":self.dataOpenDSS.memoFileUniConsumidoraBT,
+                      "SegBT":self.dataOpenDSS.memoFileSegLinhasBT,
+                      "UConBT":self.dataOpenDSS.memoFileUniConsumidoraBT,
                       "UConBTTD": self.dataOpenDSS.memoFileUniConsumidoraBT_TD,
                       "UConBTLoadShapes": self.dataOpenDSS.memoFileUniConsumidoraLoadShapesBT,
-                      # "RamLig":self.dataOpenDSS.memoFileRamaisLigBT,self.memoFileRamaisLigBT,
+                      "RamLig": self.dataOpenDSS.memoFileRamaisLigBT,
                       "CompMT": self.dataOpenDSS.memoFileUndCompReatMT,
-                      # "CompBT":self.dataOpenDSS.memoFileUndCompReatBT,
+                      "CompBT":self.dataOpenDSS.memoFileUndCompReatBT,
                     }
 
         if self.Storages:

@@ -1062,26 +1062,24 @@ class C_Data():  # classe OpenDSS
             for ctd in range(0, len(dados_db)):
 
                 if (dados_db[ctd].ctmt in lista_de_identificadores_dos_alimentadores):
+                    [num_de_fases, pac_1, pac_2] = self.getFasesConexao(dados_db[ctd].fas_con, dados_db[ctd].pac_1,
+                                                                        dados_db[ctd].pac_2)
 
-                    for ctd in range(0, len(dados_db)):
-                        [num_de_fases, pac_1, pac_2] = self.getFasesConexao(dados_db[ctd].fas_con, dados_db[ctd].pac_1,
-                                                                            dados_db[ctd].pac_2)
+                    tmp = "New Line.{0}".format(dados_db[ctd].cod_id) + " Phases={0}".format(num_de_fases)
+                    tmp += " Bus1={0}".format(pac_1) + " Bus2={0}".format(pac_2)
+                    tmp += " Linecode={0}".format(dados_db[ctd].tip_cnd)
+                    tmp += " Length={0}".format((str(int(dados_db[ctd].comp) / 1000)))
+                    tmp += " units=km"
 
-                        tmp = "New Line.{0}".format(dados_db[ctd].cod_id) + " Phases={0}".format(num_de_fases)
-                        tmp += " Bus1={0}".format(pac_1) + " Bus2={0}".format(pac_2)
-                        tmp += " Linecode={0}".format(dados_db[ctd].tip_cnd)
-                        tmp += " Length={0}".format((str(int(dados_db[ctd].comp) / 1000)))
-                        tmp += " units=km"
+                    memoFileLinha.append(tmp)
 
-                        memoFileLinha.append(tmp)
-
-                        ##Buffer
-                        self.insertElementList("Line.{0}".format(dados_db[ctd].cod_id))
-                        #self.insertBusList(dados_db[ctd].pac_1)
-                        #self.insertBusList(dados_db[ctd].pac_2)
-                        #
-                        self.insertBusListDict(dados_db[ctd].pac_1, self.afterValue(pac_1, "."))
-                        self.insertBusListDict(dados_db[ctd].pac_2, self.afterValue(pac_2, "."))
+                    ##Buffer
+                    self.insertElementList("Line.{0}".format(dados_db[ctd].cod_id))
+                    #self.insertBusList(dados_db[ctd].pac_1)
+                    #self.insertBusList(dados_db[ctd].pac_2)
+                    #
+                    self.insertBusListDict(dados_db[ctd].pac_1, self.afterValue(pac_1, "."))
+                    self.insertBusListDict(dados_db[ctd].pac_2, self.afterValue(pac_2, "."))
 
             return memoFileLinha
 
@@ -1121,20 +1119,19 @@ class C_Data():  # classe OpenDSS
 
                 if (dados_db[ctd].ctmt in lista_de_identificadores_dos_alimentadores):
 
-                    for ctd in range(0, len(dados_db)):
-                        [num_de_fases, pac_1, pac_2] = self.getFasesConexao(dados_db[ctd].fas_con, dados_db[ctd].pac_1,None)
+                    [num_de_fases, pac_1, pac_2] = self.getFasesConexao(dados_db[ctd].fas_con, dados_db[ctd].pac_1,None)
 
-                        tmp = "New Capacitor.{0}".format(dados_db[ctd].cod_id) + " Bus1={0}".format(pac_1)
-                        tmp += " Phases={0}".format(num_de_fases)
-                        tmp += " kVAR={0}".format(str(dados_db[ctd].pot_nom))
+                    tmp = "New Capacitor.{0}".format(dados_db[ctd].cod_id) + " Bus1={0}".format(pac_1)
+                    tmp += " Phases={0}".format(num_de_fases)
+                    tmp += " kVAR={0}".format(str(dados_db[ctd].pot_nom))
 
-                        memoFileComp.append(tmp)
+                    memoFileComp.append(tmp)
 
-                        ##Buffer
-                        self.insertElementList("Capacitor.{0}".format(dados_db[ctd].cod_id))
-                        #self.insertBusList(dados_db[ctd].pac_1)
-                        #
-                        self.insertBusListDict(dados_db[ctd].pac_1, self.afterValue(pac_1, "."))
+                    ##Buffer
+                    self.insertElementList("Capacitor.{0}".format(dados_db[ctd].cod_id))
+                    #self.insertBusList(dados_db[ctd].pac_1)
+                    #
+                    self.insertBusListDict(dados_db[ctd].pac_1, self.afterValue(pac_1, "."))
 
             return memoFileComp
 

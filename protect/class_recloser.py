@@ -25,7 +25,7 @@ class Recloser(QWidget):
         self.RecloserSettings_GroupBox_Layout.setAlignment(Qt.AlignCenter)
 
         self.RecloserSelect_Combobox = QComboBox()
-        self.RecloserSelect_Combobox.setMaximumWidth(150)
+        # self.RecloserSelect_Combobox.setMaximumWidth(150)
         self.RecloserSettings_GroupBox_Layout.addWidget(self.RecloserSelect_Combobox)
 
         self.ElementList = []
@@ -637,10 +637,10 @@ class EditRecloser(QDialog):
                         self.PlotState = not self.PlotState
 
         if not self.PlotState:
-             self.setFixedWidth(900)
+             # self.setFixedWidth(900)
              self.move(325,0)
         else:
-            self.setFixedWidth(440)
+            # self.setFixedWidth(440)
             self.move(860, 0)
         self.graphWidget.setHidden(self.PlotState)
 
