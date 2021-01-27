@@ -411,7 +411,7 @@ class C_OpenDSS(): # classe OpenDSSDirect
         mainFile = ''
 
         for ctd in self.execOpenDSSFunc:
-            if (ctd == "header") or (ctd == "EqThAT") or (ctd != "VoltageBase") or (ctd != "Mode"): # Cabeçalho do arquivo
+            if (ctd == "header") or (ctd == "EqThAT") or (ctd == "VoltageBase") or (ctd == "Mode"): # Cabeçalho do arquivo
                 data = self.OpenDSSDataResult[ctd]
                 for cont in data:
                     mainFile += str(cont) + '\n'
