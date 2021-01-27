@@ -1070,7 +1070,6 @@ class C_Data():  # classe OpenDSS
                     tmp += " Linecode={0}".format(dados_db[ctd].tip_cnd)
                     tmp += " Length={0}".format((str(int(dados_db[ctd].comp) / 1000)))
                     tmp += " units=km"
-
                     memoFileLinha.append(tmp)
 
                     ##Buffer

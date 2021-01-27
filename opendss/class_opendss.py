@@ -233,7 +233,7 @@ class C_OpenDSS(): # classe OpenDSSDirect
                 # Executando a função
                 ### Verificando o modo de operação
                 self.execOpenDSSFunc[ctd][-1]()
-                print(msg)
+                # print(msg)
 
 
         ## Setando a Flag
@@ -347,9 +347,11 @@ class C_OpenDSS(): # classe OpenDSSDirect
 
         if not self.memoFileVoltageBase:
             self.exec_VoltageBase()
+            print('SAVEFILE 3', self.memoFileVoltageBase)
 
         if not  self.memoFileMode:
             self.exec_Mode()
+            print('SAVEFILE 4', self.memoFileMode)
 
         tmpVoltageBase = {"VoltageBase": self.memoFileVoltageBase,}
 
@@ -363,7 +365,6 @@ class C_OpenDSS(): # classe OpenDSSDirect
 
 
     def exec_SaveFileDialogDSS(self):
-
         arquivoSalvo = QFileDialog.getSaveFileName(None, "Save OpenDSS File", "Results/",
                                                             "DSS Files (*.dss)")[0]
 
@@ -405,7 +406,6 @@ class C_OpenDSS(): # classe OpenDSSDirect
         arquivo.close()
 
     def createMainFileDSS(self): # Para salvar em arquivo
-
         self.loadDataResult()
 
         mainFile = ''

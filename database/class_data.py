@@ -495,7 +495,7 @@ class C_DBaseData():
             else:
                 raise class_exception.ExecOpenDSS("Erro ao carregar as informações das linhas de BT!\nTipo não foi especificado! \n" + tipoLinha)
 
-            sqlStr = "SELECT cod_id, ctmt, pac_1, pac_2, fas_con, comp, tip_cnd FROM " + dbase + " WHERE sub = '" + nomeSE_MT + "'"
+            sqlStr = "SELECT DISTINCT cod_id, ctmt, pac_1, pac_2, fas_con, comp, tip_cnd FROM " + dbase + " WHERE sub = '" + nomeSE_MT + "'"
 
             dadosLinhaDB = self.DataBaseConn.getSQLDB(dbase, sqlStr)
 
