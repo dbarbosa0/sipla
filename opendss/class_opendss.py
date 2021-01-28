@@ -317,7 +317,7 @@ class C_OpenDSS(): # classe OpenDSSDirect
                       "TrafoDist":self.dataOpenDSS.memoFileTrafoDist,
                       "SegBT":self.dataOpenDSS.memoFileSegLinhasBT,
                       "UConBT":self.dataOpenDSS.memoFileUniConsumidoraBT,
-                      "UConBTTD": self.dataOpenDSS.memoFileUniConsumidoraBT_TD,
+                      # "UConBTTD": self.dataOpenDSS.memoFileUniConsumidoraBT_TD,
                       "UConBTLoadShapes": self.dataOpenDSS.memoFileUniConsumidoraLoadShapesBT,
                       "RamLig": self.dataOpenDSS.memoFileRamaisLigBT,
                       "CompMT": self.dataOpenDSS.memoFileUndCompReatMT,
@@ -347,11 +347,9 @@ class C_OpenDSS(): # classe OpenDSSDirect
 
         if not self.memoFileVoltageBase:
             self.exec_VoltageBase()
-            print('SAVEFILE 3', self.memoFileVoltageBase)
 
         if not  self.memoFileMode:
             self.exec_Mode()
-            print('SAVEFILE 4', self.memoFileMode)
 
         tmpVoltageBase = {"VoltageBase": self.memoFileVoltageBase,}
 
@@ -387,12 +385,12 @@ class C_OpenDSS(): # classe OpenDSSDirect
 
             if (ctd == "UConMT") and (self.OpenDSSConfig["UNCMT"] == "1"):
                 self.saveFileDSS(diretorio, ctd, redirectFile)
-            elif (ctd == "UConBTTD") and (self.OpenDSSConfig["UNCBTTD"] == "1"):
+            elif (ctd == "UConBT") and (self.OpenDSSConfig["UNCBTTD"] == "1"):
                 self.saveFileDSS(diretorio, ctd, redirectFile)
             elif (ctd == "UConMTLoadShapes") or (ctd == "LoadShapes"):
                 if (self.OpenDSSConfig["Mode"] == "Daily") and (self.OpenDSSConfig["UNCMT"] == "1"):
                     self.saveFileDSS(diretorio, ctd, redirectFile)
-            elif (ctd == "UConBTTD") or (ctd == "UConBTLoadShapes"):
+            elif (ctd == "UConBT") or (ctd == "UConBTLoadShapes"):
                 if (self.OpenDSSConfig["Mode"] == "Daily") and (self.OpenDSSConfig["UNCBTTD"] == "1"):
                     self.saveFileDSS(diretorio, ctd, redirectFile)
             else:
@@ -410,7 +408,7 @@ class C_OpenDSS(): # classe OpenDSSDirect
 
         mainFile = ''
 
-        for ctd in self.execOpenDSSFunc:
+        for ctd in self.OpenDSSDataResult:
             if (ctd == "header") or (ctd == "EqThAT") or (ctd == "VoltageBase") or (ctd == "Mode"): # Cabeçalho do arquivo
                 data = self.OpenDSSDataResult[ctd]
                 for cont in data:
@@ -418,21 +416,21 @@ class C_OpenDSS(): # classe OpenDSSDirect
             else:
 
                 if (ctd == "UConMT") and (self.OpenDSSConfig["UNCMT"] == "1"):
-                    mainFile += "! " + self.execOpenDSSFunc[ctd][-2] + "\n"
+                    # mainFile += "! " + self.execOpenDSSFunc[ctd][-2] + "\n"
                     mainFile += "Redirect " + ctd + ".dss " + '\n'
-                elif (ctd == "UConBTTD") and (self.OpenDSSConfig["UNCBTTD"] == "1"):
-                    mainFile += "! " + self.execOpenDSSFunc[ctd][-2] + "\n"
+                elif (ctd == "UConBT") and (self.OpenDSSConfig["UNCBTTD"] == "1"):
+                    # mainFile += "! " + self.execOpenDSSFunc[ctd][-2] + "\n"
                     mainFile += "Redirect " + ctd + ".dss " + '\n'
                 elif (ctd == "UConMTLoadShapes") or (ctd == "LoadShapes"):
                     if (self.OpenDSSConfig["Mode"] == "Daily") and (self.OpenDSSConfig["UNCMT"] == "1"):
-                        mainFile += "! " + self.execOpenDSSFunc[ctd][-2] + "\n"
+                        # mainFile += "! " + self.execOpenDSSFunc[ctd][-2] + "\n"
                         mainFile += "Redirect " + ctd + ".dss " + '\n'
-                elif (ctd == "UConBTTD") or (ctd == "UConBTLoadShapes"):
+                elif (ctd == "UConBT") or (ctd == "UConBTLoadShapes"):
                     if (self.OpenDSSConfig["Mode"] == "Daily") and (self.OpenDSSConfig["UNCBTTD"] == "1"):
-                        mainFile += "! " + self.execOpenDSSFunc[ctd][-2] + "\n"
+                        # mainFile += "! " + self.execOpenDSSFunc[ctd][-2] + "\n"
                         mainFile += "Redirect " + ctd + ".dss " + '\n'
                 else:
-                    mainFile += "! " + self.execOpenDSSFunc[ctd][-2] + "\n"
+                    # mainFile += "! " + self.execOpenDSSFunc[ctd][-2] + "\n"
                     mainFile += "Redirect " + ctd + ".dss " + '\n'
 
         #Falta o final do arquivo
