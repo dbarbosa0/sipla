@@ -1185,7 +1185,7 @@ class C_Data():  # classe OpenDSS
         if fas_con == ("BCN"):
             num_de_fases = "2"
             pac_1 = pac_1.replace('-', "") + ".2.3.0"
-            pac_2 = pac_1.replace('-', "") + ".2.3.0"
+            pac_2 = pac_2.replace('-', "") + ".2.3.0"
         if fas_con == ("CAN"):
             num_de_fases = "2"
             pac_1 = pac_1.replace('-', "") + ".3.1.0"
