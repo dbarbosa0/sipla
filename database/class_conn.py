@@ -3,12 +3,13 @@ import class_exception
 import sqlite3
 import MySQLdb
 
-class C_DBaseConn(): #Classe de banco de dados
+
+class C_DBaseConn():  # Classe de banco de dados
 
     def __init__(self):
-        #Variáveis das Classes
+        # Variáveis das Classes
 
-        #Informações do Diretório
+        # Informações do Diretório
         self._DataBaseInfo = {}
 
     @property
@@ -21,19 +22,20 @@ class C_DBaseConn(): #Classe de banco de dados
     def DataBaseInfo(self, nDataBaseInfo):
         self._DataBaseInfo = nDataBaseInfo
 
-    def getSQLDB(self,nomeBancoDados, strSQL):
+    def getSQLDB(self, nomeBancoDados, strSQL):
 
         try:
-            #Conectando em apenas leitura!
+            # Conectando em apenas leitura!
             if self.DataBaseInfo["Conn"] == "sqlite":
 
-                connDB = sqlite3.connect('file:' + self.DataBaseInfo["Sqlite_DirDataBase"] + nomeBancoDados + '.sqlite?mode=ro', uri=True)
+                connDB = sqlite3.connect(
+                    'file:' + self.DataBaseInfo["Sqlite_DirDataBase"] + nomeBancoDados + '.sqlite?mode=ro', uri=True)
 
                 cbanco = connDB.execute(strSQL)
 
             elif self.DataBaseInfo["Conn"] == "mysql":
 
-                strSQL = strSQL.lower() #Apenas para compatibilizar, depois verificar
+                strSQL = strSQL.lower()  # Apenas para compatibilizar, depois verificar
 
                 connDB = MySQLdb.connect(self.DataBaseInfo['MySQL_Host'], self.DataBaseInfo['MySQL_User'],
                                          self.DataBaseInfo['MySQL_Passwd'], self.DataBaseInfo['MySQL_db'])
@@ -51,16 +53,18 @@ class C_DBaseConn(): #Classe de banco de dados
     def testConn(self):
 
         try:
-            #Conectando em apenas leitura!
+            # Conectando em apenas leitura!
             if self.DataBaseInfo["Conn"] == "sqlite":
 
-                connDB = sqlite3.connect('file:' + self.DataBaseInfo["Sqlite_DirDataBase"] + 'CTAT.sqlite?mode=ro', uri=True)
+                connDB = sqlite3.connect('file:' + self.DataBaseInfo["Sqlite_DirDataBase"] + 'CTAT.sqlite?mode=ro',
+                                         uri=True)
 
                 cbanco = connDB.execute('select sqlite_version();')
 
             elif self.DataBaseInfo["Conn"] == "mysql":
 
-                connDB = MySQLdb.connect(self.DataBaseInfo['MySQL_Host'], self.DataBaseInfo['MySQL_User'], self.DataBaseInfo['MySQL_Passwd'], self.DataBaseInfo['MySQL_db'])
+                connDB = MySQLdb.connect(self.DataBaseInfo['MySQL_Host'], self.DataBaseInfo['MySQL_User'],
+                                         self.DataBaseInfo['MySQL_Passwd'], self.DataBaseInfo['MySQL_db'])
 
                 cursor = connDB.cursor()
                 cursor.execute('SELECT VERSION();')
@@ -74,20 +78,4 @@ class C_DBaseConn(): #Classe de banco de dados
             return True
 
         except:
-                return False
-
-
-
-                
-                
-
-            
-            
-
-        
-        
-        
-            
-                
-
-    
+            return False

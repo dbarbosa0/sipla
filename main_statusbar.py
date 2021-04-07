@@ -1,4 +1,4 @@
-from PyQt5.QtWidgets import QStatusBar, QLabel, QDockWidget,QFrame
+from PyQt5.QtWidgets import QStatusBar, QLabel, QDockWidget,QFrame, QComboBox
 import platform
 
 import config as cfg
@@ -28,7 +28,6 @@ class C_StatusBar(QStatusBar):
         # self.StatusBar_LoadData.setStyleSheet('border: 0; background-color: #DCDCDC;')
         self.MainStatusBar.addPermanentWidget(QFrame())
         self.MainStatusBar.addPermanentWidget(self.StatusBar_LoadData)
-
 
         self.StatusBar_Fluxo = QLabel(config['LoadFlow']['mode'])
         self.StatusBar_Fluxo.setObjectName("StatusBarApp_Fluxo")

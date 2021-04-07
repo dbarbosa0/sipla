@@ -56,6 +56,8 @@ class C_MainActions():
         self.OpenDSS.OpenDSSConfig = self.OpenDSS_DialogSettings.dataInfo
         self.DataBase.DataBaseConn = self.DataBaseConn
 
+        ##
+
         ###
         self.OpenDSS_DialogInsertEnergyMeter = opendss.class_insert_energymeter_dialog.C_Insert_EnergyMeter_Dialog() # Instânciando a classe dialog Insert
         self.OpenDSS_DialogInsertEnergyMeter.OpenDSS = self.OpenDSS
@@ -202,6 +204,11 @@ class C_MainActions():
     def getSE_MT_AL_DB(self, nomeSEMT): # Pega os alimentadores de média tensão associados a SE MT
         return self.MainNetPanel.set_SEMT_Fields(self.DataBase.getSE_MT_AL_DB( [nomeSEMT] ))
 
+    ####
+    # Selecionar os TDs conectados ao Alimentador
+    def getSE_MT_AL_TD_DB(self, codField): # Pega os alimentadores de média tensão associados a SE MT
+        return self.DataBase.getSE_MT_AL_TrafoDIST( codField )
+
     def showDockNetPanel(self):
         if self.MainNetPanel.isHidden():
             self.MainNetPanel.show()
@@ -223,10 +230,19 @@ class C_MainActions():
 
         ##### Definindo variáveis
         self.MainMapView.DataBaseConn = self.DataBaseConn
-
-        self.MainMapView.ListFields = self.MainNetPanel.getSelectedFieldsNames()
-        self.MainMapView.ListFieldsColors = self.MainNetPanel.getSelectedFieldsColors()
         self.MainMapView.nameSEMT = self.MainNetPanel.getSelectedSEMT()
+        ####
+        listFields = self.MainNetPanel.getSelectedFieldsNames(True)
+        listFieldsColors = self.MainNetPanel.getSelectedFieldsColors()
+
+        self.MainMapView.dataFields_BTTrafos.clear()
+
+        for ctdAL in range(0, len(listFields[0]) ):
+            #Consultar os trafos habilitados
+            listTDFields = self.MainNetPanel.getSelectedTDFieldsNames(listFields[1][ctdAL])
+            listTDFieldsColors = self.MainNetPanel.getSelectedTDFieldsColors(listFields[1][ctdAL])
+            #[nomeAL:[corAL, [TDs] [Tds Colors]]]
+            self.MainMapView.dataFields_BTTrafos[listFields[0][ctdAL]] = [listFieldsColors[ctdAL], listTDFields, listTDFieldsColors]
 
         ##### Métodos
         self.MainMapView.createMap()
@@ -242,6 +258,7 @@ class C_MainActions():
     def exec_configOpenDSS_Settings(self):
         self.updateToobarMenu()
         self.OpenDSS_DialogSettings.exec()
+        self.updateStatusBar()
 
     def execOpenDSS(self):
 
@@ -250,7 +267,7 @@ class C_MainActions():
             QMessageBox(QMessageBox.Information, "OpenDSS Configuration", \
                         "A(s) Curva(s) de Carga deve(m) ser carregada(s) no modo Daily!", QMessageBox.Ok).exec()
         else:
-            self.execCreateDSS() ## Cria o arquivo que será utilizado pelo OpenDSS
+            self.execCreateDSS() ## Cria o arquivo que será utilizado pelo OpenDSS e passa os parâmtros para rodar apenas o que foi selecionado
             self.OpenDSS.exec_OpenDSS()
             ##Atualizando o ToolBar
             self.updateToobarMenu()
@@ -283,6 +300,10 @@ class C_MainActions():
         self.OpenDSS.nCircuitoAT_MT = self.MainNetPanel.get_CirATMT_Selected()
         self.OpenDSS.nSE_MT_Selecionada = self.MainNetPanel.getSelectedSEMT()
         self.OpenDSS.nFieldsMT = self.MainNetPanel.getSelectedFieldsNames()
+
+        ##
+        self.OpenDSS.nFieldsTD = self.MainNetPanel.getSelectedTDFieldsNamesALL()
+
         self.OpenDSS.tableVoltageResults = self.MainResultsPanel.TableVoltage
 
     ##Executa o Load Data

@@ -1,6 +1,8 @@
-__name__ = "SIPLA BETA"
+__name__ = "SIPLA"
 
-__version__ = "0.0.1"
+__subname__ = "Sistema Integrado de Planejamento"
+
+__version__ = "0.0.1 (ALPHA)"
 
 sipla_icon = "img/logo.png"
 

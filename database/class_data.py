@@ -9,45 +9,46 @@ class dadosTrafoDist(NamedTuple):
     pac_1: str 
     pac_2: str 
     pac_3: str 
-    fas_con_p:str 
-    fas_con_s:str 
-    fas_con_t:str 
-    sit_ativ:str 
-    tip_unid:str 
-    cap_elo:str 
-    cap_cha:str 
-    tap:str 
-    pot_nom:str 
-    per_fer:str 
-    per_tot:str 
-    ctmt:str 
-    tip_trafo:str 
-    cod_id_eqtrd:str 
-    pac_1_eqtrd:str 
+    fas_con_p: str
+    fas_con_s: str
+    fas_con_t: str
+    sit_ativ: str
+    tip_unid: str
+    cap_elo: str
+    cap_cha: str
+    tap: str
+    pot_nom: str
+    per_fer: str
+    per_tot: str
+    ctmt: str
+    tip_trafo: str
+    cod_id_eqtrd: str
+    pac_1_eqtrd: str
     pac_2_eqtrd:str 
-    pac_3_eqtrd:str 
-    fas_con:str 
-    pot_nom_eqtrd:str 
-    lig:str 
-    ten_pri:str 
-    ten_sec:str 
-    ten_ter:str 
-    lig_fas_p:str 
-    lig_fas_s:str 
-    lig_fas_t:str 
-    per_fer_eqtrd:str 
-    per_tot_eqtrd:str 
-    r:str 
-    xhl:str 
-    xht:str 
-    xlt:str
+    pac_3_eqtrd: str
+    fas_con: str
+    pot_nom_eqtrd: str
+    lig: str
+    ten_pri: str
+    ten_sec: str
+    ten_ter: str
+    lig_fas_p: str
+    lig_fas_s: str
+    lig_fas_t: str
+    per_fer_eqtrd: str
+    per_tot_eqtrd: str
+    r: str
+    xhl: str
+    xht: str
+    xlt: str
 
 class dadosUnidCompReat(NamedTuple):
-    cod_id:str
-    fas_con:str
-    pot_nom:str
-    pac_1:str
-    ctmt:str
+    cod_id: str
+    fas_con: str
+    pot_nom: str
+    pac_1: str
+    ctmt: str
+
 
 class dadosSegLinhas(NamedTuple):
     cod_id: str
@@ -57,6 +58,8 @@ class dadosSegLinhas(NamedTuple):
     fas_con: str
     comp: str
     tip_cnd: str
+    uni_tr: str
+
 
 class dadosUNREMT(NamedTuple):
     cod_id: str
@@ -65,6 +68,7 @@ class dadosUNREMT(NamedTuple):
     pac_2: str
     fas_con: str
     sit_ativ: str
+
 
 class dadosUnidCons(NamedTuple):
     objectid: str
@@ -77,6 +81,7 @@ class dadosUnidCons(NamedTuple):
     car_inst: str
     uni_tr: str
 
+
 class dadosCondutores(NamedTuple):
     cod_id: str
     r1: str
@@ -84,10 +89,12 @@ class dadosCondutores(NamedTuple):
     cnom: str
     cmax: str
 
+
 class dadosCTATMT(NamedTuple):
     nome: str
     ten_nom: str
     cod_id: str
+
 
 class dadosTransformador(NamedTuple):
     cod_id: str
@@ -99,6 +106,7 @@ class dadosTransformador(NamedTuple):
     ten_sec: str
     ten_ter: str
 
+
 class dadosSECAT(NamedTuple):
     cod_id: str
     pac_1: str
@@ -109,6 +117,7 @@ class dadosSECAT(NamedTuple):
     cap_elo: str
     cor_nom: str
     sit_ativ: str
+
 
 class dadosSECMT(NamedTuple):
     cod_id: str
@@ -310,7 +319,7 @@ class C_DBaseData():
 
         try:
 
-            sqlStr = "SELECT DISTINCT cod_id, ctmt, pac_1, pac_2, fas_con, comp, tip_cnd FROM ssdmt WHERE sub = '" + \
+            sqlStr = "SELECT DISTINCT cod_id, ctmt, pac_1, pac_2, fas_con, comp, tip_cnd, uni_tr_s FROM ssdmt WHERE sub = '" + \
                          nomeSE_MT + "' ORDER BY ctmt"
 
             lista_dados = []
@@ -326,6 +335,7 @@ class C_DBaseData():
                     linha[4],  # fas_con
                     linha[5],  # comp
                     linha[6],  # tip_cnd
+                    linha[7],  # uni_tr_s
                 )
                 lista_dados.append(tmp_dados)
 
@@ -495,7 +505,7 @@ class C_DBaseData():
             else:
                 raise class_exception.ExecOpenDSS("Erro ao carregar as informações das linhas de BT!\nTipo não foi especificado! \n" + tipoLinha)
 
-            sqlStr = "SELECT DISTINCT cod_id, ctmt, pac_1, pac_2, fas_con, comp, tip_cnd FROM " + dbase + " WHERE sub = '" + nomeSE_MT + "'"
+            sqlStr = "SELECT DISTINCT cod_id, ctmt, pac_1, pac_2, fas_con, comp, tip_cnd, uni_tr_d FROM " + dbase + " WHERE sub = '" + nomeSE_MT + "'"
 
             dadosLinhaDB = self.DataBaseConn.getSQLDB(dbase, sqlStr)
 
@@ -511,6 +521,7 @@ class C_DBaseData():
                     linha[4],  # fas_con
                     linha[5],  # comp
                     linha[6],  # tip_cnd
+                    linha[7],  # uni_tr_d
                 )
 
                 lista_dados.append(tmp_dados)

@@ -8,13 +8,17 @@ Para executar o software, os seguintes pacotes são necessários:
 ```
 pip install PyQt5
 pip install PyQtWebEngine
-pip install git+https://github.com/pyqtgraph/pyqtgraph@develop
-pip install folium
 pip install numpy
 pip install scipy
 pip install matplotlib
 pip install Unidecode
-pip3 install mysqlclient
+pip install mysqlclient
+```
+
+
+```
+pip install git+https://github.com/pyqtgraph/pyqtgraph@develop
+pip install folium
 pip install 'OpenDSSDirect.py[extras]'
 ```
 
@@ -29,6 +33,21 @@ pip install pywin32
 
 ### GNU Linux
 Para utilização no GNU Linux, verifique se os pacotes não podem ser instalados via gerenciador de pacotes ao invés do pip, visto que assim evita-se erros posteriores.
+
+###### Arch Linux
+```
+python-pip
+python-pyqt5
+python-pyqt5-webengine
+python-numpy
+python-scipy
+python-matplotlib
+python-unidecode
+python-mysqlclient
+pip install 'OpenDSSDirect.py[extras]'
+pip install git+https://github.com/pyqtgraph/pyqtgraph@develop
+```
+
 
 ## Desenvolvimento 
 O desenvolvimento é coordenado pela [G-SEPi](https://www.ligasep.eng.ufba.br/) da [UFBA](https://www.ufba.br/)
