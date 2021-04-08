@@ -1,6 +1,8 @@
 import database.class_conn
 import class_exception
-
+import prodist.tpos
+import prodist.ttranf
+import prodist.tpostotran
 
 class C_DBaseCoord():
     def __init__(self):
@@ -99,7 +101,7 @@ class C_DBaseCoord():
 
         try:
 
-            sqlStrUNTRD = "SELECT cod_id, pot_nom, ctmt, x, y " \
+            sqlStrUNTRD = "SELECT cod_id, pot_nom, ctmt, x, y, tip_trafo, pos, posto " \
                           " FROM  untrd WHERE sub = '" + nomeSE_MT[0] + "' AND ctmt = '" + codField + "'"
 
             lista_dados = []
@@ -111,7 +113,7 @@ class C_DBaseCoord():
 
                 ##Verificar a questão do X e do Y
 
-                tmp_dados = [lnhUNTRD[4],lnhUNTRD[3],lnhUNTRD[0],lnhUNTRD[1]]
+                tmp_dados = [lnhUNTRD[4],lnhUNTRD[3],lnhUNTRD[0],lnhUNTRD[1],prodist.ttranf.TTRANF[lnhUNTRD[5]],prodist.tpos.TPOS[lnhUNTRD[6]], prodist.tpostotran.TPOSTOTRAN[lnhUNTRD[7]] ]
 
                 lista_dados.append(tmp_dados)
 

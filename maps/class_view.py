@@ -5,6 +5,7 @@ from PyQt5 import QtWebEngineWidgets, QtWidgets, QtCore, QtGui
 
 import database.class_coord
 import database.class_conn
+import config
 
 class C_Viewer():
 
@@ -122,7 +123,8 @@ class C_Viewer():
 
             # Melhorar essa criação aqui
             if not self.mapFields:
-                self.mapFields = folium.Map(coordAlimentMT[0][0], zoom_start=13, name="Alimentadores")
+                self.mapFields = folium.Map(location=coordAlimentMT[0][0], zoom_start=13)
+                #config.basemaps['Google Maps'].add_to(self.mapFields)
 
             if coordAlimentMT:
                 folium.PolyLine(coordAlimentMT, color=colorField, weight=3.0, opacity=1, smooth_factor=0, control=True).add_to(self.mapFields)
@@ -178,7 +180,8 @@ class C_Viewer():
 
             infoTextTrafo = '<b>Trafo de Distribuição</b>'
             infoTextTrafo += '<br> ID: ${cod_id.text}'
-            infoTextTrafo += '<br> ${pot_nom.text} kVA'
+            infoTextTrafo += '<br> ${pot_nom.text} kVA / ${tipo_trafo.text} '
+            infoTextTrafo += '<br> ${posto_trafo.text} / ${pos_trafo.text}'
             infoTextTrafo += '<br> AL: ' + self.ListFields[ctdOption]
             callbackTrafo = ('function (row) {'
                              'var marker = L.marker(new L.LatLng(row[0], row[1]), {color: "red"});'
@@ -193,6 +196,9 @@ class C_Viewer():
                              "var popup = L.popup({maxWidth: '300'});"
                              "const cod_id = {text: row[2]};"
                              "const pot_nom = {text: row[3]};"
+                             "const tipo_trafo = {text: row[4]};"
+                             "const pos_trafo = {text: row[5]};"
+                             "const posto_trafo = {text: row[6]};"
                              "var textpopup = $(`<div id='mytext' class='display_text' style='width: 100.0%; height: 100.0%;'> " + infoTextTrafo + "</div>`)[0];"
                                                                                                                                                    "popup.setContent(textpopup);"
                                                                                                                                                    "marker.bindPopup(popup);"
