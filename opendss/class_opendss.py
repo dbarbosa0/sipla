@@ -252,7 +252,6 @@ class C_OpenDSS():  # classe OpenDSSDirect
                                               self.dataOpenDSS.exec_SEG_LINHAS_DE_MEDIA_TENSAO],
                                     "TrafoDist": ["Trafos de Distribuição ...",
                                                   self.dataOpenDSS.exec_TRANSFORMADORES_DE_DISTRIBUICAO],
-
                                     #"RamLig": ["Ramais de Ligação  ...", self.dataOpenDSS.exec_RAMAL_DE_LIGACAO],
                                     "CompMT": ["Unidades Compensadoras de MT ...",
                                                self.dataOpenDSS.exec_UNID_COMPENSADORAS_DE_REATIVO_DE_MEDIA_TENSAO],
@@ -304,17 +303,18 @@ class C_OpenDSS():  # classe OpenDSSDirect
         for ctd in self.execOpenDSSFuncAll:
             msg = self.execOpenDSSFuncAll[ctd][-2]
             ### Roda com a flag em 1
-            if (ctd == "UConMT") and (self.OpenDSSConfig["UNCMT"] == "1"):
-                self.execOpenDSSFuncAll[ctd][-1]()
-                # print(msg)
+            if (ctd == "UConMT"):
+               if (self.OpenDSSConfig["UNCMT"] == "1"):
+                   self.execOpenDSSFuncAll[ctd][-1]()
+                    # print(msg)
             elif (ctd == "UConBTTD"): #Carga concentrada na Baixa do trafo
                 if (self.OpenDSSConfig["UNCBTTD"] == "1"):
                     self.execOpenDSSFuncAll[ctd][-1]()
-                    print(msg)
+                    #print(msg)
             elif (ctd == "UConBT"):
                 if (self.OpenDSSConfig["UNCBTTD"] == "0"):
                     self.execOpenDSSFuncAll[ctd][-1]()
-                    print(msg)
+                    #print(msg)
             elif (ctd == "SegBT"):
                 if (self.OpenDSSConfig["UNCBTTD"] == "0"):
                     self.execOpenDSSFuncAll[ctd][-1]()
@@ -327,10 +327,10 @@ class C_OpenDSS():  # classe OpenDSSDirect
                 if (self.OpenDSSConfig["Mode"] == "Daily") and (self.OpenDSSConfig["UNCMT"] == "1"):
                     self.execOpenDSSFuncAll[ctd][-1]()
                     # print(msg)
-            elif (ctd == "UConBTTD") or (ctd == "UConBTLoadShapes"):
-                if (self.OpenDSSConfig["Mode"] == "Daily") and ((self.OpenDSSConfig["UNCBTTD"] == "1") or (self.nFieldsTD) ): ##Verificar
+            elif (ctd == "UConBTLoadShapes"):
+                if (self.OpenDSSConfig["Mode"] == "Daily"): ##Verificar
                     self.execOpenDSSFuncAll[ctd][-1]()
-                    print(msg)
+                    #print(msg)
             else:
                 self.execOpenDSSFuncAll[ctd][-1]()
 
@@ -434,8 +434,9 @@ class C_OpenDSS():  # classe OpenDSSDirect
                 for cont in data:
                     redirectFile += str(cont) + '\n'
 
-            if (ctd == "UConMT") and (self.OpenDSSConfig["UNCMT"] == "1"):
-                self.saveFileDSS(diretorio, ctd, redirectFile)
+            if (ctd == "UConMT"):
+                if (self.OpenDSSConfig["UNCMT"] == "1"):
+                    self.saveFileDSS(diretorio, ctd, redirectFile)
             elif (ctd == "UConBT"):
                 if (self.OpenDSSConfig["UNCBTTD"] == "0"):
                     self.saveFileDSS(diretorio, ctd, redirectFile)
@@ -445,8 +446,8 @@ class C_OpenDSS():  # classe OpenDSSDirect
             elif (ctd == "UConMTLoadShapes") or (ctd == "LoadShapes"):
                 if (self.OpenDSSConfig["Mode"] == "Daily") and (self.OpenDSSConfig["UNCMT"] == "1"):
                     self.saveFileDSS(diretorio, ctd, redirectFile)
-            elif (ctd == "UConBT") or (ctd == "UConBTLoadShapes"):
-                if (self.OpenDSSConfig["Mode"] == "Daily") and (self.OpenDSSConfig["UNCBTTD"] == "1"):
+            elif (ctd == "UConBTLoadShapes"):
+                if (self.OpenDSSConfig["Mode"] == "Daily"):
                     self.saveFileDSS(diretorio, ctd, redirectFile)
             else:
                 self.saveFileDSS(diretorio, ctd, redirectFile)
@@ -470,18 +471,24 @@ class C_OpenDSS():  # classe OpenDSSDirect
                     mainFile += str(cont) + '\n'
             else:
 
-                if (ctd == "UConMT") and (self.OpenDSSConfig["UNCMT"] == "1"):
-                    # mainFile += "! " + self.execOpenDSSFunc[ctd][-2] + "\n"
-                    mainFile += "Redirect " + ctd + ".dss " + '\n'
-                elif (ctd == "UConBT") and (self.OpenDSSConfig["UNCBTTD"] == "1"):
-                    # mainFile += "! " + self.execOpenDSSFunc[ctd][-2] + "\n"
-                    mainFile += "Redirect " + ctd + ".dss " + '\n'
+                if (ctd == "UConMT"):
+                    if (self.OpenDSSConfig["UNCMT"] == "1"):
+                        # mainFile += "! " + self.execOpenDSSFunc[ctd][-2] + "\n"
+                        mainFile += "Redirect " + ctd + ".dss " + '\n'
+                elif (ctd == "UConBT"):
+                    if (self.OpenDSSConfig["UNCBTTD"] == "0"):
+                        # mainFile += "! " + self.execOpenDSSFunc[ctd][-2] + "\n"
+                        mainFile += "Redirect " + ctd + ".dss " + '\n'
+                elif (ctd == "UConBTTD"):
+                    if (self.OpenDSSConfig["UNCBTTD"] == "1"):
+                        # mainFile += "! " + self.execOpenDSSFunc[ctd][-2] + "\n"
+                        mainFile += "Redirect " + ctd + ".dss " + '\n'
                 elif (ctd == "UConMTLoadShapes") or (ctd == "LoadShapes"):
                     if (self.OpenDSSConfig["Mode"] == "Daily") and (self.OpenDSSConfig["UNCMT"] == "1"):
                         # mainFile += "! " + self.execOpenDSSFunc[ctd][-2] + "\n"
                         mainFile += "Redirect " + ctd + ".dss " + '\n'
-                elif (ctd == "UConBT") or (ctd == "UConBTLoadShapes"):
-                    if (self.OpenDSSConfig["Mode"] == "Daily") and (self.OpenDSSConfig["UNCBTTD"] == "1"):
+                elif (ctd == "UConBTLoadShapes"):
+                    if (self.OpenDSSConfig["Mode"] == "Daily"):
                         # mainFile += "! " + self.execOpenDSSFunc[ctd][-2] + "\n"
                         mainFile += "Redirect " + ctd + ".dss " + '\n'
                 else:
