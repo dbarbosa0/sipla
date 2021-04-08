@@ -124,7 +124,9 @@ class C_Viewer():
             # Melhorar essa criação aqui
             if not self.mapFields:
                 self.mapFields = folium.Map(location=coordAlimentMT[0][0], zoom_start=13)
-                #config.basemaps['Google Maps'].add_to(self.mapFields)
+                # Carvalho
+                #tiles='https://api.mapbox.com/styles/v1/mapbox/light-v10/tiles/256/{z}/{x}/{y}@2x?access_token=pk.eyJ1Ijoid2h5c29mYXN0IiwiYSI6ImNrZzdmbHN2eTA0M3ozMG84dmp2dzkzeHMifQ.UzHSwsJDEiS9--bQvg9Jig', attr='Mapbox')
+                config.basemaps['Google Maps'].add_to(self.mapFields)
 
             if coordAlimentMT:
                 folium.PolyLine(coordAlimentMT, color=colorField, weight=3.0, opacity=1, smooth_factor=0, control=True).add_to(self.mapFields)
