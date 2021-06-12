@@ -247,7 +247,7 @@ class C_OpenDSS():  # classe OpenDSSDirect
                                                        self.dataOpenDSS.exec_SEC_CHAVE_UNIPOLAR_SUBESTACAO_DE_MEDIA_TENSAO],
                                     "ChUnipolarSEMTControl": ["Controle da Chave Unipolar da SE MT ...",
                                                               self.dataOpenDSS.exec_CONTROLE_SEC_CHAVE_UNIPOLAR_SUBESTACAO_DE_MEDIA_TENSAO],
-                                    # "Reg":["Regulador MT ...",self.dataOpenDSS.exec_REGULADORES_DE_MEDIA_TENSAO],
+                                    "Reg":["Regulador MT ...",self.dataOpenDSS.exec_REGULADORES_DE_MEDIA_TENSAO],
                                     "SegMT": ["Segmentos de Linhas MT ...",
                                               self.dataOpenDSS.exec_SEG_LINHAS_DE_MEDIA_TENSAO],
                                     "TrafoDist": ["Trafos de Distribuição ...",
@@ -255,8 +255,8 @@ class C_OpenDSS():  # classe OpenDSSDirect
                                     #"RamLig": ["Ramais de Ligação  ...", self.dataOpenDSS.exec_RAMAL_DE_LIGACAO],
                                     "CompMT": ["Unidades Compensadoras de MT ...",
                                                self.dataOpenDSS.exec_UNID_COMPENSADORAS_DE_REATIVO_DE_MEDIA_TENSAO],
-                                    #"CompBT": ["Unidades Compensadoras de BT ...",
-                                    #           self.dataOpenDSS.exec_UNID_COMPENSADORAS_DE_REATIVO_DE_BAIXA_TENSAO]
+                                    "CompBT": ["Unidades Compensadoras de BT ...",
+                                               self.dataOpenDSS.exec_UNID_COMPENSADORAS_DE_REATIVO_DE_BAIXA_TENSAO]
                                     }
 
             for ctd in self.execOpenDSSFunc:
@@ -364,7 +364,7 @@ class C_OpenDSS():  # classe OpenDSSDirect
                                   "ChTripolarSEMTControl": self.dataOpenDSS.memoFileSecTripolarSEMT_Control,
                                   "ChUnipolarSEMT": self.dataOpenDSS.memoFileSecUnipolarSEMT,
                                   "ChUnipolarSEMTControl": self.dataOpenDSS.memoFileSecUnipolarSEMT_Control,
-                                  # "Reg":self.dataOpenDSS.memoFileReguladorMT,
+                                  "Reg":self.dataOpenDSS.memoFileReguladorMT,
                                   "SegMT": self.dataOpenDSS.memoFileSegLinhasMT,
                                   "UConMT": self.dataOpenDSS.memoFileUniConsumidoraMT,
                                   "UConMTLoadShapes": self.dataOpenDSS.memoFileUniConsumidoraLoadShapesMT,

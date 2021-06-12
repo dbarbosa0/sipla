@@ -909,7 +909,7 @@ class C_Data():  # classe OpenDSS
 
                     tmp = "New Load.{0}".format(dados_db[ctd].objectid) + " Bus1={0}".format(
                         pac_1) + " Phases={0}".format(num_de_fases)
-                    tmp += " model=8 ZIPV=[0.5 0 0.5 1 0 0]" + " Kv={0}".format(nivel_de_tensao)
+                    tmp += " model=8 ZIPV=[0.5 0 0.5 0 0 1 0]" + " Kv={0}".format(nivel_de_tensao)
                     tmp += " kW={0}".format(dados_db[ctd].car_inst) + " PF=0.92"
                     tmp += " conn={0}".format(conexao)
 
