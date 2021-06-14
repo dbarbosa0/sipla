@@ -54,7 +54,7 @@ class C_ActPow_Config_StorageController_Dialog(QDialog): ## Classe Dialog config
         self._ModoDescarga_GroupBox_StorageCont_GroupBox_Layout_Time_RadioBtn = 0
 
         self._StorageConfig_GroupBox_Nome_LineEdit = 0
-        self._StorageConfig_GroupBox_PercentageReserve_LineEdit = 0
+        self._StorageConfig_GroupBox_PercentageReserve_DoubleSpinBox = 0
 
         self._NumComboBox = 0
 
@@ -143,12 +143,12 @@ class C_ActPow_Config_StorageController_Dialog(QDialog): ## Classe Dialog config
         self._StorageConfig_GroupBox_Nome_LineEdit = value
 
     @property
-    def StorageConfig_GroupBox_PercentageReserve_LineEdit(self):
-        return self._StorageConfig_GroupBox_PercentageReserve_LineEdit
+    def StorageConfig_GroupBox_PercentageReserve_DoubleSpinBox(self):
+        return self._StorageConfig_GroupBox_PercentageReserve_DoubleSpinBox
 
-    @StorageConfig_GroupBox_PercentageReserve_LineEdit.setter
-    def StorageConfig_GroupBox_PercentageReserve_LineEdit(self, value):
-        self._StorageConfig_GroupBox_PercentageReserve_LineEdit = value
+    @StorageConfig_GroupBox_PercentageReserve_DoubleSpinBox.setter
+    def StorageConfig_GroupBox_PercentageReserve_DoubleSpinBox(self, value):
+        self._StorageConfig_GroupBox_PercentageReserve_DoubleSpinBox = value
 
     @property
     def NumComboBox(self):
@@ -210,20 +210,24 @@ class C_ActPow_Config_StorageController_Dialog(QDialog): ## Classe Dialog config
 
         ### LineEdits
         self.StorControl_Name = QLineEdit()
-        self.StorControl_Reserve = QLineEdit()
 
         ### Comboboxs
         self.StorControl_Element_ComboBox = QComboBox()
         self.StorControl_Element_ComboBox.clear()
+        self.StorControl_Element_ComboBox.setEditable(True)
         self.StorControl_Terminal_ComboBox = QComboBox()
         self.StorControl_Terminal_ComboBox.addItems(["1", "2"])
 
         ### SpinBox
-        self.StorControl_DispFactor_SpinBox = QDoubleSpinBox()
-        self.StorControl_DispFactor_SpinBox.setValue(1.0)
-        self.StorControl_DispFactor_SpinBox.setRange(0.0, 1.0)
-        self.StorControl_DispFactor_SpinBox.setDecimals(1)
-        self.StorControl_DispFactor_SpinBox.setSingleStep(0.1)
+        self.StorControl_Reserve_DoubleSpinBox = QDoubleSpinBox()
+        self.StorControl_Reserve_DoubleSpinBox.setDecimals(3)
+        self.StorControl_Reserve_DoubleSpinBox.setRange(0.0, 100.0)
+        self.StorControl_Reserve_DoubleSpinBox.setButtonSymbols(2)
+        self.StorControl_DispFactor_DoubleSpinBox = QDoubleSpinBox()
+        self.StorControl_DispFactor_DoubleSpinBox.setValue(1.0)
+        self.StorControl_DispFactor_DoubleSpinBox.setRange(0.0, 1.0)
+        self.StorControl_DispFactor_DoubleSpinBox.setDecimals(1)
+        self.StorControl_DispFactor_DoubleSpinBox.setSingleStep(0.1)
 
         ### Layout
         self.StorControl_Layout = QGridLayout()
@@ -236,8 +240,8 @@ class C_ActPow_Config_StorageController_Dialog(QDialog): ## Classe Dialog config
         self.StorControl_Layout.addWidget(self.StorControl_Name, 0, 1, 1, 1)
         self.StorControl_Layout.addWidget(self.StorControl_Element_ComboBox, 1, 1, 1, 1)
         self.StorControl_Layout.addWidget(self.StorControl_Terminal_ComboBox, 2, 1, 1, 1)
-        self.StorControl_Layout.addWidget(self.StorControl_Reserve, 3, 1, 1, 1)
-        self.StorControl_Layout.addWidget(self.StorControl_DispFactor_SpinBox, 4, 1, 1, 1)
+        self.StorControl_Layout.addWidget(self.StorControl_Reserve_DoubleSpinBox, 3, 1, 1, 1)
+        self.StorControl_Layout.addWidget(self.StorControl_DispFactor_DoubleSpinBox, 4, 1, 1, 1)
 
         ###### Botões dos Parâmetros
         self.StorControl_Btns_Layout = QHBoxLayout()
@@ -305,23 +309,23 @@ class C_ActPow_Config_StorageController_Dialog(QDialog): ## Classe Dialog config
         return self.StorControl_Terminal_ComboBox.currentText()
 
     def get_ReserveStorControl(self):
-        return self.StorControl_Reserve.text()
+        return self.StorControl_Reserve_DoubleSpinBox.text()
 
     def get_DispFactor(self):
-        return self.StorControl_DispFactor_SpinBox.value()
+        return self.StorControl_DispFactor_DoubleSpinBox.text().replace(",", ".")
 
     def getStorage_Name(self):
         return unidecode.unidecode(self.StorageConfig_GroupBox_Nome_LineEdit.text().replace(" ", "_"))
 
     def getStorage_PercentageReserve(self):
-        return self.StorageConfig_GroupBox_PercentageReserve_LineEdit.text()
+        return self.StorageConfig_GroupBox_PercentageReserve_DoubleSpinBox.text().replace(",", ".")
 
     def clearStorControlParameters(self):
         self.StorControl_Name.setText("")
         self.StorControl_Element_ComboBox.setCurrentIndex(0)
         self.StorControl_Terminal_ComboBox.setCurrentIndex(0)
-        self.StorControl_Reserve.setText(self.getStorage_PercentageReserve())
-        self.StorControl_DispFactor_SpinBox.setValue(1.0)
+        self.StorControl_Reserve_DoubleSpinBox.setValue(float(self.getStorage_PercentageReserve()))
+        self.StorControl_DispFactor_DoubleSpinBox.setValue(1.0)
 
     def addStorControl(self):
         if self.StorControl_GroupBox_Selection_ComboBox.count() + 1 - self.NumComboBox <= 1: # Para garantir que só adicione um controlador por Storage
@@ -329,14 +333,15 @@ class C_ActPow_Config_StorageController_Dialog(QDialog): ## Classe Dialog config
             self.StorControl_Name.setEnabled(True)
             self.EnableDisableParameters(True)
         else:
-            QMessageBox(QMessageBox.Warning, "Storage Controller",
-                        "Só é possível adicionar um Storage Controller por Storage.\nEdite ou remova algum dos existentes!",
-                        QMessageBox.Ok).exec()
+            msg = QMessageBox()
+            msg.information(self, "Storage Controller",
+                            "Só é possível adicionar um Storage Controller para cada Storage.\nEdite ou remova algum dos existentes!")
 
     def editStorControl(self):
         if self.StorControl_GroupBox_Selection_ComboBox.currentText() == "":
-            QMessageBox(QMessageBox.Warning, "Storage Controller", "Pelo menos um Storage Controller deve ser selecionado!",
-                        QMessageBox.Ok).exec()
+            msg = QMessageBox()
+            msg.information(self, "Storage Controller",
+                            "Pelo menos um Storage Controller deve ser selecionado!")
         else:
             self.clearStorControlParameters()
 
@@ -345,8 +350,8 @@ class C_ActPow_Config_StorageController_Dialog(QDialog): ## Classe Dialog config
                     self.StorControl_Name.setText(ctd["StorageControllerName"])
                     self.StorControl_Element_ComboBox.setCurrentText(ctd["Element"])
                     self.StorControl_Terminal_ComboBox.setCurrentText(ctd["Terminal"])
-                    self.StorControl_Reserve.setText(ctd["Reserve"])
-                    self.StorControl_DispFactor_SpinBox.setValue(ctd["DispFactor"])
+                    self.StorControl_Reserve_DoubleSpinBox.setValue(float(ctd["Reserve"]))
+                    self.StorControl_DispFactor_DoubleSpinBox.setValue(float(ctd["DispFactor"]))
             self.StorControl_Name.setEnabled(False)
             self.EnableDisableParameters(True)
 
@@ -375,9 +380,9 @@ class C_ActPow_Config_StorageController_Dialog(QDialog): ## Classe Dialog config
         for ctd in self.StorageControllersTemporario:
             if ctd["StorageControllerName"] == self.StorControl_GroupBox_Selection_ComboBox.currentText():
                 self.StorageControllersTemporario.remove(ctd)
-                QMessageBox(QMessageBox.Warning, "Storage Controller",
-                            "Storage Controller " + ctd["StorageControllerName"] + " removido com sucesso!",
-                            QMessageBox.Ok).exec()
+                msg = QMessageBox()
+                msg.information(self, "Storage Controller",
+                                "Storage Controller " + ctd["StorageControllerName"] + " removido com sucesso!")
         self.updateDialog()
 
     def AcceptAddEditStorControl(self):
@@ -391,32 +396,33 @@ class C_ActPow_Config_StorageController_Dialog(QDialog): ## Classe Dialog config
         StorageController["ChargeMode"] = self.ChargeMode()
         StorageController["DischargeMode"] = self.DischargeMode()
 
-        if self.StorControl_Name.isEnabled():
-            ctdExist = False
-            for ctd in self.StorageControllersTemporario:
-                if ctd["StorageControllerName"] == StorageController["StorageControllerName"]:
-                    ctdExist = True
-            if not ctdExist:
-                self.StorageControllersTemporario.append(StorageController)
-                QMessageBox(QMessageBox.Information, "Storage Controller",
-                            "Storage Controller " + StorageController["StorageControllerName"] + " inserido com sucesso!",
-                            QMessageBox.Ok).exec()
+        if self.verificaElementCombobox():
+            if self.StorControl_Name.isEnabled():
+                ctdExist = False
+                for ctd in self.StorageControllersTemporario:
+                    if ctd["StorageControllerName"] == StorageController["StorageControllerName"]:
+                        ctdExist = True
+                if not ctdExist:
+                    self.StorageControllersTemporario.append(StorageController)
+                    msg = QMessageBox()
+                    msg.information(self, "Storage Controller",
+                                    "Storage Controller " + StorageController["StorageControllerName"] + " inserido com sucesso!")
+                else:
+                    msg = QMessageBox()
+                    msg.information(self, "Storage Controller",
+                                    "Storage Controller" + StorageController["StorageControllerName"] + " já existe! \nFavor verificar!")
             else:
-                QMessageBox(QMessageBox.Warning, "Storage Controller",
-                            "Storage Controller" + StorageController["StorageControllerName"] + " já existe! \nFavor verificar!",
-                            QMessageBox.Ok).exec()
-        else:
-            for ctd in self.StorageControllersTemporario:
-                if ctd["StorageControllerName"] == StorageController["StorageControllerName"]:
-                    ctd["Element"] = StorageController["Element"]
-                    ctd["Terminal"] = StorageController["Terminal"]
-                    ctd["Reserve"] = StorageController["Reserve"]
-                    ctd["DispFactor"] = StorageController["DispFactor"]
-                    ctd["ChargeMode"] = StorageController["ChargeMode"]
-                    ctd["DischargeMode"] = StorageController["DischargeMode"]
-                    QMessageBox(QMessageBox.Information, "Storage Controller",
-                                "Storage Controller" + ctd["StorageControllerName"] + " atualizado com sucesso!",
-                                QMessageBox.Ok).exec()
+                for ctd in self.StorageControllersTemporario:
+                    if ctd["StorageControllerName"] == StorageController["StorageControllerName"]:
+                        ctd["Element"] = StorageController["Element"]
+                        ctd["Terminal"] = StorageController["Terminal"]
+                        ctd["Reserve"] = StorageController["Reserve"]
+                        ctd["DispFactor"] = StorageController["DispFactor"]
+                        ctd["ChargeMode"] = StorageController["ChargeMode"]
+                        ctd["DischargeMode"] = StorageController["DischargeMode"]
+                        msg = QMessageBox()
+                        msg.information(self, "Storage Controller",
+                                        "Storage Controller" + ctd["StorageControllerName"] + " atualizado com sucesso!")
 
         self.updateDialog()
         self.EnableDisableParameters(False)
@@ -424,8 +430,9 @@ class C_ActPow_Config_StorageController_Dialog(QDialog): ## Classe Dialog config
 
     def configChargeDialog(self):
         if self.StorControl_GroupBox_Selection_ComboBox.currentText() == "":
-            QMessageBox(QMessageBox.Warning, "Storage Controller", "Pelo menos um Storage Controller deve ser selecionado!",
-                        QMessageBox.Ok).exec()
+            msg = QMessageBox()
+            msg.information(self, "Storage Controller",
+                            "Pelo menos um Storage Controller deve ser selecionado!")
         else:
             for i in [[self.ModoCarga_GroupBox_StorageCont_GroupBox_Layout_PeakShaveLow_RadioBtn, self.DialogActPowPeakShaveLow],
                       [self.ModoCarga_GroupBox_StorageCont_GroupBox_Layout_IPeakShaveLow_RadioBtn, self.DialogActPowIPeakShaveLow],
@@ -438,8 +445,10 @@ class C_ActPow_Config_StorageController_Dialog(QDialog): ## Classe Dialog config
 
     def configDischargeDialog(self):
         if self.StorControl_GroupBox_Selection_ComboBox.currentText() == "":
-            QMessageBox(QMessageBox.Warning, "Storage Controller", "Pelo menos um Storage Controller deve ser selecionado!",
-                        QMessageBox.Ok).exec()
+            msg = QMessageBox()
+            msg.information(self, "Storage Controller",
+                            "Pelo menos um Storage Controller deve ser selecionado!")
+
         else:
             for i in [[self.ModoDescarga_GroupBox_StorageCont_GroupBox_Layout_PeakShave_RadioBtn, self.DialogActPowPeakShave],
                       [self.ModoDescarga_GroupBox_StorageCont_GroupBox_Layout_IPeakShave_RadioBtn, self.DialogActPowIPeakShave],
@@ -457,17 +466,18 @@ class C_ActPow_Config_StorageController_Dialog(QDialog): ## Classe Dialog config
         ChargeModeOK = False
         DischargeModeOK = False
         if self.StorControl_GroupBox_Selection_ComboBox.currentText() == "":
-            QMessageBox(QMessageBox.Warning, "Storage Controller", "Pelo menos um Storage Controller deve ser selecionado!",
-                        QMessageBox.Ok).exec()
+            msg = QMessageBox()
+            msg.information(self, "Storage Controller",
+                            "Pelo menos um Storage Controller deve ser selecionado!")
         else:
             for i in [[self.ModoCarga_GroupBox_StorageCont_GroupBox_Layout_PeakShaveLow_RadioBtn, self.DialogActPowPeakShaveLow],
                       [self.ModoCarga_GroupBox_StorageCont_GroupBox_Layout_IPeakShaveLow_RadioBtn, self.DialogActPowIPeakShaveLow],
                       [self.ModoCarga_GroupBox_StorageCont_GroupBox_Layout_Time_RadioBtn, self.DialogActPowChargeTime]]:
                 if i[0].isChecked():
                     if i[1].ChargeMode == {}:
-                        QMessageBox(QMessageBox.Warning, "Storage Controller",
-                                    "Selecione um Modo de Carga!",
-                                    QMessageBox.Ok).exec()
+                        msg = QMessageBox()
+                        msg.information(self, "Storage Controller",
+                                        "Selecione um Modo de Carga!")
                     else:
                         ChargeModeOK = True
                         for ctd in self.StorageControllersTemporario:
@@ -481,9 +491,10 @@ class C_ActPow_Config_StorageController_Dialog(QDialog): ## Classe Dialog config
                       [self.ModoDescarga_GroupBox_StorageCont_GroupBox_Layout_Time_RadioBtn, self.DialogActPowDischargeTime]]:
                 if i[0].isChecked():
                     if i[1].DischargeMode == {}:
-                        QMessageBox(QMessageBox.Warning, "Storage Controller",
-                                    "Selecione um Modo de Descarga!",
-                                    QMessageBox.Ok).exec()
+                        msg = QMessageBox()
+                        msg.information(self, "Storage Controller",
+                                        "Selecione um Modo de Descarga!")
+
                     else:
                         DischargeModeOK = True
                         for ctd in self.StorageControllersTemporario:
@@ -543,3 +554,16 @@ class C_ActPow_Config_StorageController_Dialog(QDialog): ## Classe Dialog config
         else:
             self.Dialog_Btns_Charge_Btn.setVisible(True)
             self.Dialog_Btns_Discharge_Btn.setVisible(True)
+
+    def verificaElementCombobox(self):
+        ctd = 0
+        for i in self.OpenDSS.getElementList():
+            if self.StorControl_Element_ComboBox.currentText() == i:
+                ctd += 1
+
+        if ctd == 0:
+            msg = QMessageBox()
+            msg.information(self, "Storage Controller", "Elemento selecionado inexistente!")
+            return False
+        else:
+            return True

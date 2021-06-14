@@ -1,5 +1,5 @@
 from PyQt5.QtGui import QColor, QIcon
-from PyQt5.QtWidgets import QStyleFactory, QDialog, QGridLayout, QPushButton, QCheckBox, QLabel, QLineEdit
+from PyQt5.QtWidgets import QStyleFactory, QDialog, QGridLayout, QPushButton, QCheckBox, QLabel, QDoubleSpinBox
 from PyQt5.QtCore import Qt
 
 import opendss.class_opendss
@@ -35,19 +35,28 @@ class C_ActPow_Default_DispMode_Dialog(QDialog): ## Classe Dialog Despacho Deafu
 
         self.ChargeTrigger_Label = QLabel("Charge Trigger")
         self.Dialog_Layout.addWidget(self.ChargeTrigger_Label, 2, 1, 1, 1)
-        self.ChargeTrigger_LineEdit = QLineEdit()
-        self.Dialog_Layout.addWidget(self.ChargeTrigger_LineEdit, 2, 2, 1, 1)
+        self.ChargeTrigger_DoubleSpinBox = QDoubleSpinBox()
+        self.ChargeTrigger_DoubleSpinBox.setRange(0.0, 1000.0)
+        self.ChargeTrigger_DoubleSpinBox.setDecimals(3)
+        self.ChargeTrigger_DoubleSpinBox.setButtonSymbols(2)
+        self.Dialog_Layout.addWidget(self.ChargeTrigger_DoubleSpinBox, 2, 2, 1, 1)
         self.DischargeTrigger_Label = QLabel("Discharge Trigger")
         self.Dialog_Layout.addWidget(self.DischargeTrigger_Label, 3, 1, 1, 1)
-        self.DischargeTrigger_LineEdit = QLineEdit()
-        self.Dialog_Layout.addWidget(self.DischargeTrigger_LineEdit, 3, 2, 1, 1)
+        self.DischargeTrigger_DoubleSpinBox = QDoubleSpinBox()
+        self.DischargeTrigger_DoubleSpinBox.setRange(0.0, 1000.0)
+        self.DischargeTrigger_DoubleSpinBox.setDecimals(3)
+        self.DischargeTrigger_DoubleSpinBox.setButtonSymbols(2)
+        self.Dialog_Layout.addWidget(self.DischargeTrigger_DoubleSpinBox, 3, 2, 1, 1)
         self.TimeTrigger_CheckBox = QCheckBox("Time Charge Trigger")
         self.TimeTrigger_CheckBox.clicked.connect(self.EnableDisableTimeTrigger)
         self.Dialog_Layout.addWidget(self.TimeTrigger_CheckBox, 4, 1, 1, 1)
-        self.TimeTrigger_LineEdit = QLineEdit()
-        self.TimeTrigger_LineEdit.setText("2.00")
-        self.TimeTrigger_LineEdit.setEnabled(False)
-        self.Dialog_Layout.addWidget(self.TimeTrigger_LineEdit, 4, 2, 1, 1)
+        self.TimeTrigger_DoubleSpinBox = QDoubleSpinBox()
+        self.TimeTrigger_DoubleSpinBox.setRange(0.0, 1000.0)
+        self.TimeTrigger_DoubleSpinBox.setDecimals(3)
+        self.TimeTrigger_DoubleSpinBox.setValue(2.00)
+        self.TimeTrigger_DoubleSpinBox.setButtonSymbols(2)
+        self.TimeTrigger_DoubleSpinBox.setEnabled(False)
+        self.Dialog_Layout.addWidget(self.TimeTrigger_DoubleSpinBox, 4, 2, 1, 1)
         self.DispatchCurve_Btn = QPushButton("Selecionar curva de despacho")
         self.DispatchCurve_Btn.clicked.connect(self.selectDispCurve)
         self.Dialog_Layout.addWidget(self.DispatchCurve_Btn, 5, 1, 1, 2)
@@ -66,19 +75,19 @@ class C_ActPow_Default_DispMode_Dialog(QDialog): ## Classe Dialog Despacho Deafu
 
     def EnableDisableTimeTrigger(self):
         if self.TimeTrigger_CheckBox.isChecked():
-            self.TimeTrigger_LineEdit.setEnabled(True)
+            self.TimeTrigger_DoubleSpinBox.setEnabled(True)
         else:
-            self.TimeTrigger_LineEdit.setEnabled(False)
+            self.TimeTrigger_DoubleSpinBox.setEnabled(False)
 
     def selectDispCurve(self):
         self.Select_DispCurve.show()
 
     def acceptDefault(self):
         self.DefaultParameters = {}
-        self.DefaultParameters["ChargeTrigger"] = self.ChargeTrigger_LineEdit.text()
-        self.DefaultParameters["DischargeTrigger"] = self.DischargeTrigger_LineEdit.text()
-        if self.TimeTrigger_LineEdit.isEnabled():
-            self.DefaultParameters["TimeChargeTrigger"] = self.TimeTrigger_LineEdit.text()
+        self.DefaultParameters["ChargeTrigger"] = self.ChargeTrigger_DoubleSpinBox.text().replace(",", ".")
+        self.DefaultParameters["DischargeTrigger"] = self.DischargeTrigger_DoubleSpinBox.text().replace(",", ".")
+        if self.TimeTrigger_DoubleSpinBox.isEnabled():
+            self.DefaultParameters["TimeChargeTrigger"] = self.TimeTrigger_DoubleSpinBox.text().replace(",", ".")
         self.DefaultParameters.update(self.Select_DispCurve.dataDispCurve)
         self.close()
 
@@ -87,8 +96,8 @@ class C_ActPow_Default_DispMode_Dialog(QDialog): ## Classe Dialog Despacho Deafu
         self.close()
 
     def clearParameters(self):
-        self.ChargeTrigger_LineEdit.setText("")
-        self.DischargeTrigger_LineEdit.setText("")
+        self.ChargeTrigger_DoubleSpinBox.setValue(0.0)
+        self.DischargeTrigger_DoubleSpinBox.setValue(0.0)
         self.TimeTrigger_CheckBox.setChecked(False)
-        self.TimeTrigger_LineEdit.setEnabled(False)
-        self.TimeTrigger_LineEdit.setText("2.00")
+        self.TimeTrigger_DoubleSpinBox.setEnabled(False)
+        self.TimeTrigger_DoubleSpinBox.setValue(2.0)

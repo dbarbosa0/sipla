@@ -1,0 +1,10 @@
+TPOSTOTRAN={}
+TPOSTOTRAN["0"] = "Não informado"
+TPOSTOTRAN["CB"] = "Cabine"
+TPOSTOTRAN["E"] = "Estaleiro"
+TPOSTOTRAN["PT"] = "Poste"
+TPOSTOTRAN["PL"] = "Plataforma"
+TPOSTOTRAN["CT"] = "Câmara transformadora"
+TPOSTOTRAN["PD"] = "Pedestal"
+TPOSTOTRAN["Q"] = "Quiosque"
+TPOSTOTRAN["CC"] = "Cubículo blindado"

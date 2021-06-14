@@ -61,19 +61,66 @@ class C_DBase():
 
     def getSE_MT_AL_DB(self, nomeSE_MT): #Pega os nomes dos Alimentadores de uma SE MT
         try:
-            lista_de_alimentadores_de_media_tensao_disponiveis=[]
+            lista_de_alimentadores_de_media_tensao_disponiveis= []
 
             #ct_mt = self.DataBaseConn.getSQLDB("CTMT","SELECT * FROM ctmt;")
-            ct_mt = self.DataBaseConn.getSQLDB("CTMT","SELECT nom, sub FROM ctmt;")
+            ct_mt = self.DataBaseConn.getSQLDB("CTMT","SELECT nom, sub, cod_id FROM ctmt;")
 
             for linha in ct_mt.fetchall():
 
                 if linha[1] == nomeSE_MT[0]:
-                    lista_de_alimentadores_de_media_tensao_disponiveis.append(linha[0])
+                    lista_de_alimentadores_de_media_tensao_disponiveis.append( (linha[0], linha[2]))
 
-                lista_de_alimentadores_de_media_tensao_disponiveis_filtrados=(sorted(set(lista_de_alimentadores_de_media_tensao_disponiveis)))
+            lista_de_alimentadores_de_media_tensao_disponiveis_filtrados=(sorted(set(lista_de_alimentadores_de_media_tensao_disponiveis)))
 
             return lista_de_alimentadores_de_media_tensao_disponiveis_filtrados
         except:
             raise class_exception.ExecDataBaseError("Erro ao pegar os Alimentadores de Média Tensão!")
+
+    def getSE_MT_AL_TrafoDIST(self, codField):  # Pega os transformadores gerais
+
+        try:
+
+            ### Verificando se o TD possui baixa tensão
+
+            #sqlStrSSDBT = "SELECT DISTINCT uni_tr_d FROM ssdbt WHERE ctmt = '" + codField + "' ORDER BY objectid"
+
+            #codSSDBT = self.DataBaseConn.getSQLDB("SSDBT", sqlStrSSDBT)
+
+            #listTrafoBT = []
+
+            #for lnhSSDBT in codSSDBT.fetchall():  # Pegando o Transformador
+            #    listTrafoBT.append(lnhSSDBT[0])
+
+
+            sqlStrUNTRD = "SELECT DISTINCT cod_id, pot_nom FROM  untrd WHERE ctmt = '" + codField + "' AND pos = 'PD'"
+
+            lista_dados = []
+
+            dadosUNTRD = self.DataBaseConn.getSQLDB("UNTRD", sqlStrUNTRD)
+
+            for lnhUNTRD in dadosUNTRD.fetchall():  # Pegando o Transformador
+
+              #  if lnhUNTRD[0] in listTrafoBT:
+
+                    ##Verificar a questão do X e do Y
+
+                    #tmp_dados = [lnhUNTRD[0],lnhUNTRD[1]]
+                    tmp_dados = lnhUNTRD[0]
+
+                    lista_dados.append(tmp_dados)
+
+            lista_dados = sorted(set(lista_dados))
+
+
+            return lista_dados
+
+        except:
+            raise class_exception.ExecData(
+            "Erro no processamento do Banco de Dados para os Transformadores de Distribuição! ")
+
+
+
+
+
 

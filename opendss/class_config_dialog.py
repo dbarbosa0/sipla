@@ -222,6 +222,7 @@ class C_ConfigDialog(QDialog):
             raise class_exception.ExecConfigOpenDSS("Configuração da Simulação", "Erro ao carregar os parâmetros do Fluxo de Carga!")
 
 
+
 class LoadFlow(QWidget):
     def __init__(self):
         super().__init__()
@@ -338,6 +339,7 @@ class LoadFlow(QWidget):
             self.Complements_Daily_GroupBox_Maxcontroliter_SpinBox.setEnabled(False)
             self.Complements_Daily_LoadShape_Btn.setEnabled(False)
 
+        self.adjustSize()
 
     # Métodos Set Variáveis
 

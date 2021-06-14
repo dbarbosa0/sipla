@@ -1,10 +1,11 @@
 import io
 import folium
 import folium.plugins
-from PyQt5 import QtWebEngineWidgets
+from PyQt5 import QtWebEngineWidgets, QtWidgets, QtCore, QtGui
 
 import database.class_coord
 import database.class_conn
+import config
 
 class C_Viewer():
 
@@ -16,10 +17,16 @@ class C_Viewer():
         #################################
 
         self.mapFields = ''
-        self._ListFieldsColors = [] #Lista com as cores dos alimentadores
         self._ListFields = [] # Lista com os alimentadores
         self._nameSEMT = ''
         self._ListFieldsID = []
+
+        ######### Alteração da Visualização ##########
+
+
+        self.dataFields_BTTrafos = {}
+
+        ##############################################
 
         self.webEngView = QtWebEngineWidgets.QWebEngineView()
         
@@ -30,20 +37,12 @@ class C_Viewer():
 
 
     @property
-    def ListFieldsColors(self):
-        return self._ListFieldsColors
-
-    @property
     def ListFields(self):
         return self._ListFields
 
     @property
     def nameSEMT(self):
         return self._nameSEMT
-
-    @ListFieldsColors.setter
-    def ListFieldsColors(self, value):
-        self._ListFieldsColors = value
 
     @ListFields.setter
     def ListFields(self, value):
@@ -87,136 +86,173 @@ class C_Viewer():
 
         self.webEngView = nameQtWebEngineWidgets
 
-        
     def createMap(self):
+
+        QtWidgets.QApplication.setOverrideCursor(QtGui.QCursor(QtCore.Qt.WaitCursor))
 
         self.DataBaseCoord.DataBaseConn = self.DataBaseConn
 
-        self.ListFieldsID = self.DataBaseCoord.getCods_AL_SE_MT_DB(self.ListFields)
+        self.getListFieldsID()
 
-        #Varendo todos os alimentadores
+        # Varendo todos os alimentadores
         self.mapFields = ''
 
-        for contadorAL in range(0, len(self.ListFields) ):
-            #Pegando as coordenadas do Alimentador
+        ## Layer de MT
+        self.createLayerMTMap()
 
-            coordAlimentMT = self.DataBaseCoord.getCoord_AL_SE_MT_DB( self.ListFields[contadorAL] ) # Pegando os códigos dos Alimentadores [NomAL CodAL x y]
+        ## Layer de BT
+        self.createLayerBTMap()
 
-            if not self.mapFields : #Melhorar essa criação aqui
-               self.mapFields = folium.Map(coordAlimentMT [0][0] ,zoom_start=13, name = "Alimentadores")
-            
-            folium.PolyLine( coordAlimentMT , color = self.ListFieldsColors[contadorAL] , weight=3.0, opacity=1, smooth_factor=0, control = False).add_to(self.mapFields)
+        # opções
+        self.execOptionsFieldsTDMap()
+        self.execOptionsFieldsUCMTMap()
 
-        self.execOptionsMap()
+        QtWidgets.QApplication.restoreOverrideCursor()
+
+    def createLayerMTMap(self):
+
+        map = self.mapFields
+
+        for contadorAL in range(0, len(self.ListFields)):
+            # Pegando as coordenadas do Alimentador
+
+            # Pegando os códigos dos Alimentadores [NomAL CodAL x y]
+            coordAlimentMT = self.DataBaseCoord.getCoord_AL_SE_MT_DB(self.ListFields[contadorAL])
+
+            colorField = self.dataFields_BTTrafos[self.ListFields[contadorAL]][-3]
+
+            # Melhorar essa criação aqui
+            if not self.mapFields:
+                self.mapFields = folium.Map(location=coordAlimentMT[0][0], zoom_start=13)
+                # Carvalho
+                #tiles='https://api.mapbox.com/styles/v1/mapbox/light-v10/tiles/256/{z}/{x}/{y}@2x?access_token=pk.eyJ1Ijoid2h5c29mYXN0IiwiYSI6ImNrZzdmbHN2eTA0M3ozMG84dmp2dzkzeHMifQ.UzHSwsJDEiS9--bQvg9Jig', attr='Mapbox')
+                config.basemaps['Google Maps'].add_to(self.mapFields)
+
+            if coordAlimentMT:
+                folium.PolyLine(coordAlimentMT, color=colorField, weight=3.0, opacity=1, smooth_factor=0, control=True).add_to(self.mapFields)
+
+
+    def createLayerBTMap(self):
+
+        for contadorAL in range(0, len(self.ListFields)):
+            ####### Baixa Tensão por Transformador ##########
+
+            #Pegando a lista de TDs e suas cores
+
+            listTDField = self.dataFields_BTTrafos[self.ListFields[contadorAL]][-2]
+            listColorTDField = self.dataFields_BTTrafos[self.ListFields[contadorAL]][-1]
+
+            for ctdTD in range(0, len(listTDField)):
+
+            # Pegando os códigos dos Alimentadores [NomAL CodAL x y]
+                coordAlimentBT = self.DataBaseCoord.getCoord_AL_SE_MT_BT_DB( listTDField[ctdTD] )
+            # self.mapFields = folium.Map(coordAlimentBT[0][0], zoom_start=13, name="Alimentadores")
+                if coordAlimentBT: # Existem transformadores que não possuem Rede de Baixa Tensão
+                    folium.PolyLine( coordAlimentBT , color=listColorTDField[ctdTD],  weight=2.0, opacity=1, smooth_factor=0, control = True).add_to(self.mapFields)
+
+    def getListFieldsID(self):
+        self.ListFields = list(self.dataFields_BTTrafos.keys())
+        self.ListFieldsID = self.DataBaseCoord.getCods_AL_SE_MT_DB(self.ListFields)
     
     def viewMap(self):
 
         folium.LayerControl(collapsed=False).add_to(self.mapFields)
-        
+        #folium.LayerControl(position='topright', collapsed=True).add_to(self.mapFields)
+
         fileData = io.BytesIO()
-        
+
         #Salvando Arquivo binário
         self.mapFields.save(fileData, close_file = False)
 
         #Mostando Map
-       
+
         self.webEngView.setHtml(fileData.getvalue().decode())
-        
+
         self.webEngView.show()
 
-    def execOptionsMap(self):
+    def execOptionsFieldsTDMap(self):
 
-        #Transformador
-        fieldsOptions = {"TrafoDIST":"Transformador(es) de Distribuição",
-                         "UniConsMT":"Unidade(s) Consumidora(s) de MT",
-                         }
+        for ctdOption in range(0, len(self.ListFields)):
 
-        for ctdOption in fieldsOptions:
+            fgTrafoDIST = folium.FeatureGroup( name = 'TD: ' + self.ListFields[ctdOption], show=True)
 
-            if ctdOption == "TrafoDIST":
+            self.mapFields.add_child(fgTrafoDIST)
 
-                fgTrafoDIST = folium.FeatureGroup(name=fieldsOptions[ctdOption], show=False)
+            dados_db = self.DataBaseCoord.getData_TrafoDIST(self.nameSEMT, self.ListFieldsID[ctdOption])
 
-                self.mapFields.add_child(fgTrafoDIST)
+            infoTextTrafo = '<b>Trafo de Distribuição</b>'
+            infoTextTrafo += '<br> ID: ${cod_id.text}'
+            infoTextTrafo += '<br> ${pot_nom.text} kVA / ${tipo_trafo.text} '
+            infoTextTrafo += '<br> ${posto_trafo.text} / ${pos_trafo.text}'
+            infoTextTrafo += '<br> AL: ' + self.ListFields[ctdOption]
+            callbackTrafo = ('function (row) {'
+                             'var marker = L.marker(new L.LatLng(row[0], row[1]), {color: "red"});'
+                             'var icon = L.AwesomeMarkers.icon({'
+                             "icon: 'play',"
+                             "iconColor: 'white',"
+                             "markerColor: 'red',"
+                             "prefix: 'fa',"
+                             "extraClasses: 'fa-rotate-270'"
+                             '});'
+                             'marker.setIcon(icon);'
+                             "var popup = L.popup({maxWidth: '300'});"
+                             "const cod_id = {text: row[2]};"
+                             "const pot_nom = {text: row[3]};"
+                             "const tipo_trafo = {text: row[4]};"
+                             "const pos_trafo = {text: row[5]};"
+                             "const posto_trafo = {text: row[6]};"
+                             "var textpopup = $(`<div id='mytext' class='display_text' style='width: 100.0%; height: 100.0%;'> " + infoTextTrafo + "</div>`)[0];"
+                                                                                                                                                   "popup.setContent(textpopup);"
+                                                                                                                                                   "marker.bindPopup(popup);"
+                                                                                                                                                   'return marker};')
+            folium.plugins.FastMarkerCluster(
+                data=dados_db,
+                callback=callbackTrafo
+            ).add_to(fgTrafoDIST)
 
-                for ctdCodAl in self.ListFieldsID:
+    def execOptionsFieldsUCMTMap(self):
 
-                    dados_db = self.DataBaseCoord.getData_TrafoDIST(self.nameSEMT, ctdCodAl)
+        for ctdOption in range(0, len(self.ListFields)):
 
-                    infoTextTrafo  = '<b>Trafo de Distribuição</b>'
-                    infoTextTrafo  += '<br> ID: ${cod_id.text}'
-                    infoTextTrafo  += '<br> ${pot_nom.text} kVA'
+            fgUniConsMT = folium.FeatureGroup(name='UCMT: ' + self.ListFields[ctdOption], show=True)
 
-                    callbackTrafo = ('function (row) {'
-                                    'var marker = L.marker(new L.LatLng(row[0], row[1]), {color: "red"});'
-                                    'var icon = L.AwesomeMarkers.icon({'
-                                    "icon: 'info-sign',"
-                                    "iconColor: 'white',"
-                                    "markerColor: 'red',"
-                                    "prefix: 'glyphicon',"
-                                    "extraClasses: 'fa-rotate-0'"
-                                    '});'
-                                    'marker.setIcon(icon);'
-                                    "var popup = L.popup({maxWidth: '300'});"
-                                    "const cod_id = {text: row[2]};"
-                                    "const pot_nom = {text: row[3]};"
-                                    "var textpopup = $(`<div id='mytext' class='display_text' style='width: 100.0%; height: 100.0%;'> " + infoTextTrafo  +"</div>`)[0];"
-                                    "popup.setContent(textpopup);"
-                                    "marker.bindPopup(popup);"
-                                    'return marker};')
+            self.mapFields.add_child(fgUniConsMT)
 
-                    folium.plugins.FastMarkerCluster(
-                            data=dados_db,
-                            callback=callbackTrafo
-                        ).add_to(fgTrafoDIST)
 
-            if ctdOption == "UniConsMT":
+            dados_db = self.DataBaseCoord.getData_UniConsumidoraMT(self.nameSEMT, self.ListFieldsID[ctdOption])
 
-                fgUniConsMT = folium.FeatureGroup(name=fieldsOptions[ctdOption], show=False)
+            infoTextUniConsMT = '<b>Unidade Consumidora de Média Tensão</b>'
+            infoTextUniConsMT += '<br> AL: ' + self.ListFields[ctdOption]
+            infoTextUniConsMT += '<br> Situação: ${sit_ativ.text}'
+            infoTextUniConsMT += '<br> Data de Conexão: ${dat_con.text}'
+            infoTextUniConsMT += '<br> ${car_inst.text} kVA'
+            infoTextUniConsMT += '<br> ${brr.text}'
 
-                self.mapFields.add_child(fgUniConsMT)
+            callbackUniConsMT = ('function (row) {'
+                                 'var marker = L.marker(new L.LatLng(row[0], row[1]), {color: "red"});'
+                                 'var icon = L.AwesomeMarkers.icon({'
+                                 "icon: 'info-sign',"
+                                 "iconColor: 'white',"
+                                 "markerColor: 'green',"
+                                 "prefix: 'glyphicon',"
+                                 "extraClasses: 'fa-rotate-0'"
+                                 '});'
+                                 'marker.setIcon(icon);'
+                                 "var popup = L.popup({maxWidth: '300'});"
+                                 "const brr = {text: row[2]};"
+                                 "const sit_ativ = {text: row[3]};"
+                                 "const car_inst = {text: row[4]};"
+                                 "const dat_con = {text: row[5]};"
+                                 "var textpopup = $(`<div id='mytext' class='display_text' style='width: 100.0%; height: 100.0%;'> " + infoTextUniConsMT + "</div>`)[0];"
+                                                                                                                                                           "popup.setContent(textpopup);"
+                                                                                                                                                           "marker.bindPopup(popup);"
+                                                                                                                                                           'return marker};')
 
-                for ctdCodAl in self.ListFieldsID:
+            folium.plugins.FastMarkerCluster(
+                data=dados_db,
+                callback=callbackUniConsMT
+            ).add_to(fgUniConsMT)
 
-                    dados_db = self.DataBaseCoord.getData_UniConsumidoraMT(self.nameSEMT, ctdCodAl)
-
-                    infoTextUniConsMT  = '<b>Unidade Consumidora de Média Tensão</b>'
-                    infoTextUniConsMT += '<br> Situação: ${sit_ativ.text}'
-                    infoTextUniConsMT += '<br> Data de Conexão: ${dat_con.text}'
-                    infoTextUniConsMT += '<br> ${car_inst.text} kVA'
-                    infoTextUniConsMT += '<br> ${brr.text}'
-
-                    callbackUniConsMT  = ('function (row) {'
-                                    'var marker = L.marker(new L.LatLng(row[0], row[1]), {color: "red"});'
-                                    'var icon = L.AwesomeMarkers.icon({'
-                                    "icon: 'info-sign',"
-                                    "iconColor: 'white',"
-                                    "markerColor: 'green',"
-                                    "prefix: 'glyphicon',"
-                                    "extraClasses: 'fa-rotate-0'"
-                                    '});'
-                                    'marker.setIcon(icon);'
-                                    "var popup = L.popup({maxWidth: '300'});"
-                                    "const brr = {text: row[2]};"
-                                    "const sit_ativ = {text: row[3]};"
-                                    "const car_inst = {text: row[4]};"
-                                    "const dat_con = {text: row[5]};"
-                                    "var textpopup = $(`<div id='mytext' class='display_text' style='width: 100.0%; height: 100.0%;'> " + infoTextUniConsMT +"</div>`)[0];"
-                                    "popup.setContent(textpopup);"
-                                    "marker.bindPopup(popup);"
-                                    'return marker};')
-
-                    folium.plugins.FastMarkerCluster(
-                            data=dados_db,
-                            callback=callbackUniConsMT
-                        ).add_to(fgUniConsMT)
-
-        
-        
-        
-        
-        
-        
         
         
     
