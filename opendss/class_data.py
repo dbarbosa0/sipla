@@ -391,8 +391,10 @@ class C_Data():  # classe OpenDSS
 
                 tmp += "New Transformer.{0}".format(dados_trafo[ctd].cod_id) + " windings={0}".format(
                     "2") + " Phases={0}".format("3")
-                tmp += " buses={0}".format("[" + dados_trafo[ctd].pac_1 + "," + dados_trafo[
-                    ctd].pac_2 + ".1.2.3.0" + "]") + " kVAs={0}".format(pot_nom)
+                # tmp += " buses={0}".format("[" + dados_trafo[ctd].pac_1 + "," + dados_trafo[ctd].pac_2 + ".1.2.3.0" + "]") + " kVAs={0}".format(pot_nom)
+
+                dados_traf_pac = self.DataBase.getData_TrafosAT_MT_pac(dados_trafo[ctd].pac_2)
+                tmp += " buses={0}".format("[" + self.nCircuitoAT_MT + "," + dados_traf_pac[0].cod_id + ".1.2.3.0" + "]") + " kVAs={0}".format(pot_nom)
                 tmp += " kVs={0}".format("[" + tensao_pri + "," + tensao_sec + "]")
                 tmp += " conns={0}".format(ligacao) + " tap=1"
 
@@ -770,7 +772,6 @@ class C_Data():  # classe OpenDSS
             else:
                 raise class_exception.ExecOpenDSS(
                     "Erro ao carregar as informações dos Segmentos de Linha ou Regulador, pois o tipo não foi especificado! \n" + tipoSEG_REG)
-
             memoFileLinha = []
 
             for ctd in range(0, len(dados_db)):
@@ -781,6 +782,22 @@ class C_Data():  # classe OpenDSS
                 if tipoSEG_REG == "SEG":  # Segmentos de Linhas
                     if (dados_db[ctd].ctmt in lista_de_identificadores_dos_alimentadores) and \
                             (dados_db[ctd].pac_1 != self.nFieldsMT):
+
+                        #print(dados_db[ctd].uni_tr)
+                        if pac_1[0] == nomeSE_MT[0]:
+                            pac_1 = dados_db[ctd].uni_tr + ".1.2.3"
+                        if pac_2[0] == nomeSE_MT[0]:
+                            pac_2 = dados_db[ctd].uni_tr + ".1.2.3"
+
+                        #funcionou sandy
+                        if "S" in pac_1:
+                            pac_1 = pac_1.replace("S", "")
+                        if "S" in pac_2:
+                            pac_2 = pac_2.replace("S", "")
+                        if "FU" in pac_1:
+                            pac_1 = pac_1.replace("FU", "")
+                        if "FU" in pac_2:
+                            pac_2 = pac_2.replace("FU", "")
 
                         tmp = "New Line.{0}".format(dados_db[ctd].cod_id) + " Phases={0}".format(num_de_fases)
                         tmp += " Bus1={0}".format(pac_1) + " Bus2={0}".format(pac_2)
@@ -823,7 +840,6 @@ class C_Data():  # classe OpenDSS
                 else:
                     raise class_exception.ExecOpenDSS(
                         "Erro ao carregar as informações dos Segmentos de Linha ou Regulador, pois o tipo não foi especificado! \n" + tipoSEG_REG)
-
             return memoFileLinha
 
         except:
@@ -980,7 +996,15 @@ class C_Data():  # classe OpenDSS
         data = self.loadShapeUniCons[tipoUniCons]
 
         for ctd in data:
-            memoFileUCLS.append("Edit Load.{0}".format(ctd[0]) + " daily={0}".format(ctd[1]))
+            # Filtro das erros de digitação das loadshapes
+            if ctd[1][0:3] == "SER":
+                memoFileUCLS.append("Edit Load.{0}".format(ctd[0]) + " daily={0}".format("RES" + ctd[1][3:]))
+            if ctd[1][0:3] == "RE-":
+                memoFileUCLS.append("Edit Load.{0}".format(ctd[0]) + " daily={0}".format("RES-" + ctd[1][3:]))
+            if ctd[1][0:2] == "PP":
+                memoFileUCLS.append("Edit Load.{0}".format(ctd[0]) + " daily={0}".format("SP" + ctd[1][2:]))
+            else:
+                memoFileUCLS.append("Edit Load.{0}".format(ctd[0]) + " daily={0}".format(ctd[1]))
 
         return memoFileUCLS
 
@@ -1023,19 +1047,46 @@ class C_Data():  # classe OpenDSS
 
 
                     memoFileTD.append("! ALIMENTADOR: " + dados_db[ctd].ctmt)
+
+                    #funcionou sandy
+                    if "S" in pac_1:
+                        pac_1 = pac_1.replace("S", "")
+                    if "S" in pac_2:
+                        pac_2 = pac_2.replace("S", "")
+                    if "FU" in pac_1:
+                        pac_1 = pac_1.replace("FU", "")
+                    if "FU" in pac_2:
+                        pac_2 = pac_2.replace("FU", "")
+
+                    if dados_db[ctd].pot_nom == 0.0:
+                        pot_nom_ = "45.0"
+                    else:
+                        pot_nom_ = dados_db[ctd].pot_nom
+
+                    if dados_db[ctd].r == 0.0:
+                        r = "1.17"
+                    else:
+                        r = dados_db[ctd].r
+
+                    if dados_db[ctd].xhl == 0.0:
+                        xlh = "3.34"
+                    else:
+                        xlh = dados_db[ctd].xhl
+
                     # UNTRD
                     tmp = "New Transformer.{0}".format(dados_db[ctd].cod_id) + " windings={0}".format('2')
                     tmp += " Phases={0}".format(num_de_fases)
                     tmp += " buses={0}".format('[' + pac_1 + ',' + pac_2 + ']')
-                    tmp += " kVAs={0}".format('[' + str(dados_db[ctd].pot_nom) + ',' + str(dados_db[ctd].pot_nom) + ']')
+                    tmp += " kVAs={0}".format('[' + str(pot_nom_) + ',' + str(pot_nom_) + ']')
                     # EQRTD
                     tmp += " kVs={0}".format('[' + tensao_primario + ',' + tensao_sec + ']')
-                    tmp += " conns={0}".format(ligacao) + " %Rs={0}".format(str(dados_db[ctd].r))
-                    tmp += " XHL={0}".format(dados_db[ctd].xhl)
+                    tmp += " conns={0}".format(ligacao) + " %Rs={0}".format(r)
+                    tmp += " XHL={0}".format(xlh)
 
                     memoFileTD.append(tmp)
 
                     ### trafo paras as cargas
+                    self.trafoDistUniCons[str(pac_1)] = [pac_2, pot_nom_]
                     self.trafoDistUniCons[str(dados_db[ctd].cod_id)] = [dados_db[ctd].pac_2, dados_db[ctd].pot_nom]
 
                     ##Buffer
@@ -1091,6 +1142,14 @@ class C_Data():  # classe OpenDSS
                     if checkOK:
                         [num_de_fases, pac_1, pac_2] = self.getFasesConexao(dados_db[ctd].fas_con, dados_db[ctd].pac_1,
                                                                             dados_db[ctd].pac_2)
+                        if "S" in pac_1:
+                            pac_1 = pac_1.replace("S", "")
+                        if "S" in pac_2:
+                            pac_2 = pac_2.replace("S", "")
+                        if "FU" in pac_1:
+                            pac_1 = pac_1.replace("FU", "")
+                        if "FU" in pac_2:
+                            pac_2 = pac_2.replace("FU", "")
 
                         tmp = "New Line.{0}".format(dados_db[ctd].cod_id) + " Phases={0}".format(num_de_fases)
                         tmp += " Bus1={0}".format(pac_1) + " Bus2={0}".format(pac_2)

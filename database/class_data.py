@@ -106,6 +106,8 @@ class dadosTransformador(NamedTuple):
     ten_sec: str
     ten_ter: str
 
+class dadosTransformador_untrs(NamedTuple):
+    cod_id: str
 
 class dadosSECAT(NamedTuple):
     cod_id: str
@@ -229,6 +231,28 @@ class C_DBaseData():
 
         except:
             raise class_exception.ExecOpenDSS("Erro no processamento do Banco de Dados para os Transformadores de Média Tensão!")
+
+    def getData_TrafosAT_MT_pac(self, pac_teste):
+
+        try:
+            #sqlStr = "SELECT cod_id FROM untrs WHERE pac_2 = " + pac_teste
+            sqlStr = "SELECT cod_id FROM untrs WHERE pac_2 = '" + \
+                         pac_teste + "'"
+
+            lista_dados = []
+
+            dadosSE = self.DataBaseConn.getSQLDB("UNTRS", sqlStr)
+
+            for linha in dadosSE.fetchall():
+                tmp_dados = dadosTransformador_untrs(
+                    linha[0],  # cod_id
+                )
+                lista_dados.append(tmp_dados)
+
+            return lista_dados
+
+        except:
+            raise class_exception.ExecOpenDSS("Erro no processamento do Banco de Dados para os Transformadores de Subestação.")
 
     def getData_Condutores(self, tipoCondutor):  # Pega os condutores de MT
 
