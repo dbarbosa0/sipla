@@ -213,10 +213,17 @@ Pontos Y: Potência em p.u.")
                 self.dataPTCurve["npts"] = str(len(Item.getPointsXList()))
                 self.dataPTCurve["Xarray"] = Item.getPointsXList()
                 self.dataPTCurve["Yarray"] = Item.getPointsYList()
-                self.PTCurve_list.append(self.dataPTCurve.copy())
         except:
             pass
         #print(self.PTCurve_list)
+
+    def default_entries(self):
+        self.dataPTCurve = {}
+        self.ptcurve_import.define_default_entries()
+        self.dataPTCurve["PTCurveName"] = self.ptcurve_import.curve_name
+        self.dataPTCurve["npts"] = self.ptcurve_import.npts
+        self.dataPTCurve["Xarray"] = self.ptcurve_import.x_axys
+        self.dataPTCurve["Yarray"] = self.ptcurve_import.y_axys
 
 class Config_PTCurve_GroupBox_TreeWidget_Item(QTreeWidgetItem):
     def __init__(self, parent, name, pointsX, pointsY, color):

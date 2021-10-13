@@ -25,6 +25,7 @@ class C_PT_Curve_Import(QDialog):
         self.curve_name = ''
         self.x_axys = ''
         self.y_axys = ''
+        self.npts = ''
 
     def InitUI(self):
         self.setWindowTitle(self.titleWindow)
@@ -145,10 +146,9 @@ class C_PT_Curve_Import(QDialog):
 
     def define_default_entries(self):
         self.curve_name = 'PT_Default'
+        self.npts = '4'
         self.x_axys = str([0, 25, 75, 100]).strip('[]').replace("'", "")
         self.y_axys = str([1.2, 1.0, 0.8, 0.6]).strip('[]').replace("'", "")
-
-        return self.curve_name, self.x_axys, self.y_axys
 
     def verify_manual_entries(self):  # Validando as entradas manuais
         aux1 = self.PT_Curve_Xdata.text().split(',')

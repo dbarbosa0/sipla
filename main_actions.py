@@ -11,7 +11,6 @@ import opendss.invcontrol.class_insert_invcontrol_dialog
 import opendss.invcontrol.class_config_voltvar_elementlist
 import opendss.storage.class_config_storagecontroller
 import opendss.class_insert_pvsystem_config_dialog
-import opendss.class_insert_pvsystem_substation_dialog
 import opendss.class_energymeter_results_dialog
 import opendss.class_config_plot_monitor_dialog
 import opendss.class_scan_config_dialog
@@ -80,9 +79,7 @@ class C_MainActions():
 
         # Contribuição Felipe
         self.OpenDSS_PVSystem_DialogSettings = opendss.class_insert_pvsystem_config_dialog.C_Config_PVSystem_Dialog()
-        self.OpenDSS_PVSystem_DialogInsert = opendss.class_insert_pvsystem_substation_dialog.C_Insert_PVSystem_Substation_Dialog(self.OpenDSS_PVSystem_DialogSettings)
         self.OpenDSS_PVSystem_DialogSettings.OpenDSS = self.OpenDSS
-        self.OpenDSS_PVSystem_DialogInsert.OpenDSS = self.OpenDSS
 
         # Contribuição Jonas
         self.OpenDSS_DialogInsertStorage = opendss.storage.class_insert_storage_dialog.C_Insert_Storage_Dialog()
@@ -154,8 +151,7 @@ class C_MainActions():
             #self.MainWindowToolBar.Protect_Curves_Act.setEnabled(True)
 
             #Felipe
-            self.MainWindowToolBar.OpenDSSMenuSubInsert_SubPVSystem.setEnabled(True)
-            #self.MainWindowToolBar.OpenDSS_ConfigPVSystem_Act.setEnabled(True)
+            self.MainWindowToolBar.OpenDSS_ConfigPVSystem_Act.setEnabled(True)
         else:
             self.MainWindowToolBar.OpenDSS_InsertEnergyMeter_Act.setEnabled(False)
             self.MainWindowToolBar.OpenDSS_InsertMonitor_Act.setEnabled(False)
@@ -166,7 +162,7 @@ class C_MainActions():
             self.MainWindowToolBar.SCAnalyze_Config_Act.setEnabled(False)
             self.MainWindowToolBar.SCAnalyze_Run_Act.setEnabled(False)
             #Jonas
-            self.MainWindowToolBar.OpenDSS_InsertStorage_Act.setEnabled(True)
+            self.MainWindowToolBar.OpenDSS_InsertStorage_Act.setEnabled(False)
             #Carvalho
             self.MainWindowToolBar.SCAnalyze_Config_Act.setEnabled(False)
             self.MainWindowToolBar.SCAnalyze_Run_Act.setEnabled(False)
@@ -174,7 +170,7 @@ class C_MainActions():
             #self.MainWindowToolBar.Protect_Curves_Act.setEnabled(False)
 
             # Felipe
-            self.MainWindowToolBar.OpenDSSMenuSubInsert_SubPVSystem.setEnabled(False)
+            self.MainWindowToolBar.OpenDSS_ConfigPVSystem_Act.setEnabled(False)
 
 
     #############################################
@@ -329,9 +325,6 @@ class C_MainActions():
     # Contribuição Felipe
     def exec_PVSystem_Settings(self):
         self.OpenDSS_PVSystem_DialogSettings.show()
-
-    def exec_PVSystem_Substation(self):
-        self.OpenDSS_PVSystem_DialogInsert.show()
 
     def exec_Device_Settings(self):
         self.Devices_DialogSettings.updateMainProtectDialog()

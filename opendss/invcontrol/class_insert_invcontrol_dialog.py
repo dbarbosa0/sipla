@@ -391,7 +391,6 @@ class C_Insert_InvControl_Dialog(QDialog):
         self.vv_list = ''
         self.vw_list = ''
 
-
     def CancelAddEditInvControl(self):
         self.EnableDisableParameters(False)
         self.adjustSize()
@@ -806,8 +805,6 @@ class InvConfig(QWidget):
         else:
             self.VoltVar_GroupBox.setVisible(False)
             self.VoltWatt_GroupBox.setVisible(True)
-
-        self.adjustSize()
 
     def Enable_VoltageCurvexRef_SpinBox(self):
         if self.NameEMode_GroupBox_Mode_ComboBox.currentText() == "VOLTVAR":

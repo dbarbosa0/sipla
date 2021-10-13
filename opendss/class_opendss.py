@@ -157,14 +157,6 @@ class C_OpenDSS():  # classe OpenDSSDirect
         self._PVSystem_Data = value
 
     @property
-    def PVSystem_Subs(self):
-        return self._PVSystem_Subs
-
-    @PVSystem_Subs.setter
-    def PVSystem_Subs(self, value):
-        self._PVSystem_Subs = value
-
-    @property
     def SCDataInfo(self):
         return self._SCDataInfo
 
@@ -389,6 +381,10 @@ class C_OpenDSS():  # classe OpenDSSDirect
         if self.EnergyMeters:
             tmpEnergyMeter = {"EnergyMeters": self.memoFileEnergyMeters, }
             self.OpenDSSDataResult.update(tmpEnergyMeter)
+
+        if self.PVSystem_Data:
+            tmpPVsystem = {"PVSystem": self.memoFilePVs, }
+            self.OpenDSSDataResult.update(tmpPVsystem)
 
         if self.Monitors:
             tmpMonitors = {"Monitors": self.memoFileMonitors, }
@@ -883,10 +879,6 @@ class C_OpenDSS():  # classe OpenDSSDirect
 
         self.memoFileStorages = []
 
-        self.exec_DispatchCurves()
-        self.exec_PriceCurves()
-        self.exec_EffCurves()
-
         for ctd in self.Storages:
             tmp = "New Storage." + ctd["StorageName"] + \
                   " phases=" + ctd["phases"] + \
@@ -975,11 +967,16 @@ class C_OpenDSS():  # classe OpenDSSDirect
                               " ChargeTrigger=" + ctd["ActPow"]["ChargeTrigger"] + \
                               " DischargeTrigger=" + ctd["ActPow"]["DischargeTrigger"]
 
+            self.exec_DispatchCurves()
+            self.exec_PriceCurves()
+            self.exec_EffCurves()
+
             self.memoFileStorages.append(tmp)
 
         self.exec_StorageControllers()
 
     ######################################################################################
+    # INVCONTROL
 
     def exec_XYCurves(self):
         for ctd in self.InvControl:
@@ -1001,6 +998,7 @@ class C_OpenDSS():  # classe OpenDSSDirect
 
     def exec_InvControl(self):
 
+        tmp = ''
         self.memoFileInvControl = []
 
         self.exec_XYCurves()
@@ -1082,68 +1080,128 @@ class C_OpenDSS():  # classe OpenDSSDirect
 
     ########
 
-    ############## PV SYSTEM ####################
+    #############################################################################################
+    #PVSYSTEM
 
     def exec_subs_pvsystem(self):
-        for ctd in self.PVSystem_Subs:
-            tmp = 'New transformer.' + ctd['name'] + \
-                  ' phases=' + ctd['phases'] + \
-                  ' xhl=' + ctd['xhl'] + \
-                  ' wdg=' + ctd['wdg1'] + \
-                  ' bus=' + ctd['bus1'] + \
-                  ' kv=' + ctd['kv1'] + \
-                  ' kva=' + ctd['kva1'] + \
-                  ' conn=' + ctd['conn1'] + \
-                  ' wdg=' + ctd['wdg2'] + \
-                  ' bus=' + ctd['bus2'] + \
-                  ' kv=' + ctd['kv2'] + \
-                  ' kva=' + ctd['kva2'] + \
-                  ' conn=' + ctd['conn2']
+        tmp = ''
+        for ctd in self.PVSystem_Data:
+            if ctd['forma'] == "Subestação":
+                tmp = 'New transformer.' + ctd["Subestacao"]['subsname'] + \
+                      ' phases=3' + \
+                      ' xhl=' + ctd["Subestacao"]['xhl'] + \
+                      ' wdg=1' + \
+                      ' bus=' + ctd["Subestacao"]['bus1'] + \
+                      ' kv=' + ctd["Subestacao"]['kv1'] + \
+                      ' kva=' + ctd["Subestacao"]['kva1'] + \
+                      ' conn=' + ctd["Subestacao"]['conn1'] + \
+                      ' wdg=2' + \
+                      ' bus=' + ctd["Subestacao"]['bus2'] + \
+                      ' kv=' + ctd["Subestacao"]['kv2'] + \
+                      ' kva=' + ctd["Subestacao"]['kva2'] + \
+                      ' conn=' + ctd["Subestacao"]['conn2']
+                self.memoFilePVs.append(tmp)
 
-            self.memoFilePVs.append(tmp)
+            else:
+                pass
+
+    def exec_effcurve_pvsystem(self):
+        tmp = ''
+        nome = []
+        for ctd in self.PVSystem_Data:
+            if str(ctd['EffCurve']['EffCurveName']) not in nome:
+                tmp = 'New XYCurve.' + ctd['EffCurve']['EffCurveName'] + \
+                        ' npts=' + ctd['EffCurve']['npts'] + \
+                        ' xarray=[' + str(ctd['EffCurve']['Xarray']).replace(',', '').replace("[", "").replace(']', '') + ']' + \
+                        ' yarray=[' + str(ctd['EffCurve']['Yarray']).replace(',', '').replace("[", "").replace(']', '') + ']'
+                nome.append(ctd['EffCurve']['EffCurveName'])
+
+            else:
+                pass
+
+        self.memoFilePVs.append(tmp)
+
+    def exec_ptcurve_pvsystem(self):
+        tmp = ''
+        nome = []
+        for ctd in self.PVSystem_Data:
+            if str(ctd['PTCurve']['PTCurveName']) not in nome:
+                tmp = 'New XYCurve.' + ctd['PTCurve']['PTCurveName'] + \
+                        ' npts=' + ctd['PTCurve']['npts'] + \
+                        ' xarray=[' + str(ctd['PTCurve']['Xarray']).replace(',', '').replace("[", "").replace(']', '') + ']' + \
+                        ' yarray=[' + str(ctd['PTCurve']['Yarray']).replace(',', '').replace("[", "").replace(']', '') + ']'
+                nome.append(ctd['PTCurve']['PTCurveName'])
+
+            else:
+                pass
+
+        self.memoFilePVs.append(tmp)
+
+    def exec_irradcurve_pvsystem(self):
+        tmp = ''
+        nome = []
+        for ctd in self.PVSystem_Data:
+            if str(ctd['IrradCurve']['IrradCurveName']) not in nome:
+                tmp = 'New loadshape.' + ctd['IrradCurve']['IrradCurveName'] + \
+                        ' npts=' + ctd['IrradCurve']['npts'] + \
+                        ' interval=1' + \
+                        ' mult=[' + str(ctd['IrradCurve']['Yarray']).replace(',', '').replace("[", "").replace(']', '') + ']' + \
+                        ' Action=Normalize'
+                nome.append(ctd['IrradCurve']['IrradCurveName'])
+
+            else:
+                pass
+
+        self.memoFilePVs.append(tmp)
+
+    def exec_tempcurve_pvsystem(self):
+        tmp = ''
+        nome = []
+        for ctd in self.PVSystem_Data:
+            if str(ctd['TempCurve']['TempCurveName']) not in nome:
+                tmp = 'New Tshape.' + ctd['TempCurve']['TempCurveName'] + \
+                        ' npts=' + ctd['TempCurve']['npts'] + \
+                        ' interval=1' + \
+                        ' temp=[' + str(ctd['TempCurve']['Yarray']).replace(',', '').replace("[", "").replace(']', '') + ']'
+                nome.append(ctd['TempCurve']['TempCurveName'])
+
+            else:
+                pass
+
+        self.memoFilePVs.append(tmp)
 
     def exec_pvsystem(self):
 
+        tmp = ''
         self.memoFilePVs = []
 
-        for ctd in self.PVSystem_Data:
-            tmp = 'New XYCurve.' + ctd['effcurve']['EffCurveName'] + \
-                  ' npts=' + ctd['effcurve']['npts'] + \
-                  ' xarray=' + str(ctd['effcurve']['Xarray']).replace(',', '') + \
-                  ' yarray=' + str(ctd['effcurve']['Yarray']).replace(',', '') + \
-                  ' New XYCurve.' + ctd['p-tcurve']['PTCurveName'] + \
-                  ' npts=' + ctd['p-tcurve']['npts'] + \
-                  ' xarray=' + str(ctd['p-tcurve']['Xarray']).replace(',', '') + \
-                  ' yarray=' + str(ctd['p-tcurve']['Yarray']).replace(',', '') + \
-                  ' New loadshape.' + ctd['daily']['IrradCurveName'] + \
-                  ' npts=' + ctd['daily']['npts'] + \
-                  ' interval=' + ctd['daily']['interval'] + \
-                  ' xarray=' + str(ctd['daily']['Xarray']).replace(',', '') + \
-                  ' yarray=' + str(ctd['daily']['Yarray']).replace(',', '') + \
-                  ' Action=' + ctd['daily']['Action'] + \
-                  ' New Tshape.' + ctd['tdaily']['TempCurveName'] + \
-                  ' npts=' + ctd['tdaily']['npts'] + \
-                  ' interval=' + ctd['tdaily']['interval'] + \
-                  ' xarray=' + str(ctd['tdaily']['Xarray']).replace(',', '') + \
-                  ' yarray=' + str(ctd['tdaily']['Yarray']).replace(',', '') + \
-                  ' New pvsystem2.' + ctd['name'] + \
-                  ' phases=' + ctd['phases'] + \
-                  ' bus1=' + ctd['bus1'] + \
-                  ' kv=' + ctd['kv'] + \
-                  ' irrad=' + ctd['irrad'] + \
-                  ' pmpp=' + ctd['pmpp'] + \
-                  ' temperature=' + ctd['temperature'] + \
-                  ' %cutin=' + ctd['%cutin'] + \
-                  ' %cutout=' + ctd['%cutout'] + \
-                  ' effcurve=' + ctd['effcurve']['EffCurveName'] + \
-                  ' p-tcurve=' + ctd['p-tcurve']['PTCurveName'] + \
-                  ' daily=' + ctd['daily']['IrradCurveName'] + \
-                  ' tdaily=' + ctd['tdaily']['TempCurveName']
-
-            self.memoFilePVs.append(tmp)
+        self.exec_effcurve_pvsystem()
+        self.exec_ptcurve_pvsystem()
+        self.exec_irradcurve_pvsystem()
+        self.exec_tempcurve_pvsystem()
         self.exec_subs_pvsystem()
 
-        self.memoFilePVs = []
+        for ctd in self.PVSystem_Data:
+            tmp = 'New PVSystem.' + ctd['name']
+            if ctd['forma'] == "Subestação":
+                tmp = tmp + ' bus1=' + ctd["Subestacao"]['bus1']
+            else:
+                tmp = tmp + ' bus1=' + ctd['barra']
+            tmp = tmp + ' phases=' + ctd['phases'] + \
+                  ' kv=' + ctd['kv'] + \
+                  ' irrad=' + ctd['irrad'] + \
+                  ' kva=' + ctd['kva'] + \
+                  ' pmpp=' + ctd['pmpp'] + \
+                  ' temperature=' + ctd['temperature'] + \
+                  ' pf=' + ctd['pf'] + \
+                  ' %cutin=' + ctd['cutin'] + \
+                  ' %cutout=' + ctd['cutout'] + \
+                  ' effcurve=' + ctd['EffCurve']['EffCurveName'] + \
+                  ' p-tcurve=' + ctd['PTCurve']['PTCurveName'] + \
+                  ' daily=' + ctd['IrradCurve']['IrradCurveName'] + \
+                  ' tdaily=' + ctd['TempCurve']['TempCurveName']
+
+            self.memoFilePVs.append(tmp)
 
     #########################
     def getBusList(self):

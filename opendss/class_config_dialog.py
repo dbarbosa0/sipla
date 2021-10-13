@@ -153,7 +153,7 @@ class C_ConfigDialog(QDialog):
             config['LoadFlow']['StepSizeTime'] = self.TabLoadFlow.get_Stepsize_Time()
             config['LoadFlow']['Number'] = str(self.TabLoadFlow.get_Number())
             config['LoadFlow']['Maxiterations'] = str(self.TabLoadFlow.get_Maxiterations())
-            config['LoadFlow']['Maxcontroliter']  = str(self.TabLoadFlow.get_Maxcontroliter())
+            config['LoadFlow']['Maxcontroliter'] = str(self.TabLoadFlow.get_Maxcontroliter())
 
             ## LoadShapes
             config['LoadShapes'] = {}
