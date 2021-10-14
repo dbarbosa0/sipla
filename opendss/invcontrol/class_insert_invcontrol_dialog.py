@@ -852,12 +852,12 @@ class InvConfig(QWidget):
 
     def VV_ElementListConfig(self):
         self.VV_ElementList.clear()
-        self.VV_ElementList.update()
+        self.VV_ElementList.Update()
         self.VV_ElementList.show()
 
     def VW_ElementListConfig(self):
         self.VW_ElementList.clear()
-        self.VW_ElementList.update()
+        self.VW_ElementList.Update()
         self.VW_ElementList.show()
 
 class InvControl_TreeWidget_Item(QTreeWidgetItem):

@@ -1237,13 +1237,21 @@ class C_OpenDSS():  # classe OpenDSSDirect
 
     ## Gets class_insert_dialog
 
-    def getInvControl(self):
+    def getStorage(self):
 
-        tempInvControl = []
+        tempStorage = []
         for ctd in self.Storages:
-            tempInvControl.append(ctd["StorageName"])
+            tempStorage.append(ctd["StorageName"])
 
-        return tempInvControl
+        return tempStorage
+
+    def getPVSystem(self):
+
+        tempPVsystem = []
+        for ctd in self.PVSystem_Data:
+            tempPVsystem.append(ctd["name"])
+
+        return tempPVsystem
 
     def getAllNamesEnergyMeter(self):
         return self.OpenDSSEngine.get_EnergyMeter_AllNames()
