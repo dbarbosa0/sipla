@@ -222,6 +222,7 @@ class C_ConfigDialog(QDialog):
             raise class_exception.ExecConfigOpenDSS("Configuração da Simulação", "Erro ao carregar os parâmetros do Fluxo de Carga!")
 
 
+
 class LoadFlow(QWidget):
     def __init__(self):
         super().__init__()
@@ -244,7 +245,7 @@ class LoadFlow(QWidget):
         self.LoadFlow_GroupBox_Layout.addWidget(self.LoadFlow_GroupBox_VoltageBase_LineEdit, 0, 1, 1, 1)
 
         ##
-        self.LoadFlow_GroupBox_UNCMT_CheckBox = QCheckBox("Considerar Cargas de Média Tensão")
+        self.LoadFlow_GroupBox_UNCMT_CheckBox = QCheckBox("Considerar Cargas de Média Tensão (Delta - Primário do Trafo)")
         self.LoadFlow_GroupBox_UNCBT_TD_CheckBox = QCheckBox("Considerar Cargas de Baixa Tensão no Transformador de Distribuição")
 
         self.LoadFlow_GroupBox_Layout.addWidget(self.LoadFlow_GroupBox_UNCMT_CheckBox, 1, 0, 1, 2)
@@ -338,6 +339,7 @@ class LoadFlow(QWidget):
             self.Complements_Daily_GroupBox_Maxcontroliter_SpinBox.setEnabled(False)
             self.Complements_Daily_LoadShape_Btn.setEnabled(False)
 
+        self.adjustSize()
 
     # Métodos Set Variáveis
 

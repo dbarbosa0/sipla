@@ -1,6 +1,6 @@
 from PyQt5.QtGui import QColor, QIcon, QDoubleValidator
 from PyQt5.QtWidgets import QStyleFactory, QDialog, QGridLayout, \
-    QPushButton, QLabel, QLineEdit, QHBoxLayout,  QRadioButton, QButtonGroup
+    QPushButton, QLabel, QHBoxLayout,  QRadioButton, QButtonGroup, QDesktopWidget, QDoubleSpinBox
 from PyQt5.QtCore import Qt
 
 import config as cfg
@@ -30,28 +30,29 @@ class C_Reactive_Pow_DispMode_Dialog(QDialog): ## Classe Dialog Despacho da Pote
 
         self.BtnGroup = QButtonGroup()
 
-        self.LineEditsValidos = QDoubleValidator()
-        self.LineEditsValidos.setBottom(0.1)
-
         # "FP Constante"
         self.FPConst_RadioBtn = QRadioButton("FP Constante:")
         self.FPConst_RadioBtn.setChecked(True)
         self.FPConst_RadioBtn.clicked.connect(self.FPConst)
         self.Dialog_Layout.addWidget(self.FPConst_RadioBtn, 2, 1, 1, 1)
-        self.FPConst_LineEdit = QLineEdit()
-        self.FPConst_LineEdit.setValidator(self.LineEditsValidos)
-        self.FPConst_LineEdit.setText("1.0")
-        self.Dialog_Layout.addWidget(self.FPConst_LineEdit, 2, 2, 1, 1)
+        self.FPConst_DoubleSpinBox = QDoubleSpinBox()
+        self.FPConst_DoubleSpinBox.setRange(0.001, 1.0)
+        self.FPConst_DoubleSpinBox.setDecimals(3)
+        self.FPConst_DoubleSpinBox.setButtonSymbols(2)
+        self.FPConst_DoubleSpinBox.setValue(1.0)
+        self.Dialog_Layout.addWidget(self.FPConst_DoubleSpinBox, 2, 2, 1, 1)
 
         # Radio Btn "kVar Constante"
         self.kvarConst_RadioBtn = QRadioButton("kVar Constante:")
         self.kvarConst_RadioBtn.setChecked(False)
         self.kvarConst_RadioBtn.clicked.connect(self.kvarConst)
         self.Dialog_Layout.addWidget(self.kvarConst_RadioBtn, 3, 1, 1, 1)
-        self.kvarConst_LineEdit = QLineEdit()
-        self.kvarConst_LineEdit.setEnabled(False)
-        self.kvarConst_LineEdit.setValidator(self.LineEditsValidos)
-        self.Dialog_Layout.addWidget(self.kvarConst_LineEdit, 3, 2, 1, 1)
+        self.kvarConst_DoubleSpinBox = QDoubleSpinBox()
+        self.kvarConst_DoubleSpinBox.setRange(0.001, 999999999)
+        self.kvarConst_DoubleSpinBox.setDecimals(3)
+        self.kvarConst_DoubleSpinBox.setButtonSymbols(2)
+        self.kvarConst_DoubleSpinBox.setEnabled(False)
+        self.Dialog_Layout.addWidget(self.kvarConst_DoubleSpinBox, 3, 2, 1, 1)
 
          #### Botões do Dialog
         self.Dialog_Btn_Layout = QHBoxLayout()
@@ -71,21 +72,27 @@ class C_Reactive_Pow_DispMode_Dialog(QDialog): ## Classe Dialog Despacho da Pote
         self.setLayout(self.Dialog_Layout)
 
     def FPConst(self):
-        self.kvarConst_LineEdit.setEnabled(False)
-        self.FPConst_LineEdit.setEnabled(True)
+        self.kvarConst_DoubleSpinBox.setEnabled(False)
+        self.FPConst_DoubleSpinBox.setEnabled(True)
 
     def kvarConst(self):
-        self.FPConst_LineEdit.setEnabled(False)
-        self.kvarConst_LineEdit.setEnabled(True)
+        self.FPConst_DoubleSpinBox.setEnabled(False)
+        self.kvarConst_DoubleSpinBox.setEnabled(True)
 
     def acceptDespachoPotReat(self):
         if self.FPConst_RadioBtn.isChecked():
             self.ReactPow = {}
-            self.ReactPow["FP"] = self.FPConst_LineEdit.text()
+            self.ReactPow["FP"] = self.FPConst_DoubleSpinBox.text()
         if self.kvarConst_RadioBtn.isChecked():
             self.ReactPow = {}
-            self.ReactPow["kvar"] = self.kvarConst_LineEdit.text()
+            self.ReactPow["kvar"] = self.kvarConst_DoubleSpinBox.text()
         self.close()
 
     def cancelDespachoPotReat(self):
         self.close()
+
+    def centralize(self):
+        qr = self.frameGeometry()
+        centerpoint = QDesktopWidget().availableGeometry().center()
+        qr.moveCenter(centerpoint)
+        self.move(qr.topLeft())

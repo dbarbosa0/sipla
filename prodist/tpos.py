@@ -1,0 +1,10 @@
+TPOS={}
+TPOS["0"] = "Não informado"
+TPOS["PD"] = "Próprio distribuidor"
+TPOS["OD"] = "Outro distribuidor"
+TPOS["T"] = "Transmissor"
+TPOS["G"] = "Gerador"
+TPOS["CS"] = "Consumidor"
+TPOS["CO"] = "Cooperativa"
+TPOS["A"] = "Autorizado"
+TPOS["O"] = "Outro agente"

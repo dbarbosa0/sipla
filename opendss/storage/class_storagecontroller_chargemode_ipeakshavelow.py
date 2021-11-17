@@ -1,6 +1,6 @@
 from PyQt5.QtGui import QIcon, QDoubleValidator
 from PyQt5.QtWidgets import QStyleFactory, QDialog, QGridLayout, \
-    QPushButton, QMessageBox, QLabel, QLineEdit, QComboBox, QHBoxLayout
+    QPushButton, QMessageBox, QLabel, QComboBox, QHBoxLayout, QDoubleSpinBox
 from PyQt5.QtCore import Qt
 
 
@@ -45,22 +45,26 @@ class C_ActPow_Charge_IPeakShaveLow_DispMode_Dialog(QDialog): ## Classe Dialog D
         self.Dialog_Layout = QGridLayout()
         self.Label = QLabel("Insira os parâmetros")
         self.Dialog_Layout.addWidget(self.Label, 1, 1, 1, 2)
+        self.setFixedWidth(50)
+        self.setFixedHeight(40)
 
         self.kampsTargetLow_Label = QLabel("Corrente alvo (kAmps):")
         self.kampsTargetLow_Label.setToolTip("\
 A frota de Storages é carregada a fim de manter a corrente no elemento monitorado abaixo da Potência Alvo ou\n\
 dentro da faixa aceitável.")
         self.Dialog_Layout.addWidget(self.kampsTargetLow_Label, 2, 1, 1, 1)
-        self.kampsTargetLow_LineEdit = QLineEdit()
-        self.LineEditsValidos = QDoubleValidator()
-        self.LineEditsValidos.setBottom(0.1)
-        self.kampsTargetLow_LineEdit.setValidator(self.LineEditsValidos)
-        self.Dialog_Layout.addWidget(self.kampsTargetLow_LineEdit, 2, 2, 1, 2)
+        self.kampsTargetLow_DoubleSpinBox = QDoubleSpinBox()
+        self.kampsTargetLow_DoubleSpinBox.setButtonSymbols(2)
+        self.kampsTargetLow_DoubleSpinBox.setDecimals(3)
+        self.kampsTargetLow_DoubleSpinBox.setRange(0.001, 999999999)
+        self.Dialog_Layout.addWidget(self.kampsTargetLow_DoubleSpinBox, 2, 2, 1, 2)
         self.BandLow_Label = QLabel("Largura da faixa:")
         self.Dialog_Layout.addWidget(self.BandLow_Label, 3, 1, 1, 1)
-        self.BandLow_LineEdit = QLineEdit()
-        self.BandLow_LineEdit.setValidator(self.LineEditsValidos)
-        self.Dialog_Layout.addWidget(self.BandLow_LineEdit, 3, 2, 1, 1)
+        self.BandLow_DoubleSpinBox = QDoubleSpinBox()
+        self.BandLow_DoubleSpinBox.setButtonSymbols(2)
+        self.BandLow_DoubleSpinBox.setDecimals(3)
+        self.BandLow_DoubleSpinBox.setRange(0.001, 999999999)
+        self.Dialog_Layout.addWidget(self.BandLow_DoubleSpinBox, 3, 2, 1, 1)
         self.BandLow_Unit_ComboBox = QComboBox()
         self.BandLow_Unit_ComboBox.addItems(["% kAmps", "kAmps"])
         self.Dialog_Layout.addWidget(self.BandLow_Unit_ComboBox, 3, 3, 1, 1)
@@ -79,42 +83,31 @@ dentro da faixa aceitável.")
 
         self.Dialog_Layout.addLayout(self.Dialog_Btns_Layout, 4, 1, 1, 3)
         self.setLayout(self.Dialog_Layout)
+        self.setFixedWidth(400)
+        self.setFixedHeight(140)
 
     def getkampsTargetLow(self):
-        return self.kampsTargetLow_LineEdit.text()
+        return self.kampsTargetLow_DoubleSpinBox.text().replace(",", ".")
     def getBandLowUnit(self):
         return self.BandLow_Unit_ComboBox.currentText()
     def getBandWidthLow(self):
-        return self.BandLow_LineEdit.text()
-
-    def verificaLineEdits(self):
-        if not self.kampsTargetLow_LineEdit.hasAcceptableInput():
-            QMessageBox(QMessageBox.Warning, "Storage Controller","O valor para a corrente alvo (kAmps) não é um valor válido!",
-                        QMessageBox.Ok).exec()
-            return False
-        elif not self.BandLow_LineEdit.hasAcceptableInput():
-            QMessageBox(QMessageBox.Warning, "Storage Controller","O valor para a Largura da faixa não é um valor válido!",
-                        QMessageBox.Ok).exec()
-            return False
-        else:
-            return True
+        return self.BandLow_DoubleSpinBox.text().replace(",", ".")
 
     def acceptIPeakShaveLow(self):
-        if self.verificaLineEdits():
-            self.ChargeMode["ChargeMode"] = "I-PeakShaveLow"
-            self.ChargeMode["kWTargetLow"] = self.getkampsTargetLow()
-            if self.getBandLowUnit() == "kW":
-                self.ChargeMode["kWBandLow"] = self.getBandWidthLow()
-            else:
-                self.ChargeMode["%kWBandLow"] = self.getBandWidthLow()
-            self.close()
+        self.ChargeMode["ChargeMode"] = "I-PeakShaveLow"
+        self.ChargeMode["kWTargetLow"] = self.getkampsTargetLow()
+        if self.getBandLowUnit() == "kW":
+            self.ChargeMode["kWBandLow"] = self.getBandWidthLow()
+        else:
+            self.ChargeMode["%kWBandLow"] = self.getBandWidthLow()
+        self.close()
 
     def cancelIPeakShaveLow(self):
         self.close()
 
     def clearParameters(self):
-        self.kampsTargetLow_LineEdit.setText("")
-        self.BandLow_LineEdit.setText("")
+        self.kampsTargetLow_DoubleSpinBox.setValue(0.0)
+        self.BandLow_DoubleSpinBox.setValue(0.0)
         self.BandLow_Unit_ComboBox.setCurrentIndex(0)
 
     def updateDialog(self):
@@ -122,11 +115,11 @@ dentro da faixa aceitável.")
         for ctd in self.StorageControllersTemporario:
             if ctd["StorageControllerName"] == self.StorControl_GroupBox_Selection_ComboBox.currentText():
                 if "kWTargetLow" in ctd:
-                    self.kampsTargetLow_LineEdit.setText(ctd["kWTargetLow"])
+                    self.kampsTargetLow_DoubleSpinBox.setValue(float(ctd["kWTargetLow"]))
                 if "kWBandLow" in ctd:
-                    self.BandLow_LineEdit.setText(ctd["kWBandLow"])
+                    self.BandLow_DoubleSpinBox.setValue(float(ctd["kWBandLow"]))
                     self.BandLow_Unit_ComboBox.setCurrentIndex(0)
                 elif "%kWBandLow" in ctd:
-                    self.BandLow_LineEdit.setText(ctd["%kWBandLow"])
+                    self.BandLow_DoubleSpinBox.setValue(float(ctd["%kWBandLow"]))
                     self.BandLow_Unit_ComboBox.setCurrentIndex(1)
 

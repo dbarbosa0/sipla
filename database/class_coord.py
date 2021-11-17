@@ -1,6 +1,8 @@
 import database.class_conn
 import class_exception
-
+import prodist.tpos
+import prodist.ttranf
+import prodist.tpostotran
 
 class C_DBaseCoord():
     def __init__(self):
@@ -66,11 +68,40 @@ class C_DBaseCoord():
         except:
             raise class_exception.ExecDataBaseError("Erro ao pegar as Coordenadas dos Alimentadores de Média Tensão!")
 
+    def getCoord_AL_SE_MT_BT_DB(self, codTD): #Pega as coordenadas dos circuitos de baixa de um alimentador
+
+        try:
+            lista_de_coordenadas_BT = []
+
+            sqlStr = "SELECT DISTINCT ctmt,x,y,vertex_index,objectid FROM ssdbt WHERE uni_tr_d ='" + codTD + "' ORDER BY objectid"
+
+            cod_al = self.DataBaseConn.getSQLDB("SSDBT", sqlStr)
+
+            dadosCoord =[]
+            dadosCoordInicio = []
+            dadosCoordFim = []
+
+            for linha in cod_al.fetchall():
+                    if linha[3] == 0:
+                        dadosCoordInicio = [linha[2], linha[1]]
+                    if linha[3] == 1:
+                        dadosCoordFim = [linha[2], linha[1]]
+
+                        dadosCoord = [dadosCoordInicio, dadosCoordFim]
+
+                        lista_de_coordenadas_BT.append(dadosCoord)
+
+            return lista_de_coordenadas_BT
+
+        except:
+            raise class_exception.ExecDataBaseError("Erro ao pegar as Coordenadas dos Alimentadores de Baixa Tensão!")
+
+
     def getData_TrafoDIST(self, nomeSE_MT, codField):  # Pega os reguladores de MT
 
         try:
 
-            sqlStrUNTRD = "SELECT cod_id, pot_nom, ctmt, x, y " \
+            sqlStrUNTRD = "SELECT cod_id, pot_nom, ctmt, x, y, tip_trafo, pos, posto " \
                           " FROM  untrd WHERE sub = '" + nomeSE_MT[0] + "' AND ctmt = '" + codField + "'"
 
             lista_dados = []
@@ -82,7 +113,7 @@ class C_DBaseCoord():
 
                 ##Verificar a questão do X e do Y
 
-                tmp_dados = [lnhUNTRD[4],lnhUNTRD[3],lnhUNTRD[0],lnhUNTRD[1]]
+                tmp_dados = [lnhUNTRD[4],lnhUNTRD[3],lnhUNTRD[0],lnhUNTRD[1],prodist.ttranf.TTRANF[lnhUNTRD[5]],prodist.tpos.TPOS[lnhUNTRD[6]], prodist.tpostotran.TPOSTOTRAN[lnhUNTRD[7]] ]
 
                 lista_dados.append(tmp_dados)
 

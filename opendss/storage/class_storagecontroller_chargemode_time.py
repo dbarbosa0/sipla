@@ -1,6 +1,6 @@
 from PyQt5.QtGui import QIcon, QDoubleValidator
 from PyQt5.QtWidgets import QStyleFactory, QDialog, QGridLayout, \
-    QPushButton, QMessageBox, QLabel, QLineEdit, QHBoxLayout
+    QPushButton, QMessageBox, QLabel, QLineEdit, QHBoxLayout, QDoubleSpinBox
 from PyQt5.QtCore import Qt
 
 import config as cfg
@@ -48,16 +48,18 @@ class C_ActPow_Charge_Time_DispMode_Dialog(QDialog): ## Classe Dialog Despacho C
 
         self.timeChargeTrigger = QLabel("Charge Trigger:")
         self.Dialog_Layout.addWidget(self.timeChargeTrigger, 2, 1, 1, 1)
-        self.timeChargeTrigger_LineEdit = QLineEdit()
-        self.LineEditsValidos = QDoubleValidator()
-        self.LineEditsValidos.setBottom(0.1)
-        self.timeChargeTrigger_LineEdit.setValidator(self.LineEditsValidos)
-        self.Dialog_Layout.addWidget(self.timeChargeTrigger_LineEdit, 2, 2, 1, 1)
+        self.timeChargeTrigger_DoubleSpinBox = QDoubleSpinBox()
+        self.timeChargeTrigger_DoubleSpinBox.setButtonSymbols(2)
+        self.timeChargeTrigger_DoubleSpinBox.setDecimals(3)
+        self.timeChargeTrigger_DoubleSpinBox.setRange(0.001, 999999999)
+        self.Dialog_Layout.addWidget(self.timeChargeTrigger_DoubleSpinBox, 2, 2, 1, 1)
         self.RateCharge_Label = QLabel("Taxa de carregamento (%):")
         self.Dialog_Layout.addWidget(self.RateCharge_Label, 3, 1, 1, 1)
-        self.RateCharge_LineEdit = QLineEdit()
-        self.RateCharge_LineEdit.setValidator(self.LineEditsValidos)
-        self.Dialog_Layout.addWidget(self.RateCharge_LineEdit, 3, 2, 1, 1)
+        self.RateCharge_DoubleSpinBox = QDoubleSpinBox()
+        self.RateCharge_DoubleSpinBox.setButtonSymbols(2)
+        self.RateCharge_DoubleSpinBox.setDecimals(3)
+        self.RateCharge_DoubleSpinBox.setRange(0.001, 999999999)
+        self.Dialog_Layout.addWidget(self.RateCharge_DoubleSpinBox, 3, 2, 1, 1)
         ### Botões
         self.Dialog_Btns_Layout = QHBoxLayout()
 
@@ -73,43 +75,31 @@ class C_ActPow_Charge_Time_DispMode_Dialog(QDialog): ## Classe Dialog Despacho C
 
         self.Dialog_Layout.addLayout(self.Dialog_Btns_Layout, 4, 1, 1, 3)
         self.setLayout(self.Dialog_Layout)
+        self.setFixedWidth(400)
+        self.setFixedHeight(140)
 
     def gettimeChargeTrigger(self):
-        return self.timeChargeTrigger_LineEdit.text()
+        return self.timeChargeTrigger_DoubleSpinBox.text().replace(",", ".")
     def getRateCharge(self):
-        return self.RateCharge_LineEdit.text()
-
-    def verificaLineEdits(self):
-        if not self.timeChargeTrigger_LineEdit.hasAcceptableInput():
-            QMessageBox(QMessageBox.Warning, "Storage Controller",
-                        "O valor para o Charge Trigger não é um valor válido!",
-                        QMessageBox.Ok).exec()
-            return False
-        elif not self.RateCharge_LineEdit.hasAcceptableInput():
-            QMessageBox(QMessageBox.Warning, "Storage Controller",
-                        "O valor para da a Taxa de carregamento não é um valor válido!",
-                        QMessageBox.Ok).exec()
-            return False
-        else:
-            return True
+        return self.RateCharge_DoubleSpinBox.text().replace(",", ".")
 
     def acceptTime(self):
-        if self.verificaLineEdits():
-            self.ChargeMode["ChargeMode"] = "Time"
-            self.ChargeMode["timeChargeTrigger"] = self.gettimeChargeTrigger()
-            self.ChargeMode["%RateCharge"] = self.getRateCharge()
-            self.close()
+        self.ChargeMode["ChargeMode"] = "Time"
+        self.ChargeMode["timeChargeTrigger"] = self.gettimeChargeTrigger()
+        self.ChargeMode["%RateCharge"] = self.getRateCharge()
+        self.close()
+
     def cancelTime(self):
         self.close()
 
     def clearParameters(self):
-        self.timeChargeTrigger_LineEdit.setText("")
-        self.RateCharge_LineEdit.setText("")
+        self.timeChargeTrigger_DoubleSpinBox.setValue(0)
+        self.RateCharge_DoubleSpinBox.setValue(0)
 
     def updateDialog(self):
         self.clearParameters()
         for ctd in self.StorageControllersTemporario:
             if ctd["StorageControllerName"] == self.StorControl_GroupBox_Selection_ComboBox.currentText():
                 if "timeChargeTrigger" in ctd:
-                    self.timeChargeTrigger_LineEdit.setText(ctd["timeChargeTrigger"])
-                    self.RateCharge_LineEdit.setText(ctd["%RateCharge"])
+                    self.timeChargeTrigger_DoubleSpinBox.setValue(float(ctd["timeChargeTrigger"]))
+                    self.RateCharge_DoubleSpinBox.setValue(float(ctd["%RateCharge"]))

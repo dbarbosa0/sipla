@@ -9,7 +9,7 @@ class C_AboutDialog(QDialog):
     def __init__(self):
         super().__init__()
 
-        self.titleWindow = "OpenDSS About"
+        self.titleWindow = 'Sobre o ' + cfg.__name__
         self.iconWindow = cfg.sipla_icon
         self.stylesheet = cfg.sipla_stylesheet
 
@@ -30,7 +30,7 @@ class C_AboutDialog(QDialog):
         self.Dialog_Layout.setAlignment(Qt.AlignCenter)
         self.setLayout(self.Dialog_Layout)
 
-        logoWidget_qpixmap = QPixmap('img/Logo_SIPLA.png')
+        logoWidget_qpixmap = QPixmap('img/Logo_SIPLA1.png')
         logoWidget_Label = QLabel()
         logoWidget_Label.setPixmap(logoWidget_qpixmap)
         self.Dialog_Layout.addWidget(logoWidget_Label)
@@ -41,7 +41,8 @@ class C_AboutDialog(QDialog):
         nameWidget_Label.setFont(nameWidget_font)
         self.Dialog_Layout.addWidget(nameWidget_Label)
 
-        versionWidget_Label = QLabel(cfg.__version__)
+
+        versionWidget_Label = QLabel("Versão: " + cfg.__version__)
         self.Dialog_Layout.addWidget(versionWidget_Label)
 
         obsWidget_Label = QLabel('Este programa vem com absolutamente nenhuma garantia.')
