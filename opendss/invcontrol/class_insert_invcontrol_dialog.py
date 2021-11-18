@@ -1,7 +1,7 @@
 from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import QStyleFactory, QDialog, QGridLayout, QGroupBox, QVBoxLayout, QTreeWidgetItem, \
     QPushButton, QTreeWidget, QMessageBox, QLabel, QLineEdit, \
-    QComboBox, QTabWidget, QWidget, QHBoxLayout, QDoubleSpinBox, QSpinBox
+    QComboBox, QTabWidget, QWidget, QHBoxLayout, QDoubleSpinBox, QSpinBox, QDesktopWidget
 from PyQt5.QtCore import Qt
 
 import random
@@ -131,6 +131,7 @@ class C_Insert_InvControl_Dialog(QDialog):
         self.EnableDisableParameters(True)
         self.DefaultConfigParameters()
         self.adjustSize()
+        self.centralize()
 
     def removeInvControl(self):
         for ctd in range(self.InvControl_GroupBox_TreeWidget.topLevelItemCount() - 1, -1, -1):
@@ -224,15 +225,12 @@ class C_Insert_InvControl_Dialog(QDialog):
             self.adjustSize()
 
         elif checkCont > 1:
-            QMessageBox(QMessageBox.Warning, "Inserir Controle do Inversor",
-                        "Selecione somente um InvControl para editar!",
-                        QMessageBox.Ok).exec()
+            msg = QMessageBox()
+            msg.information(self, "Editar Controle do Inversor", "Selecione somente um InvControl para editar!")
 
         else:
-            QMessageBox(QMessageBox.Warning, "Inserir Controle do Inversor",
-                        "Selecione pelo menos um InvControl para editar!",
-                        QMessageBox.Ok).exec()
-
+            msg = QMessageBox()
+            msg.information(self, "Editar Controle do Inversor", "Selecione pelo menos um InvControl para editar!")
 
     def restauradefault(self):
         self.clearInvControlParameters()
@@ -254,9 +252,9 @@ class C_Insert_InvControl_Dialog(QDialog):
         if self.SelectXYCurve():
             if self.SelectElementList():
                 if self.get_InvControlName() == "":
-                    QMessageBox(QMessageBox.Information, "Inserir Controle do Inversor",
-                                "Adicione um nome ao InvControl",
-                                QMessageBox.Ok).exec()
+                    msg = QMessageBox()
+                    msg.information(self, "Inserir Controle do Inversor", "Adicione um nome ao InvControl")
+
                 else:
                     countName = 0
                     InvControl = {}
@@ -337,10 +335,8 @@ class C_Insert_InvControl_Dialog(QDialog):
                             self.InvControlList.append(InvControl)
 
                         else:
-                            QMessageBox(QMessageBox.Warning, "Inserir Controle do Inversor",
-                                        "Não foi possível adicionar, já existe um InvControl com esse nome",
-                                        QMessageBox.Ok).exec()
-
+                            msg = QMessageBox()
+                            msg.information(self, "Inserir Controle do Inversor", "Não foi possível adicionar, já existe um InvControl com esse nome")
 
                     else:  # Se estiver editando um InvControl
                         for ctd in self.InvControlList:
@@ -395,7 +391,6 @@ class C_Insert_InvControl_Dialog(QDialog):
         self.vv_list = ''
         self.vw_list = ''
 
-
     def CancelAddEditInvControl(self):
         self.EnableDisableParameters(False)
         self.adjustSize()
@@ -411,18 +406,18 @@ class C_Insert_InvControl_Dialog(QDialog):
     def SelectXYCurve(self):
         if self.TabConfig.NameEMode_GroupBox_Mode_ComboBox.currentText() == "VOLTVAR":
             if self.TabConfig.VV_XYCurve.dataVV_XYCurve == {}:
-                QMessageBox(QMessageBox.Information, "Inserir Controle do Inversor",
-                            "Selecione uma Curva XY para o InvControl",
-                            QMessageBox.Ok).exec()
+                msg = QMessageBox()
+                msg.information(self, "Inserir Controle do Inversor", "Selecione uma Curva XY para o InvControl")
+
                 return False
             else:
                 return True
 
         else:
             if self.TabConfig.VW_XYCurve.dataVW_XYCurve == {}:
-                QMessageBox(QMessageBox.Information, "Inserir Controle do Inversor",
-                            "Selecione uma Curva XY para o InvControl",
-                            QMessageBox.Ok).exec()
+                msg = QMessageBox()
+                msg.information(self, "Inserir Controle do Inversor", "Selecione uma Curva XY para o InvControl")
+
                 return False
             else:
                 return True
@@ -444,17 +439,19 @@ class C_Insert_InvControl_Dialog(QDialog):
     def SelectElementList(self):
         if self.TabConfig.NameEMode_GroupBox_Mode_ComboBox.currentText() == "VOLTVAR":
             if self.TabConfig.VV_ElementList.Derlist == []:
-                QMessageBox(QMessageBox.Information, "Inserir Controle do Inversor",
-                            "Selecione pelo menos um elemento para o InvControl se conectar",
-                            QMessageBox.Ok).exec()
+                msg = QMessageBox()
+                msg.information(self, "Inserir Controle do Inversor",
+                                "Selecione pelo menos um elemento para o InvControl se conectar")
+
                 return False
             else:
                 return True
         else:
             if self.TabConfig.VW_ElementList.Derlist == []:
-                QMessageBox(QMessageBox.Information, "Inserir Controle do Inversor",
-                            "Selecione pelo menos um elemento para o InvControl se conectar",
-                            QMessageBox.Ok).exec()
+                msg = QMessageBox()
+                msg.information(self, "Inserir Controle do Inversor",
+                                "Selecione pelo menos um elemento para o InvControl se conectar")
+
                 return False
             else:
                 return True
@@ -538,6 +535,12 @@ class C_Insert_InvControl_Dialog(QDialog):
         self.TabConfig.VoltWatt_GroupBox_RiseFallLimit_DoubleSpinBox.setValue(0)
         self.TabConfig.VoltWatt_GroupBox_VoltWattYAxis_ComboBox.setCurrentText("")
 
+    def centralize(self):
+        qr = self.frameGeometry()
+        centerpoint = QDesktopWidget().availableGeometry().center()
+        qr.moveCenter(centerpoint)
+        self.move(qr.topLeft())
+
 class InvConfig(QWidget):
     def __init__(self):
         super().__init__()
@@ -596,6 +599,7 @@ class InvConfig(QWidget):
         self.VoltVar_GroupBox_DeltaQFactor_DoubleSpinBox = QDoubleSpinBox()
         self.VoltVar_GroupBox_DeltaQFactor_DoubleSpinBox.setDecimals(2)
         self.VoltVar_GroupBox_DeltaQFactor_DoubleSpinBox.setRange(-1, 1)
+        self.VoltVar_GroupBox_DeltaQFactor_DoubleSpinBox.setToolTip("Aceita valores entre -1,00 e 1,00")
         self.VoltVar_GroupBox_DeltaQFactor_DoubleSpinBox.setButtonSymbols(2)
         self.VoltVar_GroupBox_Layout.addWidget(self.VoltVar_GroupBox_DeltaQFactor_Label, 3, 0, 1, 1)
         self.VoltVar_GroupBox_Layout.addWidget(self.VoltVar_GroupBox_DeltaQFactor_DoubleSpinBox, 3, 1, 1, 2)
@@ -604,6 +608,7 @@ class InvConfig(QWidget):
         self.VoltVar_GroupBox_VarChangeTolerance_DoubleSpinBox = QDoubleSpinBox()
         self.VoltVar_GroupBox_VarChangeTolerance_DoubleSpinBox.setDecimals(3)
         self.VoltVar_GroupBox_VarChangeTolerance_DoubleSpinBox.setRange(-100, 100)
+        self.VoltVar_GroupBox_VarChangeTolerance_DoubleSpinBox.setToolTip("Aceita valores entre -100,000 e 100,000")
         self.VoltVar_GroupBox_VarChangeTolerance_DoubleSpinBox.setButtonSymbols(2)
         self.VoltVar_GroupBox_Layout.addWidget(self.VoltVar_GroupBox_VarChangeTolerance_Label, 4, 0, 1, 1)
         self.VoltVar_GroupBox_Layout.addWidget(self.VoltVar_GroupBox_VarChangeTolerance_DoubleSpinBox, 4, 1, 1, 2)
@@ -612,6 +617,7 @@ class InvConfig(QWidget):
         self.VoltVar_GroupBox_VoltageChangeTolerance_DoubleSpinBox = QDoubleSpinBox()
         self.VoltVar_GroupBox_VoltageChangeTolerance_DoubleSpinBox.setDecimals(4)
         self.VoltVar_GroupBox_VoltageChangeTolerance_DoubleSpinBox.setRange(-100, 100)
+        self.VoltVar_GroupBox_VoltageChangeTolerance_DoubleSpinBox.setToolTip("Aceita valores entre -100,0000 e 100,0000")
         self.VoltVar_GroupBox_VoltageChangeTolerance_DoubleSpinBox.setButtonSymbols(2)
         self.VoltVar_GroupBox_Layout.addWidget(self.VoltVar_GroupBox_VoltageChangeTolerance_Label, 5, 0, 1, 1)
         self.VoltVar_GroupBox_Layout.addWidget(self.VoltVar_GroupBox_VoltageChangeTolerance_DoubleSpinBox, 5, 1, 1, 2)
@@ -620,6 +626,7 @@ class InvConfig(QWidget):
         self.VoltVar_GroupBox_HysteresisOffSet_DoubleSpinBox = QDoubleSpinBox()
         self.VoltVar_GroupBox_HysteresisOffSet_DoubleSpinBox.setDecimals(2)
         self.VoltVar_GroupBox_HysteresisOffSet_DoubleSpinBox.setRange(-100, 100)
+        self.VoltVar_GroupBox_HysteresisOffSet_DoubleSpinBox.setToolTip("Aceita valores entre -100,00 e 100,00")
         self.VoltVar_GroupBox_HysteresisOffSet_DoubleSpinBox.setButtonSymbols(2)
         self.VoltVar_GroupBox_Layout.addWidget(self.VoltVar_GroupBox_HysteresisOffSet_Label, 6, 0, 1, 1)
         self.VoltVar_GroupBox_Layout.addWidget(self.VoltVar_GroupBox_HysteresisOffSet_DoubleSpinBox, 6, 1, 1, 2)
@@ -634,7 +641,8 @@ class InvConfig(QWidget):
         # Configurar avgwindowlen
         self.VoltVar_GroupBox_AvgWindowLen_Label = QLabel("avgwindowlen")
         self.VoltVar_GroupBox_AvgWindowLen_SpinBox = QSpinBox()
-        self.VoltVar_GroupBox_AvgWindowLen_SpinBox.setRange(-100, 100)
+        self.VoltVar_GroupBox_AvgWindowLen_SpinBox.setRange(0, 100)
+        self.VoltVar_GroupBox_AvgWindowLen_SpinBox.setToolTip("Aceita valores entre 0 e 100")
         self.VoltVar_GroupBox_AvgWindowLen_SpinBox.setButtonSymbols(2)
         self.VoltVar_GroupBox_AvgWindowLen_SpinBox.setEnabled(False)
         self.VoltVar_GroupBox_AvgWindowLen_ComboBox = QComboBox()
@@ -656,6 +664,7 @@ class InvConfig(QWidget):
         self.VoltVar_GroupBox_LPFtau_DoubleSpinBox = QDoubleSpinBox()
         self.VoltVar_GroupBox_LPFtau_DoubleSpinBox.setDecimals(3)
         self.VoltVar_GroupBox_LPFtau_DoubleSpinBox.setRange(-100, 100)
+        self.VoltVar_GroupBox_LPFtau_DoubleSpinBox.setToolTip("Aceita valores entre -100,000 e 100,000")
         self.VoltVar_GroupBox_LPFtau_DoubleSpinBox.setButtonSymbols(2)
         self.VoltVar_GroupBox_LPFtau_DoubleSpinBox.setEnabled(False)
         self.VoltVar_GroupBox_Layout.addWidget(self.VoltVar_GroupBox_LPFtau_Label, 10, 0, 1, 1)
@@ -665,6 +674,7 @@ class InvConfig(QWidget):
         self.VoltVar_GroupBox_RiseFallLimit_DoubleSpinBox = QDoubleSpinBox()
         self.VoltVar_GroupBox_RiseFallLimit_DoubleSpinBox.setDecimals(3)
         self.VoltVar_GroupBox_RiseFallLimit_DoubleSpinBox.setRange(-1, 100)
+        self.VoltVar_GroupBox_RiseFallLimit_DoubleSpinBox.setToolTip("Aceita valores entre -1,000 e 100,000")
         self.VoltVar_GroupBox_RiseFallLimit_DoubleSpinBox.setButtonSymbols(2)
         self.VoltVar_GroupBox_RiseFallLimit_DoubleSpinBox.setEnabled(False)
         self.VoltVar_GroupBox_Layout.addWidget(self.VoltVar_GroupBox_RiseFallLimit_Label, 11, 0, 1, 1)
@@ -703,6 +713,7 @@ class InvConfig(QWidget):
         self.VoltWatt_GroupBox_DeltaPFactor_DoubleSpinBox = QDoubleSpinBox()
         self.VoltWatt_GroupBox_DeltaPFactor_DoubleSpinBox.setDecimals(2)
         self.VoltWatt_GroupBox_DeltaPFactor_DoubleSpinBox.setRange(-1, 1)
+        self.VoltWatt_GroupBox_DeltaPFactor_DoubleSpinBox.setToolTip("Aceita valores entre -1,00 e 1,00")
         self.VoltWatt_GroupBox_DeltaPFactor_DoubleSpinBox.setButtonSymbols(2)
         self.VoltWatt_GroupBox_Layout.addWidget(self.VoltWatt_GroupBox_DeltaPFactor_Label, 3, 0, 1, 1)
         self.VoltWatt_GroupBox_Layout.addWidget(self.VoltWatt_GroupBox_DeltaPFactor_DoubleSpinBox, 3, 1, 1, 2)
@@ -711,6 +722,7 @@ class InvConfig(QWidget):
         self.VoltWatt_GroupBox_ActivePChangeTolerance_DoubleSpinBox = QDoubleSpinBox()
         self.VoltWatt_GroupBox_ActivePChangeTolerance_DoubleSpinBox.setDecimals(2)
         self.VoltWatt_GroupBox_ActivePChangeTolerance_DoubleSpinBox.setRange(-100, 100)
+        self.VoltWatt_GroupBox_ActivePChangeTolerance_DoubleSpinBox.setToolTip("Aceita valores entre -100,00 e 100,00")
         self.VoltWatt_GroupBox_ActivePChangeTolerance_DoubleSpinBox.setButtonSymbols(2)
         self.VoltWatt_GroupBox_Layout.addWidget(self.VoltWatt_GroupBox_ActivePChangeTolerance_Label, 4, 0, 1, 1)
         self.VoltWatt_GroupBox_Layout.addWidget(self.VoltWatt_GroupBox_ActivePChangeTolerance_DoubleSpinBox, 4, 1, 1, 2)
@@ -726,6 +738,7 @@ class InvConfig(QWidget):
         self.VoltWatt_GroupBox_AvgWindowLen_Label = QLabel("avgwindowlen")
         self.VoltWatt_GroupBox_AvgWindowLen_SpinBox = QSpinBox()
         self.VoltWatt_GroupBox_AvgWindowLen_SpinBox.setRange(0, 100)
+        self.VoltWatt_GroupBox_AvgWindowLen_SpinBox.setToolTip("Aceita valores entre 0 e 100")
         self.VoltWatt_GroupBox_AvgWindowLen_SpinBox.setButtonSymbols(2)
         self.VoltWatt_GroupBox_AvgWindowLen_SpinBox.setEnabled(False)
         self.VoltWatt_GroupBox_AvgWindowLen_ComboBox = QComboBox()
@@ -747,6 +760,7 @@ class InvConfig(QWidget):
         self.VoltWatt_GroupBox_LPFtau_DoubleSpinBox = QDoubleSpinBox()
         self.VoltWatt_GroupBox_LPFtau_DoubleSpinBox.setDecimals(3)
         self.VoltWatt_GroupBox_LPFtau_DoubleSpinBox.setRange(-100, 100)
+        self.VoltWatt_GroupBox_LPFtau_DoubleSpinBox.setToolTip("Aceita valores entre -100,000 e 100,000")
         self.VoltWatt_GroupBox_LPFtau_DoubleSpinBox.setButtonSymbols(2)
         self.VoltWatt_GroupBox_LPFtau_DoubleSpinBox.setEnabled(False)
         self.VoltWatt_GroupBox_Layout.addWidget(self.VoltWatt_GroupBox_LPFtau_Label,8, 0, 1, 1)
@@ -756,6 +770,7 @@ class InvConfig(QWidget):
         self.VoltWatt_GroupBox_RiseFallLimit_DoubleSpinBox = QDoubleSpinBox()
         self.VoltWatt_GroupBox_RiseFallLimit_DoubleSpinBox.setDecimals(3)
         self.VoltWatt_GroupBox_RiseFallLimit_DoubleSpinBox.setRange(-1, 100)
+        self.VoltWatt_GroupBox_RiseFallLimit_DoubleSpinBox.setToolTip("Aceita valores entre -1,000 e 100,000")
         self.VoltWatt_GroupBox_RiseFallLimit_DoubleSpinBox.setButtonSymbols(2)
         self.VoltWatt_GroupBox_RiseFallLimit_DoubleSpinBox.setEnabled(False)
         self.VoltWatt_GroupBox_Layout.addWidget(self.VoltWatt_GroupBox_RiseFallLimit_Label, 9, 0, 1, 1)
@@ -790,8 +805,6 @@ class InvConfig(QWidget):
         else:
             self.VoltVar_GroupBox.setVisible(False)
             self.VoltWatt_GroupBox.setVisible(True)
-
-        self.adjustSize()
 
     def Enable_VoltageCurvexRef_SpinBox(self):
         if self.NameEMode_GroupBox_Mode_ComboBox.currentText() == "VOLTVAR":
@@ -839,12 +852,12 @@ class InvConfig(QWidget):
 
     def VV_ElementListConfig(self):
         self.VV_ElementList.clear()
-        self.VV_ElementList.update()
+        self.VV_ElementList.Update()
         self.VV_ElementList.show()
 
     def VW_ElementListConfig(self):
         self.VW_ElementList.clear()
-        self.VW_ElementList.update()
+        self.VW_ElementList.Update()
         self.VW_ElementList.show()
 
 class InvControl_TreeWidget_Item(QTreeWidgetItem):

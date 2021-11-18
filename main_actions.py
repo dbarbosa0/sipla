@@ -2,6 +2,7 @@ from PyQt5.QtWidgets import QStatusBar, QMessageBox
 
 ###
 import database.class_conn
+import opendss.class_data
 import opendss.class_opendss
 import opendss.class_config_dialog
 import opendss.class_insert_energymeter_dialog
@@ -11,7 +12,6 @@ import opendss.invcontrol.class_insert_invcontrol_dialog
 import opendss.invcontrol.class_config_voltvar_elementlist
 import opendss.storage.class_config_storagecontroller
 import opendss.class_insert_pvsystem_config_dialog
-import opendss.class_insert_pvsystem_substation_dialog
 import opendss.class_energymeter_results_dialog
 import opendss.class_config_plot_monitor_dialog
 import opendss.class_scan_config_dialog
@@ -77,12 +77,11 @@ class C_MainActions():
         self.Devices_DialogSettings.TabRelay.OpenDSS = self.OpenDSS
         self.Devices_DialogSettings.TabSwtControl.OpenDSS = self.OpenDSS
         self.Curves_DialogSettings = protect.class_tcc_curves.C_Config_Curves_Dialog()
+        self.OpenDSS.Curves_DialogSettings_TCC = self.Curves_DialogSettings.data_load_Curves
 
         # Contribuição Felipe
         self.OpenDSS_PVSystem_DialogSettings = opendss.class_insert_pvsystem_config_dialog.C_Config_PVSystem_Dialog()
-        self.OpenDSS_PVSystem_DialogInsert = opendss.class_insert_pvsystem_substation_dialog.C_Insert_PVSystem_Substation_Dialog(self.OpenDSS_PVSystem_DialogSettings)
         self.OpenDSS_PVSystem_DialogSettings.OpenDSS = self.OpenDSS
-        self.OpenDSS_PVSystem_DialogInsert.OpenDSS = self.OpenDSS
 
         # Contribuição Jonas
         self.OpenDSS_DialogInsertStorage = opendss.storage.class_insert_storage_dialog.C_Insert_Storage_Dialog()
@@ -154,8 +153,7 @@ class C_MainActions():
             #self.MainWindowToolBar.Protect_Curves_Act.setEnabled(True)
 
             #Felipe
-            self.MainWindowToolBar.OpenDSSMenuSubInsert_SubPVSystem.setEnabled(True)
-            #self.MainWindowToolBar.OpenDSS_ConfigPVSystem_Act.setEnabled(True)
+            self.MainWindowToolBar.OpenDSS_ConfigPVSystem_Act.setEnabled(True)
         else:
             self.MainWindowToolBar.OpenDSS_InsertEnergyMeter_Act.setEnabled(False)
             self.MainWindowToolBar.OpenDSS_InsertMonitor_Act.setEnabled(False)
@@ -166,7 +164,7 @@ class C_MainActions():
             self.MainWindowToolBar.SCAnalyze_Config_Act.setEnabled(False)
             self.MainWindowToolBar.SCAnalyze_Run_Act.setEnabled(False)
             #Jonas
-            self.MainWindowToolBar.OpenDSS_InsertStorage_Act.setEnabled(True)
+            self.MainWindowToolBar.OpenDSS_InsertStorage_Act.setEnabled(False)
             #Carvalho
             self.MainWindowToolBar.SCAnalyze_Config_Act.setEnabled(False)
             self.MainWindowToolBar.SCAnalyze_Run_Act.setEnabled(False)
@@ -174,7 +172,7 @@ class C_MainActions():
             #self.MainWindowToolBar.Protect_Curves_Act.setEnabled(False)
 
             # Felipe
-            self.MainWindowToolBar.OpenDSSMenuSubInsert_SubPVSystem.setEnabled(False)
+            self.MainWindowToolBar.OpenDSS_ConfigPVSystem_Act.setEnabled(False)
 
 
     #############################################
@@ -186,7 +184,7 @@ class C_MainActions():
             self.getSE_AT_DB()
             self.updateStatusBar()
         else:
-            QMessageBox(QMessageBox.Warning, "DataBase Configuration", \
+            QMessageBox(QMessageBox.Warning, "DataBase Configuration",
                         "A Conexão com o Banco de Dados deve ser configurada!", QMessageBox.Ok).exec()
 
     def configDataBase(self):
@@ -264,7 +262,7 @@ class C_MainActions():
 
         ## testando o Daily
         if (self.OpenDSS_DialogSettings.dataInfo["Mode"] == "Daily") and (not self.OpenDSS_DialogSettings.dataInfo["LoadShapes"]):
-            QMessageBox(QMessageBox.Information, "OpenDSS Configuration", \
+            QMessageBox(QMessageBox.Information, "OpenDSS Configuration",
                         "A(s) Curva(s) de Carga deve(m) ser carregada(s) no modo Daily!", QMessageBox.Ok).exec()
         else:
             self.execCreateDSS() ## Cria o arquivo que será utilizado pelo OpenDSS e passa os parâmtros para rodar apenas o que foi selecionado
@@ -329,9 +327,6 @@ class C_MainActions():
     def exec_PVSystem_Settings(self):
         self.OpenDSS_PVSystem_DialogSettings.show()
 
-    def exec_PVSystem_Substation(self):
-        self.OpenDSS_PVSystem_DialogInsert.show()
-
     def exec_Device_Settings(self):
         self.Devices_DialogSettings.updateMainProtectDialog()
         self.Devices_DialogSettings.show()
@@ -363,7 +358,6 @@ class C_MainActions():
 
     #Contribuição Lenon
     def execInsertInvControl(self):
-        self.OpenDSS_DialogInsertInvControl.move(500, 90)
         self.OpenDSS_DialogInsertInvControl.show()
 
 

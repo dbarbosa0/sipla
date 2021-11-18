@@ -23,6 +23,7 @@ class C_Eff_Curve_Import(QDialog):
         self.InitUI()
 
         self.curve_name = ''
+        self.npts = ''
         self.x_axys = ''
         self.y_axys = ''
 
@@ -121,9 +122,6 @@ class C_Eff_Curve_Import(QDialog):
         self.Eff_Curve_Select_Manual_Btn.toggled.connect(lambda: self.Manual_Mode_On())
         self.Eff_Curve_Select_Csv_Btn.toggled.connect(lambda: self.Csv_Mode_On())
 
-
-
-
     def Default_Mode_On(self):  # Como será apresentada a janela Default
         self.Eff_Curve_Manual_Mode_GroupBox.setVisible(False)
         self.Eff_Curve_Csv_Mode_GroupBox.setVisible(False)
@@ -145,10 +143,9 @@ class C_Eff_Curve_Import(QDialog):
 
     def define_default_entries(self):
         self.curve_name = 'Eff_Default'
+        self.npts = '4'
         self.x_axys = str([0.1, 0.2, 0.4, 1.0]).strip('[]').replace("'", "")
         self.y_axys = str([0.86, 0.9, 0.93, 0.97]).strip('[]').replace("'", "")
-
-        return self.curve_name, self.x_axys, self.y_axys
 
     def verify_manual_entries(self):  # Validando as entradas manuais
         aux1 = self.Eff_Curve_Xdata.text().split(',')

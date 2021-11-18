@@ -1,3 +1,4 @@
+import time
 from typing import NamedTuple
 import database.class_conn
 import class_exception
@@ -14,6 +15,7 @@ class dadosTrafoDist(NamedTuple):
     fas_con_t: str
     sit_ativ: str
     tip_unid: str
+    ten_lin_se: str
     cap_elo: str
     cap_cha: str
     tap: str
@@ -39,8 +41,6 @@ class dadosTrafoDist(NamedTuple):
     per_tot_eqtrd: str
     r: str
     xhl: str
-    xht: str
-    xlt: str
 
 class dadosUnidCompReat(NamedTuple):
     cod_id: str
@@ -68,6 +68,7 @@ class dadosUNREMT(NamedTuple):
     pac_2: str
     fas_con: str
     sit_ativ: str
+    descr: str
 
 
 class dadosUnidCons(NamedTuple):
@@ -79,8 +80,19 @@ class dadosUnidCons(NamedTuple):
     sit_ativ: str
     tip_cc: str
     car_inst: str
+    ene_01: str
+    ene_02: str
+    ene_03: str
+    ene_04: str
+    ene_05: str
+    ene_06: str
+    ene_07: str
+    ene_08: str
+    ene_09: str
+    ene_10: str
+    ene_11: str
+    ene_12: str
     uni_tr: str
-
 
 class dadosCondutores(NamedTuple):
     cod_id: str
@@ -183,16 +195,16 @@ class C_DBaseData():
 
             if nomeSE_MT is not None:
                 sqlStr += " WHERE sub ='" + nomeSE_MT + "'"
-
             lista_dados = []
 
             dadosSE = self.DataBaseConn.getSQLDB("CTMT", sqlStr)
 
             for linha in dadosSE.fetchall():
                 tmp_dados = dadosCTATMT (
-                    linha[0], #nome: str
-                    linha[1], #ten_nom: str
-                    linha[2]  # cod_id: str
+                    linha[0], # nome: str
+                    linha[1], # ten_nom: str
+                    linha[2], # cod_id: str
+
                 )
 
                 lista_dados.append(tmp_dados)
@@ -231,28 +243,28 @@ class C_DBaseData():
             raise class_exception.ExecOpenDSS("Erro no processamento do Banco de Dados para os Transformadores de Média Tensão!")
 
     def getData_Condutores(self, tipoCondutor):  # Pega os condutores de MT
+        start_time = time.time()
+        try:
+            sqlStr = "SELECT cod_id, r1, x1, cnom, cmax FROM segcon WHERE cod_id LIKE '%" + tipoCondutor + "%' ORDER BY cod_id"
 
-            try:
-                sqlStr = "SELECT cod_id, r1, x1, cnom, cmax FROM segcon WHERE cod_id LIKE '%" + tipoCondutor + "%' ORDER BY cod_id"
+            lista_dados = []
 
-                lista_dados = []
+            dadosSE = self.DataBaseConn.getSQLDB("SEGCON", sqlStr)
 
-                dadosSE = self.DataBaseConn.getSQLDB("SEGCON", sqlStr)
+            for linha in dadosSE.fetchall():
+                tmp_dados = dadosCondutores(
+                    linha[0],  # cod_id: str
+                    linha[1],  # r1: str
+                    linha[2],  #x1: str
+                    linha[3],  #cnom: str
+                    linha[4],  #cmax: str
+                )
+                lista_dados.append(tmp_dados)
+            print("--- %s seconds --- CONDUTORES" % (time.time() - start_time))
+            return lista_dados
 
-                for linha in dadosSE.fetchall():
-                    tmp_dados = dadosCondutores(
-                        linha[0],  # cod_id: str
-                        linha[1],  # r1: str
-                        linha[2],  #x1: str
-                        linha[3],  #cnom: str
-                        linha[4],  #cmax: str
-                    )
-                    lista_dados.append(tmp_dados)
-
-                return lista_dados
-
-            except:
-                raise class_exception.ExecOpenDSS("Erro no processamento do Banco de Dados para os Condutores: " + tipoCondutor)
+        except:
+            raise class_exception.ExecOpenDSS("Erro no processamento do Banco de Dados para os Condutores: " + tipoCondutor)
 
     def getData_SecAT(self, nomeSE_MT):  # Pega as seccionadoras de AT
 
@@ -316,7 +328,7 @@ class C_DBaseData():
             raise class_exception.ExecOpenDSS("Erro no processamento do Banco de Dados para as Seccionadoras MT: " + str(tipoSEC))
 
     def getData_SegLinhasMT(self, nomeSE_MT):  # Pega os segmentos de linhas de MT
-
+        start_time = time.time()
         try:
 
             sqlStr = "SELECT DISTINCT cod_id, ctmt, pac_1, pac_2, fas_con, comp, tip_cnd, uni_tr_s FROM ssdmt WHERE sub = '" + \
@@ -338,7 +350,7 @@ class C_DBaseData():
                     linha[7],  # uni_tr_s
                 )
                 lista_dados.append(tmp_dados)
-
+            print("--- %s seconds --- SSDMT" % (time.time() - start_time))
             return lista_dados
 
         except:
@@ -348,7 +360,7 @@ class C_DBaseData():
 
         try:
 
-            sqlStr = "SELECT cod_id, ctmt, pac_1, pac_2, fas_con, sit_ativ FROM unremt WHERE sub = '" + \
+            sqlStr = "SELECT cod_id, ctmt, pac_1, pac_2, fas_con, sit_ativ, descr FROM unremt WHERE sub = '" + \
                          nomeSE_MT + "'"
 
             lista_dados = []
@@ -363,9 +375,9 @@ class C_DBaseData():
                     linha[3],  # pac_2
                     linha[4],  # fas_con
                     linha[5],  # sit_ativ
+                    linha[6],  # descr
                 )
                 lista_dados.append(tmp_dados)
-
             return lista_dados
 
         except:
@@ -373,7 +385,7 @@ class C_DBaseData():
 
 
     def getData_UniConsumidora(self, nomeSE_MT, tipoUniCons):  # Pega os reguladores
-
+        start_time = time.time()
         try:
             if tipoUniCons == "MT":
 
@@ -390,7 +402,8 @@ class C_DBaseData():
 
             lista_dados = []
 
-            sqlStr = "SELECT objectid, pac, ctmt, fas_con, ten_forn, sit_ativ, tip_cc, car_inst, " + uni_tr + " FROM " + dbase + " WHERE sub = '" + \
+            sqlStr = "SELECT objectid, pac, ctmt, fas_con, ten_forn, sit_ativ, tip_cc, car_inst, ene_01, ene_02, " \
+                     "ene_03, ene_04, ene_05, ene_06, ene_07, ene_08, ene_09, ene_10, ene_11, ene_12, " + uni_tr + " FROM " + dbase + " WHERE sub = '" + \
                      nomeSE_MT + "' ORDER BY " + uni_tr
 
             dadosUniConsDB = self.DataBaseConn.getSQLDB(dbase, sqlStr)
@@ -405,10 +418,22 @@ class C_DBaseData():
                     linha[5],  # sit_ativ
                     linha[6],  # tip_cc
                     linha[7],  # car_inst
-                    linha[8]   # uni_tr
+                    linha[8],  # ene_01
+                    linha[9],  # ene_02
+                    linha[10],  # ene_03
+                    linha[11],  # ene_04
+                    linha[12],  # ene_05
+                    linha[13],  # ene_06
+                    linha[14],  # ene_07
+                    linha[15],  # ene_08
+                    linha[16],  # ene_09
+                    linha[17],  # ene_10
+                    linha[18],  # ene_01
+                    linha[19],  # ene_01
+                    linha[20]   # uni_tr
                 )
                 lista_dados.append(tmp_dados)
-
+            print("--- %s seconds UNI_c---" % (time.time() - start_time))
             return lista_dados
 
         except:
@@ -416,15 +441,17 @@ class C_DBaseData():
 
 
     def getData_TrafoDIST(self, nomeSE_MT):  # Pega os reguladores de MT
+        print('COMEÇANDO TRAFO')
+        start_time=time.time()
 
         try:
 
             sqlStrUNTRD = "SELECT cod_id, pac_1, pac_2, pac_3, fas_con_p, fas_con_s, fas_con_t, sit_ativ, tip_unid, " \
-                     " cap_elo, cap_cha, tap, pot_nom, per_fer, per_tot, ctmt, tip_trafo " \
+                     " ten_lin_se, cap_elo, cap_cha, tap, pot_nom, per_fer, per_tot, ctmt, tip_trafo " \
                      " FROM  untrd WHERE sub = '" + nomeSE_MT + "' ORDER BY cod_id"
 
             sqlStrEQTRD = "SELECT cod_id, pac_1, pac_2, pac_3, fas_con, pot_nom, lig, ten_pri, ten_sec, ten_ter, " \
-                         " lig_fas_p, lig_fas_s, lig_fas_t, per_fer, per_tot, r, xhl, xht, xlt " \
+                         " lig_fas_p, lig_fas_s, lig_fas_t, per_fer, per_tot, r, xhl" \
                          " FROM  eqtrd"
 
             lista_dados = []
@@ -452,14 +479,15 @@ class C_DBaseData():
                             lnhUNTRD[ 6], # fas_con_t
                             lnhUNTRD[ 7], # sit_ativ
                             lnhUNTRD[ 8], # tip_unid
-                            lnhUNTRD[ 9], # cap_elo
-                            lnhUNTRD[10], # cap_cha
-                            lnhUNTRD[11], # tap
-                            lnhUNTRD[12], # pot_nom
-                            lnhUNTRD[13], # per_fer
-                            lnhUNTRD[14], # per_tot
-                            lnhUNTRD[15], # ctmt
-                            lnhUNTRD[16], # tip_trafo
+                            lnhUNTRD[ 9], # ten_lin_se
+                            lnhUNTRD[10], # cap_elo
+                            lnhUNTRD[11], # cap_cha
+                            lnhUNTRD[12], # tap
+                            lnhUNTRD[13], # pot_nom
+                            lnhUNTRD[14], # per_fer
+                            lnhUNTRD[15], # per_tot
+                            lnhUNTRD[16], # ctmt
+                            lnhUNTRD[17], # tip_trafo
                             lnhEQTRD[ 0], # cod_id_eqtrd
                             lnhEQTRD[ 1], # pac_1_eqtrd
                             lnhEQTRD[ 2], # pac_2_eqtrd
@@ -476,15 +504,13 @@ class C_DBaseData():
                             lnhEQTRD[13], # per_fer_eqtrd
                             lnhEQTRD[14], # per_tot_eqtrd
                             lnhEQTRD[15], # r
-                            lnhEQTRD[16], # xhl
-                            lnhEQTRD[17], # xht
-                            lnhEQTRD[18] # xlt
+                            lnhEQTRD[16]  # xhl
+
                         )
 
                         lista_dados.append(tmp_dados)
 
-
-
+            print("--- %s seconds --- TRAFO_DIST" % (time.time() - start_time))
             return lista_dados
 
         except:
@@ -492,7 +518,7 @@ class C_DBaseData():
 
 
     def getData_SegLinhasRamLigBT(self, nomeSE_MT, tipoLinha):  # Pega os reguladores
-
+        start_time = time.time()
         try:
             if tipoLinha == "SEGBT":  # Segmentos de Linhas de Baixa Tensão
 
@@ -525,7 +551,7 @@ class C_DBaseData():
                 )
 
                 lista_dados.append(tmp_dados)
-
+            print("--- %s seconds --- SSDBT" % (time.time() - start_time))
             return lista_dados
 
         except:

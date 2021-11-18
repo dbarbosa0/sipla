@@ -24,7 +24,7 @@ class C_Config_Curves_Dialog(QDialog):
         self._nPointsDef = 0
         self._nStepSizeDef = 0
         self._nStepSizeTimeDef = ""
-
+        self.data_load_Curves = {}
         self._dataCurves = {}
 
         self.InitUI()
@@ -188,6 +188,8 @@ class C_Config_Curves_Dialog(QDialog):
 
         self.setDataCurves()
         self.close()
+        self.loadParameters()
+
 
 
     def onAllCurves(self):
@@ -198,7 +200,6 @@ class C_Config_Curves_Dialog(QDialog):
 
 
     def setDataCurves(self):
-
         self.dataCurves = {}
         self.dataPointsX = {}
         self.dataPointsY = {}
@@ -206,20 +207,23 @@ class C_Config_Curves_Dialog(QDialog):
 
         try:
             for ctd in range(0, self.Curves_GroupBox_TreeWidget.topLevelItemCount()):
-
                 Item = self.Curves_GroupBox_TreeWidget.topLevelItem(ctd)
 
                 self.dataCurves[Item.name] = Item.getPointsList(2)
                 self.dataPointsX[Item.name] = Item.getPointsList(2)
                 self.dataPointsY[Item.name] = Item.getPointsList(3)
-                print(f'dataPointsX{self.dataPointsX}')
 
-            for key,value in self.dataPointsX.items():
-                if len(value)> self.nPoints:
+            for key, value in self.dataPointsX.items():
+                if len(value) > self.nPoints:
                     self.nPoints = len(value)
-
         except:
             pass
+
+    def loadParameters(self):
+        self.data_load_Curves['TCC_Curves'] = self.get_TCC_Curves()
+
+    def get_TCC_Curves(self):
+        return self.dataCurves, self.dataPointsY
 
 
     def csvImport(self):
@@ -388,7 +392,7 @@ class C_Config_Curves_Dialog(QDialog):
                     countName += 1
 
             if countName == 0:
-                pts = [0 for ctd in range(0,self.nPointsDef)]
+                pts = [0 for ctd in range(0, self.nPointsDef)]
                 pts = str(pts).strip('[]').replace("'","")
                 Config_TCCCurves_GroupBox_TreeWidget_Item(self.Curves_GroupBox_TreeWidget,
                                                           self.Curves_GroupBox_Checkbox_SelectAll.checkState(),
@@ -399,6 +403,10 @@ class C_Config_Curves_Dialog(QDialog):
                 msg = QMessageBox()
                 msg.information(self, 'Curvas TCC', "Não foi possível adicionar a curva TCC!\nCurva TCC já existente!")
 
+    #def loadParameters(self):
+        #self._dataCurves["TCC_Curves"] = self.Tab
+    #def getTCC_Curves(self):
+        #return self.dataCurves
 
 class Config_TCCCurves_GroupBox_TreeWidget_Item(QTreeWidgetItem):
     def __init__(self, parent, check, name, pointsX,pointsY,color):
@@ -429,10 +437,10 @@ class Config_TCCCurves_GroupBox_TreeWidget_Item(QTreeWidgetItem):
     def name(self):
         return self.text(0)
 
-    def getPoints(self,column):
+    def getPoints(self, column):
         return self.text(column)
 
-    def getPointsList(self,column):
+    def getPointsList(self, column):
         points = [float(x) for x in self.text(column).split(',')]
         return points
 

@@ -223,6 +223,14 @@ Pontos Y: Irradiação (W/m²) em p.u.")
             pass
         #print(self.IrradCurve_list)
 
+    def default_entries(self):
+        self.dataIrradCurve = {}
+        self.irradcurve_import.define_default_entries()
+        self.dataIrradCurve["IrradCurveName"] = self.irradcurve_import.curve_name
+        self.dataIrradCurve["npts"] = self.irradcurve_import.npts
+        self.dataIrradCurve["Xarray"] = self.irradcurve_import.x_axys
+        self.dataIrradCurve["Yarray"] = self.irradcurve_import.y_axys
+
 class Config_IrradCurve_GroupBox_TreeWidget_Item(QTreeWidgetItem):
     def __init__(self, parent, name, pointsX, pointsY, color):
         super(Config_IrradCurve_GroupBox_TreeWidget_Item, self).__init__(parent)

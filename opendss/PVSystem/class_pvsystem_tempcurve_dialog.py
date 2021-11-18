@@ -216,11 +216,18 @@ Pontos Y: Temperatura (°C)")
                 self.dataTempCurve["npts"] = str(len(Item.getPointsXList()))
                 self.dataTempCurve["Xarray"] = Item.getPointsXList()
                 self.dataTempCurve["Yarray"] = Item.getPointsYList()
-                self.dataTempCurve["interval"] = '1'
                 self.TempCurve_list.append(self.dataTempCurve.copy())
         except:
             pass
         #print(self.TempCurve_list)
+
+    def default_entries(self):
+        self.dataTempCurve = {}
+        self.tempcurve_import.define_default_entries()
+        self.dataTempCurve["TempCurveName"] = self.tempcurve_import.curve_name
+        self.dataTempCurve["npts"] = self.tempcurve_import.npts
+        self.dataTempCurve["Xarray"] = self.tempcurve_import.x_axys
+        self.dataTempCurve["Yarray"] = self.tempcurve_import.y_axys
 
 class Config_TempCurve_GroupBox_TreeWidget_Item(QTreeWidgetItem):
     def __init__(self, parent, name, pointsX, pointsY, color):

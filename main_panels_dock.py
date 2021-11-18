@@ -21,7 +21,7 @@ class C_NetPanel(QDockWidget):
 
 
         self.Deck_GroupBox = QGroupBox()
-        self.Deck_GroupBox.setFixedWidth(400)
+        self.Deck_GroupBox.setFixedWidth(500)
 
         self.Deck_GroupBox_Layout = QFormLayout()
 
@@ -81,11 +81,13 @@ class C_NetPanel(QDockWidget):
         self.NetPanel_Fields_GroupBox_Select_TreeWidget = QTreeWidget()
         self.NetPanel_Fields_GroupBox_Select_TreeWidget.setHeaderLabels(['Alimentador', 'Cor', 'BT', '','']) #Alterado para visualizar a BT
         # self.NetPanel_Fields_GroupBox_TreeWidget.setColumnWidth(250,30)
-        self.NetPanel_Fields_GroupBox_Select_TreeWidget.header().resizeSection(0, 190)
-        self.NetPanel_Fields_GroupBox_Select_TreeWidget.header().resizeSection(1, 50)
-        self.NetPanel_Fields_GroupBox_Select_TreeWidget.header().resizeSection(2, 20)
-        self.NetPanel_Fields_GroupBox_Select_TreeWidget.header().resizeSection(3, 20)
-        self.NetPanel_Fields_GroupBox_Select_TreeWidget.header().resizeSection(4, 20)
+        self.NetPanel_Fields_GroupBox_Select_TreeWidget.header().resizeSection(0, 180)
+        self.NetPanel_Fields_GroupBox_Select_TreeWidget.header().resizeSection(1, 70)
+        self.NetPanel_Fields_GroupBox_Select_TreeWidget.headerItem().setTextAlignment(1, Qt.AlignCenter)
+        self.NetPanel_Fields_GroupBox_Select_TreeWidget.header().resizeSection(2, 15)
+        self.NetPanel_Fields_GroupBox_Select_TreeWidget.headerItem().setTextAlignment(2, Qt.AlignCenter)
+        self.NetPanel_Fields_GroupBox_Select_TreeWidget.header().resizeSection(3, 15)
+        self.NetPanel_Fields_GroupBox_Select_TreeWidget.header().resizeSection(4, 15)
         self.NetPanel_Fields_GroupBox_Select_TreeWidget.itemClicked.connect(self.checkOnSelectAllFields)
 
         self.NetPanel_Fields_GroupBox_Select_Layout.addWidget(self.NetPanel_Fields_GroupBox_Select_TreeWidget)
@@ -145,7 +147,7 @@ class C_NetPanel(QDockWidget):
 
     ### Métodos para Acesso da Classe
 
-    def getSelectedSEAT (self): #IN
+    def getSelectedSEAT (self):
 
         if self.NetPanel_Config_GroupBox_SEAT_ComboBox.currentText():
             return self.NetPanel_Config_GroupBox_SEAT_ComboBox.currentText()
@@ -170,7 +172,6 @@ class C_NetPanel(QDockWidget):
 
         for ctd in range(0, self.NetPanel_Fields_GroupBox_Select_TreeWidget.topLevelItemCount()):
             Item = self.NetPanel_Fields_GroupBox_Select_TreeWidget.topLevelItem(ctd)
-
             if Item.checkState(0) == Qt.Checked:
                 listFields.append(Item.name)
                 listFieldsID.append(ctd)
@@ -257,19 +258,16 @@ class C_NetPanel(QDockWidget):
         self.NetPanel_Config_GroupBox_SEMT_ComboBox.addItems(dadosSE)
 
     def set_SEMT_Fields(self, dadosFields):
-
-        # Fazer uma função para Predeterminar as cores
-        # melhora a questão das multiplas adiciones
-
+        vetor_nomes=[]
         self.NetPanel_Fields_GroupBox_Select_TreeWidget.clear()
-
         for ctd in range(0, len(dadosFields)):
+            vetor_nomes.append(dadosFields[ctd][0])
             listTrafos = self.mainActions.getSE_MT_AL_TD_DB(dadosFields[ctd][1])
-
             NetPanel_Fields_GroupBox_Select_TreeWidget_Item(self.NetPanel_Fields_GroupBox_Select_TreeWidget,
                                                                       dadosFields[ctd][0], dadosFields[ctd][1],
-                                                                      config.colorsList[random.randint(0, len(config.colorsList) -1 )],
-                                                                      listTrafos)
+                                                                      config.colorsList[ctd],
+                                                                      listTrafos, vetor_nomes)
+
 
 
 
@@ -305,6 +303,7 @@ class C_NetPanel(QDockWidget):
 
         for ctd in range(0, self.NetPanel_Fields_GroupBox_Select_TreeWidget.topLevelItemCount()):
             Item = self.NetPanel_Fields_GroupBox_Select_TreeWidget.topLevelItem(ctd)
+
             if Item.checkState(0) == Qt.Checked:
                 self.Deck_GroupBox_MapView_Btn.setEnabled(True)
 
@@ -347,21 +346,22 @@ class C_NetPanel(QDockWidget):
 
 
 class NetPanel_Fields_GroupBox_Select_TreeWidget_Item(QTreeWidgetItem):
-    def __init__(self, parent, name, codField, color, listTrafosAL):
+    def __init__(self, parent, name, codField, color, listTrafosAL, vetor_nomes):
         ## Init super class ( QtGui.QTreeWidgetItem )
         super(NetPanel_Fields_GroupBox_Select_TreeWidget_Item, self).__init__(parent)
 
         ### Dialog Transformador de Distribuição
-        self.dialogTD = class_panels_dock_TD_dialog.C_TDDialog()
+
 
         ## Column 0 - Text:
         self.setText(0, name)
         self.setFlags(self.flags() | Qt.ItemIsUserCheckable)
+        #print(self.flags())
         self.setCheckState(0, Qt.Unchecked)
-
         self.color = color
         self.codField = codField
         self.listTrafos = listTrafosAL
+        self.vetor_nomes = vetor_nomes
 
         ## Column 1 - Button:
         self.TreeWidget_Item_Btn = QPushButton()
@@ -375,7 +375,6 @@ class NetPanel_Fields_GroupBox_Select_TreeWidget_Item(QTreeWidgetItem):
         self.TreeWidget_Item_Add_Btn.setFixedSize(20, 20)
         self.TreeWidget_Item_Add_Btn.setIcon(QIcon('img/icon_add.png'))
         self.TreeWidget_Item_Add_Btn.clicked.connect(self.openTDDialog)
-
         self.treeWidget().setItemWidget(self, 2, self.TreeWidget_Item_Add_Btn)
 
         ## Column 3:
@@ -383,14 +382,12 @@ class NetPanel_Fields_GroupBox_Select_TreeWidget_Item(QTreeWidgetItem):
         self.TreeWidget_Item_Remove_Btn.setFixedSize(20, 20)
         self.TreeWidget_Item_Remove_Btn.setIcon(QIcon('img/icon_remove.png'))
         self.TreeWidget_Item_Remove_Btn.clicked.connect(self.removerTrafo)
-
         self.treeWidget().setItemWidget(self, 3, self.TreeWidget_Item_Remove_Btn)
 
         ## Column 4:
         self.TreeWidget_Item_CheckALL_Btn = QCheckBox()
         self.TreeWidget_Item_CheckALL_Btn.setFixedSize(20, 20)
         self.TreeWidget_Item_CheckALL_Btn.clicked.connect(self.onSelectAllTDs)
-
         self.treeWidget().setItemWidget(self, 4, self.TreeWidget_Item_CheckALL_Btn)
 
         ########
@@ -427,24 +424,32 @@ class NetPanel_Fields_GroupBox_Select_TreeWidget_Item(QTreeWidgetItem):
 
         return listTrafoOtimizado
 
+
     def openTDDialog(self):
 
+        soma = []
+        massa=[]
+        i = 0
         listTrafoOtimizado = self.getListTrafoOtimizado()
-
+        copia_lista_cores = config.colorsList.copy()
         if listTrafoOtimizado:
-
+            self.dialogTD = class_panels_dock_TD_dialog.C_TDDialog(listTrafoOtimizado)
             self.dialogTD.Dilalog_Field_TD_LineEdit.setText(self.name)
             self.dialogTD.listTrafos = listTrafoOtimizado
-            self.dialogTD.updateListTrafoDIST()
+            #self.dialogTD.updateListTrafoDIST()
             self.dialogTD.exec()
-
+            while self.name != self.vetor_nomes[i]:
+                i = i + 1
+            copia_lista_cores.pop(i)
+            for contador_colors in range(len(copia_lista_cores)):
+                soma.append(contador_colors)
             if self.dialogTD.codTrafoDIST:
-                for ctd in self.dialogTD.codTrafoDIST:
-                ### Child
+                for cont in range(len(self.dialogTD.codTrafoDIST)//(len(copia_lista_cores)) + 1):
+                    massa.extend(soma)
+                for inde, ctd in zip(range(len(self.listTrafos)-len(listTrafoOtimizado), len(self.dialogTD.codTrafoDIST)+(len(self.listTrafos)-len(listTrafoOtimizado))), self.dialogTD.codTrafoDIST):
                     NetPanel_Fields_GroupBox_Select_TreeWidget_Child_Item(self,
-                                                                      ctd,
-                                                                      config.colorsList[random.randint(0, len(config.colorsList) -1 )])
-
+                                                                        ctd,
+                                                                        copia_lista_cores[massa[inde]])
                 self.checkOnSelectAllTDs()
             self.setExpanded(True)
 
@@ -492,7 +497,6 @@ class NetPanel_Fields_GroupBox_Select_TreeWidget_Item(QTreeWidgetItem):
             Item.setCheckState(0, self.TreeWidget_Item_CheckALL_Btn.checkState())
 
     def checkOnSelectAllTDs(self):
-
         ctdChecked = True
 
         for ctd in range(0, self.childCount()):
@@ -512,13 +516,12 @@ class NetPanel_Fields_GroupBox_Select_TreeWidget_Child_Item(QTreeWidgetItem):
 
 
         ### Dialog Transformador de Distribuição
-        self.dialogTD = class_panels_dock_TD_dialog.C_TDDialog()
+        #self.dialogTD = class_panels_dock_TD_dialog.C_TDDialog(listatrafos)
 
         ## Column 0 - Text:
         self.setText(0, name)
         self.setFlags(self.flags() | Qt.ItemIsUserCheckable)
         self.setCheckState(0, Qt.Checked)
-
         self.color = color
 
         ## Column 1 - Button:

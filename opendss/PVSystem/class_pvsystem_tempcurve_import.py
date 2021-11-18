@@ -25,6 +25,7 @@ class C_Temp_Curve_Import(QDialog):
         self.curve_name = ''
         self.x_axys = ''
         self.y_axys = ''
+        self.npts = ''
 
     def InitUI(self):
         self.setWindowTitle(self.titleWindow)
@@ -149,8 +150,7 @@ class C_Temp_Curve_Import(QDialog):
         default_x_axys = [x for x in range(1, len(default_y_axys)+1)]
         self.y_axys = str(default_y_axys).strip('[]').replace("'", "")
         self.x_axys = str(default_x_axys).strip('[]').replace("'", "")
-
-        return self.curve_name, self.x_axys, self.y_axys
+        self.npts = '24'
 
     def verify_manual_entries(self):  # Validando as entradas manuais
         aux1 = self.Temp_Curve_Xdata.text().split(',')

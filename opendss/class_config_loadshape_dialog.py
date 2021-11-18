@@ -206,9 +206,11 @@ class C_Config_LoadShape_Dialog(QDialog):
 
                 if self.checkLoadShape(Item.name, Item.getPoints()):
                     self.dataLoadShapes[Item.name] = Item.getPointsList()
+
                 else:
                     raise class_exception.ExecConfigOpenDSS("Erro na verificação da Curva de Carga " \
                                      + Item.name + " !","Verifique se todos os " + self.nPointsLoadDef + " pontos estão presentes!")
+            #print(self.dataLoadShapes)
         except:
             pass
 

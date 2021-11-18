@@ -7,6 +7,7 @@ import configparser
 import class_exception
 import platform
 import config as cfg
+import protect.class_tcc_curves
 
 import opendss.class_config_loadshape_dialog
 
@@ -120,6 +121,7 @@ class C_ConfigDialog(QDialog):
         self.dataInfo["Maxiterations"] = self.TabLoadFlow.get_Maxiterations()
         self.dataInfo["Maxcontroliter"] = self.TabLoadFlow.get_Maxcontroliter()
         self.dataInfo["LoadShapes"] = self.TabLoadFlow.get_LoadShapes()
+        self.dataInfo["Mes"] = self.TabLoadFlow.get_Mes()
 
     def Accept(self):
         self.loadParameters()
@@ -226,15 +228,15 @@ class C_ConfigDialog(QDialog):
 class LoadFlow(QWidget):
     def __init__(self):
         super().__init__()
-
         self.listmode = ["Direct", "Snapshot", "Daily"]  # lista de modos disponíveis
+        self.listmeses = ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro']
 
         self.InitUILoadFlow()
 
     def InitUILoadFlow(self):
         #Curvas de Carga
         self.LoadShapesDialog = opendss.class_config_loadshape_dialog.C_Config_LoadShape_Dialog()
-
+        self.protect = protect.class_tcc_curves.C_Config_Curves_Dialog
         ## GroupBox Fluxo de Carga
         self.LoadFlow_GroupBox = QGroupBox("Fluxo de Carga")
         self.LoadFlow_GroupBox_VoltageBase_Label = QLabel("Set VoltageBases")
@@ -267,6 +269,30 @@ class LoadFlow(QWidget):
         self.Mode_GroupBox_Layout.addWidget(self.Mode_GroupBox_Label, 1, 1, 1, 1)
         self.Mode_GroupBox_Layout.addWidget(self.Mode_GroupBox_ComboBox, 1, 2, 1, 1)
         self.Mode_GroupBox_Layout.addWidget(self.Mode_GroupBox_QPushButton, 1, 3, 1, 1)
+
+        # Layout Anos
+        self.Date_GroupBox = QGroupBox("Data")
+
+        self.Meses_GroupBox_Label = QLabel("Mês")
+        self.Meses_GroupBox_comboBox = QComboBox()
+        self.Meses_GroupBox_comboBox.addItems(self.listmeses)
+        self.Dia_GroupBox_Label = QLabel("Dia")
+        self.Dia_GroupBox_spinBox = QSpinBox()
+        self.Dia_GroupBox_spinBox.setValue(1)
+        self.Dia_GroupBox_spinBox.setMinimum(1)
+        self.Dia_GroupBox_spinBox.setMaximum(30)
+        self.Ano_GroupBox_Label = QLabel("Ano")
+        self.Ano_GroupBox_spinBox = QSpinBox()
+        self.Ano_GroupBox_spinBox.setMaximum(2021)
+        self.Ano_GroupBox_spinBox.setValue(2020)
+
+        self.Date_GroupBox_Layout = QGridLayout()
+        self.Date_GroupBox_Layout.addWidget(self.Meses_GroupBox_Label, 1, 1, 1, 1)
+        self.Date_GroupBox_Layout.addWidget(self.Meses_GroupBox_comboBox, 1, 2, 1, 2)
+        self.Date_GroupBox_Layout.addWidget(self.Dia_GroupBox_Label, 2, 1, 1, 1)
+        self.Date_GroupBox_Layout.addWidget(self.Dia_GroupBox_spinBox, 2, 2, 1, 2)
+        self.Date_GroupBox_Layout.addWidget(self.Ano_GroupBox_Label, 3, 1, 1, 1)
+        self.Date_GroupBox_Layout.addWidget(self.Ano_GroupBox_spinBox, 3, 2, 1, 2)
 
         ## GroupBox complementos do Daily
         self.Complements_Daily_GroupBox = QGroupBox("Complementos do Daily")
@@ -308,11 +334,14 @@ class LoadFlow(QWidget):
 
         self.LoadFlow_GroupBox.setLayout(self.LoadFlow_GroupBox_Layout)
         self.Mode_GroupBox.setLayout(self.Mode_GroupBox_Layout)
+        self.Date_GroupBox.setLayout(self.Date_GroupBox_Layout)
+        #self.
         self.Complements_Daily_GroupBox.setLayout(self.Complements_Daily_GroupBox_Layout)
 
         ## Layout da TAB1
         self.Tab_layout = QVBoxLayout()
         self.Tab_layout.addWidget(self.LoadFlow_GroupBox)
+        self.Tab_layout.addWidget(self.Date_GroupBox)
         self.Tab_layout.addWidget(self.Mode_GroupBox)
         self.Tab_layout.addWidget(self.Complements_Daily_GroupBox)
 
@@ -379,5 +408,8 @@ class LoadFlow(QWidget):
 
     def get_LoadShapes(self):
         return self.LoadShapesDialog.dataLoadShapes
+
+    def get_Mes(self):
+        return self.Meses_GroupBox_comboBox.currentText()
 
 
