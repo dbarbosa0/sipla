@@ -77,7 +77,6 @@ class C_Insert_Monitor_Dialog(QDialog): ## Classe Dialog principal
         self.Monitor_Ppolar_Label = QLabel("PPolar:")
         self.Monitor_VIPolar_Label = QLabel("VIPolar:")
 
-
         ### LineEdits
         self.Monitor_Name = QLineEdit()
 
@@ -105,7 +104,6 @@ class C_Insert_Monitor_Dialog(QDialog): ## Classe Dialog principal
         self.Monitor_VIPolar_ComboBox = QComboBox()
         self.Monitor_VIPolar_ComboBox.addItems(["Yes", "No"])
 
-
         self.Monitor_Element_PushButton = QPushButton(QIcon('img/icon_opendss_pesquisar.png'), str())
 
         ### Layout
@@ -119,7 +117,6 @@ class C_Insert_Monitor_Dialog(QDialog): ## Classe Dialog principal
         self.Monitor_Layout.addWidget(self.Monitor_Ppolar_Label, 6, 0, 1, 1)
         self.Monitor_Layout.addWidget(self.Monitor_VIPolar_Label, 7, 0, 1, 1)
 
-
         self.Monitor_Layout.addWidget(self.Monitor_Name, 0, 1, 1, 1)
         self.Monitor_Layout.addWidget(self.Monitor_Element_ComboBox, 1, 1, 1, 1)
         self.Monitor_Layout.addWidget(self.Monitor_Terminal_ComboBox, 2, 1, 1, 1)
@@ -128,7 +125,6 @@ class C_Insert_Monitor_Dialog(QDialog): ## Classe Dialog principal
         self.Monitor_Layout.addWidget(self.Monitor_Enable_ComboBox, 5, 1, 1, 1)
         self.Monitor_Layout.addWidget(self.Monitor_Ppolar_ComboBox, 6, 1, 1, 1)
         self.Monitor_Layout.addWidget(self.Monitor_VIPolar_ComboBox, 7, 1, 1, 1)
-
 
         
         ###### Botões dos Parâmetros
@@ -146,7 +142,7 @@ class C_Insert_Monitor_Dialog(QDialog): ## Classe Dialog principal
         #self.Monitor_Btns_Ok_Btn.setFixedWidth(100)
         self.Monitor_Btns_Ok_Btn.clicked.connect(self.AcceptAddEditMonitor)
         self.Monitor_Btns_Layout.addWidget(self.Monitor_Btns_Ok_Btn)
-        self.Monitor_Layout.addItem(self.Monitor_Btns_Layout, 13, 0, 1, 2)
+        self.Monitor_Layout.addItem(self.Monitor_Btns_Layout,13, 0, 1, 2)
         ####
 
         self.Monitor_GroupBox.setLayout(self.Monitor_Layout)
@@ -238,8 +234,6 @@ class C_Insert_Monitor_Dialog(QDialog): ## Classe Dialog principal
                     self.Monitor_Ppolar_ComboBox.setCurrentText(ctd["Ppolar"])
                     self.Monitor_VIPolar_ComboBox.setCurrentText(ctd["VIpolar"])
 
-
-
             self.Monitor_Name.setEnabled(False)
             self.EnableDisableParameters(True)
         
@@ -265,7 +259,6 @@ class C_Insert_Monitor_Dialog(QDialog): ## Classe Dialog principal
         Monitor["Ppolar"] = self.get_PpolarMonitor()
         Monitor["VIpolar"] = self.get_VIPolarMonitor()
 
-
         if self.Monitor_Name.isEnabled():
             ctdExist = False
             for ctd in self.Monitors:
@@ -289,7 +282,6 @@ class C_Insert_Monitor_Dialog(QDialog): ## Classe Dialog principal
                     ctd["Enable"] = Monitor["Enable"]
                     ctd["Ppolar"] = Monitor["Ppolar"]
                     ctd["VIpolar"] = Monitor["VIpolar"]
-
 
                     QMessageBox(QMessageBox.Information, "Energy Monitor",
                                 "Energy Monitor" + ctd["Name"] + " atualizado com sucesso!",

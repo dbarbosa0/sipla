@@ -198,6 +198,7 @@ class C_Config_LoadShape_Dialog(QDialog):
     def setDataLoadShapes(self):
 
         self.dataLoadShapes = {}
+
         try:
             for ctd in range(0, self.Shapes_GroupBox_TreeWidget.topLevelItemCount()):
 
@@ -205,11 +206,9 @@ class C_Config_LoadShape_Dialog(QDialog):
 
                 if self.checkLoadShape(Item.name, Item.getPoints()):
                     self.dataLoadShapes[Item.name] = Item.getPointsList()
-
                 else:
                     raise class_exception.ExecConfigOpenDSS("Erro na verificação da Curva de Carga " \
                                      + Item.name + " !","Verifique se todos os " + self.nPointsLoadDef + " pontos estão presentes!")
-            #print(self.dataLoadShapes)
         except:
             pass
 

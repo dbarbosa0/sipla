@@ -358,7 +358,6 @@ class NetPanel_Fields_GroupBox_Select_TreeWidget_Item(QTreeWidgetItem):
         ## Column 0 - Text:
         self.setText(0, name)
         self.setFlags(self.flags() | Qt.ItemIsUserCheckable)
-        #print(self.flags())
         self.setCheckState(0, Qt.Unchecked)
         self.color = color
         self.codField = codField
@@ -425,7 +424,6 @@ class NetPanel_Fields_GroupBox_Select_TreeWidget_Item(QTreeWidgetItem):
                 listTrafoOtimizado.remove(Item.name)
 
         return listTrafoOtimizado
-
 
     def openTDDialog(self):
 

@@ -764,7 +764,7 @@ class C_OpenDSS():  # classe OpenDSSDirect
                   " Action=" + ctd["Action"] + \
                   " Enable=" + ctd["Enable"] + \
                   " Ppolar=" + ctd["Ppolar"] + \
-                  " VIPolar=" + ctd["VIpolar"] \
+                  " VIPolar=" + ctd["VIpolar"]
 
             self.memoFileMonitors.append(tmp)
 
