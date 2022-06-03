@@ -198,7 +198,6 @@ class C_Config_LoadShape_Dialog(QDialog):
     def setDataLoadShapes(self):
 
         self.dataLoadShapes = {}
-
         try:
             for ctd in range(0, self.Shapes_GroupBox_TreeWidget.topLevelItemCount()):
 

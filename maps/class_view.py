@@ -142,7 +142,7 @@ class C_Viewer():
                 folium.TileLayer(cartodb, name='CartoDB',
                                  attr='Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>').add_to(self.mapFields)
             if coordAlimentMT:
-                folium.PolyLine(coordAlimentMT, color=colorField, weight=5.0, opacity=1, smooth_factor=0, control=True).add_to(self.mapFields)
+                folium.PolyLine(coordAlimentMT, color=colorField, weight=2.0, opacity=1, smooth_factor=0, control=True).add_to(self.mapFields)
 
     def createLayerBTMap(self):
 

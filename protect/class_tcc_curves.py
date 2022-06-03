@@ -83,6 +83,7 @@ class C_Config_Curves_Dialog(QDialog):
         self.Curves_GroupBox_TreeWidget = QTreeWidget()
         self.Curves_GroupBox_TreeWidget.setHeaderLabels(['Nome', 'Cor', 'Corrente', 'Tempo'])
         self.Curves_GroupBox_TreeWidget.setColumnWidth(1, 20)
+        self.Curves_GroupBox_TreeWidget.addTopLevelItem(QTreeWidgetItem(["oi", 'cor']))
         self.Curves_GroupBox_Layout.addWidget(self.Curves_GroupBox_TreeWidget, 1, 1, 1, 2)
 
         self.Curves_GroupBox_Checkbox_GroupBox = QGroupBox()
@@ -221,6 +222,7 @@ class C_Config_Curves_Dialog(QDialog):
 
     def loadParameters(self):
         self.data_load_Curves['TCC_Curves'] = self.get_TCC_Curves()
+        #print(self.data_load_Curves["TCC_Curves"])
 
     def get_TCC_Curves(self):
         return self.dataCurves, self.dataPointsY

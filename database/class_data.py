@@ -6,10 +6,10 @@ import class_exception
 
 ##Classes de Dados
 class dadosTrafoDist(NamedTuple):
-    cod_id: str 
-    pac_1: str 
-    pac_2: str 
-    pac_3: str 
+    cod_id: str
+    pac_1: str
+    pac_2: str
+    pac_3: str
     fas_con_p: str
     fas_con_s: str
     fas_con_t: str
@@ -24,9 +24,10 @@ class dadosTrafoDist(NamedTuple):
     per_tot: str
     ctmt: str
     tip_trafo: str
+    uni_tr_s: str
     cod_id_eqtrd: str
     pac_1_eqtrd: str
-    pac_2_eqtrd:str 
+    pac_2_eqtrd:str
     pac_3_eqtrd: str
     fas_con: str
     pot_nom_eqtrd: str
@@ -92,6 +93,7 @@ class dadosUnidCons(NamedTuple):
     ene_10: str
     ene_11: str
     ene_12: str
+    uni_tr_s: str
     uni_tr: str
 
 class dadosCondutores(NamedTuple):
@@ -117,6 +119,11 @@ class dadosTransformador(NamedTuple):
     ten_pri: str
     ten_sec: str
     ten_ter: str
+
+class dadosTransformadorUNTRS(NamedTuple):
+    cod_id: str
+    pac_1: str
+    barr_2: str
 
 
 class dadosSECAT(NamedTuple):
@@ -144,6 +151,11 @@ class dadosSECMT(NamedTuple):
     cor_nom: str
     sit_ativ: str
 
+class dadosALIMENTADOR(NamedTuple):
+    ten_nom: str
+    uni_tr_s: str
+    nom: str
+    cod_id: str
 
 class C_DBaseData():
 
@@ -186,8 +198,31 @@ class C_DBaseData():
         except:
             raise class_exception.ExecOpenDSS("Erro no processamento do Banco de Dados para o Equivalente de Thevenin!")
 
-    def getData_CTMT(self, nomeSE_MT = None):  # Pega as coordenadas de um alimentador de uma SE MT
+    def getData_CTMT_EQTH(self, pac_2 = None):  # Pega as coordenadas de um alimentador de uma SE MT
 
+        try:
+            if pac_2 is not None:
+                sqlStr = "SELECT ten_nom, uni_tr_s, nom, cod_id  FROM ctmt  WHERE pac='" + pac_2
+            lista_dados = []
+            dadosSE = self.DataBaseConn.getSQLDB("CTMT", sqlStr)
+
+            for linha in dadosSE.fetchall():
+                tmp_dados = dadosALIMENTADOR(
+                    linha[0], # ten_nom: str
+                    linha[1], # uni_tr_s: str
+                    linha[2], # nom: str
+                    linha[3], # cod_id str
+
+                )
+
+                lista_dados.append(tmp_dados)
+
+            return lista_dados
+
+        except:
+            raise class_exception.ExecOpenDSS("Erro no processamento do Banco de Dados para o Equivalente de Thevenin de Média Tensão!")
+
+    def getData_CTMT(self, nomeSE_MT = None):  # Pega as coordenadas de um alimentador de uma SE MT
 
         try:
 
@@ -218,7 +253,7 @@ class C_DBaseData():
 
         try:
 
-            sqlStr = "SELECT  cod_id, pac_1, pac_2, pot_nom, lig, ten_pri, ten_sec, ten_ter FROM eqtrs WHERE odi ='" + "1" + nomeSE_MT + "0001" + "'"
+            sqlStr = "SELECT  cod_id, pac_1, pac_2, pot_nom, lig, ten_pri, ten_sec, ten_ter FROM eqtrs WHERE odi ='" + "1" + nomeSE_MT + "0001" + "' OR pac_1 LIKE '" + nomeSE_MT + "%'"
 
             lista_dados = []
 
@@ -241,6 +276,28 @@ class C_DBaseData():
 
         except:
             raise class_exception.ExecOpenDSS("Erro no processamento do Banco de Dados para os Transformadores de Média Tensão!")
+
+
+    def getData_TRAFO_UNTRS(self, uni_tr_s):
+        try:
+            sqlStr = "SELECT cod_id, pac_1,barr_2 FROM untrs WHERE cod_id='" + uni_tr_s + "'"
+            lista_dados = []
+            dadosSE = self.DataBaseConn.getSQLDB("UNTRS", sqlStr)
+
+            for linha in dadosSE.fetchall():
+                tmp_dados = dadosTransformadorUNTRS(
+                    linha[0], # cod_id
+                    linha[1], # pac_1
+                    linha[2], # barr_2
+                )
+                lista_dados.append(tmp_dados)
+
+            return lista_dados
+
+        except:
+            raise class_exception.ExecOpenDSS("Erro no processamento do Banco de Dados para os Transformadores de Média Tensão!")
+
+
 
     def getData_Condutores(self, tipoCondutor):  # Pega os condutores de MT
         start_time = time.time()
@@ -296,7 +353,6 @@ class C_DBaseData():
             raise class_exception.ExecOpenDSS("Erro no processamento do Banco de Dados para as Seccionadoras de AT")
 
     def getData_SecMT(self, nomeSE_MT, tipoSEC):  # Pega as seccionadoras de MT
-
         try:
 
             sqlStr = "SELECT cod_id, pac_1, pac_2, fas_con, tip_unid, ctmt, uni_tr_s, p_n_ope, cap_elo, cor_nom, sit_ativ  FROM unsemt WHERE sub = '" + \
@@ -403,7 +459,7 @@ class C_DBaseData():
             lista_dados = []
 
             sqlStr = "SELECT objectid, pac, ctmt, fas_con, ten_forn, sit_ativ, tip_cc, car_inst, ene_01, ene_02, " \
-                     "ene_03, ene_04, ene_05, ene_06, ene_07, ene_08, ene_09, ene_10, ene_11, ene_12, " + uni_tr + " FROM " + dbase + " WHERE sub = '" + \
+                     "ene_03, ene_04, ene_05, ene_06, ene_07, ene_08, ene_09, ene_10, ene_11, ene_12, uni_tr_s, " + uni_tr + " FROM " + dbase + " WHERE sub = '" + \
                      nomeSE_MT + "' ORDER BY " + uni_tr
 
             dadosUniConsDB = self.DataBaseConn.getSQLDB(dbase, sqlStr)
@@ -430,7 +486,8 @@ class C_DBaseData():
                     linha[17],  # ene_10
                     linha[18],  # ene_01
                     linha[19],  # ene_01
-                    linha[20]   # uni_tr
+                    linha[20],   # uni_tr_s
+                    linha[21]  # uni_tr
                 )
                 lista_dados.append(tmp_dados)
             print("--- %s seconds UNI_c---" % (time.time() - start_time))
@@ -447,12 +504,12 @@ class C_DBaseData():
         try:
 
             sqlStrUNTRD = "SELECT cod_id, pac_1, pac_2, pac_3, fas_con_p, fas_con_s, fas_con_t, sit_ativ, tip_unid, " \
-                     " ten_lin_se, cap_elo, cap_cha, tap, pot_nom, per_fer, per_tot, ctmt, tip_trafo " \
-                     " FROM  untrd WHERE sub = '" + nomeSE_MT + "' ORDER BY cod_id"
+                     " ten_lin_se, cap_elo, cap_cha, tap, pot_nom, per_fer, per_tot, ctmt, tip_trafo, uni_tr_s " \
+                     " FROM  untrd WHERE pac_1 LIKE '%" + nomeSE_MT
 
             sqlStrEQTRD = "SELECT cod_id, pac_1, pac_2, pac_3, fas_con, pot_nom, lig, ten_pri, ten_sec, ten_ter, " \
                          " lig_fas_p, lig_fas_s, lig_fas_t, per_fer, per_tot, r, xhl" \
-                         " FROM  eqtrd"
+                         " FROM  eqtrd WHERE pac_1 LIKE '%" + nomeSE_MT
 
             lista_dados = []
 
@@ -468,48 +525,49 @@ class C_DBaseData():
 
                 for lnhUNTRD in lista_dados_UNTRD:
 
-                    if lnhUNTRD[ 1] == lnhEQTRD[ 1]: #Transformadores com o mesmo pac_1
+                    if lnhUNTRD[ 2] == lnhEQTRD[ 2]: #Transformadores com o mesmo pac_1
                         tmp_dados = dadosTrafoDist (
                             lnhUNTRD[ 0], # cod_id
                             lnhUNTRD[ 1], # pac_1
                             lnhUNTRD[ 2], # pac_2
                             lnhUNTRD[ 3], # pac_3
-                            lnhUNTRD[ 4], # fas_con_p
-                            lnhUNTRD[ 5], # fas_con_s
-                            lnhUNTRD[ 6], # fas_con_t
-                            lnhUNTRD[ 7], # sit_ativ
-                            lnhUNTRD[ 8], # tip_unid
-                            lnhUNTRD[ 9], # ten_lin_se
-                            lnhUNTRD[10], # cap_elo
-                            lnhUNTRD[11], # cap_cha
-                            lnhUNTRD[12], # tap
-                            lnhUNTRD[13], # pot_nom
-                            lnhUNTRD[14], # per_fer
-                            lnhUNTRD[15], # per_tot
-                            lnhUNTRD[16], # ctmt
-                            lnhUNTRD[17], # tip_trafo
-                            lnhEQTRD[ 0], # cod_id_eqtrd
-                            lnhEQTRD[ 1], # pac_1_eqtrd
-                            lnhEQTRD[ 2], # pac_2_eqtrd
-                            lnhEQTRD[ 3], # pac_3_eqtrd
-                            lnhEQTRD[ 4], # fas_con
-                            lnhEQTRD[ 5], # pot_nom_eqtrd
-                            lnhEQTRD[ 6], # lig
-                            lnhEQTRD[ 7], # ten_pri
-                            lnhEQTRD[ 8], # ten_sec
-                            lnhEQTRD[ 9], # ten_ter
-                            lnhEQTRD[10], # lig_fas_p
-                            lnhEQTRD[11], # lig_fas_s
-                            lnhEQTRD[12], # lig_fas_t
-                            lnhEQTRD[13], # per_fer_eqtrd
-                            lnhEQTRD[14], # per_tot_eqtrd
-                            lnhEQTRD[15], # r
-                            lnhEQTRD[16]  # xhl
+                            lnhUNTRD[ 4], # fas_con_s
+                            lnhUNTRD[ 5], # sit_ativ
+                            lnhUNTRD[ 6], # ten_lin_se
+                            lnhUNTRD[ 7], # pot_nom
+                            lnhUNTRD[ 8], # ctmt
+                            lnhUNTRD[ 9], # uni_tr_s
+                            lnhUNTRD[10],  # uni_tr_s
+                            lnhUNTRD[11],  # uni_tr_s
+                            lnhUNTRD[12],  # uni_tr_s
+                            lnhUNTRD[13],  # uni_tr_s
+                            lnhUNTRD[14],  # uni_tr_s
+                            lnhUNTRD[15],  # uni_tr_s
+                            lnhUNTRD[16],  # uni_tr_s
+                            lnhUNTRD[17],  # uni_tr_s
+                            lnhUNTRD[18],  # uni_tr_s
+                            lnhEQTRD[ 0], # pot_nom_eqtrd
+                            lnhEQTRD[ 1], # lig
+                            lnhEQTRD[ 2], # ten_pri
+                            lnhEQTRD[ 3],  # ten_pri
+                            lnhEQTRD[ 4],  # ten_pri
+                            lnhEQTRD[ 5],  # ten_pri
+                            lnhEQTRD[ 6],  # ten_pri
+                            lnhEQTRD[ 7],  # ten_pri
+                            lnhEQTRD[ 8],  # ten_pri
+                            lnhEQTRD[ 9],  # ten_pri
+                            lnhEQTRD[ 10],  # ten_pri
+                            lnhEQTRD[ 11],  # ten_pri
+                            lnhEQTRD[ 12],  # ten_pri
+                            lnhEQTRD[ 13],  # ten_pri
+                            lnhEQTRD[14], # r
+                            lnhEQTRD[15],  # xhl
+                            lnhEQTRD[16]  # ten_pri
 
                         )
 
                         lista_dados.append(tmp_dados)
-
+                        break
             print("--- %s seconds --- TRAFO_DIST" % (time.time() - start_time))
             return lista_dados
 
@@ -555,7 +613,7 @@ class C_DBaseData():
             return lista_dados
 
         except:
-            raise class_exception.ExecOpenDSS("Erro no processamento do Banco de Dados das Linhas de BT e Ramais de Ligação!\n" + tipoLinha)
+            raise class_exception.ExecOpenFDSS("Erro no processamento do Banco de Dados das Linhas de BT e Ramais de Ligação!\n" + tipoLinha)
 
 
     def getData_UniCompReativo(self, nomeSE_MT, tipoCAP):  # Pega os reguladores

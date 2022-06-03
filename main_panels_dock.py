@@ -37,7 +37,7 @@ class C_NetPanel(QDockWidget):
         self.NetPanel_Config_GroupBox_SEAT_ComboBox.currentIndexChanged.connect(self.setDisabled_NetPanel_Config_GroupBox_SEAT_Btn)
         self.NetPanel_Config_GroupBox_SEAT_Btn = QPushButton("Ok")
         self.NetPanel_Config_GroupBox_SEAT_Btn.setFixedWidth(30)
-        self.NetPanel_Config_GroupBox_SEAT_Btn.clicked.connect(self.get_CirATMT)
+        self.NetPanel_Config_GroupBox_SEAT_Btn.clicked.connect(self.get_FieldsMT)
 
         self.NetPanel_Config_GroupBox_Layout.addWidget(self.NetPanel_Config_GroupBox_SEAT_Label, 1, 1, 1, 1)
         self.NetPanel_Config_GroupBox_Layout.addWidget(self.NetPanel_Config_GroupBox_SEAT_ComboBox, 1, 2, 1, 1)
@@ -143,7 +143,7 @@ class C_NetPanel(QDockWidget):
         self.set_SEMT(self.getSelectedSEMT_CirATMT())
 
     def get_FieldsMT(self): #metodo_FORMA_LAYOUT_ALIMENTADORES_DA_SUBESTACAO_DE_MEDIA_TENSAO)
-        self.mainActions.getSE_MT_AL_DB(self.getSelectedSEMT())
+        self.mainActions.getSE_MT_AL_DB(self.getSelectedSEAT())
 
     ### Métodos para Acesso da Classe
 
@@ -153,15 +153,16 @@ class C_NetPanel(QDockWidget):
             return self.NetPanel_Config_GroupBox_SEAT_ComboBox.currentText()
 
     def get_CirATMT_Selected (self): #INFORMA_CIRCUITO_DE_ALTA_PARA_MEDIA
-        if self.NetPanel_Config_GroupBox_CirATMT_ComboBox.currentText():
-            return self.NetPanel_Config_GroupBox_CirATMT_ComboBox.currentText()
+        if self.NetPanel_Config_GroupBox_SEAT_ComboBox.currentText():
+            print(self.NetPanel_Config_GroupBox_SEAT_ComboBox.currentText())
+            return self.NetPanel_Config_GroupBox_SEAT_ComboBox.currentText()
 
-    def getSelectedSEMT_CirATMT(self): #   PASSA_O_NOME_DA_SUBESTACAO_DE_MEDIA_ASSOCIADA_AO_CIRCUITO_DE_ALTA_PARA_MEDIA_SELECIONADO
-        return [self.get_CirATMT_Selected()[-3:]]
+    #def getSelectedSEMT_CirATMT(self): #   PASSA_O_NOME_DA_SUBESTACAO_DE_MEDIA_ASSOCIADA_AO_CIRCUITO_DE_ALTA_PARA_MEDIA_SELECIONADO
+        #return [self.get_CirATMT_Selected()[-3:]]
 
     def getSelectedSEMT(self): #metodo_INFORMA_SUBESTACAO_DE_MEDIA)
-        if self.NetPanel_Config_GroupBox_SEMT_ComboBox.currentText():
-            return self.NetPanel_Config_GroupBox_SEMT_ComboBox.currentText()
+        if self.NetPanel_Config_GroupBox_SEAT_ComboBox.currentText():
+            return self.NetPanel_Config_GroupBox_SEAT_ComboBox.currentText()
 
 
     ######################################################################################
@@ -175,11 +176,12 @@ class C_NetPanel(QDockWidget):
             if Item.checkState(0) == Qt.Checked:
                 listFields.append(Item.name)
                 listFieldsID.append(ctd)
-
+            print("listFields", listFields)
         if fieldID:
             return [listFields, listFieldsID]
         else:
             return listFields
+
 
     def getSelectedFieldsColors(self):
 

@@ -48,6 +48,7 @@ class C_OpenDSS():  # classe OpenDSSDirect
         self.loadDataFlag = False
 
         self.OpenDSSEngine = opendss.class_conn.C_Conn()  ## Apenas para o Objeto Existir, depois será sobrecarregado
+        self.OpenDSSEngine_2 = opendss.class_conn.C_Conn()
         self._OpenDSSConfig = {}
         self._Curves_DialogSettings_TCC = {}
 
@@ -205,7 +206,7 @@ class C_OpenDSS():  # classe OpenDSSDirect
             self.execOpenDSSFunc = {"header": ["Cabeçalho ...", self.dataOpenDSS.exec_HeaderFile],
                                     "EqThAT": ["Equivalente de Thevenin ...",
                                                self.dataOpenDSS.exec_EQUIVALENTE_DE_THEVENIN],
-                                    # "EqThMT":["Equivalente de Thevenin MT...",self.dataOpenDSS.exec_EQUIVALENTE_DE_THEVENIN_MEDIA],
+                                    #"EqThMT": ["Equivalente de Thevenin MT...", self.dataOpenDSS.exec_EQUIVALENTE_DE_THEVENIN_MEDIA],
                                     "SecEqThAT_SecAT": ["Chaves entre o Equivalente e a SecAT ...",
                                                         self.dataOpenDSS.exec_SEC_EQTHAT_SECAT],
                                     "TrafoATMT": ["Trafo AT - MT...",
@@ -763,7 +764,7 @@ class C_OpenDSS():  # classe OpenDSSDirect
                   " Action=" + ctd["Action"] + \
                   " Enable=" + ctd["Enable"] + \
                   " Ppolar=" + ctd["Ppolar"] + \
-                  " VIPolar=" + ctd["VIpolar"]
+                  " VIPolar=" + ctd["VIpolar"] \
 
             self.memoFileMonitors.append(tmp)
 

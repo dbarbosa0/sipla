@@ -19,7 +19,7 @@ class C_DBase():
             lista_de_subestacoes_de_alta_tensao_disponivel=[]
 
             #ct_at = self.DataBaseConn.getSQLDB("CTAT","SELECT * FROM ctat;")
-            ct_at = self.DataBaseConn.getSQLDB("CTAT","SELECT nom FROM ctat;")
+            ct_at = self.DataBaseConn.getSQLDB("CTMT","SELECT sub FROM ctmt;")
 
             for ctat in ct_at.fetchall():
                 #lista_de_subestacoes_de_alta_tensao_disponivel_formato_proprio_do_banco.append(ctat[3])

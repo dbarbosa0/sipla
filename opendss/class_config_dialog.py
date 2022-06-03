@@ -200,10 +200,15 @@ class C_ConfigDialog(QDialog):
                 self.TabLoadFlow.LoadFlow_GroupBox_UNCBT_TD_CheckBox.setChecked(False)
 
             ## Curvas de Carga
-            section = config['LoadShapes']
-
-            loadShapes = list(section.keys())
-
+            loadShapes = ['COM-Tipo1', 'COM-Tipo2', 'COM-Tipo3', 'COM-Tipo4', 'COM-Tipo5', 'COM-Tipo6', 'COM-Tipo7',
+                          'COM-Tipo8', 'COM-Tipo9', 'COM-Tipo10', 'IND-Tipo1', 'IND-Tipo2', 'IND-Tipo3', 'IND-Tipo4',
+                          'IND-Tipo5', 'IND-Tipo6', 'IND-Tipo7', 'IND-Tipo8', 'IND-Tipo9', 'IND-Tipo10', 'IP-Tipo1',
+                          'RES-Tipo1', 'RES-Tipo2', 'RES-Tipo3', 'RES-Tipo4', 'RES-Tipo5', 'RES-Tipo6', 'RES-Tipo7',
+                          'RES-Tipo8', 'RES-Tipo9', 'RES-Tipo10', 'RUR-Tipo1', 'RUR-Tipo2', 'RUR-Tipo3', 'RUR-Tipo4',
+                          'RUR-Tipo5', 'RUR-Tipo6', 'RUR-Tipo7', 'RUR-Tipo8', 'RUR-Tipo9', 'RUR-Tipo10', 'SP-Tipo1',
+                          'SP-Tipo2', 'SP-Tipo3', 'SP-Tipo4', 'SP-Tipo5', 'SP-Tipo6', 'SP-Tipo7', 'SP-Tipo8',
+                          'SP-Tipo9', 'SP-Tipo10', 'MT-Tipo1', 'MT-Tipo2', 'MT-Tipo3', 'MT-Tipo4', 'MT-Tipo5',
+                          'MT-Tipo6', 'MT-Tipo7', 'MT-Tipo8', 'MT-Tipo9', 'MT-Tipo10']
             for nLoadShape in loadShapes:
                 self.TabLoadFlow.LoadShapesDialog.addLoadShapeTreeWidget(nLoadShape, config['LoadShapes'][nLoadShape])
 
