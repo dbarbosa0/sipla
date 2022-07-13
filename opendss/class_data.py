@@ -687,9 +687,8 @@ class C_Data():  # classe OpenDSS
                         self.insertRelayList(temp_memoFileSEC_CONTROL)
 
                 elif tipoSEC == "32":  # Religador
-                    temp_memoFileSEC_CONTROL = "New Swtcontrol.{0}".format(
-                        # Era New Recloser, troquei pra swt pq tava dando problema. Vou rever depois - Messala
-                        dados_sec[ctd].cod_id)  # + " MonitoredObj={0}".format("Line." + dados_sec[ctd].cod_id)
+                    temp_memoFileSEC_CONTROL = "New Recloser.{0}".format(
+                        dados_sec[ctd].cod_id) + " MonitoredObj={0}".format("Line." + dados_sec[ctd].cod_id)
                     temp_memoFileSEC_CONTROL += " SwitchedObj={0}".format(
                         "Line." + dados_sec[ctd].cod_id) + " SwitchedTerm={0}".format("1")
                     temp_memoFileSEC_CONTROL += " State={0}".format(operacao_da_chave)

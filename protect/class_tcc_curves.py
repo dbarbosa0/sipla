@@ -83,7 +83,7 @@ class C_Config_Curves_Dialog(QDialog):
         self.Curves_GroupBox_TreeWidget = QTreeWidget()
         self.Curves_GroupBox_TreeWidget.setHeaderLabels(['Nome', 'Cor', 'Corrente', 'Tempo'])
         self.Curves_GroupBox_TreeWidget.setColumnWidth(1, 20)
-        self.Curves_GroupBox_TreeWidget.addTopLevelItem(QTreeWidgetItem(["oi", 'cor']))
+        self.Curves_GroupBox_TreeWidget.addTopLevelItem(QTreeWidgetItem(["Selecionar Curvas", "dados", 'cor']))
         self.Curves_GroupBox_Layout.addWidget(self.Curves_GroupBox_TreeWidget, 1, 1, 1, 2)
 
         self.Curves_GroupBox_Checkbox_GroupBox = QGroupBox()
@@ -201,6 +201,7 @@ class C_Config_Curves_Dialog(QDialog):
 
 
     def setDataCurves(self):
+
         self.dataCurves = {}
         self.dataPointsX = {}
         self.dataPointsY = {}
@@ -208,15 +209,17 @@ class C_Config_Curves_Dialog(QDialog):
 
         try:
             for ctd in range(0, self.Curves_GroupBox_TreeWidget.topLevelItemCount()):
+
                 Item = self.Curves_GroupBox_TreeWidget.topLevelItem(ctd)
 
                 self.dataCurves[Item.name] = Item.getPointsList(2)
                 self.dataPointsX[Item.name] = Item.getPointsList(2)
                 self.dataPointsY[Item.name] = Item.getPointsList(3)
 
-            for key, value in self.dataPointsX.items():
-                if len(value) > self.nPoints:
+            for key,value in self.dataPointsX.items():
+                if len(value)> self.nPoints:
                     self.nPoints = len(value)
+
         except:
             pass
 
@@ -343,10 +346,13 @@ class C_Config_Curves_Dialog(QDialog):
             writer.writerow(rowText)
 
             for ctdPoints in range(0, self.nPoints):
+
                 # region Description
                 rowText.clear()
                 # endregion
+
                 for dataShape in self.dataPointsX:
+
                     try:
                         m = str(self.dataPointsX[dataShape][ctdPoints]) + ";" + str(self.dataPointsY[dataShape][ctdPoints])
                         rowText.append(m)
@@ -394,7 +400,7 @@ class C_Config_Curves_Dialog(QDialog):
                     countName += 1
 
             if countName == 0:
-                pts = [0 for ctd in range(0, self.nPointsDef)]
+                pts = [0 for ctd in range(0,self.nPointsDef)]
                 pts = str(pts).strip('[]').replace("'","")
                 Config_TCCCurves_GroupBox_TreeWidget_Item(self.Curves_GroupBox_TreeWidget,
                                                           self.Curves_GroupBox_Checkbox_SelectAll.checkState(),

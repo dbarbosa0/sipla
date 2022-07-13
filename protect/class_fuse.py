@@ -15,10 +15,8 @@ import config as cfg
 import pyqtgraph
 
 class Fuse(QWidget):
-
     def __init__(self):
         super().__init__()
-
         self.OpenDSS = opendss.class_opendss.C_OpenDSS()
         self.Edit_Fuse = EditFuse(self)
         self.FuseSettings_GroupBox = QGroupBox('Selecionar Fusível')
