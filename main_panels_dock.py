@@ -50,9 +50,9 @@ class C_NetPanel(QDockWidget):
         self.NetPanel_Config_GroupBox_CirATMT_Btn.setFixedWidth(30)
         self.NetPanel_Config_GroupBox_CirATMT_Btn.clicked.connect(self.get_SEMT)
 
-        self.NetPanel_Config_GroupBox_Layout.addWidget(self.NetPanel_Config_GroupBox_CirATMT_Label, 2, 1, 1, 1)
-        self.NetPanel_Config_GroupBox_Layout.addWidget(self.NetPanel_Config_GroupBox_CirATMT_ComboBox, 2, 2, 1, 1)
-        self.NetPanel_Config_GroupBox_Layout.addWidget(self.NetPanel_Config_GroupBox_CirATMT_Btn, 2, 3, 1, 1)
+        #self.NetPanel_Config_GroupBox_Layout.addWidget(self.NetPanel_Config_GroupBox_CirATMT_Label, 2, 1, 1, 1)
+        #self.NetPanel_Config_GroupBox_Layout.addWidget(self.NetPanel_Config_GroupBox_CirATMT_ComboBox, 2, 2, 1, 1)
+        #self.NetPanel_Config_GroupBox_Layout.addWidget(self.NetPanel_Config_GroupBox_CirATMT_Btn, 2, 3, 1, 1)
 
         self.NetPanel_Config_GroupBox_SEMT_Label = QLabel("SE - Média Tensão")
         self.NetPanel_Config_GroupBox_SEMT_ComboBox = QComboBox()
@@ -61,9 +61,9 @@ class C_NetPanel(QDockWidget):
         self.NetPanel_Config_GroupBox_SEMT_Btn.setFixedWidth(30)
         self.NetPanel_Config_GroupBox_SEMT_Btn.clicked.connect(self.get_FieldsMT)
 
-        self.NetPanel_Config_GroupBox_Layout.addWidget(self.NetPanel_Config_GroupBox_SEMT_Label, 3, 1, 1, 1)
-        self.NetPanel_Config_GroupBox_Layout.addWidget(self.NetPanel_Config_GroupBox_SEMT_ComboBox, 3, 2, 1, 1)
-        self.NetPanel_Config_GroupBox_Layout.addWidget(self.NetPanel_Config_GroupBox_SEMT_Btn, 3, 3, 1, 1)
+        #self.NetPanel_Config_GroupBox_Layout.addWidget(self.NetPanel_Config_GroupBox_SEMT_Label, 3, 1, 1, 1)
+        #self.NetPanel_Config_GroupBox_Layout.addWidget(self.NetPanel_Config_GroupBox_SEMT_ComboBox, 3, 2, 1, 1)
+        #self.NetPanel_Config_GroupBox_Layout.addWidget(self.NetPanel_Config_GroupBox_SEMT_Btn, 3, 3, 1, 1)
 
         self.NetPanel_Config_GroupBox.setLayout(self.NetPanel_Config_GroupBox_Layout)
 
