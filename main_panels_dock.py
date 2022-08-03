@@ -32,7 +32,7 @@ class C_NetPanel(QDockWidget):
 
         self.NetPanel_Config_GroupBox_Layout = QGridLayout()
 
-        self.NetPanel_Config_GroupBox_SEAT_Label = QLabel("SE - Alta Tensão")
+        self.NetPanel_Config_GroupBox_SEAT_Label = QLabel("SE - Média Tensão")
         self.NetPanel_Config_GroupBox_SEAT_ComboBox = QComboBox()
         self.NetPanel_Config_GroupBox_SEAT_ComboBox.currentIndexChanged.connect(self.setDisabled_NetPanel_Config_GroupBox_SEAT_Btn)
         self.NetPanel_Config_GroupBox_SEAT_Btn = QPushButton("Ok")
