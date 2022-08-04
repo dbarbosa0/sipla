@@ -1,20 +1,24 @@
-from PyQt5.QtGui import QIcon
-from PyQt5.QtWidgets import QStyleFactory, QDialog, QGroupBox, QHBoxLayout, QPushButton, QVBoxLayout, QLabel, QComboBox,\
-    QLineEdit, QRadioButton,  QButtonGroup
+from PyQt5.QtGui import QIcon, QFont
+from PyQt5.QtWidgets import (QDialog,
+                             QLineEdit, QLabel, QPushButton,
+                             QScrollArea, QCheckBox,
+                             QHBoxLayout, QVBoxLayout, QSpacerItem, QCompleter,
+                             QFormLayout, QGroupBox, QStyleFactory
+                             )
 from PyQt5.QtCore import Qt
-
 import config as cfg
+from customwidgets import OnOffWidget
+
 
 class C_TDDialog(QDialog):
-    def __init__(self):
+    def __init__(self, listTrafoOtimizado):
         super().__init__()
 
         self.listTrafos = []
-
+        self.parametro = listTrafoOtimizado
         self.titleWindow = "Transformador de Distribuição"
         self.iconWindow = cfg.sipla_icon
         self.stylesheet = cfg.sipla_stylesheet
-
         self.InitUI()
 
     def InitUI(self):
@@ -22,11 +26,37 @@ class C_TDDialog(QDialog):
         self.setWindowTitle(self.titleWindow)
         self.setWindowIcon(QIcon(self.iconWindow))  # ícone da janela
         self.setWindowModality(Qt.ApplicationModal)
-        self.setStyle(QStyleFactory.create('Cleanlooks'))  # Estilo da Interface
-        self.adjustSize()
+        self.setStyle(QStyleFactory.create('Cleanlooks'))
+        self.formLayout = QFormLayout()
+        self.groupBox = QGroupBox()
+        self.controlsLayout = QVBoxLayout()  # Controls container layout.
 
+        self.widgets = []
+        self.listanmomes = []
 
-        self.Dialog_Layout = QVBoxLayout() #Layout da Dialog
+        # List of names, widgets are stored in a dictionary by these keys.
+        for name, i in zip(self.parametro, range(len(self.parametro))):
+            self.item = OnOffWidget(name)
+            self.listanmomes.append(self.item.btn_on.text())
+            self.widgets.append(self.item)
+            self.formLayout.addRow(self.widgets[i])
+        self.groupBox.setLayout(self.formLayout)
+
+        self.scroll = QScrollArea()
+        self.scroll.setWidget(self.groupBox)
+        self.groupBox.setStyleSheet("QGroupBox {background-color: white;"
+                                    "border : solid black;border-width : 1px 1px 1px 1px;}"
+                                    )
+
+        self.scroll.setWidgetResizable(True)
+        self.scroll.setFixedWidth(600)
+        self.scroll.setStyleSheet("QScrollBar:vertical{"
+                                  "width: 25px;"
+                                  "border-radius: 5px;"
+                                  "border : solid black; "
+                                  "border-width : 10px 10px 10px 10px;"
+                                  "}"
+                                  )
 
         ##Alimentador de Referência
         self.Field_GroupBox = QGroupBox("Dados do Alimentador")
@@ -40,98 +70,142 @@ class C_TDDialog(QDialog):
         self.Dilalog_Field_TD_LineEdit.setReadOnly(True)
         self.Field_GroupBox_Layout.addWidget(self.Dilalog_Field_TD_LineEdit)
 
-        self.Dialog_Layout.addWidget(self.Field_GroupBox)
+        self.controlsLayout.addWidget(self.Field_GroupBox)
 
-        ### Selecionar Todos ou Algum específico
+        # Search bar.
+        self.groupBox_searchbar = QGroupBox()
+        self.groupBox_searchbar.setStyleSheet("QLineEdit"
+                                              "{"
+                                              "border : solid black;"
+                                              "border-width : 1.1px 1.1px 1.1px 1.1px;"
+                                              "}""QGroupBox{border : solid black;border-width : 1px 1px 1px 1px;}")
 
-        self.selectTrafo_GroupBox = QGroupBox("Quais Redes de BT do alimentador deseja selecionar?")
-        self.selectTrafo_GroupBox_Layout = QVBoxLayout()
-        self.selectTrafo_GroupBox.setLayout(self.selectTrafo_GroupBox_Layout)
+        self.searchbar_Label = QLabel('SearchBar')
+        self.searchbar_Label.setFont(QFont('Arial', 9))
+        self.searchbar_Layout = QVBoxLayout()
+        self.groupBox_searchbar.setLayout(self.searchbar_Layout)
+        self.searchbar_Layout.addWidget(self.searchbar_Label)
+        self.searchbar = QLineEdit()
+        self.searchbar.textChanged.connect(self.update_display)
 
-        self.selectTrafoALL_RadioBox = QRadioButton("Todas")
-        self.selectTrafoALL_RadioBox.setChecked(False)
-        # self.Conn_GroupBox_OpenDSSDirect.toggled.connect(lambda: self.onConnRadioBtn(self.Conn_GroupBox_OpenDSSDirect))
-        self.selectTrafo_GroupBox_Layout.addWidget(self.selectTrafoALL_RadioBox)
+        # Adding Completer.
 
-        self.selectTrafoIND_RadioBox = QRadioButton("Apenas mais 1 (uma)")
-        self.selectTrafoIND_RadioBox.setChecked(True)
-        self.selectTrafo_GroupBox_Layout.addWidget(self.selectTrafoIND_RadioBox)
+        self.completer = QCompleter(self.parametro)
+        self.completer.setMaxVisibleItems(4)
+        self.completer.setCompletionMode(QCompleter.UnfilteredPopupCompletion)
+        self.completer.setCaseSensitivity(Qt.CaseSensitive)
+        self.searchbar.setCompleter(self.completer)
+        self.searchbar_Layout.addWidget(self.searchbar)
+        spacer = QSpacerItem(1, 100)
+        self.searchbar_Layout.addItem(spacer)
+        self.controlsLayout.addWidget(self.groupBox_searchbar)
 
-        self.selectTrafo_BGroup = QButtonGroup()
-        self.selectTrafo_BGroup.addButton(self.selectTrafoALL_RadioBox)
-        self.selectTrafo_BGroup.addButton(self.selectTrafoIND_RadioBox)
-        self.selectTrafo_BGroup.buttonClicked.connect(self.setDisabled_Trafos_GroupBox)
+        self.controlsLayout.addWidget(self.scroll)
 
-        self.Dialog_Layout.addWidget(self.selectTrafo_GroupBox)
+        # Add the items to VBoxLayout (applied to container widget)
+        # which encompasses the whole window.
 
+        self.Dilalog_marcar_todos_Layout = QHBoxLayout()
 
-        ##### Transformador de Distribuição
-        self.TD_GroupBox = QGroupBox("Dados do Transformador de Distribuição da Distribuidora")
-        self.TD_GroupBox_Layout = QVBoxLayout()
-        self.TD_GroupBox.setLayout(self.TD_GroupBox_Layout)
+        self.Dilalog_Btns_marcar_todos_Btn = QCheckBox("Selecionar todos")
+        self.Dilalog_Btns_marcar_todos_Btn.setFixedWidth(150)
+        self.Dilalog_Btns_marcar_todos_Btn.clicked.connect(self.setDisabled_Trafos_GroupBox)
+        self.Dilalog_marcar_todos_Layout.addWidget(self.Dilalog_Btns_marcar_todos_Btn)
+        self.Dilalog_marcar_todos_Layout.setAlignment(Qt.AlignLeft)
+        self.controlsLayout.addLayout(self.Dilalog_marcar_todos_Layout, 0)
 
-        self.Dilalog_ID_TD_Label = QLabel("ID do Transformador:")
-        self.TD_GroupBox_Layout.addWidget(self.Dilalog_ID_TD_Label)
-
-        self.Dilalog_ID_TD_ComboBox = QComboBox()
-        self.TD_GroupBox_Layout.addWidget(self.Dilalog_ID_TD_ComboBox)
-
-
-        self.Dialog_Layout.addWidget(self.TD_GroupBox)
-
-
-        ###### Botões
         self.Dilalog_Btns_Layout = QHBoxLayout()
-        self.Dilalog_Btns_Layout.setAlignment(Qt.AlignRight)
-
 
         self.Dilalog_Btns_Cancel_Btn = QPushButton("Cancelar")
-        self.Dilalog_Btns_Cancel_Btn.setIcon(QIcon('img/icon_cancel.png'))
         self.Dilalog_Btns_Cancel_Btn.setFixedWidth(100)
-        self.Dilalog_Btns_Cancel_Btn.clicked.connect(self.reject)
+        self.Dilalog_Btns_Cancel_Btn.clicked.connect(self.Cancelamento)
         self.Dilalog_Btns_Layout.addWidget(self.Dilalog_Btns_Cancel_Btn)
 
         self.Dilalog_Btns_Ok_Btn = QPushButton("OK")
-        self.Dilalog_Btns_Ok_Btn.setIcon(QIcon('img/icon_ok.png'))
         self.Dilalog_Btns_Ok_Btn.setFixedWidth(100)
         self.Dilalog_Btns_Ok_Btn.clicked.connect(self.setID_TrafoDIST)
         self.Dilalog_Btns_Layout.addWidget(self.Dilalog_Btns_Ok_Btn)
 
-        self.Dialog_Layout.addLayout(self.Dilalog_Btns_Layout,0)
+        self.Dilalog_Btns_Layout.setAlignment(Qt.AlignRight)
+        self.controlsLayout.addLayout(self.Dilalog_Btns_Layout)
 
-        self.setLayout(self.Dialog_Layout)
+        #self.setLayout(self.controlsLayout)
 
-    def updateListTrafoDIST(self):
+        # Otimização dos Trafos.
+        self.groupBox_cargas = QGroupBox()
+        self.groupBox_cargas.setStyleSheet("QLineEdit"
+                                           "{"
+                                           "border : solid black;"
+                                           "border-width : 1.1px 1.1px 1.1px 1.1px;"
+                                           "}""QGroupBox{border : solid black;border-width : 1px 1px 1px 1px;}")
 
-        self.setDisabled_Trafos_GroupBox()
+        self.cargas_Label = QLabel('configuração das Cargas')
+        self.cargas_Label.setFont(QFont('Arial', 9))
+        self.cargas_Layout = QVBoxLayout()
+        self.groupBox_cargas.setLayout(self.cargas_Layout)
+        self.cargas_Layout.addWidget(self.cargas_Label)
+        self.cargas = QLineEdit('Otimização das Cargas')
+        self.cargas.textChanged.connect(self.update_display)
 
-        self.Dilalog_ID_TD_ComboBox.clear()
+        self.controlsLayout.addWidget(self.groupBox_cargas)
+        self.setLayout(self.controlsLayout)
 
-        self.codTrafoDIST = ''
 
-        self.Dilalog_ID_TD_ComboBox.addItems(self.listTrafos)
+    def keyPressEvent(self, event):
+        self.naiads = self.searchbar.text()
+        if event.key() == Qt.Key_Return:
+            if self.naiads != '':
+                for i in range(len(self.listanmomes)):
+                    if self.naiads == self.listanmomes[i]:
+                        self.widgets[i].btn_on.nextCheckState()
+                        if self.widgets[i].btn_on.isChecked():
+                            self.widgets[i].btn_on.setStyleSheet("background-color: #4CAF50; color: #fff;")
+                            self.widgets[i].btn_off.setStyleSheet("background-color: none; color: none;")
+                        else:
+                            self.widgets[i].btn_on.setStyleSheet("background-color: none; color: none;")
+                            self.widgets[i].btn_off.setStyleSheet("background-color: #D32F2F; color: #fff;")
+                        self.searchbar.clear()
+            else:
+                self.setID_TrafoDIST()
+        if event.key() == Qt.Key_Escape:
+            print('esc')
+            self.close()
 
     def setID_TrafoDIST(self):
-        if self.selectTrafoIND_RadioBox.isChecked():
-            self.codTrafoDIST = [self.Dilalog_ID_TD_ComboBox.currentText()]
-        else:
-            self.codTrafoDIST = self.listTrafos
+        self.codTrafoDIST = []
+        for i in range(len(self.listanmomes)):
+            if self.widgets[i].btn_on.isChecked():
+                self.codTrafoDIST.append(self.widgets[i].btn_on.text())
+        self.close()
+
+    def Cancelamento(self):
         self.close()
 
     def setDisabled_Trafos_GroupBox(self):
-        if self.selectTrafoIND_RadioBox.isChecked():
-            self.TD_GroupBox.setHidden(False)
+        if self.Dilalog_Btns_marcar_todos_Btn.isChecked():
+            for i in range(len(self.listanmomes)):
+                self.widgets[i].btn_on.setChecked(True)
+                if self.widgets[i].btn_on.isChecked():
+                    self.widgets[i].btn_on.setStyleSheet("background-color: #4CAF50; color: #fff;")
+                    self.widgets[i].btn_off.setStyleSheet("background-color: none; color: none;")
+                else:
+                    self.widgets[i].btn_on.setStyleSheet("background-color: none; color: none;")
+                    self.widgets[i].btn_off.setStyleSheet("background-color: #D32F2F; color: #fff;")
+                self.searchbar.clear()
         else:
-            self.TD_GroupBox.setHidden(True)
+            for i in range(len(self.listanmomes)):
+                self.widgets[i].btn_on.setChecked(False)
+                if self.widgets[i].btn_on.isChecked():
+                    self.widgets[i].btn_on.setStyleSheet("background-color: #4CAF50; color: #fff;")
+                    self.widgets[i].btn_off.setStyleSheet("background-color: none; color: none;")
+                else:
+                    self.widgets[i].btn_on.setStyleSheet("background-color: none; color: none;")
+                    self.widgets[i].btn_off.setStyleSheet("background-color: #D32F2F; color: #fff;")
+                self.searchbar.clear()
 
-        self.adjustSize()
-
-
-
-
-
-
-
-
-
-
+    def update_display(self, text):
+        for widget in self.widgets:
+            if text.lower() in widget.name.lower():
+                widget.show()
+            else:
+                widget.hide()

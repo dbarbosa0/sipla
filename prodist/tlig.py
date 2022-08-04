@@ -12,3 +12,6 @@ TLIG["9"] = ""
 TLIG["10"] = ""
 TLIG["11"] = "[wye,delta]"
 TLIG["12"] = "[delta]"
+TLIG_BIFASICO={}
+TLIG_BIFASICO["2"] = "[delta,wye,wye]"
+

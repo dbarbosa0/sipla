@@ -214,10 +214,17 @@ Pontos Y: Eficiência do inversor em p.u.")
                 self.dataEffCurve["npts"] = str(len(Item.getPointsXList()))
                 self.dataEffCurve["Xarray"] = Item.getPointsXList()
                 self.dataEffCurve["Yarray"] = Item.getPointsYList()
-                self.EffCurve_list.append(self.dataEffCurve.copy())
         except:
             pass
         #print(self.EffCurve_list)
+
+    def default_entries(self):
+        self.dataEffCurve = {}
+        self.effcurve_import.define_default_entries()
+        self.dataEffCurve["EffCurveName"] = self.effcurve_import.curve_name
+        self.dataEffCurve["npts"] = self.effcurve_import.npts
+        self.dataEffCurve["Xarray"] = self.effcurve_import.x_axys
+        self.dataEffCurve["Yarray"] = self.effcurve_import.y_axys
 
 class Config_EffCurve_GroupBox_TreeWidget_Item(QTreeWidgetItem):
     def __init__(self, parent, name, pointsX, pointsY, color):

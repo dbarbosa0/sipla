@@ -20,7 +20,6 @@ class C_DBaseCoord():
     ######################## Visualização
 
     def getCods_AL_SE_MT_DB(self, listaNomesAL_MT): #Pega os códigos dos alimenatadores de uma SE MT
-
         try:
 
             lista_de_identificadores_dos_alimentadores = []
@@ -29,7 +28,7 @@ class C_DBaseCoord():
 
             for linha in ct_mt.fetchall():
                 if linha[1] in listaNomesAL_MT:
-                        lista_de_identificadores_dos_alimentadores.append(linha[0])
+                    lista_de_identificadores_dos_alimentadores.append(linha[0])
 
             return lista_de_identificadores_dos_alimentadores
         except:
@@ -40,13 +39,14 @@ class C_DBaseCoord():
         try:
             nomeAL_MTS = []
             nomeAL_MTS.append(str(nomeAL_MT))
-
             codAlimentador = self.getCods_AL_SE_MT_DB(nomeAL_MTS)
 
             lista_de_coordenadas_do_alimentador = []
 
-            sqlStr = "SELECT DISTINCT ctmt,x,y,vertex_index,objectid FROM ssdmt WHERE ctmt ='" + str(codAlimentador[0]) + "' ORDER BY objectid"
 
+
+            sqlStr = "SELECT DISTINCT ctmt,x,y,vertex_index,pac_1,objectid FROM ssdmt WHERE ctmt ='" + str(codAlimentador[0]) + "' ORDER BY objectid"
+            lista_de_dados_linha = []
             cod_al = self.DataBaseConn.getSQLDB("SSDMT", sqlStr)
 
             dadosCoord =[]
@@ -60,10 +60,11 @@ class C_DBaseCoord():
                         dadosCoordFim = [linha[2], linha[1]]
 
                         dadosCoord = [dadosCoordInicio, dadosCoordFim]
-
+                        dadoslinha = str(linha[4])
                         lista_de_coordenadas_do_alimentador.append(dadosCoord)
+                        lista_de_dados_linha.append(dadoslinha)
 
-            return lista_de_coordenadas_do_alimentador
+            return lista_de_coordenadas_do_alimentador, lista_de_dados_linha
 
         except:
             raise class_exception.ExecDataBaseError("Erro ao pegar as Coordenadas dos Alimentadores de Média Tensão!")
@@ -101,7 +102,7 @@ class C_DBaseCoord():
 
         try:
 
-            sqlStrUNTRD = "SELECT cod_id, pot_nom, ctmt, x, y, tip_trafo, pos, posto " \
+            sqlStrUNTRD = "SELECT cod_id, pot_nom, ctmt, x, y, tip_trafo, pos, posto, pac_1, pac_2 " \
                           " FROM  untrd WHERE sub = '" + nomeSE_MT[0] + "' AND ctmt = '" + codField + "'"
 
             lista_dados = []
@@ -113,7 +114,7 @@ class C_DBaseCoord():
 
                 ##Verificar a questão do X e do Y
 
-                tmp_dados = [lnhUNTRD[4],lnhUNTRD[3],lnhUNTRD[0],lnhUNTRD[1],prodist.ttranf.TTRANF[lnhUNTRD[5]],prodist.tpos.TPOS[lnhUNTRD[6]], prodist.tpostotran.TPOSTOTRAN[lnhUNTRD[7]] ]
+                tmp_dados = [lnhUNTRD[4],lnhUNTRD[3],lnhUNTRD[0],lnhUNTRD[1],prodist.ttranf.TTRANF[lnhUNTRD[5]],prodist.tpos.TPOS[lnhUNTRD[6]], prodist.tpostotran.TPOSTOTRAN[lnhUNTRD[7]],lnhUNTRD[8],lnhUNTRD[9] ]
 
                 lista_dados.append(tmp_dados)
 

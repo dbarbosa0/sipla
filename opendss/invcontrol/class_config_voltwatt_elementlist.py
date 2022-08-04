@@ -75,9 +75,9 @@ class C_Config_ElementList_Dialog(QDialog):
                 checkCont += 1
 
         if checkCont == 0:
-            QMessageBox(QMessageBox.Warning, "Lista de Elementos",
-                        "Nenhum elemento selecionado",
-                        QMessageBox.Ok).exec()
+            msg = QMessageBox()
+            msg.information(self, "Lista de Elementos", "Nenhum elemento selecionado")
+
         else:
             for ctd in range(0, self.ElementList_GroupBox_TreeWidget.topLevelItemCount()):
                 Item = self.ElementList_GroupBox_TreeWidget.topLevelItem(ctd)
@@ -89,10 +89,14 @@ class C_Config_ElementList_Dialog(QDialog):
     def Cancel(self):
         self.close()
 
-    def update(self):
-        for ctd in self.OpenDSS.getInvControl():
+    def Update(self):
+        for pv in self.OpenDSS.getPVSystem():
             ElementList_TreeWidget_Item(self.ElementList_GroupBox_TreeWidget,
-                                        ctd,
+                                        pv,
+                                        "PVSystem")
+        for storage in self.OpenDSS.getStorage():
+            ElementList_TreeWidget_Item(self.ElementList_GroupBox_TreeWidget,
+                                        storage,
                                         "Storage")
 
     def clear(self):

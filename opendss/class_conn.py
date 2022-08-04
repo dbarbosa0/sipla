@@ -35,11 +35,12 @@ class C_OpenDSSDirect_Conn(C_Conn):  # classe OpenDSSDirect
         self.engine = opendssdirect
         self.engineBasic = self.engine.Basic
         self.engineCircuit = self.engine.Circuit
-        self.engineTopoly = self.engine.Topology
+        self.engineSolution = self.engine.Solution
         self.engineMeters = self.engine.Meters
         self.engineMonitors = self.engine.Monitors
-        self.engineSolution = self.engine.Solution
+        self.engineTopoly = self.engine.Topology
         self.engineLoads = self.engine.Loads
+
 
     def run(self, msg):
         self.engine.run_command(unidecode.unidecode(msg))
@@ -54,7 +55,7 @@ class C_OpenDSSDirect_Conn(C_Conn):  # classe OpenDSSDirect
         return self.engineCircuit.AllBusVolts()
 
     def get_Solution_ProcessTime(self):
-        return self.engineSolution.ProcessTime()
+        return self.engineSolutFion.ProcessTime()
 
     def get_Monitor_AllNames(self):
         return self.engineMonitors.AllNames()
@@ -76,6 +77,7 @@ class C_OpenDSSDirect_Conn(C_Conn):  # classe OpenDSSDirect
 
     def get_RegisterNames(self):
         return self.engineMeters.RegisterNames()
+
     def get_RegisterValues(self):
         return self.engineMeters.RegisterValues()
 
@@ -128,7 +130,4 @@ class C_OpenDSSCOM_Conn(C_Conn):  # classe OpenDSSCOM
 
     def get_MonitorActive_ChannelNames(self):
         return self.engineMonitors.Header
-
-
-
 

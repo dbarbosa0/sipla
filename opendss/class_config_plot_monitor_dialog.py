@@ -1,6 +1,6 @@
 from PyQt5.QtGui import QColor, QIcon
 from PyQt5.QtWidgets import QStyleFactory, QDialog, QGridLayout, QGroupBox, QHBoxLayout, QTreeWidgetItem, \
-    QPushButton, QTreeWidget, QColorDialog, QMessageBox, QCheckBox,QVBoxLayout, QComboBox
+    QPushButton, QTreeWidget, QColorDialog, QMessageBox, QCheckBox, QVBoxLayout, QComboBox, QLineEdit, QLabel
 from PyQt5.QtCore import Qt
 
 import pyqtgraph
@@ -44,20 +44,30 @@ class C_Config_Plot_Dialog(QDialog):
         self.Monitor_GroupBox.setLayout(self.Monitor_GroupBox_Layout)
 
         ##GroupBOx Select
-        self.Monitor_Select_GroupBox = QGroupBox("Selecione o Monitor")
-        self.Monitor_Select_GroupBox.setMaximumHeight(200)
-        self.Monitor_Select_GroupBox_Layout = QHBoxLayout()
+        self.Monitor_Select_GroupBox = QGroupBox("Configurações")
+        #self.Monitor_Select_GroupBox.setMaximumHeight(200)
+        self.Monitor_Select_GroupBox_Layout = QGridLayout()
         self.Monitor_Select_GroupBox_ComboBox = QComboBox()
-        self.Monitor_Select_GroupBox_ComboBox.setMinimumWidth(200)
-        self.Monitor_Select_GroupBox_Layout.addWidget(self.Monitor_Select_GroupBox_ComboBox)
+        self.Monitor_Select_GroupBox_ComboBox_Unidades = QComboBox()
+        self.Monitor_Select_GroupBox_ComboBox_Unidades.addItems(['Volts', 'Ampères', 'kVA'])
+        self.Monitor_Select_GroupBox_Label = QLabel("Selecionar Monitor")
+        self.Bases_Select_GroupBox_Label = QLabel("Base Monofásica")
+        self.Bases_Select_GroupBox_LineEdit = QLineEdit()
+        #self.Monitor_Select_GroupBox_ComboBox.setMinimumWidth(100)
+        self.Monitor_Select_GroupBox_Layout.addWidget(self.Monitor_Select_GroupBox_Label, 0, 0, 1, 1)
+        self.Monitor_Select_GroupBox_Layout.addWidget(self.Monitor_Select_GroupBox_ComboBox, 0, 1, 1, 1)
+        self.Monitor_Select_GroupBox_Layout.addWidget(self.Bases_Select_GroupBox_Label, 1, 0, 1, 1)
+        self.Monitor_Select_GroupBox_Layout.addWidget(self.Bases_Select_GroupBox_LineEdit, 1, 1, 1, 1)
+        self.Monitor_Select_GroupBox_Layout.addWidget(self.Monitor_Select_GroupBox_ComboBox_Unidades, 1, 2, 1, 1)
         self.Monitor_Select_GroupBox.setLayout(self.Monitor_Select_GroupBox_Layout)
+
 
         ##Button
         self.Monitor_Select_Ok_Btn = QPushButton("Ok")
         self.Monitor_Select_Ok_Btn.setIcon(QIcon('img/icon_ok.png'))
-        self.Monitor_Select_Ok_Btn.setFixedWidth(50)
+        #self.Monitor_Select_Ok_Btn.setFixedWidth(55)
         self.Monitor_Select_Ok_Btn.clicked.connect(self.SelectCurve)
-        self.Monitor_Select_GroupBox_Layout.addWidget(self.Monitor_Select_Ok_Btn)
+        self.Monitor_Select_GroupBox_Layout.addWidget(self.Monitor_Select_Ok_Btn, 0, 2, 1, 1)
 
         ##GroupBOx Select grandeza eletrica
         self.Monitor_Select_Variable_GroupBox = QGroupBox("Grandeza elétrica")
@@ -111,6 +121,13 @@ class C_Config_Plot_Dialog(QDialog):
         self.Dialog_Layout.addLayout(self.Dialog_Btns_Layout, 2, 3, 1, 1)
 
         self.setLayout(self.Dialog_Layout)
+
+    def get_bases(self):
+        if not self.Bases_Select_GroupBox_LineEdit.text():
+            self.Bases_Select_GroupBox_LineEdit.setText('1')
+        else:
+            pass
+        return int(self.Bases_Select_GroupBox_LineEdit.text())
 
     def onAllCurves(self):
 
@@ -191,6 +208,8 @@ class C_Config_Plot_Dialog(QDialog):
                     dStepSizeTime = 1
 
                 plot_x = [self.StepSize * ctd / dStepSizeTime for ctd in range(0, len(pointsList))]
+                y = tuple(i / self.get_bases() for i in pointsList)
+                pointsList = y
 
                 symbol = Item.getMarker()
 
@@ -289,6 +308,9 @@ class Monitor_Select_Variable_GroupBox_TreeWidget_Item(QTreeWidgetItem):
         if colorSelected.isValid():
             self.color = colorSelected.name()
             self.TreeWidget_Item_Btn.setStyleSheet('QPushButton {background-color:' + colorSelected.name() + '}')
+
+
+
 
 
 

@@ -110,6 +110,7 @@ class C_Viewer():
         QtWidgets.QApplication.restoreOverrideCursor()
 
     def createLayerMTMap(self):
+        paranaue = folium.FeatureGroup( name = 'paranaue', show=True)
 
         map = self.mapFields
 
@@ -117,20 +118,31 @@ class C_Viewer():
             # Pegando as coordenadas do Alimentador
 
             # Pegando os códigos dos Alimentadores [NomAL CodAL x y]
-            coordAlimentMT = self.DataBaseCoord.getCoord_AL_SE_MT_DB(self.ListFields[contadorAL])
-
+            coordAlimentMT, dados_linha = self.DataBaseCoord.getCoord_AL_SE_MT_DB(self.ListFields[contadorAL])
+            print('self.ListFields')
+            print(len(self.ListFields))
+            print(contadorAL)
+            print(dados_linha)
+            print(coordAlimentMT)
+            print(len(dados_linha))
+            print(len(coordAlimentMT))
+            #print('final')
+            #print(self.mapFields)
             colorField = self.dataFields_BTTrafos[self.ListFields[contadorAL]][-3]
-
+            cartodb='https://{s}.basemaps.cartocdn.com/rastertiles/voyager_nolabels/{z}/{x}/{y}.png'
             # Melhorar essa criação aqui
             if not self.mapFields:
-                self.mapFields = folium.Map(location=coordAlimentMT[0][0], zoom_start=13)
-                # Carvalho
-                #tiles='https://api.mapbox.com/styles/v1/mapbox/light-v10/tiles/256/{z}/{x}/{y}@2x?access_token=pk.eyJ1Ijoid2h5c29mYXN0IiwiYSI6ImNrZzdmbHN2eTA0M3ozMG84dmp2dzkzeHMifQ.UzHSwsJDEiS9--bQvg9Jig', attr='Mapbox')
-                config.basemaps['Google Maps'].add_to(self.mapFields)
-
+                self.mapFields = folium.Map(location=coordAlimentMT[0][0], zoom_start=13,
+                                            tiles=None)
+                                            #attr='copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="http://cartodb.com/a:ttributions">CartoDB</a>, CartoDB <a href ="http//cartodb.com/attributions">attributions</a>')
+                #config.basemaps['Google Maps'].add_to(self.mapFields)
+                #tiles = 'https://{s}.basemaps.cartocdn.com/rastertiles/voyager_nolabels/{z}/{x}/{y}.png',
+                #attr = 'copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="http://cartodb.com/a:ttributions">CartoDB</a>, CartoDB <a href ="http//cartodb.com/attributions">attributions</a>',
+                #zoom_start = 13
+                folium.TileLayer(cartodb, name='CartoDB',
+                                 attr='Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>').add_to(self.mapFields)
             if coordAlimentMT:
-                folium.PolyLine(coordAlimentMT, color=colorField, weight=3.0, opacity=1, smooth_factor=0, control=True).add_to(self.mapFields)
-
+                folium.PolyLine(coordAlimentMT, color=colorField, weight=2.0, opacity=1, smooth_factor=0, control=True).add_to(self.mapFields)
 
     def createLayerBTMap(self):
 
@@ -145,10 +157,10 @@ class C_Viewer():
             for ctdTD in range(0, len(listTDField)):
 
             # Pegando os códigos dos Alimentadores [NomAL CodAL x y]
-                coordAlimentBT = self.DataBaseCoord.getCoord_AL_SE_MT_BT_DB( listTDField[ctdTD] )
+                coordAlimentBT = self.DataBaseCoord.getCoord_AL_SE_MT_BT_DB(listTDField[ctdTD])
             # self.mapFields = folium.Map(coordAlimentBT[0][0], zoom_start=13, name="Alimentadores")
                 if coordAlimentBT: # Existem transformadores que não possuem Rede de Baixa Tensão
-                    folium.PolyLine( coordAlimentBT , color=listColorTDField[ctdTD],  weight=2.0, opacity=1, smooth_factor=0, control = True).add_to(self.mapFields)
+                    folium.PolyLine( coordAlimentBT, color=listColorTDField[ctdTD],  weight=3.0, opacity=1, smooth_factor=0, control = True).add_to(self.mapFields)
 
     def getListFieldsID(self):
         self.ListFields = list(self.dataFields_BTTrafos.keys())
@@ -184,6 +196,8 @@ class C_Viewer():
             infoTextTrafo += '<br> ID: ${cod_id.text}'
             infoTextTrafo += '<br> ${pot_nom.text} kVA / ${tipo_trafo.text} '
             infoTextTrafo += '<br> ${posto_trafo.text} / ${pos_trafo.text}'
+            infoTextTrafo += '<br> Barra 1: ${pac_1_trafo.text}'
+            infoTextTrafo += '<br> Barra 2: ${pac_2_trafo.text}'
             infoTextTrafo += '<br> AL: ' + self.ListFields[ctdOption]
             callbackTrafo = ('function (row) {'
                              'var marker = L.marker(new L.LatLng(row[0], row[1]), {color: "red"});'
@@ -201,6 +215,8 @@ class C_Viewer():
                              "const tipo_trafo = {text: row[4]};"
                              "const pos_trafo = {text: row[5]};"
                              "const posto_trafo = {text: row[6]};"
+                             "const pac_1_trafo = {text: row[7]};"
+                             "const pac_2_trafo = {text: row[8]};"
                              "var textpopup = $(`<div id='mytext' class='display_text' style='width: 100.0%; height: 100.0%;'> " + infoTextTrafo + "</div>`)[0];"
                                                                                                                                                    "popup.setContent(textpopup);"
                                                                                                                                                    "marker.bindPopup(popup);"

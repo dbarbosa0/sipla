@@ -48,7 +48,9 @@ class C_OpenDSS():  # classe OpenDSSDirect
         self.loadDataFlag = False
 
         self.OpenDSSEngine = opendss.class_conn.C_Conn()  ## Apenas para o Objeto Existir, depois será sobrecarregado
+        self.OpenDSSEngine_2 = opendss.class_conn.C_Conn()
         self._OpenDSSConfig = {}
+        self._Curves_DialogSettings_TCC = {}
 
         ####
         self.memoFileVoltageBase = []
@@ -67,6 +69,14 @@ class C_OpenDSS():  # classe OpenDSSDirect
     @OpenDSSConfig.setter
     def OpenDSSConfig(self, value):
         self._OpenDSSConfig = value
+
+    @property
+    def Curves_DialogSettings_TCC (self):
+        return self._Curves_DialogSettings_TCC
+
+    @Curves_DialogSettings_TCC.setter
+    def Curves_DialogSettings_TCC(self, value):
+        self._Curves_DialogSettings_TCC = value
 
     @property
     def DataBaseConn(self):
@@ -157,14 +167,6 @@ class C_OpenDSS():  # classe OpenDSSDirect
         self._PVSystem_Data = value
 
     @property
-    def PVSystem_Subs(self):
-        return self._PVSystem_Subs
-
-    @PVSystem_Subs.setter
-    def PVSystem_Subs(self, value):
-        self._PVSystem_Subs = value
-
-    @property
     def SCDataInfo(self):
         return self._SCDataInfo
 
@@ -204,7 +206,7 @@ class C_OpenDSS():  # classe OpenDSSDirect
             self.execOpenDSSFunc = {"header": ["Cabeçalho ...", self.dataOpenDSS.exec_HeaderFile],
                                     "EqThAT": ["Equivalente de Thevenin ...",
                                                self.dataOpenDSS.exec_EQUIVALENTE_DE_THEVENIN],
-                                    # "EqThMT":["Equivalente de Thevenin MT...",self.dataOpenDSS.exec_EQUIVALENTE_DE_THEVENIN_MEDIA],
+                                    #"EqThMT": ["Equivalente de Thevenin MT...", self.dataOpenDSS.exec_EQUIVALENTE_DE_THEVENIN_MEDIA],
                                     "SecEqThAT_SecAT": ["Chaves entre o Equivalente e a SecAT ...",
                                                         self.dataOpenDSS.exec_SEC_EQTHAT_SECAT],
                                     "TrafoATMT": ["Trafo AT - MT...",
@@ -247,7 +249,7 @@ class C_OpenDSS():  # classe OpenDSSDirect
                                                        self.dataOpenDSS.exec_SEC_CHAVE_UNIPOLAR_SUBESTACAO_DE_MEDIA_TENSAO],
                                     "ChUnipolarSEMTControl": ["Controle da Chave Unipolar da SE MT ...",
                                                               self.dataOpenDSS.exec_CONTROLE_SEC_CHAVE_UNIPOLAR_SUBESTACAO_DE_MEDIA_TENSAO],
-                                    # "Reg":["Regulador MT ...",self.dataOpenDSS.exec_REGULADORES_DE_MEDIA_TENSAO],
+                                    "Reg":["Regulador MT ...",self.dataOpenDSS.exec_REGULADORES_DE_MEDIA_TENSAO],
                                     "SegMT": ["Segmentos de Linhas MT ...",
                                               self.dataOpenDSS.exec_SEG_LINHAS_DE_MEDIA_TENSAO],
                                     "TrafoDist": ["Trafos de Distribuição ...",
@@ -257,6 +259,26 @@ class C_OpenDSS():  # classe OpenDSSDirect
                                                self.dataOpenDSS.exec_UNID_COMPENSADORAS_DE_REATIVO_DE_MEDIA_TENSAO],
                                     #"CompBT": ["Unidades Compensadoras de BT ...",
                                     #           self.dataOpenDSS.exec_UNID_COMPENSADORAS_DE_REATIVO_DE_BAIXA_TENSAO]
+                                    "SecFusAterramento": ["Chave Fusivel com Aterramento...",
+                                                          self.dataOpenDSS.exec_SEC_CHAVE_FUSIVEL_ATERRAMENTO],
+                                    "SecFusAterramentoControl": ["Controle da chave Fusivel com Aterramento...",
+                                                          self.dataOpenDSS.exec_CONTROLE_SEC_CHAVE_FUSIVEL_ATERRAMENTO],
+                                    "SecFusLamina": ["Chave Fusivel Lamina...",
+                                                        self.dataOpenDSS.exec_SEC_CHAVE_FUSIVEL_LAMINA],
+                                    "SecFusLaminaControl": ["Controle da chave Fusivel Laminha...",
+                                                            self.dataOpenDSS.exec_CONTROLE_SEC_CHAVE_FUSIVEL_LAMINA],
+                                    "SecFusTresOperacoes": ["Chave Fusivel de Tres Operacoes...",
+                                                     self.dataOpenDSS.exec_SEC_CHAVE_FUSIVEL_TRESOPERACOES],
+                                    "SecFusTresOperacoesControl": ["Controle da chave Fusivel de Tres Operacoes...",
+                                                            self.dataOpenDSS.exec_CONTROLE_SEC_CHAVE_FUSIVEL_TRESOPERACOES],
+                                    "SecSeccionalizador": ["Chave Seccionalizadora...",
+                                                            self.dataOpenDSS.exec_SEC_CHAVE_SECCIONALIZADOR],
+                                    "SecSeccionalizadoraControl": ["Controle da chave Seccionalizadora...",
+                                                                   self.dataOpenDSS.exec_CONTROLE_SEC_CHAVE_SECCIONALIZADOR],
+                                    "SecSeccionalizadorMono": ["Chave Seccionalizadora Monofasica...",
+                                                           self.dataOpenDSS.exec_SEC_CHAVE_SECCIONALIZADOR_MONOFASICO],
+                                    "SecSeccionalizadoraMonoControl": ["Controle da chave Seccionalizadora Monofasica...",
+                                                                   self.dataOpenDSS.exec_CONTROLE_SEC_CHAVE_SECCIONALIZADOR_MONOFASICO],
                                     }
 
             for ctd in self.execOpenDSSFunc:
@@ -264,9 +286,7 @@ class C_OpenDSS():  # classe OpenDSSDirect
 
                 # Executando a função
                 ### Verificando o modo de operação
-                #print(msg)
                 self.execOpenDSSFunc[ctd][-1]()
-                # print(msg)
 
         ## Setando a Flag
 
@@ -275,17 +295,18 @@ class C_OpenDSS():  # classe OpenDSSDirect
     def loadData_Solve(self):  # Sempre que o fluxo rodar executa essas funções
 
         self.execOpenDSSFuncAll = {
+            "LoadShapes": ["Curvas de Carga ...", self.exec_LOADSHAPES],
             "UConMT": ["Unidades Consumidoras MT ...", self.dataOpenDSS.exec_UNID_CONSUMIDORAS_MT],  # Cargas
             ################
             ## Concentrando as cargas de BT no TD
-            "UConBTTD": ["Unidades Consumidoras BT no Transformador de Distribuição ...",self.dataOpenDSS.exec_UNID_CONSUMIDORAS_BT_TD],
+            "UConBTTD": ["Unidades Consumidoras BT no Transformador de Distribuição ...", self.dataOpenDSS.exec_UNID_CONSUMIDORAS_BT_TD],
             ## Colocando as cargas de BT
             "UConBT": ["Unidades Consumidoras BT ...", self.dataOpenDSS.exec_UNID_CONSUMIDORAS_BT],
             ## Colocando os segmentos de BT
             "SegBT": ["Segmentos de Linhas BT ...", self.dataOpenDSS.exec_SEG_LINHAS_DE_BAIXA_TENSAO],
             "SegBTTD": ["Segmentos de Linhas BT nos TDs selecionados...", self.dataOpenDSS.exec_SEG_LINHAS_DE_BAIXA_TENSAO_TD],
             #############
-            "LoadShapes": ["Curvas de Carga ...", self.exec_LOADSHAPES],
+            "TCC_Curves": ["Curvas dos Fusiveis...", self.exec_TCC_CURVES],
             "UConMTLoadShapes": ["Unidades Consumidoras MT - Curvas de Carga ...",
                                  self.dataOpenDSS.exec_UNID_CONSUMIDORAS_LOADSHAPES_MT],
             "UConBTLoadShapes": ["Unidades Consumidoras BT - Curvas de Carga ...",
@@ -298,15 +319,19 @@ class C_OpenDSS():  # classe OpenDSSDirect
             "Monitors": ["Inserindo os Monitors ...", self.exec_Monitors],
             "VoltageBase": ["Bases de Tensão ...", self.exec_VoltageBase],
             "Mode": ["Modo de Operação ...", self.exec_Mode],
+            "Optimization": ["Curvas de Cargas para otimização...",
+                             self.dataOpenDSS.exec_Optimization(self.OpenDSSConfig["LoadShapes"])],
+
         }
 
         for ctd in self.execOpenDSSFuncAll:
-            msg = self.execOpenDSSFuncAll[ctd][-2]
+            msg = self.execOpenDSSFuncAll[ctd][-1]
             ### Roda com a flag em 1
             if (ctd == "UConMT"):
-               if (self.OpenDSSConfig["UNCMT"] == "1"):
-                   self.execOpenDSSFuncAll[ctd][-1]()
-                    # print(msg)
+
+                if (self.OpenDSSConfig["UNCMT"] == "1"):
+                    self.execOpenDSSFuncAll[ctd][-1]()
+                    #print(msg)
             elif (ctd == "UConBTTD"): #Carga concentrada na Baixa do trafo
                 if (self.OpenDSSConfig["UNCBTTD"] == "1"):
                     self.execOpenDSSFuncAll[ctd][-1]()
@@ -330,7 +355,9 @@ class C_OpenDSS():  # classe OpenDSSDirect
             elif (ctd == "UConBTLoadShapes"):
                 if (self.OpenDSSConfig["Mode"] == "Daily"): ##Verificar
                     self.execOpenDSSFuncAll[ctd][-1]()
-                    #print(msg)
+
+            elif ctd == "Optimization":
+                pass
             else:
                 self.execOpenDSSFuncAll[ctd][-1]()
 
@@ -340,6 +367,7 @@ class C_OpenDSS():  # classe OpenDSSDirect
         self.OpenDSSDataResult = {"header": self.dataOpenDSS.memoFileHeader,
                                   "EqThAT": self.dataOpenDSS.memoFileEqTh,
                                   "LoadShapes": self.memoLoadShapes,
+                                  "TCC_Curves": self.memoTCC_Curves,
                                   # "EqThMT":self.dataOpenDSS.memoFileEqThMT,
                                   "SecEqThAT_SecAT": self.dataOpenDSS.memoFileSecAT_EqThAT,
                                   "TrafoATMT": self.dataOpenDSS.memoFileTrafoATMT,
@@ -364,7 +392,7 @@ class C_OpenDSS():  # classe OpenDSSDirect
                                   "ChTripolarSEMTControl": self.dataOpenDSS.memoFileSecTripolarSEMT_Control,
                                   "ChUnipolarSEMT": self.dataOpenDSS.memoFileSecUnipolarSEMT,
                                   "ChUnipolarSEMTControl": self.dataOpenDSS.memoFileSecUnipolarSEMT_Control,
-                                  # "Reg":self.dataOpenDSS.memoFileReguladorMT,
+                                  "Reg":self.dataOpenDSS.memoFileReguladorMT,
                                   "SegMT": self.dataOpenDSS.memoFileSegLinhasMT,
                                   "UConMT": self.dataOpenDSS.memoFileUniConsumidoraMT,
                                   "UConMTLoadShapes": self.dataOpenDSS.memoFileUniConsumidoraLoadShapesMT,
@@ -376,6 +404,16 @@ class C_OpenDSS():  # classe OpenDSSDirect
                                   #"RamLig": self.dataOpenDSS.memoFileRamaisLigBT,
                                   "CompMT": self.dataOpenDSS.memoFileUndCompReatMT,
                                   "CompBT": self.dataOpenDSS.memoFileUndCompReatBT,
+                                  "SecFusAterramento": self.dataOpenDSS.memoFileSecFusivel_ATERRADO,
+                                  "SecFusAterramentoControl": self.dataOpenDSS.memoFileSecFusivel_ATERRADO_Control,
+                                  "SecFusLamina": self.dataOpenDSS.memoFileSecFusivel_LAMINA,
+                                  "SecFusLaminaControl": self.dataOpenDSS.memoFileSecFusivel_LAMINA_Control,
+                                  "SecFusTresOperacoes": self.dataOpenDSS.memoFileSecFusivel_TRESOPERACOES,
+                                  "SecFusTresOperacoesControl": self.dataOpenDSS.memoFileSecFusivel_TRESOPERACOES_Control,
+                                  "SecSeccionalizador": self.dataOpenDSS.memoFileSecSECCIONALIZADOR,
+                                  "SecSeccionalizadoraControl": self.dataOpenDSS.memoFileSecSECCIONALIZADOR_Control,
+                                  "SecSeccionalizadorMono": self.dataOpenDSS.memoFileSecSECCIONALIZADOR_MONOFASICO,
+                                  "SecSeccionalizadoraMonoControl": self.dataOpenDSS.memoFileSecSECCIONALIZADOR_MONOFASICO_Control,
                                   }
 
         if self.Storages:
@@ -389,6 +427,10 @@ class C_OpenDSS():  # classe OpenDSSDirect
         if self.EnergyMeters:
             tmpEnergyMeter = {"EnergyMeters": self.memoFileEnergyMeters, }
             self.OpenDSSDataResult.update(tmpEnergyMeter)
+
+        if self.PVSystem_Data:
+            tmpPVsystem = {"PVSystem": self.memoFilePVs, }
+            self.OpenDSSDataResult.update(tmpPVsystem)
 
         if self.Monitors:
             tmpMonitors = {"Monitors": self.memoFileMonitors, }
@@ -534,6 +576,15 @@ class C_OpenDSS():  # classe OpenDSSDirect
                 + " " + sztime + "interval={0}".format(self.OpenDSSConfig["StepSize"]) \
                 + " mult =" + str(loadShapes[ctd]).replace("[", "(").replace("]", ")") + " Action=Normalize")
 
+    def exec_TCC_CURVES(self):
+        TCC_Curves, TCC_Time = self.Curves_DialogSettings_TCC['TCC_Curves']
+        self.memoTCC_Curves = []
+        for ctd in TCC_Curves:
+            self.memoTCC_Curves.append(
+                "New TCC_Curve.{0}".format(ctd).replace(",", ".") + " npts={0}".format(len(TCC_Time[ctd])) \
+                + " c_array=" + str(TCC_Curves[ctd]).replace("[", "(").replace("]", ")") \
+                + " t_array=" + str(TCC_Time[ctd]).replace("[", "(").replace("]", ")")) \
+
     def exec_OpenDSS(self):
 
         ##Indicação de funcionamento 
@@ -663,6 +714,20 @@ class C_OpenDSS():  # classe OpenDSSDirect
         except:
             pass
             # class_exception.ExecOpenDSS("Erro ao processar as tensões!", "Fase C")
+
+
+    def get_Voltages_TableViewsResults(self):
+        Voltages = self.OpenDSSEngine.get_CktElementVoltagesMagAng()
+        print(Voltages)
+        return Voltages
+    def get_Currents_TableViewsResults(self):
+        Currents = self.OpenDSSEngine.get_CktElementCurrentsMagAng()
+        print(Currents)
+        return Currents
+    def get_Powers_TableViewsResults(self):
+        Powers = self.OpenDSSEngine.get_CktElementPowers()
+        print(Powers)
+        return Powers
 
     #######Monitor
 
@@ -966,6 +1031,7 @@ class C_OpenDSS():  # classe OpenDSSDirect
         self.exec_StorageControllers()
 
     ######################################################################################
+    # INVCONTROL
 
     def exec_XYCurves(self):
         for ctd in self.InvControl:
@@ -987,6 +1053,7 @@ class C_OpenDSS():  # classe OpenDSSDirect
 
     def exec_InvControl(self):
 
+        tmp = ''
         self.memoFileInvControl = []
 
         self.exec_XYCurves()
@@ -1068,68 +1135,128 @@ class C_OpenDSS():  # classe OpenDSSDirect
 
     ########
 
-    ############## PV SYSTEM ####################
+    #############################################################################################
+    #PVSYSTEM
 
     def exec_subs_pvsystem(self):
-        for ctd in self.PVSystem_Subs:
-            tmp = 'New transformer.' + ctd['name'] + \
-                  ' phases=' + ctd['phases'] + \
-                  ' xhl=' + ctd['xhl'] + \
-                  ' wdg=' + ctd['wdg1'] + \
-                  ' bus=' + ctd['bus1'] + \
-                  ' kv=' + ctd['kv1'] + \
-                  ' kva=' + ctd['kva1'] + \
-                  ' conn=' + ctd['conn1'] + \
-                  ' wdg=' + ctd['wdg2'] + \
-                  ' bus=' + ctd['bus2'] + \
-                  ' kv=' + ctd['kv2'] + \
-                  ' kva=' + ctd['kva2'] + \
-                  ' conn=' + ctd['conn2']
+        tmp = ''
+        for ctd in self.PVSystem_Data:
+            if ctd['forma'] == "Subestação":
+                tmp = 'New transformer.' + ctd["Subestacao"]['subsname'] + \
+                      ' phases=3' + \
+                      ' xhl=' + ctd["Subestacao"]['xhl'] + \
+                      ' wdg=1' + \
+                      ' bus=' + ctd["Subestacao"]['bus1'] + \
+                      ' kv=' + ctd["Subestacao"]['kv1'] + \
+                      ' kva=' + ctd["Subestacao"]['kva1'] + \
+                      ' conn=' + ctd["Subestacao"]['conn1'] + \
+                      ' wdg=2' + \
+                      ' bus=' + ctd["Subestacao"]['bus2'] + \
+                      ' kv=' + ctd["Subestacao"]['kv2'] + \
+                      ' kva=' + ctd["Subestacao"]['kva2'] + \
+                      ' conn=' + ctd["Subestacao"]['conn2']
+                self.memoFilePVs.append(tmp)
 
-            self.memoFilePVs.append(tmp)
+            else:
+                pass
+
+    def exec_effcurve_pvsystem(self):
+        tmp = ''
+        nome = []
+        for ctd in self.PVSystem_Data:
+            if str(ctd['EffCurve']['EffCurveName']) not in nome:
+                tmp = 'New XYCurve.' + ctd['EffCurve']['EffCurveName'] + \
+                        ' npts=' + ctd['EffCurve']['npts'] + \
+                        ' xarray=[' + str(ctd['EffCurve']['Xarray']).replace(',', '').replace("[", "").replace(']', '') + ']' + \
+                        ' yarray=[' + str(ctd['EffCurve']['Yarray']).replace(',', '').replace("[", "").replace(']', '') + ']'
+                nome.append(ctd['EffCurve']['EffCurveName'])
+
+            else:
+                pass
+
+        self.memoFilePVs.append(tmp)
+
+    def exec_ptcurve_pvsystem(self):
+        tmp = ''
+        nome = []
+        for ctd in self.PVSystem_Data:
+            if str(ctd['PTCurve']['PTCurveName']) not in nome:
+                tmp = 'New XYCurve.' + ctd['PTCurve']['PTCurveName'] + \
+                        ' npts=' + ctd['PTCurve']['npts'] + \
+                        ' xarray=[' + str(ctd['PTCurve']['Xarray']).replace(',', '').replace("[", "").replace(']', '') + ']' + \
+                        ' yarray=[' + str(ctd['PTCurve']['Yarray']).replace(',', '').replace("[", "").replace(']', '') + ']'
+                nome.append(ctd['PTCurve']['PTCurveName'])
+
+            else:
+                pass
+
+        self.memoFilePVs.append(tmp)
+
+    def exec_irradcurve_pvsystem(self):
+        tmp = ''
+        nome = []
+        for ctd in self.PVSystem_Data:
+            if str(ctd['IrradCurve']['IrradCurveName']) not in nome:
+                tmp = 'New loadshape.' + ctd['IrradCurve']['IrradCurveName'] + \
+                        ' npts=' + ctd['IrradCurve']['npts'] + \
+                        ' interval=1' + \
+                        ' mult=[' + str(ctd['IrradCurve']['Yarray']).replace(',', '').replace("[", "").replace(']', '') + ']' + \
+                        ' Action=Normalize'
+                nome.append(ctd['IrradCurve']['IrradCurveName'])
+
+            else:
+                pass
+
+        self.memoFilePVs.append(tmp)
+
+    def exec_tempcurve_pvsystem(self):
+        tmp = ''
+        nome = []
+        for ctd in self.PVSystem_Data:
+            if str(ctd['TempCurve']['TempCurveName']) not in nome:
+                tmp = 'New Tshape.' + ctd['TempCurve']['TempCurveName'] + \
+                        ' npts=' + ctd['TempCurve']['npts'] + \
+                        ' interval=1' + \
+                        ' temp=[' + str(ctd['TempCurve']['Yarray']).replace(',', '').replace("[", "").replace(']', '') + ']'
+                nome.append(ctd['TempCurve']['TempCurveName'])
+
+            else:
+                pass
+
+        self.memoFilePVs.append(tmp)
 
     def exec_pvsystem(self):
 
+        tmp = ''
         self.memoFilePVs = []
 
-        for ctd in self.PVSystem_Data:
-            tmp = 'New XYCurve.' + ctd['effcurve']['EffCurveName'] + \
-                  ' npts=' + ctd['effcurve']['npts'] + \
-                  ' xarray=' + str(ctd['effcurve']['Xarray']).replace(',', '') + \
-                  ' yarray=' + str(ctd['effcurve']['Yarray']).replace(',', '') + \
-                  ' New XYCurve.' + ctd['p-tcurve']['PTCurveName'] + \
-                  ' npts=' + ctd['p-tcurve']['npts'] + \
-                  ' xarray=' + str(ctd['p-tcurve']['Xarray']).replace(',', '') + \
-                  ' yarray=' + str(ctd['p-tcurve']['Yarray']).replace(',', '') + \
-                  ' New loadshape.' + ctd['daily']['IrradCurveName'] + \
-                  ' npts=' + ctd['daily']['npts'] + \
-                  ' interval=' + ctd['daily']['interval'] + \
-                  ' xarray=' + str(ctd['daily']['Xarray']).replace(',', '') + \
-                  ' yarray=' + str(ctd['daily']['Yarray']).replace(',', '') + \
-                  ' Action=' + ctd['daily']['Action'] + \
-                  ' New Tshape.' + ctd['tdaily']['TempCurveName'] + \
-                  ' npts=' + ctd['tdaily']['npts'] + \
-                  ' interval=' + ctd['tdaily']['interval'] + \
-                  ' xarray=' + str(ctd['tdaily']['Xarray']).replace(',', '') + \
-                  ' yarray=' + str(ctd['tdaily']['Yarray']).replace(',', '') + \
-                  ' New pvsystem2.' + ctd['name'] + \
-                  ' phases=' + ctd['phases'] + \
-                  ' bus1=' + ctd['bus1'] + \
-                  ' kv=' + ctd['kv'] + \
-                  ' irrad=' + ctd['irrad'] + \
-                  ' pmpp=' + ctd['pmpp'] + \
-                  ' temperature=' + ctd['temperature'] + \
-                  ' %cutin=' + ctd['%cutin'] + \
-                  ' %cutout=' + ctd['%cutout'] + \
-                  ' effcurve=' + ctd['effcurve']['EffCurveName'] + \
-                  ' p-tcurve=' + ctd['p-tcurve']['PTCurveName'] + \
-                  ' daily=' + ctd['daily']['IrradCurveName'] + \
-                  ' tdaily=' + ctd['tdaily']['TempCurveName']
-
-            self.memoFilePVs.append(tmp)
+        self.exec_effcurve_pvsystem()
+        self.exec_ptcurve_pvsystem()
+        self.exec_irradcurve_pvsystem()
+        self.exec_tempcurve_pvsystem()
         self.exec_subs_pvsystem()
 
-        self.memoFilePVs = []
+        for ctd in self.PVSystem_Data:
+            tmp = 'New PVSystem.' + ctd['name']
+            if ctd['forma'] == "Subestação":
+                tmp = tmp + ' bus1=' + ctd["Subestacao"]['bus1']
+            else:
+                tmp = tmp + ' bus1=' + ctd['barra']
+            tmp = tmp + ' phases=' + ctd['phases'] + \
+                  ' kv=' + ctd['kv'] + \
+                  ' irrad=' + ctd['irrad'] + \
+                  ' kva=' + ctd['kva'] + \
+                  ' pmpp=' + ctd['pmpp'] + \
+                  ' temperature=' + ctd['temperature'] + \
+                  ' pf=' + ctd['pf'] + \
+                  ' %cutin=' + ctd['cutin'] + \
+                  ' %cutout=' + ctd['cutout'] + \
+                  ' effcurve=' + ctd['EffCurve']['EffCurveName'] + \
+                  ' p-tcurve=' + ctd['PTCurve']['PTCurveName'] + \
+                  ' daily=' + ctd['IrradCurve']['IrradCurveName'] + \
+                  ' tdaily=' + ctd['TempCurve']['TempCurveName']
+
+            self.memoFilePVs.append(tmp)
 
     #########################
     def getBusList(self):
@@ -1165,13 +1292,21 @@ class C_OpenDSS():  # classe OpenDSSDirect
 
     ## Gets class_insert_dialog
 
-    def getInvControl(self):
+    def getStorage(self):
 
-        tempInvControl = []
+        tempStorage = []
         for ctd in self.Storages:
-            tempInvControl.append(ctd["StorageName"])
+            tempStorage.append(ctd["StorageName"])
 
-        return tempInvControl
+        return tempStorage
+
+    def getPVSystem(self):
+
+        tempPVsystem = []
+        for ctd in self.PVSystem_Data:
+            tempPVsystem.append(ctd["name"])
+
+        return tempPVsystem
 
     def getAllNamesEnergyMeter(self):
         return self.OpenDSSEngine.get_EnergyMeter_AllNames()
@@ -1202,3 +1337,16 @@ class C_OpenDSS():  # classe OpenDSSDirect
 
     def getMonitorActive_DataChannel(self, idx):
         return self.OpenDSSEngine.get_MonitorActive_DataChannel(idx)
+
+
+### Cicuit
+    def SetActiveElement(self, elemento): ## ativa elemento
+        return self.OpenDSSEngine.set_ActiveElement(elemento)
+
+#### CktElement
+
+    def getCktElementVoltagesMagAng(self):
+        return self.OpenDSSEngine.get_CktElementVoltagesMagAng()
+
+    def get_CktElementName(self):
+        return self.OpenDSSEngine.get_CktElementName()
