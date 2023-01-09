@@ -296,7 +296,8 @@ class C_OpenDSS():  # classe OpenDSSDirect
 
         self.execOpenDSSFuncAll = {
             "LoadShapes": ["Curvas de Carga ...", self.exec_LOADSHAPES],
-            "UConMT": ["Unidades Consumidoras MT ...", self.dataOpenDSS.exec_UNID_CONSUMIDORAS_MT],  # Cargas
+            "UConMTTS": ["Unidades Consumidoras MT ...", self.dataOpenDSS.exec_UNID_CONSUMIDORAS_MT_TS],  # Cargas no transformador de subestação
+            "UConMT": ["Unidades Consumidoras MT ...", self.dataOpenDSS.exec_UNID_CONSUMIDORAS_MT],
             ################
             ## Concentrando as cargas de BT no TD
             "UConBTTD": ["Unidades Consumidoras BT no Transformador de Distribuição ...", self.dataOpenDSS.exec_UNID_CONSUMIDORAS_BT_TD],
@@ -305,6 +306,7 @@ class C_OpenDSS():  # classe OpenDSSDirect
             ## Colocando os segmentos de BT
             "SegBT": ["Segmentos de Linhas BT ...", self.dataOpenDSS.exec_SEG_LINHAS_DE_BAIXA_TENSAO],
             "SegBTTD": ["Segmentos de Linhas BT nos TDs selecionados...", self.dataOpenDSS.exec_SEG_LINHAS_DE_BAIXA_TENSAO_TD],
+            "RamLig": ["Ramais de Ligação  ...", self.dataOpenDSS.exec_RAMAL_DE_LIGACAO],
             #############
             "TCC_Curves": ["Curvas dos Fusiveis...", self.exec_TCC_CURVES],
             "UConMTLoadShapes": ["Unidades Consumidoras MT - Curvas de Carga ...",
@@ -327,24 +329,27 @@ class C_OpenDSS():  # classe OpenDSSDirect
         for ctd in self.execOpenDSSFuncAll:
             msg = self.execOpenDSSFuncAll[ctd][-1]
             ### Roda com a flag em 1
-            if (ctd == "UConMT"):
-
-                if (self.OpenDSSConfig["UNCMT"] == "1"):
+            if ctd == "UConMTTS":
+                if self.OpenDSSConfig["UNCMT"] == "1":  # Carga concentrada no trafo de subestação
+                    self.execOpenDSSFuncAll[ctd][-1]()
+                    print('teste unidades consumidoras média tensão', self.execOpenDSSFuncAll[ctd][-1])
+            elif ctd == "UConMT":
+                if self.OpenDSSConfig["UNCMT"] == "0":
+                    self.execOpenDSSFuncAll[ctd][-1]()
+                    print("EXCEÇÃO TESTE DE MÉDIA TENSÃO")
+            elif ctd == "UConBTTD": #Carga concentrada na Baixa do trafo
+                if self.OpenDSSConfig["UNCBTTD"] == "1":
                     self.execOpenDSSFuncAll[ctd][-1]()
                     #print(msg)
-            elif (ctd == "UConBTTD"): #Carga concentrada na Baixa do trafo
-                if (self.OpenDSSConfig["UNCBTTD"] == "1"):
+            elif ctd == "UConBT":
+                if self.OpenDSSConfig["UNCBTTD"] == "0":
                     self.execOpenDSSFuncAll[ctd][-1]()
                     #print(msg)
-            elif (ctd == "UConBT"):
-                if (self.OpenDSSConfig["UNCBTTD"] == "0"):
+            elif ctd == "SegBT":
+                if self.OpenDSSConfig["UNCBTTD"] == "0":
                     self.execOpenDSSFuncAll[ctd][-1]()
-                    #print(msg)
-            elif (ctd == "SegBT"):
-                if (self.OpenDSSConfig["UNCBTTD"] == "0"):
-                    self.execOpenDSSFuncAll[ctd][-1]()
-            elif (ctd == "SegBTTD"):
-                if (self.OpenDSSConfig["UNCBTTD"] == "1"):
+            elif ctd == "SegBTTD":
+                if self.OpenDSSConfig["UNCBTTD"] == "1":
                     #print(msg)
                     self.execOpenDSSFuncAll[ctd][-1]()
                     # print(msg)
@@ -352,8 +357,8 @@ class C_OpenDSS():  # classe OpenDSSDirect
                 if (self.OpenDSSConfig["Mode"] == "Daily") and (self.OpenDSSConfig["UNCMT"] == "1"):
                     self.execOpenDSSFuncAll[ctd][-1]()
                     # print(msg)
-            elif (ctd == "UConBTLoadShapes"):
-                if (self.OpenDSSConfig["Mode"] == "Daily"): ##Verificar
+            elif ctd == "UConBTLoadShapes":
+                if self.OpenDSSConfig["Mode"] == "Daily": ##Verificar
                     self.execOpenDSSFuncAll[ctd][-1]()
 
             elif ctd == "Optimization":
@@ -401,7 +406,7 @@ class C_OpenDSS():  # classe OpenDSSDirect
                                   "UConBT": self.dataOpenDSS.memoFileUniConsumidoraBT,
                                   "UConBTTD": self.dataOpenDSS.memoFileUniConsumidoraBT_TD,
                                   "UConBTLoadShapes": self.dataOpenDSS.memoFileUniConsumidoraLoadShapesBT,
-                                  #"RamLig": self.dataOpenDSS.memoFileRamaisLigBT,
+                                  "RamLig": self.dataOpenDSS.memoFileRamaisLigBT,
                                   "CompMT": self.dataOpenDSS.memoFileUndCompReatMT,
                                   "CompBT": self.dataOpenDSS.memoFileUndCompReatBT,
                                   "SecFusAterramento": self.dataOpenDSS.memoFileSecFusivel_ATERRADO,
