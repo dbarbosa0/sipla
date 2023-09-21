@@ -44,6 +44,7 @@ python-scipy
 python-matplotlib
 python-unidecode
 python-mysqlclient
+pip install folium
 pip install 'OpenDSSDirect.py[extras]'
 pip install git+https://github.com/pyqtgraph/pyqtgraph@develop
 ```
@@ -53,4 +54,4 @@ pip install git+https://github.com/pyqtgraph/pyqtgraph@develop
 O desenvolvimento é coordenado pela [G-SEPi](https://www.ligasep.eng.ufba.br/) da [UFBA](https://www.ufba.br/)
 
 ### Agradecimentos
-Agradecimentos especiais a Sandy Aquino, Felipe Bomfim e Matheus Carvalho pelas importantes contribuições
+Agradecimentos especiais a Ricardo Messala, Jonas Santos, Lenon Andrade, Sandy Aquino, Felipe Bomfim e Matheus Carvalho pelas importantes contribuições
