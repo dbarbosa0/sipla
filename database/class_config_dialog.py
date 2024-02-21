@@ -1,6 +1,7 @@
 from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import QStyleFactory, QDialog, QFileDialog, QGroupBox, QHBoxLayout,\
-    QPushButton, QVBoxLayout, QLabel, QLineEdit, QRadioButton, QMessageBox
+    QPushButton, QVBoxLayout, QLabel, QLineEdit, QRadioButton, QMessageBox,\
+    QGridLayout, QCheckBox
 from PyQt5.QtCore import Qt
 
 import configparser
@@ -13,7 +14,7 @@ class C_ConfigDialog(QDialog):
     def __init__(self):
         super().__init__()
 
-        self.titleWindow = "Database Settings"
+        self.titleWindow = "Configuração da Base de Dados Geográfica da Distribuidora"
         self.iconWindow = cfg.sipla_icon
         self.stylesheet = cfg.sipla_stylesheet
 
@@ -38,17 +39,26 @@ class C_ConfigDialog(QDialog):
         self.Dialog_Layout = QVBoxLayout() #Layout da Dialog
 
         ##### Option DataBase
-        self.Conn_GroupBox = QGroupBox("Método de Conexão com o BDGD")
-        self.Conn_GroupBox_Layout = QHBoxLayout()
+        self.Conn_GroupBox = QGroupBox("Modelo da BDGD (manual de instruções da BDGD  2021/revisão 1):")
+        self.Conn_GroupBox_Layout = QGridLayout()
 
-        self.Conn_GroupBox_Radio_Sqlite = QRadioButton("Local - SQLite")
-        self.Conn_GroupBox_Radio_Sqlite.setChecked(True)
-        self.Conn_GroupBox_Layout.addWidget(self.Conn_GroupBox_Radio_Sqlite)
+        self.Conn_GroupBox_Radio_Modelo_Versao_1_0 = QRadioButton("Modelo Versão 1.0 (2021)")
+        self.Conn_GroupBox_Radio_Modelo_Versao_1_0.setChecked(True)
+        self.Conn_GroupBox_Layout.addWidget(self.Conn_GroupBox_Radio_Modelo_Versao_1_0, 0, 0)
 
-        self.Conn_GroupBox_Radio_Mysql = QRadioButton("MariaDB / MySQL")
-        self.Conn_GroupBox_Radio_Mysql.setChecked(False)
-        #self.Conn_GroupBox_Radio_Mysql.setEnabled(False)
-        self.Conn_GroupBox_Layout.addWidget(self.Conn_GroupBox_Radio_Mysql)
+        self.Conn_GroupBox_Radio_Modelo_Novo = QRadioButton("Modelo Novo (2017)")
+        self.Conn_GroupBox_Radio_Modelo_Novo.setChecked(False)
+        self.Conn_GroupBox_Layout.addWidget(self.Conn_GroupBox_Radio_Modelo_Novo, 0, 1)
+
+        self.Conn_GroupBox_Radio_Modelo_Antigo = QRadioButton("Modelo Antigo (2016)")
+        self.Conn_GroupBox_Radio_Modelo_Antigo.setChecked(False)
+        self.Conn_GroupBox_Layout.addWidget(self.Conn_GroupBox_Radio_Modelo_Antigo, 0, 2)
+
+
+        self.Conn_GroupBox_Radio_check_identificar = QCheckBox("Identificar automaticamente")
+        self.Conn_GroupBox_Radio_check_identificar.setChecked(True)
+        self.Conn_GroupBox_Layout.addWidget(self.Conn_GroupBox_Radio_check_identificar, 2, 0)
+
 
         self.Conn_GroupBox.setLayout(self.Conn_GroupBox_Layout)
         self.Dialog_Layout.addWidget(self.Conn_GroupBox)
@@ -74,32 +84,6 @@ class C_ConfigDialog(QDialog):
         self.Conn_GroupBox_Sqlite.setLayout(self.Conn_GroupBox_Sqlite_Layout)
         self.Dialog_Layout.addWidget(self.Conn_GroupBox_Sqlite)
 
-        #### MySQL / Maria DB
-        self.Conn_GroupBox_MySQL = QGroupBox("Conexão MySQL / MariaDB")
-        self.Conn_GroupBox_MySQL_Layout = QVBoxLayout()
-        self.Conn_GroupBox_MySQL_Host_Label = QLabel("Host:")
-        self.Conn_GroupBox_MySQL_Layout.addWidget(self.Conn_GroupBox_MySQL_Host_Label)
-        self.Conn_GroupBox_MySQL_Host_Edit = QLineEdit()
-        self.Conn_GroupBox_MySQL_Host_Edit.setMinimumWidth(300)
-        self.Conn_GroupBox_MySQL_Layout.addWidget(self.Conn_GroupBox_MySQL_Host_Edit)
-        self.Conn_GroupBox_MySQL_User_Label = QLabel("User:")
-        self.Conn_GroupBox_MySQL_Layout.addWidget(self.Conn_GroupBox_MySQL_User_Label)
-        self.Conn_GroupBox_MySQL_User_Edit = QLineEdit()
-        self.Conn_GroupBox_MySQL_User_Edit.setMinimumWidth(300)
-        self.Conn_GroupBox_MySQL_Layout.addWidget(self.Conn_GroupBox_MySQL_User_Edit)
-        self.Conn_GroupBox_MySQL_Passwd_Label = QLabel("Senha:")
-        self.Conn_GroupBox_MySQL_Layout.addWidget(self.Conn_GroupBox_MySQL_Passwd_Label)
-        self.Conn_GroupBox_MySQL_Passwd_Edit = QLineEdit()
-        self.Conn_GroupBox_MySQL_Passwd_Edit.setMinimumWidth(300)
-        self.Conn_GroupBox_MySQL_Layout.addWidget(self.Conn_GroupBox_MySQL_Passwd_Edit)
-        self.Conn_GroupBox_MySQL_db_Label = QLabel("Banco de Dados:")
-        self.Conn_GroupBox_MySQL_Layout.addWidget(self.Conn_GroupBox_MySQL_db_Label)
-        self.Conn_GroupBox_MySQL_db_Edit = QLineEdit()
-        self.Conn_GroupBox_MySQL_db_Edit.setMinimumWidth(300)
-        self.Conn_GroupBox_MySQL_Layout.addWidget(self.Conn_GroupBox_MySQL_db_Edit)
-
-        self.Conn_GroupBox_MySQL.setLayout(self.Conn_GroupBox_MySQL_Layout)
-        self.Dialog_Layout.addWidget(self.Conn_GroupBox_MySQL)
 
         ###### Botões
         self.Dilalog_Btns_Layout = QHBoxLayout()
@@ -130,18 +114,20 @@ class C_ConfigDialog(QDialog):
         self.loadDefaultParameters()
         self.updateDialog()
 
-        self.Conn_GroupBox_Radio_Sqlite.toggled.connect(self.updateDialog)
-        self.Conn_GroupBox_Radio_Mysql.toggled.connect(self.updateDialog)
+
+        self.Conn_GroupBox_Radio_check_identificar.toggled.connect(self.updateDialog)
 
     def Accept(self):
         self.loadParameters()
         self.close()
 
     def getConn_GroupBox_Radio_Btn(self):
-        if self.Conn_GroupBox_Radio_Sqlite.isChecked():
+        if self.Conn_GroupBox_Radio_Modelo_Versao_1_0.isChecked():
             return "sqlite"
-        elif self.Conn_GroupBox_Radio_Mysql.isChecked():
-            return "mysql"
+        elif self.Conn_GroupBox_Radio_Modelo_Novo.isChecked():
+            return "Modelo Novo"
+        elif self.Conn_GroupBox_Radio_Modelo_Antigo.isChecked():
+            return "Modelo Antigo"
 
     def loadParameters(self):
 
@@ -149,10 +135,6 @@ class C_ConfigDialog(QDialog):
         self.databaseInfo["Conn"] = self.getConn_GroupBox_Radio_Btn()
         self.databaseInfo["versao"] = self.get_versaoDataBaseSqlite()
         self.databaseInfo["Sqlite_DirDataBase"] = self.get_DirDataBaseSqlite()
-        self.databaseInfo['MySQL_Host'] = self.Conn_GroupBox_MySQL_Host_Edit.text()
-        self.databaseInfo['MySQL_User'] = self.Conn_GroupBox_MySQL_User_Edit.text()
-        self.databaseInfo['MySQL_Passwd'] = self.Conn_GroupBox_MySQL_Passwd_Edit.text()
-        self.databaseInfo['MySQL_db'] = self.Conn_GroupBox_MySQL_db_Edit.text()
 
 
     def get_DirDataBaseSqlite(self):
@@ -183,25 +165,18 @@ class C_ConfigDialog(QDialog):
 
             ## Default
             if config['BDGD']['Conn'] == "sqlite":
-                self.Conn_GroupBox_Radio_Sqlite.setChecked(True)
+                self.Conn_GroupBox_Radio_Modelo_Versao_1_0.setChecked(True)
             elif config['BDGD']['Conn'] == "mysql":
-                self.Conn_GroupBox_Radio_Mysql.setChecked(False)
+                self.Conn_GroupBox_Radio_Modelo_Novo.setChecked(False)
 
             if os.path.isdir(config['Sqlite']['dir']):
                 if self.checkDirDataBaseSqlite(config['Sqlite']['dir'], config['Sqlite']['versao']):
                     self.Conn_GroupBox_Sqlite_Edit.setText(config['Sqlite']['dir'])
             else:
                 self.Conn_GroupBox_Sqlite_Edit.clear()
-            ##
-            self.Conn_GroupBox_MySQL_Host_Edit.setText(config['MySQL']['host'])
-            self.Conn_GroupBox_MySQL_User_Edit.setText(config['MySQL']['user'])
-            self.Conn_GroupBox_MySQL_Passwd_Edit.setText(config['MySQL']['passwd'])
-            self.Conn_GroupBox_MySQL_db_Edit.setText(config['MySQL']['db'])
-
 
             ##### Carregando parâmetros
             self.loadParameters()
-
         except:
             raise class_exception.FileDataBaseError("Configuração do Banco de Dados",
                                                     "Erro ao carregar os parâmetros do Banco de Dados!")
@@ -219,13 +194,6 @@ class C_ConfigDialog(QDialog):
             config['Sqlite'] = {}
             config['Sqlite']['dir'] = self.databaseInfo["Sqlite_DirDataBase"]
             config['Sqlite']['versao'] = self.databaseInfo["versao"]
-
-            config['MySQL'] = {}
-            config['MySQL']['host'] = self.databaseInfo['MySQL_Host']
-            config['MySQL']['user'] = self.databaseInfo['MySQL_User']
-            config['MySQL']['passwd'] = self.databaseInfo['MySQL_Passwd']
-            config['MySQL']['db'] = self.databaseInfo['MySQL_db']
-
 
 
             with open('siplaconfigdatabase.ini', 'w') as configfile:
@@ -293,11 +261,12 @@ class C_ConfigDialog(QDialog):
 
     def updateDialog(self):
 
-        if self.getConn_GroupBox_Radio_Btn() == "sqlite":
-            self.Conn_GroupBox_Sqlite.setHidden(False)
-            self.Conn_GroupBox_MySQL.setHidden(True)
-        elif self.getConn_GroupBox_Radio_Btn() == "mysql":
-            self.Conn_GroupBox_Sqlite.setHidden(True)
-            self.Conn_GroupBox_MySQL.setHidden(False)
-
+        if self.Conn_GroupBox_Radio_check_identificar.isChecked():
+            self.Conn_GroupBox_Radio_Modelo_Versao_1_0.setHidden(True)
+            self.Conn_GroupBox_Radio_Modelo_Novo.setHidden(True)
+            self.Conn_GroupBox_Radio_Modelo_Antigo.setHidden(True)
+        elif not self.Conn_GroupBox_Radio_check_identificar.isChecked():
+            self.Conn_GroupBox_Radio_Modelo_Versao_1_0.setHidden(False)
+            self.Conn_GroupBox_Radio_Modelo_Novo.setHidden(False)
+            self.Conn_GroupBox_Radio_Modelo_Antigo.setHidden(False)
         self.adjustSize()

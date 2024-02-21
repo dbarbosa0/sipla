@@ -25,24 +25,11 @@ class C_DBaseConn:  # Classe de banco de dados
 
         try:
             # Conectando em apenas leitura!
-            if self.DataBaseInfo["Conn"] == "sqlite":
 
-                connDB = sqlite3.connect(
-                    'file:' + self.DataBaseInfo["Sqlite_DirDataBase"] + nomeBancoDados + '.sqlite?mode=ro', uri=True)
+            connDB = sqlite3.connect(
+                'file:' + self.DataBaseInfo["Sqlite_DirDataBase"] + nomeBancoDados + '.sqlite?mode=ro', uri=True)
 
-                cbanco = connDB.execute(strSQL)
-
-            elif self.DataBaseInfo["Conn"] == "mysql":
-
-                strSQL = strSQL.lower()  # Apenas para compatibilizar, depois verificar
-
-                connDB = MySQLdb.connect(self.DataBaseInfo['MySQL_Host'], self.DataBaseInfo['MySQL_User'],
-                                         self.DataBaseInfo['MySQL_Passwd'], self.DataBaseInfo['MySQL_db'])
-
-                cbanco = connDB.cursor()
-                cbanco.execute(strSQL)
-
-                connDB.close()
+            cbanco = connDB.execute(strSQL)
 
             return cbanco
 
@@ -53,26 +40,10 @@ class C_DBaseConn:  # Classe de banco de dados
 
         try:
             # Conectando em apenas leitura!
-            if self.DataBaseInfo["Conn"] == "sqlite":
 
-                connDB = sqlite3.connect('file:' + self.DataBaseInfo["Sqlite_DirDataBase"] + 'CTAT.sqlite?mode=ro',
-                                         uri=True)
-
-                cbanco = connDB.execute('select sqlite_version();')
-
-            elif self.DataBaseInfo["Conn"] == "mysql":
-
-                connDB = MySQLdb.connect(self.DataBaseInfo['MySQL_Host'], self.DataBaseInfo['MySQL_User'],
-                                         self.DataBaseInfo['MySQL_Passwd'], self.DataBaseInfo['MySQL_db'])
-
-                cursor = connDB.cursor()
-                cursor.execute('SELECT VERSION();')
-                results = cursor.fetchone()
-
-                connDB.close()
-
-                if not results:
-                    return False
+            connDB = sqlite3.connect('file:' + self.DataBaseInfo["Sqlite_DirDataBase"] + 'CTAT.sqlite?mode=ro',
+                                     uri=True)
+            cbanco = connDB.execute('select sqlite_version();')
 
             return True
 
