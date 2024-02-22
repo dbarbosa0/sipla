@@ -57,7 +57,7 @@ class C_ConfigDialog(QDialog):
 
         self.Conn_GroupBox_Radio_check_identificar = QCheckBox("Identificar automaticamente")
         self.Conn_GroupBox_Radio_check_identificar.setChecked(True)
-        self.Conn_GroupBox_Layout.addWidget(self.Conn_GroupBox_Radio_check_identificar, 2, 0)
+        self.Conn_GroupBox_Layout.addWidget(self.Conn_GroupBox_Radio_check_identificar, 1, 0)
 
 
         self.Conn_GroupBox.setLayout(self.Conn_GroupBox_Layout)
@@ -118,8 +118,15 @@ class C_ConfigDialog(QDialog):
         self.Conn_GroupBox_Radio_check_identificar.toggled.connect(self.updateDialog)
 
     def Accept(self):
-        self.loadParameters()
-        self.close()
+        if True: #is zip file?
+            self.loadParameters()
+            self.close()
+        else:
+            window = Window_confirmacao_zip_file(self.get_DirDataBaseSqlite())
+            window.show()
+            window.exec_()
+            self.Conn_GroupBox_Sqlite_Edit.setText(window.dir_path)
+            self.Accept()
 
     def getConn_GroupBox_Radio_Btn(self):
         if self.Conn_GroupBox_Radio_Modelo_Versao_1_0.isChecked():
@@ -270,3 +277,30 @@ class C_ConfigDialog(QDialog):
             self.Conn_GroupBox_Radio_Modelo_Novo.setHidden(False)
             self.Conn_GroupBox_Radio_Modelo_Antigo.setHidden(False)
         self.adjustSize()
+
+class Window_confirmacao_zip_file(QMessageBox):
+
+    def __init__(self, dir_path):
+        super().__init__()
+
+        self.dir_path = dir_path
+        # Construção da janela
+        self.titleWindow = "Arquivo da BDGD em formato zip"
+        self.iconWindow = cfg.sipla_icon
+        self.stylesheet = cfg.sipla_stylesheet
+
+        self.setWindowTitle(self.titleWindow)
+        self.setWindowIcon(QIcon(self.iconWindow))
+        self.setWindowModality(Qt.ApplicationModal)
+        self.setStyle(QStyleFactory.create('Cleanlooks'))
+        self.adjustSize()
+
+        self.setIcon(QMessageBox.Information)
+        self.setText("O arquivo da BDGD está compactado no formato zip. É\nnecessário que descompactemos o arquivo para"
+                     " leitura\npelo SIPLA.\nConfirmar a descompactação do arquivo na pasta original?\n"
+                     "(O arquivo em formato zip pode ser excluído após esse processo)")
+
+        self.buttonClicked.connect(self.decompact_zip)
+
+    def decompact_zip(self):
+        pass

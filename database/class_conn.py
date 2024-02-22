@@ -1,20 +1,14 @@
 import class_exception
 import sqlite3
-import MySQLdb
 
 
 class C_DBaseConn:  # Classe de banco de dados
 
     def __init__(self):
-        # Variáveis das Classes
-
-        # Informações do Diretório
         self._DataBaseInfo = {}
 
     @property
     def DataBaseInfo(self):
-        # Este código é executado quando alguém for
-        # ler o valor de self.nome
         return self._DataBaseInfo
 
     @DataBaseInfo.setter
