@@ -9,6 +9,7 @@ import class_exception
 import config as cfg
 import os
 import platform
+import zipfile
 
 class C_ConfigDialog(QDialog):
     def __init__(self):
@@ -39,50 +40,50 @@ class C_ConfigDialog(QDialog):
         self.Dialog_Layout = QVBoxLayout() #Layout da Dialog
 
         ##### Option DataBase
-        self.Conn_GroupBox = QGroupBox("Modelo da BDGD (manual de instruções da BDGD  2021/revisão 1):")
-        self.Conn_GroupBox_Layout = QGridLayout()
+        self.GroupBox = QGroupBox("Modelo da BDGD (manual de instruções da BDGD 2021/revisão 1):")
+        self.GroupBox_Layout = QGridLayout()
 
-        self.Conn_GroupBox_Radio_Modelo_Versao_1_0 = QRadioButton("Modelo Versão 1.0 (2021)")
-        self.Conn_GroupBox_Radio_Modelo_Versao_1_0.setChecked(True)
-        self.Conn_GroupBox_Layout.addWidget(self.Conn_GroupBox_Radio_Modelo_Versao_1_0, 0, 0)
+        self.GroupBox_Radio_Modelo_Versao_1_0 = QRadioButton("Modelo Versão 1.0 (2021)")
+        self.GroupBox_Radio_Modelo_Versao_1_0.setChecked(True)
+        self.GroupBox_Layout.addWidget(self.GroupBox_Radio_Modelo_Versao_1_0, 0, 0)
 
-        self.Conn_GroupBox_Radio_Modelo_Novo = QRadioButton("Modelo Novo (2017)")
-        self.Conn_GroupBox_Radio_Modelo_Novo.setChecked(False)
-        self.Conn_GroupBox_Layout.addWidget(self.Conn_GroupBox_Radio_Modelo_Novo, 0, 1)
+        self.GroupBox_Radio_Modelo_Novo = QRadioButton("Modelo Novo (2017)")
+        self.GroupBox_Radio_Modelo_Novo.setChecked(False)
+        self.GroupBox_Layout.addWidget(self.GroupBox_Radio_Modelo_Novo, 0, 1)
 
-        self.Conn_GroupBox_Radio_Modelo_Antigo = QRadioButton("Modelo Antigo (2016)")
-        self.Conn_GroupBox_Radio_Modelo_Antigo.setChecked(False)
-        self.Conn_GroupBox_Layout.addWidget(self.Conn_GroupBox_Radio_Modelo_Antigo, 0, 2)
-
-
-        self.Conn_GroupBox_Radio_check_identificar = QCheckBox("Identificar automaticamente")
-        self.Conn_GroupBox_Radio_check_identificar.setChecked(True)
-        self.Conn_GroupBox_Layout.addWidget(self.Conn_GroupBox_Radio_check_identificar, 1, 0)
+        self.GroupBox_Radio_Modelo_Antigo = QRadioButton("Modelo Antigo (2016)")
+        self.GroupBox_Radio_Modelo_Antigo.setChecked(False)
+        self.GroupBox_Layout.addWidget(self.GroupBox_Radio_Modelo_Antigo, 0, 2)
 
 
-        self.Conn_GroupBox.setLayout(self.Conn_GroupBox_Layout)
-        self.Dialog_Layout.addWidget(self.Conn_GroupBox)
+        self.GroupBox_Radio_check_identificar = QCheckBox("Identificar automaticamente")
+        self.GroupBox_Radio_check_identificar.setChecked(True)
+        self.GroupBox_Layout.addWidget(self.GroupBox_Radio_check_identificar, 1, 0)
+
+
+        self.GroupBox.setLayout(self.GroupBox_Layout)
+        self.Dialog_Layout.addWidget(self.GroupBox)
 
 
         #### Grupo do Sqlite
-        self.Conn_GroupBox_Sqlite = QGroupBox("Conexão Local")
-        self.Conn_GroupBox_Sqlite_Layout = QHBoxLayout()
+        self.GroupBox_Sqlite = QGroupBox("Conexão Local")
+        self.GroupBox_Sqlite_Layout = QHBoxLayout()
 
-        self.Conn_GroupBox_Sqlite_Label = QLabel("Diretório:")
-        self.Conn_GroupBox_Sqlite_Layout.addWidget(self.Conn_GroupBox_Sqlite_Label)
-        self.Conn_GroupBox_Sqlite_Edit = QLineEdit()
-        self.Conn_GroupBox_Sqlite_Edit.setMinimumWidth(300)
-        self.Conn_GroupBox_Sqlite_Edit.setEnabled(False)
-        self.Conn_GroupBox_Sqlite_Layout.addWidget(self.Conn_GroupBox_Sqlite_Edit)
+        self.GroupBox_Sqlite_Label = QLabel("Diretório:")
+        self.GroupBox_Sqlite_Layout.addWidget(self.GroupBox_Sqlite_Label)
+        self.GroupBox_Sqlite_Edit = QLineEdit()
+        self.GroupBox_Sqlite_Edit.setMinimumWidth(300)
+        self.GroupBox_Sqlite_Edit.setEnabled(False)
+        self.GroupBox_Sqlite_Layout.addWidget(self.GroupBox_Sqlite_Edit)
 
-        self.Conn_GroupBox_Sqlite_Btn = QPushButton()
-        self.Conn_GroupBox_Sqlite_Btn.setIcon(QIcon('img/icon_opendatabase.png'))
-        self.Conn_GroupBox_Sqlite_Btn.setFixedWidth(30)
-        self.Conn_GroupBox_Sqlite_Btn.clicked.connect(self.OpenDataBase)
-        self.Conn_GroupBox_Sqlite_Layout.addWidget(self.Conn_GroupBox_Sqlite_Btn)
+        self.GroupBox_Sqlite_Btn = QPushButton()
+        self.GroupBox_Sqlite_Btn.setIcon(QIcon('img/icon_opendatabase.png'))
+        self.GroupBox_Sqlite_Btn.setFixedWidth(30)
+        self.GroupBox_Sqlite_Btn.clicked.connect(self.OpenDataBase)
+        self.GroupBox_Sqlite_Layout.addWidget(self.GroupBox_Sqlite_Btn)
 
-        self.Conn_GroupBox_Sqlite.setLayout(self.Conn_GroupBox_Sqlite_Layout)
-        self.Dialog_Layout.addWidget(self.Conn_GroupBox_Sqlite)
+        self.GroupBox_Sqlite.setLayout(self.GroupBox_Sqlite_Layout)
+        self.Dialog_Layout.addWidget(self.GroupBox_Sqlite)
 
 
         ###### Botões
@@ -115,37 +116,39 @@ class C_ConfigDialog(QDialog):
         self.updateDialog()
 
 
-        self.Conn_GroupBox_Radio_check_identificar.toggled.connect(self.updateDialog)
+        self.GroupBox_Radio_check_identificar.toggled.connect(self.updateDialog)
 
     def Accept(self):
-        if True: #is zip file?
-            self.loadParameters()
-            self.close()
-        else:
+        if zipfile.is_zipfile(self.get_versaoDataBaseSqlite()): #is zip file?
             window = Window_confirmacao_zip_file(self.get_DirDataBaseSqlite())
             window.show()
             window.exec_()
-            self.Conn_GroupBox_Sqlite_Edit.setText(window.dir_path)
-            self.Accept()
 
-    def getConn_GroupBox_Radio_Btn(self):
-        if self.Conn_GroupBox_Radio_Modelo_Versao_1_0.isChecked():
-            return "sqlite"
-        elif self.Conn_GroupBox_Radio_Modelo_Novo.isChecked():
+            self.GroupBox_Sqlite_Edit.setText(window.dir_path)
+            self.Accept()
+        else:
+            self.loadParameters()
+            self.close()
+
+
+    def getGroupBox_Radio_Btn(self):
+        if self.GroupBox_Radio_Modelo_Versao_1_0.isChecked():
+            return "Modelo Versao 1.0"
+        elif self.GroupBox_Radio_Modelo_Novo.isChecked():
             return "Modelo Novo"
-        elif self.Conn_GroupBox_Radio_Modelo_Antigo.isChecked():
+        elif self.GroupBox_Radio_Modelo_Antigo.isChecked():
             return "Modelo Antigo"
 
     def loadParameters(self):
 
         ## Geral
-        self.databaseInfo["Conn"] = self.getConn_GroupBox_Radio_Btn()
+        self.databaseInfo["Modelo"] = self.getGroupBox_Radio_Btn()
         self.databaseInfo["versao"] = self.get_versaoDataBaseSqlite()
         self.databaseInfo["Sqlite_DirDataBase"] = self.get_DirDataBaseSqlite()
 
 
     def get_DirDataBaseSqlite(self):
-        dirDataBase = self.Conn_GroupBox_Sqlite_Edit.text()
+        dirDataBase = self.GroupBox_Sqlite_Edit.text()
 
         if (dirDataBase != "") and (self.checkDirDataBaseSqlite(dirDataBase, self.databaseInfo["versao"])):
             return dirDataBase
@@ -156,7 +159,7 @@ class C_ConfigDialog(QDialog):
         """
         Identifica a versão da database com base no banco de transformadores de média tensão
         """
-        dirDataBase = self.Conn_GroupBox_Sqlite_Edit.text()
+        dirDataBase = self.GroupBox_Sqlite_Edit.text()
 
         if os.path.isfile(dirDataBase + "UNTRD" + ".sqlite"):
             return "2017"
@@ -171,16 +174,19 @@ class C_ConfigDialog(QDialog):
             config.read('siplaconfigdatabase.ini')
 
             ## Default
-            if config['BDGD']['Conn'] == "sqlite":
-                self.Conn_GroupBox_Radio_Modelo_Versao_1_0.setChecked(True)
-            elif config['BDGD']['Conn'] == "mysql":
-                self.Conn_GroupBox_Radio_Modelo_Novo.setChecked(False)
+            match config['BDGD']['Modelo']:
+                case "Modelo Versao 1.0":
+                    self.GroupBox_Radio_Modelo_Versao_1_0.setChecked(True)
+                case "Modelo Novo":
+                    self.GroupBox_Radio_Modelo_Novo.setChecked(True)
+                case "Modelo Antigo":
+                    self.GroupBox_Radio_Modelo_Antigo.setChecked(True)
 
             if os.path.isdir(config['Sqlite']['dir']):
                 if self.checkDirDataBaseSqlite(config['Sqlite']['dir'], config['Sqlite']['versao']):
-                    self.Conn_GroupBox_Sqlite_Edit.setText(config['Sqlite']['dir'])
+                    self.GroupBox_Sqlite_Edit.setText(config['Sqlite']['dir'])
             else:
-                self.Conn_GroupBox_Sqlite_Edit.clear()
+                self.GroupBox_Sqlite_Edit.clear()
 
             ##### Carregando parâmetros
             self.loadParameters()
@@ -196,7 +202,7 @@ class C_ConfigDialog(QDialog):
 
             ## Load Flow
             config['BDGD']= { }
-            config['BDGD']['Conn'] = self.databaseInfo["Conn"]
+            config['BDGD']['Modelo'] = self.databaseInfo["Modelo"]
 
             config['Sqlite'] = {}
             config['Sqlite']['dir'] = self.databaseInfo["Sqlite_DirDataBase"]
@@ -218,18 +224,13 @@ class C_ConfigDialog(QDialog):
             QFileDialog.getExistingDirectory(None, "Selecione o Diretório com o Danco de Dados", "Banco/",
                                              QFileDialog.ShowDirsOnly))
 
-        nameDirDataBase += "/"
-
-        if platform.system() == "Windows":
-            nameDirDataBase = nameDirDataBase.replace('/', '\\')
-
-        self.Conn_GroupBox_Sqlite_Edit.setText(nameDirDataBase)
+        self.GroupBox_Sqlite_Edit.setText(nameDirDataBase)
         versaodatabase = self.get_versaoDataBaseSqlite()
 
         if self.checkDirDataBaseSqlite(nameDirDataBase, versaodatabase):
-            self.Conn_GroupBox_Sqlite_Edit.setText(nameDirDataBase)
+            self.GroupBox_Sqlite_Edit.setText(nameDirDataBase)
         else:
-            self.Conn_GroupBox_Sqlite_Edit.setText("")
+            self.GroupBox_Sqlite_Edit.setText("")
 
     def checkDirDataBaseSqlite(self, nameDirDataBase, versaodatabase):
         """
@@ -268,14 +269,14 @@ class C_ConfigDialog(QDialog):
 
     def updateDialog(self):
 
-        if self.Conn_GroupBox_Radio_check_identificar.isChecked():
-            self.Conn_GroupBox_Radio_Modelo_Versao_1_0.setHidden(True)
-            self.Conn_GroupBox_Radio_Modelo_Novo.setHidden(True)
-            self.Conn_GroupBox_Radio_Modelo_Antigo.setHidden(True)
-        elif not self.Conn_GroupBox_Radio_check_identificar.isChecked():
-            self.Conn_GroupBox_Radio_Modelo_Versao_1_0.setHidden(False)
-            self.Conn_GroupBox_Radio_Modelo_Novo.setHidden(False)
-            self.Conn_GroupBox_Radio_Modelo_Antigo.setHidden(False)
+        if self.GroupBox_Radio_check_identificar.isChecked():
+            self.GroupBox_Radio_Modelo_Versao_1_0.setHidden(True)
+            self.GroupBox_Radio_Modelo_Novo.setHidden(True)
+            self.GroupBox_Radio_Modelo_Antigo.setHidden(True)
+        elif not self.GroupBox_Radio_check_identificar.isChecked():
+            self.GroupBox_Radio_Modelo_Versao_1_0.setHidden(False)
+            self.GroupBox_Radio_Modelo_Novo.setHidden(False)
+            self.GroupBox_Radio_Modelo_Antigo.setHidden(False)
         self.adjustSize()
 
 class Window_confirmacao_zip_file(QMessageBox):
@@ -284,6 +285,7 @@ class Window_confirmacao_zip_file(QMessageBox):
         super().__init__()
 
         self.dir_path = dir_path
+
         # Construção da janela
         self.titleWindow = "Arquivo da BDGD em formato zip"
         self.iconWindow = cfg.sipla_icon
@@ -303,4 +305,6 @@ class Window_confirmacao_zip_file(QMessageBox):
         self.buttonClicked.connect(self.decompact_zip)
 
     def decompact_zip(self):
-        pass
+        with zipfile.ZipFile(self.dir_path, mode='r') as container:
+            for file in container.namelist():
+                print(file)

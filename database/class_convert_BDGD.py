@@ -9,6 +9,10 @@ import class_config_dialog
 import sys
 import config as cfg
 import class_exception
+import os
+import fiona
+import class_data
+import copy
 
 
 class Window_conversion_status(QWidget):
@@ -89,8 +93,18 @@ class Window_conversion_status(QWidget):
 
         self.setLayout(self.Layout_principal)
 
+    def iniciar_conv(self):
+        pass
 
+    def interromper_conv(self):
+        pass
+
+class Conversor(class_data.dadosBDGD):
+
+    def __init__(self):
+        super().__init__()
         self._DataBaseInfo = {}
+        self.path_BDGD_sqlite = ""
 
     @property
     def DataBaseInfo(self):
@@ -100,12 +114,68 @@ class Window_conversion_status(QWidget):
     def DataBaseInfo(self, nDataBaseInfo):
         self._DataBaseInfo = nDataBaseInfo
 
-    def iniciar_conv(self):
-        pass
+    def criacao_novo_diretorio(self):
+        input_geodb = self.DataBaseInfo["Sqlite_DirDataBase"]
 
-    def interromper_conv(self):
-        pass
+        # Cria um novo diretório para a BDGD (formato sqlite)
+        path_temp = os.path.join(input_geodb, "SIPLA_" + os.path.basename(input_geodb))
+        try:
+            os.mkdir(path_temp)
+        except FileExistsError as erro:
+            pass
+        self.path_BDGD_sqlite = path_temp
 
+    def convert_geodatabase_to_sqlite(self):
+        input_geodb = self.DataBaseInfo["Sqlite_DirDataBase"]
+
+        for nome_layer in self.get_layers_uteis_BDGD(self.DataBaseInfo["Modelo"]):
+            with fiona.open(input_geodb, layer=nome_layer) as src:
+                # Criação de uma cópia do dicionário de esquema do layout
+                schema = copy.deepcopy(src.schema)
+
+                #Conexão com o banco em sqlite
+                conn = sqlite3.connect(self.path_BDGD_sqlite + f"\\{nome_layer}")
+                c = conn.cursor()
+
+                match schema['geometry']:
+                    case 'Point':
+                        schema['properties']['x'] = 'float'
+                        schema['properties']['y'] = 'float'
+
+                        create_table_sql = f"CREATE TABLE {nome_layer.lower()} (id INTEGER PRIMARY KEY"
+                        for field in schema['properties']:
+                            if fiona.prop_type(schema['properties'][f'{field}']) in [fiona.prop_type('float'), fiona.prop_type('int')]:
+                                pass
+                            create_table_sql += f", {field} TEXT"
+                        create_table_sql += ")"
+                        c.execute(create_table_sql)
+
+                    case 'LineString':
+                        pass
+                    case _:
+                        create_table_sql = f"CREATE TABLE {nome_layer.lower()} (id INTEGER PRIMARY KEY"
+                        for field in schema['properties']:
+                            create_table_sql += f", {field} TEXT"
+                        create_table_sql += ")"
+                        c.execute(create_table_sql)
+
+                for feature in src:
+                    values = [feature['properties'][field] for field in schema['properties']]
+                    c.execute(f"INSERT INTO {nome_layer.lower()} VALUES (NULL, {','.join(['?'] * len(values))})",
+                              values)
+
+                conn.commit()
+                conn.close()
+
+    def convert_type_fiona_to_type_sqlite(self, esquema_geodb, feature):
+        if isinstance(fiona.prop_type(esquema_geodb['properties'][f'{feature}']), int):
+            return 'INTEGER'
+        elif isinstance(fiona.prop_type(esquema_geodb['properties'][f'{feature}']), float):
+            return 'REAL'
+        elif isinstance(fiona.prop_type(esquema_geodb['properties'][f'{feature}']), str):
+            return 'TEXT'
+        elif isinstance(fiona.prop_type(esquema_geodb['properties'][f'{feature}']), bool):
+            return 'BLOB'
 
 app = QApplication(sys.argv)
 
