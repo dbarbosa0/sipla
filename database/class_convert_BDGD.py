@@ -1,11 +1,9 @@
 from PyQt5.QtGui import QIcon
-from PyQt5.QtWidgets import QStyleFactory, QDialog, QFileDialog, QGroupBox, QHBoxLayout,\
-    QPushButton, QVBoxLayout, QLabel, QLineEdit, QRadioButton, QMessageBox,\
-    QGridLayout, QCheckBox, QWidget, QProgressBar, QApplication, QSpacerItem
+from PyQt5.QtWidgets import QStyleFactory, QGroupBox, QHBoxLayout, QPushButton, QVBoxLayout, QLabel, \
+    QGridLayout, QWidget, QProgressBar, QApplication
 from PyQt5.QtCore import Qt
 import sqlite3
-import class_config_dialog
-
+from timeit import default_timer as timer
 import sys
 import config as cfg
 import class_exception
@@ -13,12 +11,17 @@ import os
 import fiona
 import class_data
 import copy
+import class_conn
 
 
-class Window_conversion_status(QWidget):
+class WindowConversionStatus(QWidget, class_data.dadosBDGD):
 
-    def __init__(self):
+    def __init__(self, adapter_window_conversion_status_converter):
         super().__init__()
+        self.adapter = adapter_window_conversion_status_converter
+
+        # Dados gerais BDGD
+        self._DataBaseInfo = {}
 
         # Construção da janela
         self.titleWindow = "Preparação do Banco de Dados..."
@@ -41,15 +44,15 @@ class Window_conversion_status(QWidget):
 
         # Construção da barra de progresso
         self.bar_progress = QProgressBar()
-        self.bar_progress_total_steps = 8
+        self.bar_progress_total_steps = 10
         self.bar_progress.setMinimumWidth(550)
         self.bar_progress.setMinimumHeight(25)
         self.bar_progress.setFormat(f"    %v / {self.bar_progress_total_steps} passos concluídos (%p%)")
         self.bar_progress.setMaximum(self.bar_progress_total_steps)
-        self.bar_progress.setValue(4)
+        self.bar_progress.setValue(0)
 
         # Construção do indicador da ação atual
-        self.acaoes = ["Renomeando layers da geodatabase...", "bla bla...", "bla blo..."]
+        self.acaoes = ['...']
         self.acao_atual = QLabel("Estado atual: " + self.acaoes[0])
         self.acao_atual.setStyleSheet("border: 2px solid green;"
                                       "border-radius: 4px;"
@@ -94,15 +97,157 @@ class Window_conversion_status(QWidget):
         self.setLayout(self.Layout_principal)
 
     def iniciar_conv(self):
-        pass
+        self.adapter.iniciar_conversao()
 
     def interromper_conv(self):
         pass
 
-class Conversor(class_data.dadosBDGD):
+    def atualizacao_indicador_acao(self):
+        pass
+
+
+class Converter_BDGD():
+
+    def __init__(self, path_geodb):
+        super().__init__()
+
+        # Diretórios da BDGD
+        self.path_BDGD_geodb = path_geodb
+        self.path_BDGD_sqlite = ""
+
+    def criacao_novo_diretorio(self):
+        # Cria um novo diretório para a BDGD (formato sqlite)
+        path_temp = os.path.join(self.path_BDGD_geodb, "SIPLA_" + os.path.basename(self.path_BDGD_geodb))
+        try:
+            os.mkdir(path_temp)
+        except FileExistsError as erro:
+            pass
+        self.path_BDGD_sqlite = path_temp
+        return path_temp
+
+    def convert_geodatabase_to_sqlite(self, nome_layer):
+        with fiona.open(self.path_BDGD_geodb, layer=nome_layer) as geodb:
+            # Criação de uma cópia do dicionário de esquema do layout
+            schema = copy.deepcopy(geodb.schema)
+
+            # Conexão com o banco em sqlite
+            conn = sqlite3.connect(self.path_BDGD_sqlite + f"\\{nome_layer}.sqlite")
+            c = conn.cursor()
+
+            match schema['geometry']:
+                case 'Point':
+                    self.convert_layer_point(geodb, nome_layer, schema, c, conn)
+                case 'MultiLineString':
+                    self.convert_layer_MultiLineString(geodb, nome_layer, schema, c, conn)
+                case _:
+                    self.convert_layer_table(geodb, nome_layer, schema, c, conn)
+
+    def convert_layer_table(self, geodatabase, nome_layer, schema, cursor, connection):
+        create_table_sql = f"CREATE TABLE {nome_layer.lower()} (id INTEGER PRIMARY KEY"
+        for field in schema['properties']:
+            create_table_sql += f", {field} {self.convert_type_py_to_type_sqlite(schema, field)}"
+        create_table_sql += ")"
+        cursor.execute(create_table_sql)
+
+        for index, feature in enumerate(geodatabase):
+            values = [feature['properties'][field] for field in schema['properties']]
+            cursor.execute(f"INSERT INTO {nome_layer.lower()} VALUES (NULL, {','.join(['?'] * len(values))})",
+                           values)
+            self.atualizar_progresso(index)
+
+        connection.commit()
+        connection.close()
+
+    def convert_layer_point(self, geodatabase, nome_layer, schema, cursor, connection):
+        schema['properties']['x'] = 'float'
+        schema['properties']['y'] = 'float'
+
+        create_table_sql = f"CREATE TABLE {nome_layer.lower()} (id INTEGER PRIMARY KEY"
+        for field in schema['properties']:
+            create_table_sql += f", {field} {self.convert_type_py_to_type_sqlite(schema, field)}"
+        create_table_sql += ")"
+        cursor.execute(create_table_sql)
+
+        del schema['properties']['x']
+        del schema['properties']['y']
+        for feature in geodatabase:
+            values = [feature['properties'][field] for field in schema['properties']]
+
+            x, y = feature.geometry['coordinates']
+
+            values.append(x)
+            values.append(y)
+            cursor.execute(f"INSERT INTO {nome_layer.lower()} VALUES (NULL, {','.join(['?'] * len(values))})",
+                           values)
+
+        connection.commit()
+        connection.close()
+
+    def convert_layer_MultiLineString(self, geodatabase, nome_layer, schema, cursor, connection):
+        schema['properties']['vertex_index'] = 'int'
+        schema['properties']['x'] = 'float'
+        schema['properties']['y'] = 'float'
+
+        create_table_sql = f"CREATE TABLE {nome_layer.lower()} (id INTEGER PRIMARY KEY"
+        for field in schema['properties']:
+            create_table_sql += f", {field} {self.convert_type_py_to_type_sqlite(schema, field)}"
+        create_table_sql += ")"
+        cursor.execute(create_table_sql)
+
+        del schema['properties']['vertex_index']
+        del schema['properties']['x']
+        del schema['properties']['y']
+        for feature in geodatabase:
+
+            ponto_inicial = [feature['properties'][field] for field in schema['properties']]
+            ponto_final = [feature['properties'][field] for field in schema['properties']]
+
+            Vertices = feature.geometry['coordinates']
+            (x0, y0), (x1, y1) = Vertices[0][0:2]
+
+            ponto_inicial.append(0)
+            ponto_inicial.append(x0)
+            ponto_inicial.append(y0)
+
+            ponto_final.append(1)
+            ponto_final.append(x1)
+            ponto_final.append(y1)
+
+
+            cursor.execute(f"INSERT INTO {nome_layer.lower()} VALUES (NULL, {','.join(['?'] * len(ponto_inicial))})",
+                           ponto_inicial)
+            cursor.execute(f"INSERT INTO {nome_layer.lower()} VALUES (NULL, {','.join(['?'] * len(ponto_final))})",
+                           ponto_final)
+
+        connection.commit()
+        connection.close()
+
+    def convert_Polygon(self):
+        pass
+
+    def convert_type_py_to_type_sqlite(self, esquema_geodb, field):
+        if fiona.prop_type(esquema_geodb['properties'][f'{field}']) == type(1):
+            return 'INTEGER'
+        elif fiona.prop_type(esquema_geodb['properties'][f'{field}']) == type(1.45):
+            return 'REAL'
+        elif fiona.prop_type(esquema_geodb['properties'][f'{field}']) == type("string"):
+            return 'TEXT'
+        elif fiona.prop_type(esquema_geodb['properties'][f'{field}']) == type(True):
+            return 'BLOB'
+        else:
+            return 'TEXT'
+
+
+    def atualizar_progresso(self):
+        pass
+
+
+class AdapterWindowStatusAndConverter(class_data.dadosBDGD):
 
     def __init__(self):
         super().__init__()
+
+        # Dados gerais BDGD
         self._DataBaseInfo = {}
         self.path_BDGD_sqlite = ""
 
@@ -112,74 +257,31 @@ class Conversor(class_data.dadosBDGD):
 
     @DataBaseInfo.setter
     def DataBaseInfo(self, nDataBaseInfo):
-        self._DataBaseInfo = nDataBaseInfo
+        self._DataBaseInfo = nDataBaseInfo 
+        self.path_BDGD_geodb = self.DataBaseInfo["Sqlite_DirDataBase"]
+        
+        # Layer variables
+        self.layers_BDGD = self.get_layers_uteis_BDGD(self.DataBaseInfo["Modelo"])
+        self.n_layers_BDGD = len(self.layers_BDGD)
+        self.acaoes = ['...']+["Convertendo a layer: " + nome_da_layer + " (0/?)" for nome_da_layer in self.layers_BDGD]
 
-    def criacao_novo_diretorio(self):
-        input_geodb = self.DataBaseInfo["Sqlite_DirDataBase"]
+    def initUI(self):
+        self.window = WindowConversionStatus(self)
+        self.window.show()
+        self.window.exec_()
+        
+    def iniciar_conversao(self):
+        self.conversor = Converter_BDGD(self.path_BDGD_geodb)
+        self.conversor.criacao_novo_diretorio()
 
-        # Cria um novo diretório para a BDGD (formato sqlite)
-        path_temp = os.path.join(input_geodb, "SIPLA_" + os.path.basename(input_geodb))
-        try:
-            os.mkdir(path_temp)
-        except FileExistsError as erro:
-            pass
-        self.path_BDGD_sqlite = path_temp
+        for index, nome_layer in enumerate(self.layers_BDGD, start=1):
+            self.conversor.convert_geodatabase_to_sqlite(nome_layer)
 
-    def convert_geodatabase_to_sqlite(self):
-        input_geodb = self.DataBaseInfo["Sqlite_DirDataBase"]
 
-        for nome_layer in self.get_layers_uteis_BDGD(self.DataBaseInfo["Modelo"]):
-            with fiona.open(input_geodb, layer=nome_layer) as src:
-                # Criação de uma cópia do dicionário de esquema do layout
-                schema = copy.deepcopy(src.schema)
 
-                #Conexão com o banco em sqlite
-                conn = sqlite3.connect(self.path_BDGD_sqlite + f"\\{nome_layer}")
-                c = conn.cursor()
+if __name__ == '__main__':
+    pass
+    app = QApplication(sys.argv)
 
-                match schema['geometry']:
-                    case 'Point':
-                        schema['properties']['x'] = 'float'
-                        schema['properties']['y'] = 'float'
-
-                        create_table_sql = f"CREATE TABLE {nome_layer.lower()} (id INTEGER PRIMARY KEY"
-                        for field in schema['properties']:
-                            if fiona.prop_type(schema['properties'][f'{field}']) in [fiona.prop_type('float'), fiona.prop_type('int')]:
-                                pass
-                            create_table_sql += f", {field} TEXT"
-                        create_table_sql += ")"
-                        c.execute(create_table_sql)
-
-                    case 'LineString':
-                        pass
-                    case _:
-                        create_table_sql = f"CREATE TABLE {nome_layer.lower()} (id INTEGER PRIMARY KEY"
-                        for field in schema['properties']:
-                            create_table_sql += f", {field} TEXT"
-                        create_table_sql += ")"
-                        c.execute(create_table_sql)
-
-                for feature in src:
-                    values = [feature['properties'][field] for field in schema['properties']]
-                    c.execute(f"INSERT INTO {nome_layer.lower()} VALUES (NULL, {','.join(['?'] * len(values))})",
-                              values)
-
-                conn.commit()
-                conn.close()
-
-    def convert_type_fiona_to_type_sqlite(self, esquema_geodb, feature):
-        if isinstance(fiona.prop_type(esquema_geodb['properties'][f'{feature}']), int):
-            return 'INTEGER'
-        elif isinstance(fiona.prop_type(esquema_geodb['properties'][f'{feature}']), float):
-            return 'REAL'
-        elif isinstance(fiona.prop_type(esquema_geodb['properties'][f'{feature}']), str):
-            return 'TEXT'
-        elif isinstance(fiona.prop_type(esquema_geodb['properties'][f'{feature}']), bool):
-            return 'BLOB'
-
-app = QApplication(sys.argv)
-
-window = Window_conversion_status()
-window.show()
-
-app.exec_()
+    adater = AdapterWindowStatusAndConverter()
+    adater.initUI()
