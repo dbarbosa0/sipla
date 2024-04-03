@@ -6,12 +6,13 @@ from PyQt5.QtCore import Qt
 
 import configparser
 import class_exception
+import database.class_data as class_data
 import config as cfg
 import os
-import platform
-import zipfile
+import class_convert_BDGD
+import fiona
 
-class C_ConfigDialog(QDialog):
+class C_ConfigDialog(QDialog, class_data.dadosBDGD):
     def __init__(self):
         super().__init__()
 
@@ -39,51 +40,25 @@ class C_ConfigDialog(QDialog):
 
         self.Dialog_Layout = QVBoxLayout() #Layout da Dialog
 
-        ##### Option DataBase
-        self.GroupBox = QGroupBox("Modelo da BDGD (manual de instruções da BDGD 2021/revisão 1):")
-        self.GroupBox_Layout = QGridLayout()
+        #### Grupo do BDGD
+        self.GroupBox_BDGD = QGroupBox("Conexão Local")
+        self.GroupBox_BDGD_Layout = QHBoxLayout()
 
-        self.GroupBox_Radio_Modelo_Versao_1_0 = QRadioButton("Modelo Versão 1.0 (2021)")
-        self.GroupBox_Radio_Modelo_Versao_1_0.setChecked(True)
-        self.GroupBox_Layout.addWidget(self.GroupBox_Radio_Modelo_Versao_1_0, 0, 0)
+        self.GroupBox_BDGD_Label = QLabel("Diretório:")
+        self.GroupBox_BDGD_Layout.addWidget(self.GroupBox_BDGD_Label)
+        self.GroupBox_BDGD_Edit = QLineEdit()
+        self.GroupBox_BDGD_Edit.setMinimumWidth(300)
+        self.GroupBox_BDGD_Edit.setEnabled(False)
+        self.GroupBox_BDGD_Layout.addWidget(self.GroupBox_BDGD_Edit)
 
-        self.GroupBox_Radio_Modelo_Novo = QRadioButton("Modelo Novo (2017)")
-        self.GroupBox_Radio_Modelo_Novo.setChecked(False)
-        self.GroupBox_Layout.addWidget(self.GroupBox_Radio_Modelo_Novo, 0, 1)
+        self.GroupBox_BDGD_Btn = QPushButton()
+        self.GroupBox_BDGD_Btn.setIcon(QIcon('img/icon_opendatabase.png'))
+        self.GroupBox_BDGD_Btn.setFixedWidth(30)
+        self.GroupBox_BDGD_Btn.clicked.connect(self.OpenDataBase)
+        self.GroupBox_BDGD_Layout.addWidget(self.GroupBox_BDGD_Btn)
 
-        self.GroupBox_Radio_Modelo_Antigo = QRadioButton("Modelo Antigo (2016)")
-        self.GroupBox_Radio_Modelo_Antigo.setChecked(False)
-        self.GroupBox_Layout.addWidget(self.GroupBox_Radio_Modelo_Antigo, 0, 2)
-
-
-        self.GroupBox_Radio_check_identificar = QCheckBox("Identificar automaticamente")
-        self.GroupBox_Radio_check_identificar.setChecked(True)
-        self.GroupBox_Layout.addWidget(self.GroupBox_Radio_check_identificar, 1, 0)
-
-
-        self.GroupBox.setLayout(self.GroupBox_Layout)
-        self.Dialog_Layout.addWidget(self.GroupBox)
-
-
-        #### Grupo do Sqlite
-        self.GroupBox_Sqlite = QGroupBox("Conexão Local")
-        self.GroupBox_Sqlite_Layout = QHBoxLayout()
-
-        self.GroupBox_Sqlite_Label = QLabel("Diretório:")
-        self.GroupBox_Sqlite_Layout.addWidget(self.GroupBox_Sqlite_Label)
-        self.GroupBox_Sqlite_Edit = QLineEdit()
-        self.GroupBox_Sqlite_Edit.setMinimumWidth(300)
-        self.GroupBox_Sqlite_Edit.setEnabled(False)
-        self.GroupBox_Sqlite_Layout.addWidget(self.GroupBox_Sqlite_Edit)
-
-        self.GroupBox_Sqlite_Btn = QPushButton()
-        self.GroupBox_Sqlite_Btn.setIcon(QIcon('img/icon_opendatabase.png'))
-        self.GroupBox_Sqlite_Btn.setFixedWidth(30)
-        self.GroupBox_Sqlite_Btn.clicked.connect(self.OpenDataBase)
-        self.GroupBox_Sqlite_Layout.addWidget(self.GroupBox_Sqlite_Btn)
-
-        self.GroupBox_Sqlite.setLayout(self.GroupBox_Sqlite_Layout)
-        self.Dialog_Layout.addWidget(self.GroupBox_Sqlite)
+        self.GroupBox_BDGD.setLayout(self.GroupBox_BDGD_Layout)
+        self.Dialog_Layout.addWidget(self.GroupBox_BDGD)
 
 
         ###### Botões
@@ -119,74 +94,62 @@ class C_ConfigDialog(QDialog):
         self.GroupBox_Radio_check_identificar.toggled.connect(self.updateDialog)
 
     def Accept(self):
-        if zipfile.is_zipfile(self.get_versaoDataBaseSqlite()): #is zip file?
-            window = Window_confirmacao_zip_file(self.get_DirDataBaseSqlite())
-            window.show()
-            window.exec_()
+        if  self.databaseInfo["Sqlite_DirDataBase"]:
 
-            self.GroupBox_Sqlite_Edit.setText(window.dir_path)
-            self.Accept()
+            CONVERSOR = class_convert_BDGD.ConnectorWindowAndConverterBDGD
+            CONVERSOR.DataBaseInfo = self.databaseInfo
+            CONVERSOR.initUI()
         else:
             self.loadParameters()
             self.close()
 
-
-    def getGroupBox_Radio_Btn(self):
-        if self.GroupBox_Radio_Modelo_Versao_1_0.isChecked():
-            return "Modelo Versao 1.0"
-        elif self.GroupBox_Radio_Modelo_Novo.isChecked():
-            return "Modelo Novo"
-        elif self.GroupBox_Radio_Modelo_Antigo.isChecked():
-            return "Modelo Antigo"
-
     def loadParameters(self):
+        directory_database: str = self.GroupBox_BDGD_Edit.text()
 
         ## Geral
-        self.databaseInfo["Modelo"] = self.getGroupBox_Radio_Btn()
-        self.databaseInfo["versao"] = self.get_versaoDataBaseSqlite()
-        self.databaseInfo["Sqlite_DirDataBase"] = self.get_DirDataBaseSqlite()
+        self.databaseInfo["Modelo"] = self.modelo_database(directory_database)
+        self.databaseInfo['versao'] = self.get_versao_database(self.databaseInfo["Modelo"])
+        if self.checkDirDataBase(directory_database):
+            self.get_directories(directory_database)
 
 
-    def get_DirDataBaseSqlite(self):
-        dirDataBase = self.GroupBox_Sqlite_Edit.text()
+    def get_directories(self, directory_database: str) -> None:
+        match self.tipo_database(directory_database):
+            case '.gdb':
+                self.databaseInfo["Geodb_DirDataBase"] = directory_database
+                self.databaseInfo["Sqlite_DirDataBase"] = ''
+            case '.gdb.sqlite':
+                path_sqlite_convertido = os.path.join(directory_database,
+                                                      "SIPLA_" + os.path.basename(self.path_BDGD_geodb))
 
-        if (dirDataBase != "") and (self.checkDirDataBaseSqlite(dirDataBase, self.databaseInfo["versao"])):
-            return dirDataBase
-        else:
-            return ""
+                self.databaseInfo["Geodb_DirDataBase"] = ''
+                self.databaseInfo["Sqlite_DirDataBase"] = path_sqlite_convertido
+            case '.sqlite':
+                self.databaseInfo["Geodb_DirDataBase"] = ''
+                self.databaseInfo["Sqlite_DirDataBase"] = directory_database
 
-    def get_versaoDataBaseSqlite(self):
-        """
-        Identifica a versão da database com base no banco de transformadores de média tensão
-        """
-        dirDataBase = self.GroupBox_Sqlite_Edit.text()
-
-        if os.path.isfile(dirDataBase + "UNTRD" + ".sqlite"):
-            return "2017"
-        elif os.path.isfile(dirDataBase + "UNTRMT" + ".sqlite"):
-            return "2021"
-        else:
-            return ""
+    def get_versao_database(self, Modelo: str) -> str:
+        match Modelo:
+            case "Modelo Versao 1.0":
+                return "2021"
+            case "Modelo Novo":
+                return "2017"
+            case "Modelo Antigo":
+                return "2016"
 
     def loadDefaultParameters(self):  # Só carrega quando abre a janela pela primeira vez
         try:
             config = configparser.ConfigParser()
             config.read('siplaconfigdatabase.ini')
 
-            ## Default
-            match config['BDGD']['Modelo']:
-                case "Modelo Versao 1.0":
-                    self.GroupBox_Radio_Modelo_Versao_1_0.setChecked(True)
-                case "Modelo Novo":
-                    self.GroupBox_Radio_Modelo_Novo.setChecked(True)
-                case "Modelo Antigo":
-                    self.GroupBox_Radio_Modelo_Antigo.setChecked(True)
-
             if os.path.isdir(config['Sqlite']['dir']):
-                if self.checkDirDataBaseSqlite(config['Sqlite']['dir'], config['Sqlite']['versao']):
-                    self.GroupBox_Sqlite_Edit.setText(config['Sqlite']['dir'])
+                if self.checkDirDataBase(config['Sqlite']['dir']):
+                    self.GroupBox_BDGD_Edit.setText(config['Sqlite']['dir'])
+            elif os.path.isdir(config['Geodb']['dir']):
+                if self.checkDirDataBase(config['Geodb']['dir']):
+                    self.GroupBox_BDGD_Edit.setText(config['Geodb']['dir'])
             else:
-                self.GroupBox_Sqlite_Edit.clear()
+                self.GroupBox_BDGD_Edit.clear()
 
             ##### Carregando parâmetros
             self.loadParameters()
@@ -203,10 +166,13 @@ class C_ConfigDialog(QDialog):
             ## Load Flow
             config['BDGD']= { }
             config['BDGD']['Modelo'] = self.databaseInfo["Modelo"]
+            config['BDGD']['versao'] = self.databaseInfo["versao"]
 
             config['Sqlite'] = {}
             config['Sqlite']['dir'] = self.databaseInfo["Sqlite_DirDataBase"]
-            config['Sqlite']['versao'] = self.databaseInfo["versao"]
+
+            config['Geodb'] = {}
+            config['Geodb']['dir'] = self.databaseInfo['Geobd_DirDataBase']
 
 
             with open('siplaconfigdatabase.ini', 'w') as configfile:
@@ -224,87 +190,102 @@ class C_ConfigDialog(QDialog):
             QFileDialog.getExistingDirectory(None, "Selecione o Diretório com o Danco de Dados", "Banco/",
                                              QFileDialog.ShowDirsOnly))
 
-        self.GroupBox_Sqlite_Edit.setText(nameDirDataBase)
-        versaodatabase = self.get_versaoDataBaseSqlite()
+        self.GroupBox_BDGD_Edit.setText(nameDirDataBase)
 
-        if self.checkDirDataBaseSqlite(nameDirDataBase, versaodatabase):
-            self.GroupBox_Sqlite_Edit.setText(nameDirDataBase)
+        if self.checkDirDataBase(nameDirDataBase):
+            self.GroupBox_BDGD_Edit.setText(nameDirDataBase)
         else:
-            self.GroupBox_Sqlite_Edit.setText("")
+            self.GroupBox_BDGD_Edit.setText("")
 
-    def checkDirDataBaseSqlite(self, nameDirDataBase, versaodatabase):
+    def checkDirDataBase(self, directory_database:str) -> bool:
         """
-        Identifica a versão da database com base no banco de transformadores de média tensão, verifica e lista se todos
-        os bancos necessário estão presentes no diretório de acordo com a respectiva versão.
-        :param nameDirDataBase:
+        Verifica e lista se todas
+        as layers necessárias estão presentes no diretório de acordo com a respectiva versão.
+        :param directory_database:
         :return True or False:
         """
-        msg = ''
-
-        match versaodatabase:
-            case "2017":
-                for ctd2017 in self.DBPRODIST2017:
-                    if not os.path.isfile(nameDirDataBase + ctd2017 + ".sqlite"):
-                        msg += ctd2017 + ".sqlite\n"
-            case "2021":
-                for ctd2021 in self.DBPRODIST2021:
-                    if not os.path.isfile(nameDirDataBase + ctd2021 + ".sqlite"):
-                        msg += ctd2021 + ".sqlite\n"
-            case _:
-                for ctd2017, ctd2021 in zip(self.DBPRODIST2017, self.DBPRODIST2021):
-                    if ctd2017 == ctd2021 and not os.path.isfile(nameDirDataBase + ctd2017 + ".sqlite"):
-                        msg += ctd2017 + ".sqlite\n"
-                    elif not os.path.isfile(nameDirDataBase + ctd2017 + ".sqlite"):
-                        msg += ctd2017 + ".sqlite (Para bases de 2017 até 2020)\n"
-                    elif not os.path.isfile(nameDirDataBase + ctd2021 + ".sqlite"):
-                        msg += ctd2021 + ".sqlite (Para bases a partir de 2021)\n"
-                msg += "Não foi possível identificar o ano da base devido a falta dos arquivos listados"
-
-        if msg != '':
+        if self.modelo_database(directory_database) == 'Modelo nao identificado':
             QMessageBox(QMessageBox.Warning, "DataBase Configuration",
-                        "Diretório não apresenta os arquivos necessários! \n" + msg, QMessageBox.Ok).exec()
+                        "Não foi possível identificar o modelo do BDGD pela falta de uma das seguintes layers: \n"
+                        + "    -> UNTRMT\n    -> UNTRD\n    -> UN_TR_D",
+                        QMessageBox.Ok).exec()
+            return False
+
+        layers_necessarias = self.get_layers_uteis_BDGD(self.modelo_database(directory_database))
+        layers_ausentes = []
+
+
+        match self.tipo_database(directory_database):
+            case '.gdb':
+                layers_presentes_geodb = fiona.listlayers(directory_database)
+
+                for layer in layers_necessarias:
+                    if layer not in layers_presentes_geodb:
+                        layers_ausentes.append(layer)
+
+            case '.gdb.sqlite':
+                path_sqlite_convertido = os.path.join(directory_database, "SIPLA_" +
+                                                      os.path.basename(self.path_BDGD_geodb))
+
+                for layer in layers_necessarias:
+                    if not os.path.isfile(path_sqlite_convertido + "//" + layer + ".sqlite"):
+                        layers_ausentes.append(layer)
+
+            case '.sqlite':
+                for layer in layers_necessarias:
+                    if not os.path.isfile(directory_database + "//" + layer + ".sqlite"):
+                        layers_ausentes.append(layer)
+
+        if layers_ausentes:
+            QMessageBox(QMessageBox.Warning, "DataBase Configuration",
+                        "O banco de dados não possui os seguintes layers : \n" + str(layers_ausentes),
+                        QMessageBox.Ok).exec()
             return False
         else:
             return True
 
-    def updateDialog(self):
+    def modelo_database(self, directory_database):
+        match self.tipo_database(directory_database):
+            case '.gdb':
+                layers_presentes_geodb = fiona.listlayers(directory_database)
 
-        if self.GroupBox_Radio_check_identificar.isChecked():
-            self.GroupBox_Radio_Modelo_Versao_1_0.setHidden(True)
-            self.GroupBox_Radio_Modelo_Novo.setHidden(True)
-            self.GroupBox_Radio_Modelo_Antigo.setHidden(True)
-        elif not self.GroupBox_Radio_check_identificar.isChecked():
-            self.GroupBox_Radio_Modelo_Versao_1_0.setHidden(False)
-            self.GroupBox_Radio_Modelo_Novo.setHidden(False)
-            self.GroupBox_Radio_Modelo_Antigo.setHidden(False)
-        self.adjustSize()
+                if "UNTRMT" in layers_presentes_geodb:
+                    return "Modelo Versao 1.0"
+                elif "UNTRD" in layers_presentes_geodb:
+                    return "Modelo Novo"
+                elif "UN_TR_D" in layers_presentes_geodb:
+                    return "Modelo Antigo"
+            case '.gdb.sqlite':
+                path_sqlite_convertido = os.path.join(directory_database, "SIPLA_" +
+                                                      os.path.basename(self.path_BDGD_geodb))
 
-class Window_confirmacao_zip_file(QMessageBox):
+                if os.path.isfile(path_sqlite_convertido + "//" + "UNTRMT" + ".sqlite"):
+                    return "Modelo Versao 1.0"
+                elif os.path.isfile(path_sqlite_convertido + "//" + "UNTRD" + ".sqlite"):
+                    return "Modelo Novo"
+                elif os.path.isfile(path_sqlite_convertido + "//" + "UN_TR_D" + ".sqlite"):
+                    return "Modelo Antigo"
+            case '.sqlite':
+                if os.path.isfile(directory_database + "//" + "UNTRMT" + ".sqlite"):
+                    return "Modelo Versao 1.0"
+                elif os.path.isfile(directory_database + "//" + "UNTRD" + ".sqlite"):
+                    return "Modelo Novo"
+                elif os.path.isfile(directory_database + "//" + "UN_TR_D" + ".sqlite"):
+                    return "Modelo Antigo"
 
-    def __init__(self, dir_path):
-        super().__init__()
+        return 'Modelo nao identificado'
 
-        self.dir_path = dir_path
+    def tipo_database(self, directory_database: str) -> str:
+        # Instância de uma possível db em sqlite, resultado de uma conversão de um Geo Package
+        path_sqlite_convertido = os.path.join(directory_database, "SIPLA_" + os.path.basename(self.path_BDGD_geodb))
 
-        # Construção da janela
-        self.titleWindow = "Arquivo da BDGD em formato zip"
-        self.iconWindow = cfg.sipla_icon
-        self.stylesheet = cfg.sipla_stylesheet
+        # Identifica se o diretório é uma BDGD em formato nativo Geo Package (Padrão Aneel) ou Pasta sqlite
+        if directory_database.endswith('.gdb'):
 
-        self.setWindowTitle(self.titleWindow)
-        self.setWindowIcon(QIcon(self.iconWindow))
-        self.setWindowModality(Qt.ApplicationModal)
-        self.setStyle(QStyleFactory.create('Cleanlooks'))
-        self.adjustSize()
+            if os.path.isdir(path_sqlite_convertido):
+                return '.gdb.sqlite'
+            else:
+                return '.gdb'
 
-        self.setIcon(QMessageBox.Information)
-        self.setText("O arquivo da BDGD está compactado no formato zip. É\nnecessário que descompactemos o arquivo para"
-                     " leitura\npelo SIPLA.\nConfirmar a descompactação do arquivo na pasta original?\n"
-                     "(O arquivo em formato zip pode ser excluído após esse processo)")
-
-        self.buttonClicked.connect(self.decompact_zip)
-
-    def decompact_zip(self):
-        with zipfile.ZipFile(self.dir_path, mode='r') as container:
-            for file in container.namelist():
-                print(file)
+        else:
+            '.sqlite'

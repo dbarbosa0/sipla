@@ -2,6 +2,7 @@ from PyQt5.QtWidgets import QStatusBar, QMessageBox
 
 ###
 import database.class_conn
+import database.class_convert_BDGD
 import opendss.class_data
 import opendss.class_opendss
 import opendss.class_config_dialog
@@ -48,6 +49,7 @@ class C_MainActions():
         self.DataBaseConn = database.class_conn.C_DBaseConn()  # Carregando o acesso aos Arquivos do BDGD
         self.DataBase = database.class_base.C_DBase()
         self.DataBase_DialogSettings = database.class_config_dialog.C_ConfigDialog() # Instânciando a classe dialog Settings
+        self.DataBase_converter = database.class_convert_BDGD.ConnectorWindowAndConverterBDGD()
         self.OpenDSS = opendss.class_opendss.C_OpenDSS()
         self.OpenDSS.DataBaseConn = self.DataBaseConn
 
@@ -176,8 +178,18 @@ class C_MainActions():
 
 
     #############################################
+    def converterDatbase(self):
+        # Setup e inicialização da tela de conversão da BDGD para SQLite3
+        self.DataBase_converter.DataBaseInfo = self.DataBase_DialogSettings.databaseInfo
+        self.DataBase_converter.initUI()
+        self.DataBase_DialogSettings.databaseInfo['Sqlite_DirDataBase'] = self.DataBase_converter.path_BDGD_sqlite
 
     def connectDataBase(self):
+        # Setup e inicialização da tela de conversão da BDGD para SQLite3
+        self.DataBase_converter.DataBaseInfo = self.DataBase_DialogSettings.databaseInfo
+        self.DataBase_converter.initUI()
+        self.DataBase_DialogSettings.databaseInfo['Sqlite_DirDataBase'] = self.DataBase_converter.path_BDGD_sqlite
+
         self.DataBaseConn.DataBaseInfo = self.DataBase_DialogSettings.databaseInfo
 
         if self.OpenDSS.DataBaseConn.testConn():

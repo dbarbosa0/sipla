@@ -189,12 +189,12 @@ class dadosBDGD():
                                               "SSDMT": "SSDMT",  # Segmento de distribucao de media tensao
                                               "SSDBT": "SSDBT",  # Segmento de distribucao de baixa tensao
                                               "SUB": "SUB",  # Subestacao
-                                              "UCAT": "UCAT",  # Unidade consumidora de alta tensao
-                                              "UCMT": "UCMT",  # Unidade consumidora de media tensao
-                                              "UCBT": "UCBT",  # Unidade consumidora de baixa tensao
-                                              "UGAT": "UGAT",  # Unidade geradora de alta tensao
-                                              "UGMT": "UGMT",  # Unidade geradora de media tensao
-                                              "UGBT": "UGBT",  # Unidade geradora de baixa tensao
+                                              "UCAT": "UCAT_tab",  # Unidade consumidora de alta tensao
+                                              "UCMT": "UCMT_tab",  # Unidade consumidora de media tensao
+                                              "UCBT": "UCBT_tab",  # Unidade consumidora de baixa tensao
+                                              "UGAT": "UGAT_tab",  # Unidade geradora de alta tensao
+                                              "UGMT": "UGMT_tab",  # Unidade geradora de media tensao
+                                              "UGBT": "UGBT_tab",  # Unidade geradora de baixa tensao
                                               "UNCRAT": "UNCRAT",  # Unidade compensadora de reativo de alta tensao
                                               "UNCRMT": "UNCRMT",  # Unidade compensadora de reativo de media tensao
                                               "UNCRBT": "UNCRBT",  # Unidade compensadora de reativo de baixa tensao
@@ -237,12 +237,12 @@ class dadosBDGD():
                                         "SSDMT": "SSDMT",  # Segmento de distribucao de media tensao
                                         "SSDBT": "SSDBT",  # Segmento de distribucao de baixa tensao
                                         "SUB": "SUB",  # Subestacao
-                                        "UCAT": "UCAT",  # Unidade consumidora de alta tensao
-                                        "UCMT": "UCMT",  # Unidade consumidora de media tensao
-                                        "UCBT": "UCBT",  # Unidade consumidora de baixa tensao
-                                        "UGAT": "UGAT",  # Unidade geradora de alta tensao
-                                        "UGMT": "UGMT",  # Unidade geradora de media tensao
-                                        "UGBT": "UGBT",  # Unidade geradora de baixa tensao
+                                        "UCAT": "UCAT_tab",  # Unidade consumidora de alta tensao
+                                        "UCMT": "UCMT_tab",  # Unidade consumidora de media tensao
+                                        "UCBT": "UCBT_tab",  # Unidade consumidora de baixa tensao
+                                        "UGAT": "UGAT_tab",  # Unidade geradora de alta tensao
+                                        "UGMT": "UGMT_tab",  # Unidade geradora de media tensao
+                                        "UGBT": "UGBT_tab",  # Unidade geradora de baixa tensao
                                         "UNCRAT": "UNCRAT",  # Unidade compensadora de reativo de alta tensao
                                         "UNCRMT": "UNCRMT",  # Unidade compensadora de reativo de media tensao
                                         "UNCRBT": "UNCRBT",  # Unidade compensadora de reativo de baixa tensao
@@ -269,4 +269,6 @@ class dadosBDGD():
             case "Modelo Novo":
                 return [self.BDGD_layers_Modelo_Novo[layer] for layer in self.BDGD_layers_SIPLA]
             case "Modelo Antigo":
+                pass
+            case _:
                 pass
