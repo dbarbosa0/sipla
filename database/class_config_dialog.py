@@ -9,16 +9,18 @@ import class_exception
 import database.class_data as class_data
 import config as cfg
 import os
-import class_convert_BDGD
+import database.class_convert_BDGD as class_convert_BDGD
 import fiona
 
 class C_ConfigDialog(QDialog, class_data.dadosBDGD):
     def __init__(self):
         super().__init__()
 
-        self.titleWindow = "Configuração da Base de Dados Geográfica da Distribuidora"
+        self.titleWindow = "Insira uma Base de Dados Geográfica da Distribuidora (BDGD)"
         self.iconWindow = cfg.sipla_icon
         self.stylesheet = cfg.sipla_stylesheet
+
+        self.setMinimumSize(640,100)
 
         self.databaseInfo = {}
 
@@ -88,29 +90,27 @@ class C_ConfigDialog(QDialog, class_data.dadosBDGD):
 
         ####
         self.loadDefaultParameters()
-        self.updateDialog()
-
-
-        self.GroupBox_Radio_check_identificar.toggled.connect(self.updateDialog)
 
     def Accept(self):
-        if  self.databaseInfo["Sqlite_DirDataBase"]:
+        Conversor: class_convert_BDGD.ConnectorWindowAndConverterBDGD
+        self.loadParameters()
+        if self.databaseInfo["Sqlite_DirDataBase"]:
+            self.close()
 
-            CONVERSOR = class_convert_BDGD.ConnectorWindowAndConverterBDGD
+        else:
+            CONVERSOR = class_convert_BDGD.ConnectorWindowAndConverterBDGD(self)
             CONVERSOR.DataBaseInfo = self.databaseInfo
             CONVERSOR.initUI()
-        else:
-            self.loadParameters()
-            self.close()
 
     def loadParameters(self):
         directory_database: str = self.GroupBox_BDGD_Edit.text()
 
         ## Geral
-        self.databaseInfo["Modelo"] = self.modelo_database(directory_database)
-        self.databaseInfo['versao'] = self.get_versao_database(self.databaseInfo["Modelo"])
-        if self.checkDirDataBase(directory_database):
-            self.get_directories(directory_database)
+        if directory_database:
+            self.databaseInfo["Modelo"] = self.modelo_database(directory_database)
+            self.databaseInfo['versao'] = self.get_versao_database(self.databaseInfo["Modelo"])
+            if self.checkDirDataBase(directory_database):
+                self.get_directories(directory_database)
 
 
     def get_directories(self, directory_database: str) -> None:
@@ -120,7 +120,7 @@ class C_ConfigDialog(QDialog, class_data.dadosBDGD):
                 self.databaseInfo["Sqlite_DirDataBase"] = ''
             case '.gdb.sqlite':
                 path_sqlite_convertido = os.path.join(directory_database,
-                                                      "SIPLA_" + os.path.basename(self.path_BDGD_geodb))
+                                                      "SIPLA_" + os.path.basename(directory_database) + '.sqlite')
 
                 self.databaseInfo["Geodb_DirDataBase"] = ''
                 self.databaseInfo["Sqlite_DirDataBase"] = path_sqlite_convertido
@@ -141,14 +141,17 @@ class C_ConfigDialog(QDialog, class_data.dadosBDGD):
         try:
             config = configparser.ConfigParser()
             config.read('siplaconfigdatabase.ini')
-
+            print(config['Sqlite']['dir'])
             if os.path.isdir(config['Sqlite']['dir']):
+                print("1")
                 if self.checkDirDataBase(config['Sqlite']['dir']):
                     self.GroupBox_BDGD_Edit.setText(config['Sqlite']['dir'])
             elif os.path.isdir(config['Geodb']['dir']):
+                print("2")
                 if self.checkDirDataBase(config['Geodb']['dir']):
                     self.GroupBox_BDGD_Edit.setText(config['Geodb']['dir'])
             else:
+                print("3")
                 self.GroupBox_BDGD_Edit.clear()
 
             ##### Carregando parâmetros
@@ -161,6 +164,14 @@ class C_ConfigDialog(QDialog, class_data.dadosBDGD):
         try:
             self.loadParameters()
 
+            if not self.databaseInfo["Sqlite_DirDataBase"]:
+                QMessageBox(QMessageBox.Information, "DataBase Configuration",
+                            "Não foi possível salvar o diretório do BDGD: \n"
+                            + "Primeiro, é necessário converter o BDGD para o formato apropriado.\n"
+                            + "Pressione OK na tela de inserção do BDGD para iniciar a conversão!",
+                            QMessageBox.Ok).exec()
+                return
+
             config = configparser.ConfigParser()
 
             ## Load Flow
@@ -172,7 +183,7 @@ class C_ConfigDialog(QDialog, class_data.dadosBDGD):
             config['Sqlite']['dir'] = self.databaseInfo["Sqlite_DirDataBase"]
 
             config['Geodb'] = {}
-            config['Geodb']['dir'] = self.databaseInfo['Geobd_DirDataBase']
+            config['Geodb']['dir'] = self.databaseInfo['Geodb_DirDataBase']
 
 
             with open('siplaconfigdatabase.ini', 'w') as configfile:
@@ -204,14 +215,15 @@ class C_ConfigDialog(QDialog, class_data.dadosBDGD):
         :param directory_database:
         :return True or False:
         """
-        if self.modelo_database(directory_database) == 'Modelo nao identificado':
+        modelo_database = self.modelo_database(directory_database)
+        if modelo_database == 'Modelo nao identificado':
             QMessageBox(QMessageBox.Warning, "DataBase Configuration",
                         "Não foi possível identificar o modelo do BDGD pela falta de uma das seguintes layers: \n"
                         + "    -> UNTRMT\n    -> UNTRD\n    -> UN_TR_D",
                         QMessageBox.Ok).exec()
             return False
 
-        layers_necessarias = self.get_layers_uteis_BDGD(self.modelo_database(directory_database))
+        layers_necessarias = self.get_layers_uteis_BDGD(modelo_database)
         layers_ausentes = []
 
 
@@ -225,14 +237,18 @@ class C_ConfigDialog(QDialog, class_data.dadosBDGD):
 
             case '.gdb.sqlite':
                 path_sqlite_convertido = os.path.join(directory_database, "SIPLA_" +
-                                                      os.path.basename(self.path_BDGD_geodb))
+                                                      os.path.basename(directory_database) + '.sqlite')
 
                 for layer in layers_necessarias:
+                    if layer.endswith("_tab"):
+                        layer = layer[:-4]
                     if not os.path.isfile(path_sqlite_convertido + "//" + layer + ".sqlite"):
                         layers_ausentes.append(layer)
 
             case '.sqlite':
                 for layer in layers_necessarias:
+                    if layer.endswith("_tab"):
+                        layer = layer[:-4]
                     if not os.path.isfile(directory_database + "//" + layer + ".sqlite"):
                         layers_ausentes.append(layer)
 
@@ -248,7 +264,7 @@ class C_ConfigDialog(QDialog, class_data.dadosBDGD):
         match self.tipo_database(directory_database):
             case '.gdb':
                 layers_presentes_geodb = fiona.listlayers(directory_database)
-
+                print('ok1')
                 if "UNTRMT" in layers_presentes_geodb:
                     return "Modelo Versao 1.0"
                 elif "UNTRD" in layers_presentes_geodb:
@@ -257,28 +273,31 @@ class C_ConfigDialog(QDialog, class_data.dadosBDGD):
                     return "Modelo Antigo"
             case '.gdb.sqlite':
                 path_sqlite_convertido = os.path.join(directory_database, "SIPLA_" +
-                                                      os.path.basename(self.path_BDGD_geodb))
-
-                if os.path.isfile(path_sqlite_convertido + "//" + "UNTRMT" + ".sqlite"):
+                                                      os.path.basename(directory_database) + '.sqlite')
+                print('ok2')
+                if os.path.isfile(path_sqlite_convertido + "\\" + "UNTRMT" + ".sqlite"):
                     return "Modelo Versao 1.0"
-                elif os.path.isfile(path_sqlite_convertido + "//" + "UNTRD" + ".sqlite"):
+                elif os.path.isfile(path_sqlite_convertido + "\\" + "UNTRD" + ".sqlite"):
                     return "Modelo Novo"
-                elif os.path.isfile(path_sqlite_convertido + "//" + "UN_TR_D" + ".sqlite"):
+                elif os.path.isfile(path_sqlite_convertido + "\\" + "UN_TR_D" + ".sqlite"):
                     return "Modelo Antigo"
             case '.sqlite':
-                if os.path.isfile(directory_database + "//" + "UNTRMT" + ".sqlite"):
+                print('ok3')
+                print(directory_database + "\\" + "UNTRMT" + ".sqlite")
+                print(os.path.isfile(directory_database + "\\" + "UNTRMT" + ".sqlite"))
+                if os.path.isfile(directory_database + "\\" + "UNTRMT" + ".sqlite"):
                     return "Modelo Versao 1.0"
-                elif os.path.isfile(directory_database + "//" + "UNTRD" + ".sqlite"):
+                elif os.path.isfile(directory_database + "\\" + "UNTRD" + ".sqlite"):
                     return "Modelo Novo"
-                elif os.path.isfile(directory_database + "//" + "UN_TR_D" + ".sqlite"):
+                elif os.path.isfile(directory_database + "\\" + "UN_TR_D" + ".sqlite"):
                     return "Modelo Antigo"
 
         return 'Modelo nao identificado'
 
     def tipo_database(self, directory_database: str) -> str:
         # Instância de uma possível db em sqlite, resultado de uma conversão de um Geo Package
-        path_sqlite_convertido = os.path.join(directory_database, "SIPLA_" + os.path.basename(self.path_BDGD_geodb))
-
+        path_sqlite_convertido = os.path.join(directory_database, "SIPLA_" +
+                                              os.path.basename(directory_database) + '.sqlite')
         # Identifica se o diretório é uma BDGD em formato nativo Geo Package (Padrão Aneel) ou Pasta sqlite
         if directory_database.endswith('.gdb'):
 
@@ -288,4 +307,4 @@ class C_ConfigDialog(QDialog, class_data.dadosBDGD):
                 return '.gdb'
 
         else:
-            '.sqlite'
+            return '.sqlite'

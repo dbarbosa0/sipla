@@ -260,7 +260,7 @@ class dadosBDGD():
 
         self.BDGD_n_layers_SIPLA = 18
         self.BDGD_layers_SIPLA = ["CTAT", "EQTRM", "SSDMT", "UNREMT", "UNTRAT", "CTMT", "EQTRAT", "UCBT", "UNSEAT",
-                                  "EQSE", "RAMLIG", "UCMT", "UNSEMT", "EQTRMT", "SEGCON", "UNCRMT", "UNCRBT", "UNTRMT"]
+                                  "SSDBT", "RAMLIG", "UCMT", "UNSEMT", "EQTRMT", "SEGCON", "UNCRMT", "UNCRBT", "UNTRMT"]
 
     def get_layers_uteis_BDGD(self, modelo_BDGD):
         match modelo_BDGD:

@@ -21,7 +21,7 @@ class C_DBaseConn:  # Classe de banco de dados
             # Conectando em apenas leitura!
 
             connDB = sqlite3.connect(
-                'file:' + self.DataBaseInfo["Sqlite_DirDataBase"] + nomeBancoDados + '.sqlite?mode=ro', uri=True)
+                'file:' + self.DataBaseInfo["Sqlite_DirDataBase"] + '\\' + nomeBancoDados + '.sqlite?mode=ro', uri=True)
 
             cbanco = connDB.execute(strSQL)
 
@@ -35,7 +35,7 @@ class C_DBaseConn:  # Classe de banco de dados
         try:
             # Conectando em apenas leitura!
 
-            connDB = sqlite3.connect('file:' + self.DataBaseInfo["Sqlite_DirDataBase"] + 'CTAT.sqlite?mode=ro',
+            connDB = sqlite3.connect('file:' + self.DataBaseInfo["Sqlite_DirDataBase"] + '\\' +'CTAT.sqlite?mode=ro',
                                      uri=True)
             cbanco = connDB.execute('select sqlite_version();')
 

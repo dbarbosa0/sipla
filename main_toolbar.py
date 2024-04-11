@@ -277,7 +277,7 @@ class C_MenuToolBar(QDockWidget):
 
         # ******* Create the Configuration Menu *******
         self.ConfigMenu = self.MainMenu.addMenu('&Configuração do BDGD')
-        self.Config_BDGD_Act = QAction(QIcon('img/icon_opendatabase.png'), 'Carregar um novo BDGD', self)
+        self.Config_BDGD_Act = QAction(QIcon('img/icon_opendatabase.png'), 'Carregar um BDGD', self)
         self.Config_BDGD_Act.setShortcut("Ctrl+Alt+D")
         self.Config_BDGD_Act.setStatusTip('Configura a Conexão com o Banco de Dados BDGD')
         self.Config_BDGD_Act.triggered.connect(self.exec_configBDGD)

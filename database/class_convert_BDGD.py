@@ -11,16 +11,18 @@ import os
 import fiona
 import database.class_data as class_data
 import copy
+import database.class_config_dialog as class_config_dialog
 
 
 class ConnectorWindowAndConverterBDGD(class_data.dadosBDGD):
 
-    def __init__(self):
+    def __init__(self, config_dialog: class_config_dialog.C_ConfigDialog):
         super().__init__()
 
         # Dados gerais BDGD
         self._DataBaseInfo = {}
         self.path_BDGD_sqlite = ""
+        self.config_dialog = config_dialog
 
     @property
     def DataBaseInfo(self):
@@ -29,7 +31,7 @@ class ConnectorWindowAndConverterBDGD(class_data.dadosBDGD):
     @DataBaseInfo.setter
     def DataBaseInfo(self, nDataBaseInfo):
         self._DataBaseInfo = nDataBaseInfo
-        self.path_BDGD_geodb = self.DataBaseInfo["Sqlite_DirDataBase"]
+        self.path_BDGD_geodb = self.DataBaseInfo["Geodb_DirDataBase"]
 
         # Layer variables
         self.layers_BDGD = self.get_layers_uteis_BDGD(self.DataBaseInfo["Modelo"])
@@ -42,6 +44,8 @@ class ConnectorWindowAndConverterBDGD(class_data.dadosBDGD):
         self.window.show()
 
     def iniciar_conversao(self):
+        start = timer()
+
         self.conversor = Converter_BDGD(self, self.path_BDGD_geodb)
         self.path_BDGD_sqlite, self.BDGD_sqlite_already_exists = self.conversor.criacao_novo_diretorio()
 
@@ -51,6 +55,16 @@ class ConnectorWindowAndConverterBDGD(class_data.dadosBDGD):
                 self.conversor.convert_geodatabase_to_sqlite(nome_layer)
                 self.window.atualizar_barra_progresso(index)
 
+        end = timer()
+        print('Time in seconds:')
+        print(end - start)
+
+        self.config_dialog.GroupBox_BDGD_Edit.setText(self.path_BDGD_sqlite)
+        self.config_dialog.loadParameters()
+        self.config_dialog.close()
+        self.window.close()
+
+    def cancelar_conversao(self):
         self.window.close()
 
 
@@ -103,9 +117,9 @@ class WindowConversionStatus(QWidget):
         self.botao_iniciar.clicked.connect(self.iniciar_conv)
 
         # Construção do botão de interrupção da conversão
-        self.botao_cancelar = QPushButton("Interromper a conversão")
+        self.botao_cancelar = QPushButton("Cancelar a conversão")
         self.botao_cancelar.setIcon(QIcon('img/icon_cancel.png'))
-        self.botao_cancelar.clicked.connect(self.interromper_conv)
+        self.botao_cancelar.clicked.connect(self.cancelar_conv)
 
         # Contrução do aviso ao usuário
         self.aviso = QLabel("Antes do primeiro uso de uma BDGD no ambiente do SIPLA, é necessário renomear, configurar "
@@ -138,11 +152,11 @@ class WindowConversionStatus(QWidget):
     def iniciar_conv(self):
         self.connector.iniciar_conversao()
 
-    def interromper_conv(self):
-        pass
+    def cancelar_conv(self):
+        self.connector.cancelar_conversao()
 
     def atualizar_indicador_acao(self, nome_layer:str):
-        self.acao_atual = QLabel("Estado atual: " + "convertendo a layer: " + nome_layer)
+        self.acao_atual.setText("Estado atual: " + "convertendo a layer: " + nome_layer)
 
     def atualizar_barra_progresso(self,index_layer: int):
         self.bar_progress.setValue(index_layer)
@@ -160,7 +174,7 @@ class Converter_BDGD():
 
     def criacao_novo_diretorio(self) -> tuple[str,bool]:
         # Cria um novo diretório para a BDGD (formato sqlite)
-        path_temp = os.path.join(self.path_BDGD_geodb, "SIPLA_" + os.path.basename(self.path_BDGD_geodb))
+        path_temp = os.path.join(self.path_BDGD_geodb, "SIPLA_" + os.path.basename(self.path_BDGD_geodb) + '.sqlite')
         try:
             os.mkdir(path_temp)
             self.path_BDGD_sqlite = path_temp
@@ -177,20 +191,24 @@ class Converter_BDGD():
             schema = copy.deepcopy(geodb.schema)
 
             # Conexão com o banco em sqlite
-            conn = sqlite3.connect(self.path_BDGD_sqlite + f"\\{nome_layer}.sqlite")
+            if nome_layer.endswith('_tab'):
+                nome_layer_sem_tab = nome_layer[:-4]
+            else:
+                nome_layer_sem_tab = nome_layer
+            conn = sqlite3.connect(self.path_BDGD_sqlite + f"\\{nome_layer_sem_tab}.sqlite")
             c = conn.cursor()
 
             match schema['geometry']:
                 case 'Point':
-                    self.convert_layer_point(geodb, nome_layer, schema, c, conn)
+                    self.convert_layer_point(geodb, nome_layer_sem_tab, schema, c, conn)
                 case 'MultiLineString':
-                    self.convert_layer_MultiLineString(geodb, nome_layer, schema, c, conn)
+                    self.convert_layer_MultiLineString(geodb, nome_layer_sem_tab, schema, c, conn)
                 case _:
                     print('ok3')
-                    self.convert_layer_table(geodb, nome_layer, schema, c, conn)
+                    self.convert_layer_table(geodb, nome_layer_sem_tab, schema, c, conn)
 
     def convert_layer_table(self, geodatabase, nome_layer, schema, cursor, connection):
-        create_table_sql = f"CREATE TABLE {nome_layer.lower()} (id INTEGER PRIMARY KEY"
+        create_table_sql = f"CREATE TABLE {nome_layer.lower()} (objectid INTEGER PRIMARY KEY"
         for field in schema['properties']:
             create_table_sql += f", {field} {self.convert_type_py_to_type_sqlite(schema, field)}"
         create_table_sql += ")"
@@ -208,7 +226,7 @@ class Converter_BDGD():
         schema['properties']['x'] = 'float'
         schema['properties']['y'] = 'float'
 
-        create_table_sql = f"CREATE TABLE {nome_layer.lower()} (id INTEGER PRIMARY KEY"
+        create_table_sql = f"CREATE TABLE {nome_layer.lower()} (objectid INTEGER PRIMARY KEY"
         for field in schema['properties']:
             create_table_sql += f", {field} {self.convert_type_py_to_type_sqlite(schema, field)}"
         create_table_sql += ")"
@@ -234,7 +252,7 @@ class Converter_BDGD():
         schema['properties']['x'] = 'float'
         schema['properties']['y'] = 'float'
 
-        create_table_sql = f"CREATE TABLE {nome_layer.lower()} (id INTEGER PRIMARY KEY"
+        create_table_sql = f"CREATE TABLE {nome_layer.lower()} (objectid INTEGER PRIMARY KEY"
         for field in schema['properties']:
             create_table_sql += f", {field} {self.convert_type_py_to_type_sqlite(schema, field)}"
         create_table_sql += ")"
@@ -287,15 +305,15 @@ class Converter_BDGD():
 if __name__ == '__main__':
 
     # Setup de teste isolado do conversor
-    path_BDGD_geodb = r"C:\Users\ppgsa\Documents\SIPLA\Semana 05\testes 05\Working_with_convert\ODEIODEBUG.gdb"
-    modelo_BDGD = "Modelo Versao 1.0"
-    layers_p_conversao = ["CTMT", "SSDAT", "UNTRAT"]
+    path_BDGD_geodb = r"C:\Users\ppgsa\Documents\SIPLA\Debug_final_geodb_conv\COELBA_47_2018-12-31_M10_20190610-1331.gdb"
+    modelo_BDGD = "Modelo Novo"
+    layers_p_conversao = ["SSDBT"]
 
     #
     app = QApplication(sys.argv)
-    Connector = ConnectorWindowAndConverterBDGD()
+    Connector = ConnectorWindowAndConverterBDGD(QWidget())
     Connector.BDGD_layers_SIPLA = layers_p_conversao
-    Connector.DataBaseInfo = {'Sqlite_DirDataBase': path_BDGD_geodb, 'Modelo': modelo_BDGD}
+    Connector.DataBaseInfo = {'Geodb_DirDataBase': path_BDGD_geodb, 'Modelo': modelo_BDGD}
 
     Connector.initUI()
     app.exec_()
