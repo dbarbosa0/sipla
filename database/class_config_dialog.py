@@ -19,8 +19,10 @@ class C_ConfigDialog(QDialog):
 
         self.databaseInfo = {}
 
-        self.DBPRODIST = ["CTAT", "EQTRM", "SSDMT", "UNREMT", "UNTRS", "CTMT", "EQTRS", "UCBT", "UNSEAT", "EQSE", \
-                          "RAMLIG", "UCMT", "UNSEMT", "EQTRD", "SEGCON", "UNCRMT", "UNCRBT", "UNTRD"]
+        self.DBPRODIST2017 = ["CTAT", "EQTRM", "SSDMT", "UNREMT", "UNTRS", "CTMT", "EQTRS", "UCBT", "UNSEAT",
+                              "EQSE", "RAMLIG", "UCMT", "UNSEMT", "EQTRD", "SEGCON", "UNCRMT", "UNCRBT", "UNTRD"]
+        self.DBPRODIST2021 = ["CTAT", "EQTRM", "SSDMT", "UNREMT", "UNTRAT", "CTMT", "EQTRAT", "UCBT", "UNSEAT",
+                              "EQSE", "RAMLIG", "UCMT", "UNSEMT", "EQTRMT", "SEGCON", "UNCRMT", "UNCRBT", "UNTRMT"]
 
         self.InitUI()
 
@@ -145,6 +147,7 @@ class C_ConfigDialog(QDialog):
 
         ## Geral
         self.databaseInfo["Conn"] = self.getConn_GroupBox_Radio_Btn()
+        self.databaseInfo["versao"] = self.get_versaoDataBaseSqlite()
         self.databaseInfo["Sqlite_DirDataBase"] = self.get_DirDataBaseSqlite()
         self.databaseInfo['MySQL_Host'] = self.Conn_GroupBox_MySQL_Host_Edit.text()
         self.databaseInfo['MySQL_User'] = self.Conn_GroupBox_MySQL_User_Edit.text()
@@ -155,8 +158,21 @@ class C_ConfigDialog(QDialog):
     def get_DirDataBaseSqlite(self):
         dirDataBase = self.Conn_GroupBox_Sqlite_Edit.text()
 
-        if (dirDataBase != "") and (self.checkDirDataBaseSqlite(dirDataBase)):
+        if (dirDataBase != "") and (self.checkDirDataBaseSqlite(dirDataBase, self.databaseInfo["versao"])):
             return dirDataBase
+        else:
+            return ""
+
+    def get_versaoDataBaseSqlite(self):
+        """
+        Identifica a versão da database com base no banco de transformadores de média tensão
+        """
+        dirDataBase = self.Conn_GroupBox_Sqlite_Edit.text()
+
+        if os.path.isfile(dirDataBase + "UNTRD" + ".sqlite"):
+            return "2017"
+        elif os.path.isfile(dirDataBase + "UNTRMT" + ".sqlite"):
+            return "2021"
         else:
             return ""
 
@@ -168,13 +184,11 @@ class C_ConfigDialog(QDialog):
             ## Default
             if config['BDGD']['Conn'] == "sqlite":
                 self.Conn_GroupBox_Radio_Sqlite.setChecked(True)
-
-
             elif config['BDGD']['Conn'] == "mysql":
                 self.Conn_GroupBox_Radio_Mysql.setChecked(False)
 
             if os.path.isdir(config['Sqlite']['dir']):
-                if self.checkDirDataBaseSqlite(config['Sqlite']['dir']):
+                if self.checkDirDataBaseSqlite(config['Sqlite']['dir'], config['Sqlite']['versao']):
                     self.Conn_GroupBox_Sqlite_Edit.setText(config['Sqlite']['dir'])
             else:
                 self.Conn_GroupBox_Sqlite_Edit.clear()
@@ -189,7 +203,8 @@ class C_ConfigDialog(QDialog):
             self.loadParameters()
 
         except:
-            raise class_exception.FileDataBaseError("Configuração do Banco de Dados", "Erro ao carregar os parâmetros do Banco de Dados!")
+            raise class_exception.FileDataBaseError("Configuração do Banco de Dados",
+                                                    "Erro ao carregar os parâmetros do Banco de Dados!")
 
     def saveDefaultParameters(self):
         try:
@@ -203,6 +218,7 @@ class C_ConfigDialog(QDialog):
 
             config['Sqlite'] = {}
             config['Sqlite']['dir'] = self.databaseInfo["Sqlite_DirDataBase"]
+            config['Sqlite']['versao'] = self.databaseInfo["versao"]
 
             config['MySQL'] = {}
             config['MySQL']['host'] = self.databaseInfo['MySQL_Host']
@@ -210,17 +226,19 @@ class C_ConfigDialog(QDialog):
             config['MySQL']['passwd'] = self.databaseInfo['MySQL_Passwd']
             config['MySQL']['db'] = self.databaseInfo['MySQL_db']
 
+
+
             with open('siplaconfigdatabase.ini', 'w') as configfile:
                 config.write(configfile)
 
-            QMessageBox(QMessageBox.Information, "DataBase Configuration", "Configurações Salvas com Sucesso!", QMessageBox.Ok).exec()
+            QMessageBox(QMessageBox.Information, "DataBase Configuration", "Configurações Salvas com Sucesso!",
+                        QMessageBox.Ok).exec()
 
         except:
-            raise class_exception.FileDataBaseError("Configuração do Banco de Dados", "Erro ao salvar os parâmetros do Banco de Dados!")
+            raise class_exception.FileDataBaseError("Configuração do Banco de Dados", "Erro ao salvar os parâmetros\
+                                                    do Banco de Dados!")
 
     def OpenDataBase(self):
-        # este código é executado sempre que alguém fizer
-        # self.nome = value
         nameDirDataBase = str(
             QFileDialog.getExistingDirectory(None, "Selecione o Diretório com o Danco de Dados", "Banco/",
                                              QFileDialog.ShowDirsOnly))
@@ -230,22 +248,45 @@ class C_ConfigDialog(QDialog):
         if platform.system() == "Windows":
             nameDirDataBase = nameDirDataBase.replace('/', '\\')
 
-        if self.checkDirDataBaseSqlite(nameDirDataBase):
+        self.Conn_GroupBox_Sqlite_Edit.setText(nameDirDataBase)
+        versaodatabase = self.get_versaoDataBaseSqlite()
+
+        if self.checkDirDataBaseSqlite(nameDirDataBase, versaodatabase):
             self.Conn_GroupBox_Sqlite_Edit.setText(nameDirDataBase)
         else:
             self.Conn_GroupBox_Sqlite_Edit.setText("")
 
-    def checkDirDataBaseSqlite(self, nameDirDataBase):
-
+    def checkDirDataBaseSqlite(self, nameDirDataBase, versaodatabase):
+        """
+        Identifica a versão da database com base no banco de transformadores de média tensão, verifica e lista se todos
+        os bancos necessário estão presentes no diretório de acordo com a respectiva versão.
+        :param nameDirDataBase:
+        :return True or False:
+        """
         msg = ''
 
-        for ctd in self.DBPRODIST:
-            if not os.path.isfile(nameDirDataBase + ctd + ".sqlite"):
-                msg += ctd + ".sqlite\n"
+        match versaodatabase:
+            case "2017":
+                for ctd2017 in self.DBPRODIST2017:
+                    if not os.path.isfile(nameDirDataBase + ctd2017 + ".sqlite"):
+                        msg += ctd2017 + ".sqlite\n"
+            case "2021":
+                for ctd2021 in self.DBPRODIST2021:
+                    if not os.path.isfile(nameDirDataBase + ctd2021 + ".sqlite"):
+                        msg += ctd2021 + ".sqlite\n"
+            case _:
+                for ctd2017, ctd2021 in zip(self.DBPRODIST2017, self.DBPRODIST2021):
+                    if ctd2017 == ctd2021 and not os.path.isfile(nameDirDataBase + ctd2017 + ".sqlite"):
+                        msg += ctd2017 + ".sqlite\n"
+                    elif not os.path.isfile(nameDirDataBase + ctd2017 + ".sqlite"):
+                        msg += ctd2017 + ".sqlite (Para bases de 2017 até 2020)\n"
+                    elif not os.path.isfile(nameDirDataBase + ctd2021 + ".sqlite"):
+                        msg += ctd2021 + ".sqlite (Para bases a partir de 2021)\n"
+                msg += "Não foi possível identificar o ano da base devido a falta dos arquivos listados"
 
         if msg != '':
-            QMessageBox(QMessageBox.Warning, "DataBase Configuration", "Diretório não apresenta os arquivos necessários! \n" + msg,
-                        QMessageBox.Ok).exec()
+            QMessageBox(QMessageBox.Warning, "DataBase Configuration",
+                        "Diretório não apresenta os arquivos necessários! \n" + msg, QMessageBox.Ok).exec()
             return False
         else:
             return True
@@ -260,5 +301,3 @@ class C_ConfigDialog(QDialog):
             self.Conn_GroupBox_MySQL.setHidden(False)
 
         self.adjustSize()
-
-

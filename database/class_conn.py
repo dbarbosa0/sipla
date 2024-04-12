@@ -1,10 +1,9 @@
 import class_exception
-
 import sqlite3
 import MySQLdb
 
 
-class C_DBaseConn():  # Classe de banco de dados
+class C_DBaseConn:  # Classe de banco de dados
 
     def __init__(self):
         # Variáveis das Classes
