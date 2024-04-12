@@ -1,4 +1,4 @@
-import database.class_data
+import database.class_data_actions
 import class_exception
 
 import database.class_conn
@@ -14,7 +14,7 @@ class C_Data():  # classe OpenDSS
 
     def __init__(self):
         self.teste_Tratamento_trafo = opendss.class_trafo_data.trafo_data()
-        self.DataBase = database.class_data.C_DBaseData()  # Acesso ao Banco de Dados
+        self.DataBase = database.class_data_actions.C_DBaseData()  # Acesso ao Banco de Dados
         self.Config_Dia = opendss.class_config_dialog.LoadFlow()
         self._DataBaseConn = database.class_conn.C_DBaseConn()  # Carregando o acesso aos Arquivos do BDGD
         self._nCircuitoAT_MT = ''
@@ -41,8 +41,8 @@ class C_Data():  # classe OpenDSS
         self.num_de_fases = {}
         self.ajuste_memoria = []
         self.uni_tr_s = []
-        self.memoALIMENTADOR =[]
-        self.trafosATMT_ideais ={}
+        self.memoALIMENTADOR = []
+        self.trafosATMT_ideais = {}
         self.barra_infinita = str()
         self.basekv = str()
         self.initUI()
@@ -229,11 +229,11 @@ class C_Data():  # classe OpenDSS
     def getEQUIVALENTE_DE_THEVENIN(self):
         try:
             dados_eqth = self.DataBase.getData_TrafosAT_MT(self.nCircuitoAT_MT)
-            #print(self.nCircuitoAT_MT)
+            # print(self.nCircuitoAT_MT)
             memoFileEqTh = []
             memoFileEqTh.append("!Barramento Infinito")
 
-            #for ctd in range(0, len(dados_eqth)):
+            # for ctd in range(0, len(dados_eqth)):
             tmp = ''
 
             self.basekv = tten.TTEN[dados_eqth[0].ten_pri]
@@ -246,7 +246,7 @@ class C_Data():  # classe OpenDSS
             tmp = "New Circuit.{0}".format(dados_eqth[0].cod_id)
             tmp += "  basekv={0}".format(self.basekv) + "  pu=1" + "  phase=3" + "  bus1={0}".format(
                 dados_eqth[0].cod_id)
-            #tmp += "  MVAsc3=10000000000000000000000" + "  MVAsc1=1000000000000000000000"
+            # tmp += "  MVAsc3=10000000000000000000000" + "  MVAsc1=1000000000000000000000"
             self.barra_infinita = dados_eqth[0].cod_id
             memoFileEqTh.append(tmp)
 
@@ -265,28 +265,27 @@ class C_Data():  # classe OpenDSS
         try:
             dados_eqth = self.DataBase.getData_CTMT_EQTH(self.nSE_MT_Selecionada)
 
-            #memoFileEqThMT = []
+            # memoFileEqThMT = []
 
-            #tmp = ''
+            # tmp = ''
             for ctd in range(0, len(dados_eqth)):
                 if dados_eqth[ctd].nome in self.nFieldsMT:
                     self.listaAlimentadores[dados_eqth[ctd].uni_tr_s] = dados_eqth[ctd].nome
 
                     # self.insertBusList(dados_eqth[ctd].nome)
 
-                    #self.insertBusListDict(dados_eqth[ctd].nome, ".1.2.3.0")
+                    # self.insertBusListDict(dados_eqth[ctd].nome, ".1.2.3.0")
 
-                    #self.insertElementList("Circuit.{0}".format(dados_eqth[ctd].nome))
+                    # self.insertElementList("Circuit.{0}".format(dados_eqth[ctd].nome))
 
-                    #basekv = tten.TTEN[dados_eqth[ctd].ten_nom]
-                    #tmp += "New Circuit.{0}".format(dados_eqth[ctd].nome)
-                    #tmp += "  basekv={0}".format(basekv) + " pu=1 " + "  phase=3 " + "  bus1={0}".format(
-                        #dados_eqth[ctd].nome)
+                    # basekv = tten.TTEN[dados_eqth[ctd].ten_nom]
+                    # tmp += "New Circuit.{0}".format(dados_eqth[ctd].nome)
+                    # tmp += "  basekv={0}".format(basekv) + " pu=1 " + "  phase=3 " + "  bus1={0}".format(
+                    # dados_eqth[ctd].nome)
 
+                    # memoFileEqThMT.append(tmp)
 
-                    #memoFileEqThMT.append(tmp)
-
-                #return memoFileEqThMT
+                # return memoFileEqThMT
 
         except:
             raise class_exception.ExecOpenDSS("Erro ao carregar as informações do Equivalente de Thevenin")
@@ -338,9 +337,9 @@ class C_Data():  # classe OpenDSS
 
                     for con in tmpPAC:
                         pac_1 = pac_1.replace(con, self.nCircuitoAT_MT)
-                        #print("kkkkkk", self.nCircuitoAT_MT)
+                        # print("kkkkkk", self.nCircuitoAT_MT)
                         pac_2 = pac_2.replace(con, self.nCircuitoAT_MT)
-                        #print(pac_1, pac_2)
+                        # print(pac_1, pac_2)
 
                     if dados_sec[ctd].fas_con == "ABC":
                         Linecode = " length=0.0001" + " LineCode=CHAVE_3 "
@@ -402,7 +401,7 @@ class C_Data():  # classe OpenDSS
             self.trafosATMT_ideais['trafo_72'] = ['2', '3', self.barra_infinita, 'ATMT_72', '[1000000,1000000]',
                                                   '[' + self.basekv + ', 34.500]', '[delta, wye]', 'tap=1']
 
-            #print(self.trafosATMT_ideais['trafo_72'][2], self.trafosATMT_ideais['trafo_72'][3],self.trafosATMT_ideais['trafo_72'][6])
+            # print(self.trafosATMT_ideais['trafo_72'][2], self.trafosATMT_ideais['trafo_72'][3],self.trafosATMT_ideais['trafo_72'][6])
 
             for ctd in self.trafosATMT_ideais:
                 tmp = ""
@@ -413,7 +412,6 @@ class C_Data():  # classe OpenDSS
                 tmp += " kVAs={0}".format(self.trafosATMT_ideais[ctd][4])
                 tmp += " kVs={0}".format(self.trafosATMT_ideais[ctd][5])
                 tmp += " conns={0}".format(self.trafosATMT_ideais[ctd][6]) + " tap=1"
-
 
                 memoFileTrafoATMT.append(tmp)
 
@@ -452,8 +450,6 @@ class C_Data():  # classe OpenDSS
             #     ##
             #     self.insertBusListDict(dados_trafo[ctd].pac_1, ".1.2.3")
             #     self.insertBusListDict(dados_trafo[ctd].pac_2, ".1.2.3.0")
-
-
 
             return memoFileTrafoATMT
 
@@ -521,14 +517,15 @@ class C_Data():  # classe OpenDSS
             for ctdDB in range(0, len(nameFields)):
                 if nameFields[ctdDB].nome[0:3] in self.nFieldsMT[0][0:3]:
                     lista_de_identificadores_dos_alimentadores.append(nameFields[ctdDB].cod_id)
-                    lista_de_identificadores_dos_alimentadores = (sorted(set(lista_de_identificadores_dos_alimentadores)))
+                    lista_de_identificadores_dos_alimentadores = (
+                        sorted(set(lista_de_identificadores_dos_alimentadores)))
         else:
             for ctdDB in range(0, len(nameFields)):
                 if nameFields[ctdDB].nome in self.nFieldsMT:
                     lista_de_identificadores_dos_alimentadores.append(nameFields[ctdDB].cod_id)
-                    lista_de_identificadores_dos_alimentadores = (sorted(set(lista_de_identificadores_dos_alimentadores)))
+                    lista_de_identificadores_dos_alimentadores = (
+                        sorted(set(lista_de_identificadores_dos_alimentadores)))
         return lista_de_identificadores_dos_alimentadores
-
 
     def getSEC(self, nomeSE_ATMT, tipoSEC, testAL_MT=None):
         try:
@@ -554,7 +551,6 @@ class C_Data():  # classe OpenDSS
                 [num_de_fases, pac_1, pac_2] = self.getFasesConexao(dados_sec[ctd].fas_con, dados_sec[ctd].pac_1,
                                                                     dados_sec[ctd].pac_2)
 
-
                 # if dados_sec[ctd].fas_con == "ABC":
                 Linecode = " length=0.0001" + " LineCode=CHAVE_3 "
                 # else:
@@ -576,22 +572,22 @@ class C_Data():  # classe OpenDSS
                         if dados_sec[ctd].pac_2 == self.media_tensao_do_circuito[ctd_2].nom:
                             dados_trafo_p = self.media_tensao_do_circuito[ctd_2].ten_nom
                             break
-                    #and dados_sec[ctd].pac_2 not in self.memoALIMENTADOR:
-                    #self.memoALIMENTADOR.append(dados_sec[ctd].pac_2)
-                    #dados_trafo_p = self.DataBase.getData_CTMT_EQTH(dados_sec[ctd].pac_2)
-                    #print(self.memoALIMENTADOR)
-                    #print(dados_sec[ctd].pac_2)
-                    #print(dados_trafo_p[0].ten_nom)
-                    #print(pac_2)
+                    # and dados_sec[ctd].pac_2 not in self.memoALIMENTADOR:
+                    # self.memoALIMENTADOR.append(dados_sec[ctd].pac_2)
+                    # dados_trafo_p = self.DataBase.getData_CTMT_EQTH(dados_sec[ctd].pac_2)
+                    # print(self.memoALIMENTADOR)
+                    # print(dados_sec[ctd].pac_2)
+                    # print(dados_trafo_p[0].ten_nom)
+                    # print(pac_2)
                     if dados_trafo_p == "42":
                         pac_1 = 'ATMT_42.1.2.3'
 
                     elif dados_trafo_p == "49":
                         pac_1 = 'ATMT_49.1.2.3'
-                        
+
                     else:
                         pac_1 = 'ATMT_72.1.2.3'
-                    #print(pac_1)
+                    # print(pac_1)
 
                 temp_memoFileSEC = "New Line.{0}".format(dados_sec[ctd].cod_id)
                 temp_memoFileSEC += " Switch={0}".format(operacao_da_chave) + " Bus1={0}".format(pac_1)
@@ -600,9 +596,9 @@ class C_Data():  # classe OpenDSS
 
                 # Chaves de Média
                 if testAL_MT is not None:  # MT
-                    #print("lista de identificadores: ", lista_de_identificadores_dos_alimentadores, type(lista_de_identificadores_dos_alimentadores))
-                    if dados_sec[ctd].ctmt in lista_de_identificadores_dos_alimentadores: #or len(
-                            #dados_sec[ctd].ctmt) == 1:
+                    # print("lista de identificadores: ", lista_de_identificadores_dos_alimentadores, type(lista_de_identificadores_dos_alimentadores))
+                    if dados_sec[ctd].ctmt in lista_de_identificadores_dos_alimentadores:  # or len(
+                        # dados_sec[ctd].ctmt) == 1:
                         if dados_sec[ctd].tip_unid == tipoSEC:
                             memoFileSEC.append(temp_memoFileSEC)
 
@@ -666,7 +662,8 @@ class C_Data():  # classe OpenDSS
                         dados_sec[ctd].cod_id) + " MonitoredObj={0}".format("Line." + dados_sec[ctd].cod_id)
                     temp_memoFileSEC_CONTROL += " SwitchedObj={0}".format(
                         "Line." + dados_sec[ctd].cod_id) + " SwitchedTerm={0}".format("1")
-                    temp_memoFileSEC_CONTROL += " FuseCurve={0}".format(curva_do_fusivel).replace(",", ".") + " RatedCurrent={0}".format(
+                    temp_memoFileSEC_CONTROL += " FuseCurve={0}".format(curva_do_fusivel).replace(",",
+                                                                                                  ".") + " RatedCurrent={0}".format(
                         RatedCurrent)
                     temp_memoFileSEC_CONTROL += " State={0}".format(operacao_da_chave)
                     if dados_sec[ctd].ctmt in lista:
@@ -712,7 +709,7 @@ class C_Data():  # classe OpenDSS
 
                 # Chaves de Média
                 if testAL_MT is not None:  # MT
-                    if dados_sec[ctd].ctmt in lista: #or len(dados_sec[ctd].ctmt) == 1:
+                    if dados_sec[ctd].ctmt in lista:  # or len(dados_sec[ctd].ctmt) == 1:
                         if dados_sec[ctd].tip_unid == tipoSEC:
                             memoFileSEC_CONTROL.append(temp_memoFileSEC_CONTROL)
 
@@ -1018,25 +1015,25 @@ class C_Data():  # classe OpenDSS
 
             lista_de_identificadores_dos_alimentadores = self.getID_Fields(dados_ctmt)
             if (tipoUniCons == "MT") or (tipoUniCons == "BT"):  #
-                print("BUUUUG",nomeSE_MT)
+                print("BUUUUG", nomeSE_MT)
                 dados_db = self.DataBase.getData_UniConsumidora(nomeSE_MT, tipoUniCons)
             else:
                 raise class_exception.ExecOpenDSS(
                     "Erro ao carregar as informações das Unidades Consumidoras, pois o tipo não foi especificado! \n" + tipoUniCons)
 
             memoFileUC = []
-            #self.teste_Tratamento_trafo.tratamento_dados_TrafosDist(tipoUniCons, dados_db,
-             #                                                       lista_de_identificadores_dos_alimentadores,
-             #                                                       self.identificadorTrafo)
+            # self.teste_Tratamento_trafo.tratamento_dados_TrafosDist(tipoUniCons, dados_db,
+            #                                                       lista_de_identificadores_dos_alimentadores,
+            #                                                       self.identificadorTrafo)
 
-            #self.teste_Tratamento_trafo.get_trafo_sec(self.identificadorTrafo)
+            # self.teste_Tratamento_trafo.get_trafo_sec(self.identificadorTrafo)
             self.tratamento_dados_TrafosDist(tipoUniCons, dados_db, lista_de_identificadores_dos_alimentadores)
-            #for ctd in range(0, len(self.ajuste_memoria)):
-                #if self.ajuste_memoria == self.teste_Tratamento_trafo.ajuste_memoria:
-                    #print("DEU BOM")
-                    #pass
-                #else:
-                    #print('DEU RUIM', dados_db[ctd].uni_tr)
+            # for ctd in range(0, len(self.ajuste_memoria)):
+            # if self.ajuste_memoria == self.teste_Tratamento_trafo.ajuste_memoria:
+            # print("DEU BOM")
+            # pass
+            # else:
+            # print('DEU RUIM', dados_db[ctd].uni_tr)
             if tipoUniCons == "BT":
                 self.teste_Tratamento_trafo.ajuste_tensao_cargas(dados_db)
             else:
@@ -1056,9 +1053,9 @@ class C_Data():  # classe OpenDSS
                     tipo_curva = "SP" + tipo_curva[2:]
 
                 curva_loadshape = loadshape[tipo_curva]
-                #print('entrando', dados_db[ctd].ctmt, lista_de_identificadores_dos_alimentadores, dados_db[ctd].sit_ativ)
+                # print('entrando', dados_db[ctd].ctmt, lista_de_identificadores_dos_alimentadores, dados_db[ctd].sit_ativ)
                 if dados_db[ctd].ctmt in lista_de_identificadores_dos_alimentadores and dados_db[ctd].sit_ativ == 'AT':
-                    #print('entrou')
+                    # print('entrou')
                     if mes == 'Janeiro':
                         max_carga = dados_db[ctd].ene_01
                     elif mes == 'Fevereiro':
@@ -1085,17 +1082,17 @@ class C_Data():  # classe OpenDSS
                         max_carga = dados_db[ctd].ene_12
 
                     carga_otimizada = (max_carga * 2) / ((sum(curva_loadshape) / max(curva_loadshape)) * 15)
-                    if carga_otimizada > 0.6*(dados_db[ctd].car_inst):
-                        carga_otimizada = 0.6*(dados_db[ctd].car_inst)
+                    if carga_otimizada > 0.6 * (dados_db[ctd].car_inst):
+                        carga_otimizada = 0.6 * (dados_db[ctd].car_inst)
 
                     vetor_carga_otimizada.append(carga_otimizada)
                     vetor_carga_NAO_otimizada.append(dados_db[ctd].car_inst)
 
-                    #if tipoUniCons == "BT":
-                    #nivel_de_tensao = tten.TTEN[
-                            #self.ajuste_memoria[ctd]]  # Pra coreção mudar mas vai ter que mudar
-                    #else:
-                        #nivel_de_tensao = tten.TTEN[dados_db[ctd].ten_forn]  # isso aqui vai ter que mudar
+                    # if tipoUniCons == "BT":
+                    # nivel_de_tensao = tten.TTEN[
+                    # self.ajuste_memoria[ctd]]  # Pra coreção mudar mas vai ter que mudar
+                    # else:
+                    # nivel_de_tensao = tten.TTEN[dados_db[ctd].ten_forn]  # isso aqui vai ter que mudar
 
                     ######
                     ## Testando para verificar se o transformador foi listado na seleção, se foi ele vai ser considerado mesmo se concentrado as cargas
@@ -1114,10 +1111,10 @@ class C_Data():  # classe OpenDSS
 
                     [num_de_fases, pac_1, pac_2] = self.getFasesConexao(dados_db[ctd].fas_con, auxpac_1, None)
 
-                    #if tipoUniCons == "BT":
-                        #conexao = "wye"
-                    #if tipoUniCons == "MT":
-                        #conexao = "wye"
+                    # if tipoUniCons == "BT":
+                    # conexao = "wye"
+                    # if tipoUniCons == "MT":
+                    # conexao = "wye"
 
                     if carga_otimizada != 0:
 
@@ -1133,12 +1130,12 @@ class C_Data():  # classe OpenDSS
                             tmp += " model=8 ZIPV=[0.5 0 0.5 1 0 0 0]" + " Kv={0}".format(dados_db[ctd].ten_forn)
                             tmp += " kW={0}".format(carga_otimizada) + " PF=0.92"
                             tmp += " conn={0}".format("delta")
-                        #else:
-                            #tmp = "New Load.{0}".format(dados_db[ctd].objectid) + " Bus1={0}".format(
-                                #pac_1) + " Phases={0}".format(num_de_fases)
-                            #tmp += " model=8 ZIPV=[0.5 0 0.5 1 0 0 0]" + " Kv={0}".format(nivel_de_tensao)
-                            #tmp += " kW={0}".format(carga_otimizada) + " PF=0.92"
-                            #tmp += " conn={0}".format(conexao)
+                        # else:
+                        # tmp = "New Load.{0}".format(dados_db[ctd].objectid) + " Bus1={0}".format(
+                        # pac_1) + " Phases={0}".format(num_de_fases)
+                        # tmp += " model=8 ZIPV=[0.5 0 0.5 1 0 0 0]" + " Kv={0}".format(nivel_de_tensao)
+                        # tmp += " kW={0}".format(carga_otimizada) + " PF=0.92"
+                        # tmp += " conn={0}".format(conexao)
 
                         memoFileUC.append(tmp)
 
@@ -1153,7 +1150,7 @@ class C_Data():  # classe OpenDSS
 
             ####### TESTE DE CARGA
             ####### Sumário das Cargas
-            #print("Relação de otimização: ", (sum(vetor_carga_otimizada) / sum(vetor_carga_NAO_otimizada)) * 100, "%")
+            # print("Relação de otimização: ", (sum(vetor_carga_otimizada) / sum(vetor_carga_NAO_otimizada)) * 100, "%")
             tmpUniTr = {}
 
             for ctd in range(0, len(dados_db)):
@@ -1245,23 +1242,23 @@ class C_Data():  # classe OpenDSS
             print(lista_de_identificadores_dos_alimentadores)
             dados_db = self.DataBase.getData_TrafoDIST(self.lista_CTMT)
 
-            #for ctd in range(0, len(dados_db)):
-                #self.uni_tr_s.append(dados_db[ctd].uni_tr_s)
+            # for ctd in range(0, len(dados_db)):
+            # self.uni_tr_s.append(dados_db[ctd].uni_tr_s)
 
-            #self.uni_tr_s = list(set(self.uni_tr_s))
-            #variavel = str(self.uni_tr_s[0])
+            # self.uni_tr_s = list(set(self.uni_tr_s))
+            # variavel = str(self.uni_tr_s[0])
 
-            #for ctd in range(1, len(self.uni_tr_s)):
-                #variavel = variavel + "'" + " OR cod_id='" + str(self.uni_tr_s[ctd])
+            # for ctd in range(1, len(self.uni_tr_s)):
+            # variavel = variavel + "'" + " OR cod_id='" + str(self.uni_tr_s[ctd])
 
-            #dados_trafo = self.DataBase.getData_TRAFO_UNTRS(variavel)
+            # dados_trafo = self.DataBase.getData_TRAFO_UNTRS(variavel)
             # self.teste_Tratamento_trafo.ajuste_tensao_UNTRS(dados_trafo)
 
             self.teste_Tratamento_trafo.ajuste_tensao_trafos(dados_db)
             self.teste_Tratamento_trafo.ajuste_media_tensao(dados_db, 'alta_trafo_dist', self.media_tensao_do_circuito)
             memoFileTD = []
             for ctd in range(0, len(dados_db)):
-                #self.identificadorTrafo.append(dados_db[ctd].cod_id)
+                # self.identificadorTrafo.append(dados_db[ctd].cod_id)
                 self.identificadorTrafo[dados_db[ctd].cod_id] = [dados_db[ctd].ten_lin_se, dados_db[ctd].fas_con_s]
                 if dados_db[ctd].ctmt in lista_de_identificadores_dos_alimentadores:
                     [num_de_fases, pac_1, pac_2_1, pac_2_2, windings] = self.getFasesConexao_trafodist(
@@ -1588,7 +1585,8 @@ class C_Data():  # classe OpenDSS
 
         return resultfase
 
-    def tratamento_dados_TrafosDist(self, tipoUniCons, dados_db, lista_de_identificadores_dos_alimentadores): #ESSA lista de identificadores tem que ser otimizada.
+    def tratamento_dados_TrafosDist(self, tipoUniCons, dados_db,
+                                    lista_de_identificadores_dos_alimentadores):  # ESSA lista de identificadores tem que ser otimizada.
 
         if tipoUniCons == 'BT':
             self.ajusteTrafos.clear()
@@ -1638,20 +1636,19 @@ class C_Data():  # classe OpenDSS
                     if self.ajusteTrafos[ctd][str(ctd_2)]:
                         self.ajusteTrafos[ctd][str(ctd_2)] = max(set(self.ajusteTrafos[ctd][str(ctd_2)]),
                                                                  key=self.ajusteTrafos[ctd][
-                                                                  str(ctd_2)].count)
+                                                                     str(ctd_2)].count)
                         for count in range(0, len(self.ajuste_memoria)):
                             ctmt_lenght = len(ctd)
                             if self.ajuste_memoria[count][0:ctmt_lenght] == ctd and self.ajuste_memoria[count][
                                 ctmt_lenght] == str(
-                                    ctd_2):
+                                ctd_2):
                                 self.ajuste_memoria[count] = self.ajusteTrafos[ctd][str(ctd_2)]
-                                #self.ajusteTrafos[ctd][str(ctd_2)] = self.ajuste_memoria[count]
+                                # self.ajusteTrafos[ctd][str(ctd_2)] = self.ajuste_memoria[count]
 
-
-        #print('padrao', len(self.ajuste_memoria))
-        #print('padrao', len(self.ajusteTrafos))
-        #print(('padrao', self.ajuste_memoria))
-        #print(('padrao', self.ajusteTrafos))
+        # print('padrao', len(self.ajuste_memoria))
+        # print('padrao', len(self.ajusteTrafos))
+        # print(('padrao', self.ajuste_memoria))
+        # print(('padrao', self.ajusteTrafos))
 
     def Definindo_media_tensao_do_circuito(self):
 
@@ -1660,7 +1657,12 @@ class C_Data():  # classe OpenDSS
             if ctd == 0:
                 self.listaAlimentadores = self.nFieldsMT[ctd] + "'"
             else:
-                self.listaAlimentadores = self.listaAlimentadores + " OR pac = '" + self.nFieldsMT[ctd] + "'"
+                match self.DataBase.DataBaseConn.DataBaseInfo["versao"]:
+                    case "2017":
+                        self.listaAlimentadores = self.listaAlimentadores + " OR pac = '" + self.nFieldsMT[ctd] + "'"
+                    case "2021":
+                        self.listaAlimentadores = self.listaAlimentadores + " OR pac_ini = '" + self.nFieldsMT[
+                            ctd] + "'"
         print(self.listaAlimentadores)
         self.media_tensao_do_circuito = self.DataBase.getData_CTMT_EQTH(self.listaAlimentadores)
 
@@ -1669,33 +1671,30 @@ class C_Data():  # classe OpenDSS
             if ctd == 0:
                 self.lista_CTMT = self.media_tensao_do_circuito[ctd].cod_id + "'"
             else:
-                self.lista_CTMT = self.lista_CTMT + " OR pac_1 LIKE '%" + self.media_tensao_do_circuito[ctd].cod_id + "'"
-
-
-
+                self.lista_CTMT = self.lista_CTMT + " OR pac_1 LIKE '%" + self.media_tensao_do_circuito[
+                    ctd].cod_id + "'"
 
     def Ajuste_cargas_bifasicas(self, trafo_dist, ten_forn):
-        #print(trafo_dist, ten_forn, self.num_de_fases[trafo_dist], type(ten_forn), type(trafo_dist))
+        # print(trafo_dist, ten_forn, self.num_de_fases[trafo_dist], type(ten_forn), type(trafo_dist))
 
         if self.num_de_fases[trafo_dist] == "1":
             if ten_forn == 0.44:
                 ten_forn_ajustada = 0.38
 
-            #elif ten_forn == 0.254:
+            # elif ten_forn == 0.254:
             #    ten_forn_ajustada = 0.127
 
         else:
-            #if ten_forn == 0.22:
+            # if ten_forn == 0.22:
             #    ten_forn_ajustada = 0.127
 
-            #elif ten_forn == 0.38:
+            # elif ten_forn == 0.38:
             #    ten_forn_ajustada = 0.22
 
-            #elif ten_forn == 0.44:
+            # elif ten_forn == 0.44:
             #    ten_forn_ajustada = 0.254
             ten_forn_ajustada = ten_forn
         return ten_forn_ajustada
-
 
     def afterValue(self, value, a):
         # Find and validate first part.
@@ -1706,7 +1705,7 @@ class C_Data():  # classe OpenDSS
         if adjusted_pos_a >= len(value): return ""
         return value[adjusted_pos_a:]
 
-    #def insertBusList(self, pac):
+    # def insertBusList(self, pac):
     #    if pac.replace('-', "") not in self.busList:
     #        self.busList.append(pac.replace('-', ""))
 

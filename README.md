@@ -13,6 +13,7 @@ pip install scipy
 pip install matplotlib
 pip install Unidecode
 pip install mysqlclient
+pip install fiona
 ```
 
 
@@ -44,6 +45,7 @@ python-scipy
 python-matplotlib
 python-unidecode
 python-mysqlclient
+python-fiona
 pip install folium
 pip install 'OpenDSSDirect.py[extras]'
 pip install git+https://github.com/pyqtgraph/pyqtgraph@develop
