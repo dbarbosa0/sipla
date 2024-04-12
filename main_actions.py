@@ -2,6 +2,7 @@ from PyQt5.QtWidgets import QStatusBar, QMessageBox
 
 ###
 import database.class_conn
+import database.class_convert_BDGD
 import opendss.class_data
 import opendss.class_opendss
 import opendss.class_config_dialog
@@ -178,13 +179,27 @@ class C_MainActions():
     #############################################
 
     def connectDataBase(self):
+        # # Setup e inicialização da tela de conversão da BDGD para SQLite3
+        # self.DataBase_converter.DataBaseInfo = self.DataBase_DialogSettings.databaseInfo
+        # self.DataBase_converter.initUI()
+        # self.DataBase_DialogSettings.databaseInfo['Sqlite_DirDataBase'] = self.DataBase_converter.path_BDGD_sqlite
+        #
+        # self.DataBaseConn.DataBaseInfo = self.DataBase_DialogSettings.databaseInfo
+        #
+        # if self.OpenDSS.DataBaseConn.testConn():
+        #     self.getSE_AT_DB()
+        #     self.updateStatusBar()
+        # else:
+        #     QMessageBox(QMessageBox.Warning, "DataBase Configuration", \
+        #                 "A Conexão com o Banco de Dados deve ser configurada!", QMessageBox.Ok).exec()
+        print(self.DataBase_DialogSettings.databaseInfo)
         self.DataBaseConn.DataBaseInfo = self.DataBase_DialogSettings.databaseInfo
 
-        if self.OpenDSS.DataBaseConn.testConn():
+        if self.DataBaseConn.testConn():
             self.getSE_AT_DB()
             self.updateStatusBar()
         else:
-            QMessageBox(QMessageBox.Warning, "DataBase Configuration", \
+            QMessageBox(QMessageBox.Warning, "DataBase Configuration",
                         "A Conexão com o Banco de Dados deve ser configurada!", QMessageBox.Ok).exec()
 
     def configDataBase(self):

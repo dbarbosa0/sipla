@@ -1,26 +1,33 @@
 from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import QStyleFactory, QDialog, QFileDialog, QGroupBox, QHBoxLayout,\
-    QPushButton, QVBoxLayout, QLabel, QLineEdit, QRadioButton, QMessageBox
+    QPushButton, QVBoxLayout, QLabel, QLineEdit, QRadioButton, QMessageBox,\
+    QGridLayout, QCheckBox
 from PyQt5.QtCore import Qt
 
 import configparser
 import class_exception
+import database.class_data as class_data
 import config as cfg
 import os
-import platform
+import database.class_convert_BDGD as class_convert_BDGD
+import fiona
 
-class C_ConfigDialog(QDialog):
+class C_ConfigDialog(QDialog, class_data.dadosBDGD):
     def __init__(self):
         super().__init__()
 
-        self.titleWindow = "Database Settings"
+        self.titleWindow = "Insira uma Base de Dados Geográfica da Distribuidora (BDGD)"
         self.iconWindow = cfg.sipla_icon
         self.stylesheet = cfg.sipla_stylesheet
 
+        self.setMinimumSize(640,100)
+
         self.databaseInfo = {}
 
-        self.DBPRODIST = ["CTAT", "EQTRM", "SSDMT", "UNREMT", "UNTRS", "CTMT", "EQTRS", "UCBT", "UNSEAT", "EQSE", \
-                          "RAMLIG", "UCMT", "UNSEMT", "EQTRD", "SEGCON", "UNCRMT", "UNCRBT", "UNTRD"]
+        self.DBPRODIST2017 = ["CTAT", "EQTRM", "SSDMT", "UNREMT", "UNTRS", "CTMT", "EQTRS", "UCBT", "UNSEAT",
+                              "EQSE", "RAMLIG", "UCMT", "UNSEMT", "EQTRD", "SEGCON", "UNCRMT", "UNCRBT", "UNTRD"]
+        self.DBPRODIST2021 = ["CTAT", "EQTRM", "SSDMT", "UNREMT", "UNTRAT", "CTMT", "EQTRAT", "UCBT", "UNSEAT",
+                              "EQSE", "RAMLIG", "UCMT", "UNSEMT", "EQTRMT", "SEGCON", "UNCRMT", "UNCRBT", "UNTRMT"]
 
         self.InitUI()
 
@@ -35,69 +42,26 @@ class C_ConfigDialog(QDialog):
 
         self.Dialog_Layout = QVBoxLayout() #Layout da Dialog
 
-        ##### Option DataBase
-        self.Conn_GroupBox = QGroupBox("Método de Conexão com o BDGD")
-        self.Conn_GroupBox_Layout = QHBoxLayout()
+        #### Grupo do BDGD
+        self.GroupBox_BDGD = QGroupBox("Conexão Local")
+        self.GroupBox_BDGD_Layout = QHBoxLayout()
 
-        self.Conn_GroupBox_Radio_Sqlite = QRadioButton("Local - SQLite")
-        self.Conn_GroupBox_Radio_Sqlite.setChecked(True)
-        self.Conn_GroupBox_Layout.addWidget(self.Conn_GroupBox_Radio_Sqlite)
+        self.GroupBox_BDGD_Label = QLabel("Diretório:")
+        self.GroupBox_BDGD_Layout.addWidget(self.GroupBox_BDGD_Label)
+        self.GroupBox_BDGD_Edit = QLineEdit()
+        self.GroupBox_BDGD_Edit.setMinimumWidth(300)
+        self.GroupBox_BDGD_Edit.setEnabled(False)
+        self.GroupBox_BDGD_Layout.addWidget(self.GroupBox_BDGD_Edit)
 
-        self.Conn_GroupBox_Radio_Mysql = QRadioButton("MariaDB / MySQL")
-        self.Conn_GroupBox_Radio_Mysql.setChecked(False)
-        #self.Conn_GroupBox_Radio_Mysql.setEnabled(False)
-        self.Conn_GroupBox_Layout.addWidget(self.Conn_GroupBox_Radio_Mysql)
+        self.GroupBox_BDGD_Btn = QPushButton()
+        self.GroupBox_BDGD_Btn.setIcon(QIcon('img/icon_opendatabase.png'))
+        self.GroupBox_BDGD_Btn.setFixedWidth(30)
+        self.GroupBox_BDGD_Btn.clicked.connect(self.OpenDataBase)
+        self.GroupBox_BDGD_Layout.addWidget(self.GroupBox_BDGD_Btn)
 
-        self.Conn_GroupBox.setLayout(self.Conn_GroupBox_Layout)
-        self.Dialog_Layout.addWidget(self.Conn_GroupBox)
+        self.GroupBox_BDGD.setLayout(self.GroupBox_BDGD_Layout)
+        self.Dialog_Layout.addWidget(self.GroupBox_BDGD)
 
-
-        #### Grupo do Sqlite
-        self.Conn_GroupBox_Sqlite = QGroupBox("Conexão Local")
-        self.Conn_GroupBox_Sqlite_Layout = QHBoxLayout()
-
-        self.Conn_GroupBox_Sqlite_Label = QLabel("Diretório:")
-        self.Conn_GroupBox_Sqlite_Layout.addWidget(self.Conn_GroupBox_Sqlite_Label)
-        self.Conn_GroupBox_Sqlite_Edit = QLineEdit()
-        self.Conn_GroupBox_Sqlite_Edit.setMinimumWidth(300)
-        self.Conn_GroupBox_Sqlite_Edit.setEnabled(False)
-        self.Conn_GroupBox_Sqlite_Layout.addWidget(self.Conn_GroupBox_Sqlite_Edit)
-
-        self.Conn_GroupBox_Sqlite_Btn = QPushButton()
-        self.Conn_GroupBox_Sqlite_Btn.setIcon(QIcon('img/icon_opendatabase.png'))
-        self.Conn_GroupBox_Sqlite_Btn.setFixedWidth(30)
-        self.Conn_GroupBox_Sqlite_Btn.clicked.connect(self.OpenDataBase)
-        self.Conn_GroupBox_Sqlite_Layout.addWidget(self.Conn_GroupBox_Sqlite_Btn)
-
-        self.Conn_GroupBox_Sqlite.setLayout(self.Conn_GroupBox_Sqlite_Layout)
-        self.Dialog_Layout.addWidget(self.Conn_GroupBox_Sqlite)
-
-        #### MySQL / Maria DB
-        self.Conn_GroupBox_MySQL = QGroupBox("Conexão MySQL / MariaDB")
-        self.Conn_GroupBox_MySQL_Layout = QVBoxLayout()
-        self.Conn_GroupBox_MySQL_Host_Label = QLabel("Host:")
-        self.Conn_GroupBox_MySQL_Layout.addWidget(self.Conn_GroupBox_MySQL_Host_Label)
-        self.Conn_GroupBox_MySQL_Host_Edit = QLineEdit()
-        self.Conn_GroupBox_MySQL_Host_Edit.setMinimumWidth(300)
-        self.Conn_GroupBox_MySQL_Layout.addWidget(self.Conn_GroupBox_MySQL_Host_Edit)
-        self.Conn_GroupBox_MySQL_User_Label = QLabel("User:")
-        self.Conn_GroupBox_MySQL_Layout.addWidget(self.Conn_GroupBox_MySQL_User_Label)
-        self.Conn_GroupBox_MySQL_User_Edit = QLineEdit()
-        self.Conn_GroupBox_MySQL_User_Edit.setMinimumWidth(300)
-        self.Conn_GroupBox_MySQL_Layout.addWidget(self.Conn_GroupBox_MySQL_User_Edit)
-        self.Conn_GroupBox_MySQL_Passwd_Label = QLabel("Senha:")
-        self.Conn_GroupBox_MySQL_Layout.addWidget(self.Conn_GroupBox_MySQL_Passwd_Label)
-        self.Conn_GroupBox_MySQL_Passwd_Edit = QLineEdit()
-        self.Conn_GroupBox_MySQL_Passwd_Edit.setMinimumWidth(300)
-        self.Conn_GroupBox_MySQL_Layout.addWidget(self.Conn_GroupBox_MySQL_Passwd_Edit)
-        self.Conn_GroupBox_MySQL_db_Label = QLabel("Banco de Dados:")
-        self.Conn_GroupBox_MySQL_Layout.addWidget(self.Conn_GroupBox_MySQL_db_Label)
-        self.Conn_GroupBox_MySQL_db_Edit = QLineEdit()
-        self.Conn_GroupBox_MySQL_db_Edit.setMinimumWidth(300)
-        self.Conn_GroupBox_MySQL_Layout.addWidget(self.Conn_GroupBox_MySQL_db_Edit)
-
-        self.Conn_GroupBox_MySQL.setLayout(self.Conn_GroupBox_MySQL_Layout)
-        self.Dialog_Layout.addWidget(self.Conn_GroupBox_MySQL)
 
         ###### Botões
         self.Dilalog_Btns_Layout = QHBoxLayout()
@@ -126,139 +90,221 @@ class C_ConfigDialog(QDialog):
 
         ####
         self.loadDefaultParameters()
-        self.updateDialog()
-
-        self.Conn_GroupBox_Radio_Sqlite.toggled.connect(self.updateDialog)
-        self.Conn_GroupBox_Radio_Mysql.toggled.connect(self.updateDialog)
 
     def Accept(self):
+        Conversor: class_convert_BDGD.ConnectorWindowAndConverterBDGD
         self.loadParameters()
-        self.close()
+        if self.databaseInfo["Sqlite_DirDataBase"]:
+            self.close()
 
-    def getConn_GroupBox_Radio_Btn(self):
-        if self.Conn_GroupBox_Radio_Sqlite.isChecked():
-            return "sqlite"
-        elif self.Conn_GroupBox_Radio_Mysql.isChecked():
-            return "mysql"
+        else:
+            CONVERSOR = class_convert_BDGD.ConnectorWindowAndConverterBDGD(self)
+            CONVERSOR.DataBaseInfo = self.databaseInfo
+            CONVERSOR.initUI()
 
     def loadParameters(self):
+        directory_database: str = self.GroupBox_BDGD_Edit.text()
 
         ## Geral
-        self.databaseInfo["Conn"] = self.getConn_GroupBox_Radio_Btn()
-        self.databaseInfo["Sqlite_DirDataBase"] = self.get_DirDataBaseSqlite()
-        self.databaseInfo['MySQL_Host'] = self.Conn_GroupBox_MySQL_Host_Edit.text()
-        self.databaseInfo['MySQL_User'] = self.Conn_GroupBox_MySQL_User_Edit.text()
-        self.databaseInfo['MySQL_Passwd'] = self.Conn_GroupBox_MySQL_Passwd_Edit.text()
-        self.databaseInfo['MySQL_db'] = self.Conn_GroupBox_MySQL_db_Edit.text()
+        if directory_database:
+            self.databaseInfo["Modelo"] = self.modelo_database(directory_database)
+            self.databaseInfo['versao'] = self.get_versao_database(self.databaseInfo["Modelo"])
+            if self.checkDirDataBase(directory_database):
+                self.get_directories(directory_database)
 
 
-    def get_DirDataBaseSqlite(self):
-        dirDataBase = self.Conn_GroupBox_Sqlite_Edit.text()
+    def get_directories(self, directory_database: str) -> None:
+        match self.tipo_database(directory_database):
+            case '.gdb':
+                self.databaseInfo["Geodb_DirDataBase"] = directory_database
+                self.databaseInfo["Sqlite_DirDataBase"] = ''
+            case '.gdb.sqlite':
+                path_sqlite_convertido = os.path.join(directory_database,
+                                                      "SIPLA_" + os.path.basename(directory_database) + '.sqlite')
 
-        if (dirDataBase != "") and (self.checkDirDataBaseSqlite(dirDataBase)):
-            return dirDataBase
-        else:
-            return ""
+                self.databaseInfo["Geodb_DirDataBase"] = ''
+                self.databaseInfo["Sqlite_DirDataBase"] = path_sqlite_convertido
+            case '.sqlite':
+                self.databaseInfo["Geodb_DirDataBase"] = ''
+                self.databaseInfo["Sqlite_DirDataBase"] = directory_database
+
+    def get_versao_database(self, Modelo: str) -> str:
+        match Modelo:
+            case "Modelo Versao 1.0":
+                return "2021"
+            case "Modelo Novo":
+                return "2017"
+            case "Modelo Antigo":
+                return "2016"
 
     def loadDefaultParameters(self):  # Só carrega quando abre a janela pela primeira vez
         try:
             config = configparser.ConfigParser()
             config.read('siplaconfigdatabase.ini')
-
-            ## Default
-            if config['BDGD']['Conn'] == "sqlite":
-                self.Conn_GroupBox_Radio_Sqlite.setChecked(True)
-
-
-            elif config['BDGD']['Conn'] == "mysql":
-                self.Conn_GroupBox_Radio_Mysql.setChecked(False)
-
+            print(config['Sqlite']['dir'])
             if os.path.isdir(config['Sqlite']['dir']):
-                if self.checkDirDataBaseSqlite(config['Sqlite']['dir']):
-                    self.Conn_GroupBox_Sqlite_Edit.setText(config['Sqlite']['dir'])
+                print("1")
+                if self.checkDirDataBase(config['Sqlite']['dir']):
+                    self.GroupBox_BDGD_Edit.setText(config['Sqlite']['dir'])
+            elif os.path.isdir(config['Geodb']['dir']):
+                print("2")
+                if self.checkDirDataBase(config['Geodb']['dir']):
+                    self.GroupBox_BDGD_Edit.setText(config['Geodb']['dir'])
             else:
-                self.Conn_GroupBox_Sqlite_Edit.clear()
-            ##
-            self.Conn_GroupBox_MySQL_Host_Edit.setText(config['MySQL']['host'])
-            self.Conn_GroupBox_MySQL_User_Edit.setText(config['MySQL']['user'])
-            self.Conn_GroupBox_MySQL_Passwd_Edit.setText(config['MySQL']['passwd'])
-            self.Conn_GroupBox_MySQL_db_Edit.setText(config['MySQL']['db'])
-
+                print("3")
+                self.GroupBox_BDGD_Edit.clear()
 
             ##### Carregando parâmetros
             self.loadParameters()
-
         except:
-            raise class_exception.FileDataBaseError("Configuração do Banco de Dados", "Erro ao carregar os parâmetros do Banco de Dados!")
+            raise class_exception.FileDataBaseError("Configuração do Banco de Dados",
+                                                    "Erro ao carregar os parâmetros do Banco de Dados!")
 
     def saveDefaultParameters(self):
         try:
             self.loadParameters()
 
+            if not self.databaseInfo["Sqlite_DirDataBase"]:
+                QMessageBox(QMessageBox.Information, "DataBase Configuration",
+                            "Não foi possível salvar o diretório do BDGD: \n"
+                            + "Primeiro, é necessário converter o BDGD para o formato apropriado.\n"
+                            + "Pressione OK na tela de inserção do BDGD para iniciar a conversão!",
+                            QMessageBox.Ok).exec()
+                return
+
             config = configparser.ConfigParser()
 
             ## Load Flow
             config['BDGD']= { }
-            config['BDGD']['Conn'] = self.databaseInfo["Conn"]
+            config['BDGD']['Modelo'] = self.databaseInfo["Modelo"]
+            config['BDGD']['versao'] = self.databaseInfo["versao"]
 
             config['Sqlite'] = {}
             config['Sqlite']['dir'] = self.databaseInfo["Sqlite_DirDataBase"]
 
-            config['MySQL'] = {}
-            config['MySQL']['host'] = self.databaseInfo['MySQL_Host']
-            config['MySQL']['user'] = self.databaseInfo['MySQL_User']
-            config['MySQL']['passwd'] = self.databaseInfo['MySQL_Passwd']
-            config['MySQL']['db'] = self.databaseInfo['MySQL_db']
+            config['Geodb'] = {}
+            config['Geodb']['dir'] = self.databaseInfo['Geodb_DirDataBase']
+
 
             with open('siplaconfigdatabase.ini', 'w') as configfile:
                 config.write(configfile)
 
-            QMessageBox(QMessageBox.Information, "DataBase Configuration", "Configurações Salvas com Sucesso!", QMessageBox.Ok).exec()
+            QMessageBox(QMessageBox.Information, "DataBase Configuration", "Configurações Salvas com Sucesso!",
+                        QMessageBox.Ok).exec()
 
         except:
-            raise class_exception.FileDataBaseError("Configuração do Banco de Dados", "Erro ao salvar os parâmetros do Banco de Dados!")
+            raise class_exception.FileDataBaseError("Configuração do Banco de Dados", "Erro ao salvar os parâmetros\
+                                                    do Banco de Dados!")
 
     def OpenDataBase(self):
-        # este código é executado sempre que alguém fizer
-        # self.nome = value
         nameDirDataBase = str(
             QFileDialog.getExistingDirectory(None, "Selecione o Diretório com o Danco de Dados", "Banco/",
                                              QFileDialog.ShowDirsOnly))
 
-        nameDirDataBase += "/"
+        self.GroupBox_BDGD_Edit.setText(nameDirDataBase)
 
-        if platform.system() == "Windows":
-            nameDirDataBase = nameDirDataBase.replace('/', '\\')
-
-        if self.checkDirDataBaseSqlite(nameDirDataBase):
-            self.Conn_GroupBox_Sqlite_Edit.setText(nameDirDataBase)
+        if self.checkDirDataBase(nameDirDataBase):
+            self.GroupBox_BDGD_Edit.setText(nameDirDataBase)
         else:
-            self.Conn_GroupBox_Sqlite_Edit.setText("")
+            self.GroupBox_BDGD_Edit.setText("")
 
-    def checkDirDataBaseSqlite(self, nameDirDataBase):
+    def checkDirDataBase(self, directory_database:str) -> bool:
+        """
+        Verifica e lista se todas
+        as layers necessárias estão presentes no diretório de acordo com a respectiva versão.
+        :param directory_database:
+        :return True or False:
+        """
+        modelo_database = self.modelo_database(directory_database)
+        if modelo_database == 'Modelo nao identificado':
+            QMessageBox(QMessageBox.Warning, "DataBase Configuration",
+                        "Não foi possível identificar o modelo do BDGD pela falta de uma das seguintes layers: \n"
+                        + "    -> UNTRMT\n    -> UNTRD\n    -> UN_TR_D",
+                        QMessageBox.Ok).exec()
+            return False
 
-        msg = ''
+        layers_necessarias = self.get_layers_uteis_BDGD(modelo_database)
+        layers_ausentes = []
 
-        for ctd in self.DBPRODIST:
-            if not os.path.isfile(nameDirDataBase + ctd + ".sqlite"):
-                msg += ctd + ".sqlite\n"
 
-        if msg != '':
-            QMessageBox(QMessageBox.Warning, "DataBase Configuration", "Diretório não apresenta os arquivos necessários! \n" + msg,
+        match self.tipo_database(directory_database):
+            case '.gdb':
+                layers_presentes_geodb = fiona.listlayers(directory_database)
+
+                for layer in layers_necessarias:
+                    if layer not in layers_presentes_geodb:
+                        layers_ausentes.append(layer)
+
+            case '.gdb.sqlite':
+                path_sqlite_convertido = os.path.join(directory_database, "SIPLA_" +
+                                                      os.path.basename(directory_database) + '.sqlite')
+
+                for layer in layers_necessarias:
+                    if layer.endswith("_tab"):
+                        layer = layer[:-4]
+                    if not os.path.isfile(path_sqlite_convertido + "//" + layer + ".sqlite"):
+                        layers_ausentes.append(layer)
+
+            case '.sqlite':
+                for layer in layers_necessarias:
+                    if layer.endswith("_tab"):
+                        layer = layer[:-4]
+                    if not os.path.isfile(directory_database + "//" + layer + ".sqlite"):
+                        layers_ausentes.append(layer)
+
+        if layers_ausentes:
+            QMessageBox(QMessageBox.Warning, "DataBase Configuration",
+                        "O banco de dados não possui os seguintes layers : \n" + str(layers_ausentes),
                         QMessageBox.Ok).exec()
             return False
         else:
             return True
 
-    def updateDialog(self):
+    def modelo_database(self, directory_database):
+        match self.tipo_database(directory_database):
+            case '.gdb':
+                layers_presentes_geodb = fiona.listlayers(directory_database)
+                print('ok1')
+                if "UNTRMT" in layers_presentes_geodb:
+                    return "Modelo Versao 1.0"
+                elif "UNTRD" in layers_presentes_geodb:
+                    return "Modelo Novo"
+                elif "UN_TR_D" in layers_presentes_geodb:
+                    return "Modelo Antigo"
+            case '.gdb.sqlite':
+                path_sqlite_convertido = os.path.join(directory_database, "SIPLA_" +
+                                                      os.path.basename(directory_database) + '.sqlite')
+                print('ok2')
+                if os.path.isfile(path_sqlite_convertido + "\\" + "UNTRMT" + ".sqlite"):
+                    return "Modelo Versao 1.0"
+                elif os.path.isfile(path_sqlite_convertido + "\\" + "UNTRD" + ".sqlite"):
+                    return "Modelo Novo"
+                elif os.path.isfile(path_sqlite_convertido + "\\" + "UN_TR_D" + ".sqlite"):
+                    return "Modelo Antigo"
+            case '.sqlite':
+                print('ok3')
+                print(directory_database + "\\" + "UNTRMT" + ".sqlite")
+                print(os.path.isfile(directory_database + "\\" + "UNTRMT" + ".sqlite"))
+                if os.path.isfile(directory_database + "\\" + "UNTRMT" + ".sqlite"):
+                    return "Modelo Versao 1.0"
+                elif os.path.isfile(directory_database + "\\" + "UNTRD" + ".sqlite"):
+                    return "Modelo Novo"
+                elif os.path.isfile(directory_database + "\\" + "UN_TR_D" + ".sqlite"):
+                    return "Modelo Antigo"
 
-        if self.getConn_GroupBox_Radio_Btn() == "sqlite":
-            self.Conn_GroupBox_Sqlite.setHidden(False)
-            self.Conn_GroupBox_MySQL.setHidden(True)
-        elif self.getConn_GroupBox_Radio_Btn() == "mysql":
-            self.Conn_GroupBox_Sqlite.setHidden(True)
-            self.Conn_GroupBox_MySQL.setHidden(False)
+        return 'Modelo nao identificado'
 
-        self.adjustSize()
+    def tipo_database(self, directory_database: str) -> str:
+        # Instância de uma possível db em sqlite, resultado de uma conversão de um Geo Package
+        path_sqlite_convertido = os.path.join(directory_database, "SIPLA_" +
+                                              os.path.basename(directory_database) + '.sqlite')
+        # Identifica se o diretório é uma BDGD em formato nativo Geo Package (Padrão Aneel) ou Pasta sqlite
+        if directory_database.endswith('.gdb'):
 
+            if os.path.isdir(path_sqlite_convertido):
+                return '.gdb.sqlite'
+            else:
+                return '.gdb'
 
+        else:
+            return '.sqlite'
