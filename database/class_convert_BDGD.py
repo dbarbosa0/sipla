@@ -12,11 +12,15 @@ import fiona
 import database.class_data as class_data
 import copy
 import database.class_config_dialog as class_config_dialog
+import threading
+import concurrent.futures
+import multiprocessing
+import platform
 
 
 class ConnectorWindowAndConverterBDGD(class_data.dadosBDGD):
 
-    def __init__(self, config_dialog: class_config_dialog.C_ConfigDialog):
+    def __init__(self, config_dialog):
         super().__init__()
 
         # Dados gerais BDGD
@@ -44,25 +48,85 @@ class ConnectorWindowAndConverterBDGD(class_data.dadosBDGD):
         self.window.show()
 
     def iniciar_conversao(self):
-        start = timer()
+        inicio = timer()
 
         self.conversor = Converter_BDGD(self, self.path_BDGD_geodb)
         self.path_BDGD_sqlite, self.BDGD_sqlite_already_exists = self.conversor.criacao_novo_diretorio()
 
         if not self.BDGD_sqlite_already_exists:
-            for index, nome_layer in enumerate(self.layers_BDGD, start=1):
-                self.window.atualizar_indicador_acao(nome_layer)
-                self.conversor.convert_geodatabase_to_sqlite(nome_layer)
-                self.window.atualizar_barra_progresso(index)
+            self.conversao()
 
-        end = timer()
-        print('Time in seconds:')
-        print(end - start)
+        tempo_decorrido = timer() - inicio
+        print(f'Tempo demandado em segundos: {tempo_decorrido}')
+
 
         self.config_dialog.GroupBox_BDGD_Edit.setText(self.path_BDGD_sqlite)
         self.config_dialog.loadParameters()
         self.config_dialog.close()
         self.window.close()
+
+    def conversao(self):
+        if platform.system() == 'Linux':
+            self.conversao_multiprocessing()
+        elif platform.system() == 'Windows':
+            self.conversao_padrao()
+        elif platform.system() == 'Darwin':
+            multiprocessing.set_start_method('fork')
+            self.conversao_multiprocessing()
+
+    def conversao_padrao(self):
+        for index, nome_layer in enumerate(self.layers_BDGD, start=1):
+            self.window.atualizar_indicador_acao(nome_layer)
+            self.conversor.convert_geodatabase_to_sqlite(nome_layer)
+            self.window.atualizar_barra_progresso(index)
+
+    def conversao_threading(self):
+        with concurrent.futures.thread.ThreadPoolExecutor(max_workers=len(self.layers_BDGD)) as executor:
+            executor.map(self.conversor.convert_geodatabase_to_sqlite, self.layers_BDGD)
+
+    def conversao_multiprocessing(self):
+        with multiprocessing.Pool() as pool:
+            pool.map(self.conversor.convert_geodatabase_to_sqlite, self.layers_BDGD)
+
+    def conversao_process(self):
+        with concurrent.futures.ProcessPoolExecutor as executor:
+            executor.map(self.conversor.convert_geodatabase_to_sqlite, self.layers_BDGD)
+
+    def conversao_daniel(self):
+        nCore = multiprocessing.cpu_count()
+        threads = []
+        for layer in self.layers_BDGD:
+
+            thr = threading.Thread(target=self.conversor.convert_geodatabase_to_sqlite, args=(layer,))
+
+            threads.append(thr)
+
+            thr.start()
+
+            print("Iniciado conversao [", layer, "]: ")
+
+        for idxThr, thread in enumerate(threads):
+            thread.join()
+
+            print("Layer Finalizado: [", idxThr, "]")
+
+    def conversao_Pedro(self):
+        nCore = multiprocessing.cpu_count()
+        process = []
+        for layer in self.layers_BDGD:
+
+            pro = multiprocessing.Process(target=self.conversor.convert_geodatabase_to_sqlite, args=(layer,))
+
+            process.append(pro)
+
+            pro.start()
+
+            print("Iniciado conversao [", layer, "]: ")
+
+        for idxThr, pro in enumerate(process):
+            pro.join()
+
+            print("Layer Finalizado: [", idxThr, "]")
 
     def cancelar_conversao(self):
         self.window.close()
@@ -307,7 +371,7 @@ if __name__ == '__main__':
     # Setup de teste isolado do conversor
     path_BDGD_geodb = r"C:\Users\ppgsa\Documents\SIPLA\Debug_final_geodb_conv\COELBA_47_2018-12-31_M10_20190610-1331.gdb"
     modelo_BDGD = "Modelo Novo"
-    layers_p_conversao = ["SSDBT"]
+    layers_p_conversao = ["CTAT", "EQTRAT", "SSDAT", "CTMT","SSDMT","EQTRMT", "UNTRAT","UNTRMT"]
 
     #
     app = QApplication(sys.argv)
