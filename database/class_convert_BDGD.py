@@ -71,8 +71,7 @@ class ConnectorWindowAndConverterBDGD(class_data.dadosBDGD):
         elif platform.system() == 'Windows':
             self.conversao_padrao()
         elif platform.system() == 'Darwin':
-            multiprocessing.set_start_method('fork')
-            self.conversao_multiprocessing()
+            pass
 
     def conversao_padrao(self):
         for index, nome_layer in enumerate(self.layers_BDGD, start=1):
