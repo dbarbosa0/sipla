@@ -17,6 +17,9 @@ import main_actions
 import main_panels
 import main_panels_dock
 
+import platform
+import multiprocessing
+
 
 class mainWindow(QMainWindow):
     def __init__(self, parent=None):
@@ -76,6 +79,10 @@ class mainWindow(QMainWindow):
 
 
 if __name__ == '__main__':
+    # Define the method to create all multiprocessed processes in Linux
+    if platform.system() == 'Linux':
+        multiprocessing.set_start_method('fork')
+
     siplaApp = QApplication(sys.argv)
 
     # Create and display the splash screen

@@ -67,7 +67,7 @@ class ConnectorWindowAndConverterBDGD(class_data.dadosBDGD):
 
     def conversao(self):
         if platform.system() == 'Linux':
-            self.conversao_multiprocessing()
+            self.conversao_multiprocessing_manual()
         elif platform.system() == 'Windows':
             self.conversao_padrao()
         elif platform.system() == 'Darwin':
@@ -92,7 +92,7 @@ class ConnectorWindowAndConverterBDGD(class_data.dadosBDGD):
         with concurrent.futures.ProcessPoolExecutor as executor:
             executor.map(self.conversor.convert_geodatabase_to_sqlite, self.layers_BDGD)
 
-    def conversao_daniel(self):
+    def conversao_threading_manual(self):
         nCore = multiprocessing.cpu_count()
         threads = []
         for layer in self.layers_BDGD:
@@ -110,7 +110,7 @@ class ConnectorWindowAndConverterBDGD(class_data.dadosBDGD):
 
             print("Layer Finalizado: [", idxThr, "]")
 
-    def conversao_Pedro(self):
+    def conversao_multiprocessing_manual(self):
         nCore = multiprocessing.cpu_count()
         process = []
         for layer in self.layers_BDGD:
@@ -259,7 +259,14 @@ class Converter_BDGD():
                 nome_layer_sem_tab = nome_layer[:-4]
             else:
                 nome_layer_sem_tab = nome_layer
-            conn = sqlite3.connect(self.path_BDGD_sqlite + f"\\{nome_layer_sem_tab}.sqlite")
+
+            if platform.system() == 'Linux':
+                conn = sqlite3.connect(os.path.join(self.path_BDGD_sqlite, f"{nome_layer_sem_tab}.sqlite"))
+            elif platform.system() == 'Windows':
+                conn = sqlite3.connect(self.path_BDGD_sqlite + f"\\{nome_layer_sem_tab}.sqlite")
+            elif platform.system() == 'Darwin':
+                pass
+
             c = conn.cursor()
 
             match schema['geometry']:

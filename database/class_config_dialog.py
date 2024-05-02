@@ -11,6 +11,7 @@ import config as cfg
 import os
 import database.class_convert_BDGD as class_convert_BDGD
 import fiona
+import platform
 
 class C_ConfigDialog(QDialog, class_data.dadosBDGD):
     def __init__(self):
@@ -275,22 +276,38 @@ class C_ConfigDialog(QDialog, class_data.dadosBDGD):
                 path_sqlite_convertido = os.path.join(directory_database, "SIPLA_" +
                                                       os.path.basename(directory_database) + '.sqlite')
                 print('ok2')
-                if os.path.isfile(path_sqlite_convertido + "\\" + "UNTRMT" + ".sqlite"):
-                    return "Modelo Versao 1.0"
-                elif os.path.isfile(path_sqlite_convertido + "\\" + "UNTRD" + ".sqlite"):
-                    return "Modelo Novo"
-                elif os.path.isfile(path_sqlite_convertido + "\\" + "UN_TR_D" + ".sqlite"):
-                    return "Modelo Antigo"
+
+                if platform.system() == 'Linux':
+                    if os.path.isfile(os.path.join(path_sqlite_convertido, "UNTRMT" + ".sqlite")):
+                        return "Modelo Versao 1.0"
+                    elif os.path.isfile(os.path.join(path_sqlite_convertido, "UNTRD" + ".sqlite")):
+                        return "Modelo Novo"
+                    elif os.path.isfile(os.path.join(path_sqlite_convertido, "UN_TR_D" + ".sqlite")):
+                        return "Modelo Antigo"
+                elif platform.system() == 'Windows':
+                    if os.path.isfile(path_sqlite_convertido + "\\" + "UNTRMT" + ".sqlite"):
+                        return "Modelo Versao 1.0"
+                    elif os.path.isfile(path_sqlite_convertido + "\\" + "UNTRD" + ".sqlite"):
+                        return "Modelo Novo"
+                    elif os.path.isfile(path_sqlite_convertido + "\\" + "UN_TR_D" + ".sqlite"):
+                        return "Modelo Antigo"
             case '.sqlite':
                 print('ok3')
-                print(directory_database + "\\" + "UNTRMT" + ".sqlite")
-                print(os.path.isfile(directory_database + "\\" + "UNTRMT" + ".sqlite"))
-                if os.path.isfile(directory_database + "\\" + "UNTRMT" + ".sqlite"):
-                    return "Modelo Versao 1.0"
-                elif os.path.isfile(directory_database + "\\" + "UNTRD" + ".sqlite"):
-                    return "Modelo Novo"
-                elif os.path.isfile(directory_database + "\\" + "UN_TR_D" + ".sqlite"):
-                    return "Modelo Antigo"
+
+                if platform.system() == 'Linux':
+                    if os.path.isfile(os.path.join(directory_database, "UNTRMT" + ".sqlite")):
+                        return "Modelo Versao 1.0"
+                    elif os.path.isfile(os.path.join(directory_database, "UNTRD" + ".sqlite")):
+                        return "Modelo Novo"
+                    elif os.path.isfile(os.path.join(directory_database, "UN_TR_D" + ".sqlite")):
+                        return "Modelo Antigo"
+                elif platform.system() == 'Windows':
+                    if os.path.isfile(directory_database + "\\" + "UNTRMT" + ".sqlite"):
+                        return "Modelo Versao 1.0"
+                    elif os.path.isfile(directory_database + "\\" + "UNTRD" + ".sqlite"):
+                        return "Modelo Novo"
+                    elif os.path.isfile(directory_database + "\\" + "UN_TR_D" + ".sqlite"):
+                        return "Modelo Antigo"
 
         return 'Modelo nao identificado'
 
