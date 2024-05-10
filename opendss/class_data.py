@@ -8,6 +8,7 @@ import prodist.tten as tten  # Níveis de tensão do prodist
 import prodist.tlig as tlig  # Tipos de Ligações
 import prodist.tpotatr as tpotatr  # Potências dos transformadores
 import prodist.tcapelofu as tcapelofu  # Elos fusíveis
+from random import random
 
 
 class C_Data():  # classe OpenDSS
@@ -1052,6 +1053,43 @@ class C_Data():  # classe OpenDSS
                 elif tipo_curva[0:2] == "PP":
                     tipo_curva = "SP" + tipo_curva[2:]
 
+                # Tratamento dos tipos de carga de média tensão da SULGIPE, ou seja que iniciam com SSDMT:
+                if tipo_curva.startswith('SDMT'):
+                    # Haja vista que não existe divisão entre os tipos de carga no banco da SULGIPE, distribuiremos as
+                    # curvas de modo aleatório considerando a distribuição do Banco UCMT da Coelba 2021
+                    probabilidades_curvas_coelba = []
+                    if not probabilidades_curvas_coelba:
+                        num_amostras_coelba = 22026
+                        distribuicao_curvas_coelba = {'MT-Tipo1': 9512, 'MT-Tipo2': 3108, 'MT-Tipo3': 1854,
+                                                      'MT-Tipo4': 1519, 'MT-Tipo5': 1309, 'MT-Tipo6': 1237,
+                                                      'MT-Tipo7': 852, 'MT-Tipo8': 1017, 'MT-Tipo9': 1539}
+
+                        probabilidades_curvas_coelba = [distribuicao_curvas_coelba['MT-Tipo1'] / 22026]
+                        for (indx, frequencia) in enumerate(distribuicao_curvas_coelba.values(), start=1):
+                            probabilidade_acumulada = ((frequencia - probabilidades_curvas_coelba[indx - 1]) /
+                                                       num_amostras_coelba)
+                            probabilidades_curvas_coelba.append(probabilidade_acumulada)
+
+                    numero_entre_0_1 = random()
+                    if numero_entre_0_1 < probabilidades_curvas_coelba[0]:
+                        tipo_curva = 'MT-Tipo1'
+                    elif numero_entre_0_1 < probabilidades_curvas_coelba[1]:
+                        tipo_curva = 'MT-Tipo2'
+                    elif numero_entre_0_1 < probabilidades_curvas_coelba[2]:
+                        tipo_curva = 'MT-Tipo3'
+                    elif numero_entre_0_1 < probabilidades_curvas_coelba[3]:
+                        tipo_curva = 'MT-Tipo4'
+                    elif numero_entre_0_1 < probabilidades_curvas_coelba[4]:
+                        tipo_curva = 'MT-Tipo5'
+                    elif numero_entre_0_1 < probabilidades_curvas_coelba[5]:
+                        tipo_curva = 'MT-Tipo6'
+                    elif numero_entre_0_1 < probabilidades_curvas_coelba[6]:
+                        tipo_curva = 'MT-Tipo7'
+                    elif numero_entre_0_1 < probabilidades_curvas_coelba[7]:
+                        tipo_curva = 'MT-Tipo8'
+                    else:
+                        tipo_curva = 'MT-Tipo9'
+
                 curva_loadshape = loadshape[tipo_curva]
                 # print('entrando', dados_db[ctd].ctmt, lista_de_identificadores_dos_alimentadores, dados_db[ctd].sit_ativ)
                 if dados_db[ctd].ctmt in lista_de_identificadores_dos_alimentadores and dados_db[ctd].sit_ativ == 'AT':
@@ -1101,7 +1139,7 @@ class C_Data():  # classe OpenDSS
                         memoFileUC.append("! Tranformador de Distribuicao: " + dados_db[ctd].uni_tr)
 
                         if (dados_db[ctd].uni_tr not in self.nFieldsTD):
-
+                            print(f'Bugde: {self.trafoDistUniCons}')
                             auxpac_1 = self.trafoDistUniCons[dados_db[ctd].uni_tr][-2]
                         else:
                             auxpac_1 = dados_db[ctd].pac
@@ -1233,13 +1271,14 @@ class C_Data():  # classe OpenDSS
         try:
             # Transformadores
             self.trafoDistUniCons = {}  ## Transformadores para as Cargas
-
+            print('exec_Get_EQTRD_By_CTMT')
             self.Get_EQTRD_By_CTMT()
 
             dados_ctmt = self.DataBase.getData_CTMT(None)
 
             lista_de_identificadores_dos_alimentadores = self.getID_Fields(dados_ctmt)
             print(lista_de_identificadores_dos_alimentadores)
+            print(f'Debug1: {self.lista_CTMT}')
             dados_db = self.DataBase.getData_TrafoDIST(self.lista_CTMT)
 
             # for ctd in range(0, len(dados_db)):
@@ -1292,7 +1331,7 @@ class C_Data():  # classe OpenDSS
 
                         ### trafo paras as cargas
                         self.trafoDistUniCons[str(dados_db[ctd].cod_id)] = [dados_db[ctd].pac_2, dados_db[ctd].pot_nom]
-
+                        print(f'fluxo1: {self.trafoDistUniCons}')
                         ##Buffer
                         # self.insertBusList(dados_db[ctd].pac_1)
                         # self.insertBusList(dados_db[ctd].pac_2)
@@ -1317,6 +1356,7 @@ class C_Data():  # classe OpenDSS
 
                         ### trafo paras as cargas
                         self.trafoDistUniCons[str(dados_db[ctd].cod_id)] = [dados_db[ctd].pac_2, dados_db[ctd].pot_nom]
+                        print(f'fluxo2: {self.trafoDistUniCons}')
                         ##Buffer
                         # self.insertBusList(dados_db[ctd].pac_1)
                         # self.insertBusList(dados_db[ctd].pac_2)
@@ -1657,16 +1697,19 @@ class C_Data():  # classe OpenDSS
             if ctd == 0:
                 self.listaAlimentadores = self.nFieldsMT[ctd] + "'"
             else:
-                match self.DataBase.DataBaseConn.DataBaseInfo["versao"]:
+                match self.DataBaseConn.DataBaseInfo["versao"]:
                     case "2017":
-                        self.listaAlimentadores = self.listaAlimentadores + " OR pac = '" + self.nFieldsMT[ctd] + "'"
+                        self.listaAlimentadores = self.listaAlimentadores + " OR nom = '" + self.nFieldsMT[ctd] + "'"
                     case "2021":
-                        self.listaAlimentadores = self.listaAlimentadores + " OR pac_ini = '" + self.nFieldsMT[
-                            ctd] + "'"
+                        self.listaAlimentadores = (self.listaAlimentadores + " OR nome = '" + self.nFieldsMT[ctd] +
+                                                   "'")
         print(self.listaAlimentadores)
+        print(f'exec_self.media_tensao_do_circuito: {self.listaAlimentadores}')
         self.media_tensao_do_circuito = self.DataBase.getData_CTMT_EQTH(self.listaAlimentadores)
 
     def Get_EQTRD_By_CTMT(self):
+        print(f'Debug2: {self.media_tensao_do_circuito}')
+        print(f'{len(self.media_tensao_do_circuito)}')
         for ctd in range(0, len(self.media_tensao_do_circuito)):
             if ctd == 0:
                 self.lista_CTMT = self.media_tensao_do_circuito[ctd].cod_id + "'"

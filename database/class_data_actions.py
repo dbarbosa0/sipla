@@ -68,10 +68,10 @@ class C_DBaseData():
             match self.DataBaseConn.DataBaseInfo["versao"]:
                 case "2017":
                     if pac_2 is not None:
-                        sqlQuery = "SELECT ten_nom, uni_tr_s, nom, cod_id FROM ctmt WHERE pac ='" + pac_2
+                        sqlQuery = "SELECT ten_nom, uni_tr_s, nom, cod_id FROM ctmt WHERE nom ='" + pac_2
                 case "2021":
                     if pac_2 is not None:
-                        sqlQuery = "SELECT ten_nom, uni_tr_at, nome, cod_id FROM ctmt WHERE pac_ini ='" + pac_2
+                        sqlQuery = "SELECT ten_nom, uni_tr_at, nome, cod_id FROM ctmt WHERE nome ='" + pac_2
 
             CTMTs_pac = self.DataBaseConn.getSQLDB("CTMT", sqlQuery)
 
@@ -529,7 +529,7 @@ class C_DBaseData():
                 case "2017":
                     sqlQueryUNTRMT = ("SELECT cod_id, pac_1, pac_2, pac_3, fas_con_p, fas_con_s, fas_con_t, sit_ativ," +
                                       " tip_unid, ten_lin_se, cap_elo, cap_cha, tap, pot_nom, per_fer, per_tot, ctmt," +
-                                      " tip_trafo, uni_tr_s FROM  untrd WHERE pac_1 LIKE '%" + codCT_MT +
+                                      " tip_trafo, uni_tr_s FROM untrd WHERE pac_1 LIKE '%" + codCT_MT +
                                       " ORDER BY pac_1")
                     sqlQueryEQTRMT = ("SELECT cod_id, pac_1, pac_2, pac_3, fas_con, pot_nom, lig, ten_pri, ten_sec, " +
                                       "ten_ter, lig_fas_p, lig_fas_s, lig_fas_t, per_fer, per_tot, r, xhl " +
@@ -544,38 +544,38 @@ class C_DBaseData():
                             UNTRMT_ctmt[1],  # pac_1
                             UNTRMT_ctmt[2],  # pac_2
                             UNTRMT_ctmt[3],  # pac_3
-                            UNTRMT_ctmt[4],  # fas_con_s
-                            UNTRMT_ctmt[5],  # sit_ativ
-                            UNTRMT_ctmt[6],  # ten_lin_se
-                            UNTRMT_ctmt[7],  # pot_nom
-                            UNTRMT_ctmt[8],  # ctmt
-                            UNTRMT_ctmt[9],  # uni_tr_s
-                            UNTRMT_ctmt[10],  # uni_tr_s
-                            UNTRMT_ctmt[11],  # uni_tr_s
-                            UNTRMT_ctmt[12],  # uni_tr_s
-                            UNTRMT_ctmt[13],  # uni_tr_s
-                            UNTRMT_ctmt[14],  # uni_tr_s
-                            UNTRMT_ctmt[15],  # uni_tr_s
-                            UNTRMT_ctmt[16],  # uni_tr_s
-                            UNTRMT_ctmt[17],  # uni_tr_s
+                            UNTRMT_ctmt[4],  # fas_con_p
+                            UNTRMT_ctmt[5],  # fas_con_s
+                            UNTRMT_ctmt[6],  # fas_con_t
+                            UNTRMT_ctmt[7],  # sit_ativ
+                            UNTRMT_ctmt[8],  # tip_unid
+                            UNTRMT_ctmt[9],  # ten_lin_se
+                            UNTRMT_ctmt[10],  # cap_elo
+                            UNTRMT_ctmt[11],  # cap_cha
+                            UNTRMT_ctmt[12],  # tap
+                            UNTRMT_ctmt[13],  # pot_nom
+                            UNTRMT_ctmt[14],  # per_fer
+                            UNTRMT_ctmt[15],  # per_tot
+                            UNTRMT_ctmt[16],  # ctmt
+                            UNTRMT_ctmt[17],  # tip_trafo
                             UNTRMT_ctmt[18],  # uni_tr_s
-                            EQTRMT_ctmt[0],  # pot_nom_eqtrd
-                            EQTRMT_ctmt[1],  # lig
-                            EQTRMT_ctmt[2],  # ten_pri
-                            EQTRMT_ctmt[3],  # ten_pri
-                            EQTRMT_ctmt[4],  # ten_pri
-                            EQTRMT_ctmt[5],  # ten_pri
-                            EQTRMT_ctmt[6],  # ten_pri
+                            EQTRMT_ctmt[0],  # cod_id
+                            EQTRMT_ctmt[1],  # pac_1
+                            EQTRMT_ctmt[2],  # pac_2
+                            EQTRMT_ctmt[3],  # pac_3
+                            EQTRMT_ctmt[4],  # fas_con
+                            EQTRMT_ctmt[5],  # pot_nom
+                            EQTRMT_ctmt[6],  # lig
                             EQTRMT_ctmt[7],  # ten_pri
-                            EQTRMT_ctmt[8],  # ten_pri
-                            EQTRMT_ctmt[9],  # ten_pri
-                            EQTRMT_ctmt[10],  # ten_pri
-                            EQTRMT_ctmt[11],  # ten_pri
-                            EQTRMT_ctmt[12],  # ten_pri
-                            EQTRMT_ctmt[13],  # ten_pri
-                            EQTRMT_ctmt[14],  # r
-                            EQTRMT_ctmt[15],  # xhl
-                            EQTRMT_ctmt[16]  # ten_pri
+                            EQTRMT_ctmt[8],  # ten_sec
+                            EQTRMT_ctmt[9],  # ten_ter
+                            EQTRMT_ctmt[10],  # lig_fas_p
+                            EQTRMT_ctmt[11],  # lig_fas_s
+                            EQTRMT_ctmt[12],  # lig_fas_t
+                            EQTRMT_ctmt[13],  # per_fer
+                            EQTRMT_ctmt[14],  # per_tot
+                            EQTRMT_ctmt[15],  # r
+                            EQTRMT_ctmt[16],  # xhl
                         )
                         lista_TRMTs_ctmt.append(TRMT_ctmt)
 
@@ -590,46 +590,48 @@ class C_DBaseData():
                                       "lig_fas_s, lig_fas_t, per_fer, per_tot, r, xhl FROM eqtrmt WHERE uni_tr_mt " +
                                       "IN(" + str(cod_id_untrmts)[1:-1] + ") ORDER BY uni_tr_mt")
                     EQTRMTs_ctmt = self.DataBaseConn.getSQLDB("EQTRMT", sqlQueryEQTRMT)
-
+                    UNTRMTs_ctmt = self.DataBaseConn.getSQLDB("UNTRMT", sqlQueryUNTRMT)
+                    print(f'Bugde: {cod_id_untrmts}')
                     lista_TRMTs_ctmt = []
                     for EQTRMT_ctmt, UNTRMT_ctmt in zip(EQTRMTs_ctmt.fetchall(), UNTRMTs_ctmt.fetchall()):
+                        print(f'Bugde: {UNTRMT_ctmt[0]}')
                         TRMT_ctmt = data.dadosTrafoDist(
                             UNTRMT_ctmt[0],  # cod_id
                             UNTRMT_ctmt[1],  # pac_1
                             UNTRMT_ctmt[2],  # pac_2
                             UNTRMT_ctmt[3],  # pac_3
-                            UNTRMT_ctmt[4],  # fas_con_s
-                            UNTRMT_ctmt[5],  # sit_ativ
-                            UNTRMT_ctmt[6],  # ten_lin_se
-                            UNTRMT_ctmt[7],  # pot_nom
-                            UNTRMT_ctmt[8],  # ctmt
-                            UNTRMT_ctmt[9],  # uni_tr_s
-                            UNTRMT_ctmt[10],  # uni_tr_s
-                            UNTRMT_ctmt[11],  # uni_tr_s
-                            UNTRMT_ctmt[12],  # uni_tr_s
-                            UNTRMT_ctmt[13],  # uni_tr_s
-                            UNTRMT_ctmt[14],  # uni_tr_s
-                            UNTRMT_ctmt[15],  # uni_tr_s
-                            UNTRMT_ctmt[16],  # uni_tr_s
-                            UNTRMT_ctmt[17],  # uni_tr_s
+                            UNTRMT_ctmt[4],  # fas_con_p
+                            UNTRMT_ctmt[5],  # fas_con_s
+                            UNTRMT_ctmt[6],  # fas_con_t
+                            UNTRMT_ctmt[7],  # sit_ativ
+                            UNTRMT_ctmt[8],  # tip_unid
+                            UNTRMT_ctmt[9],  # ten_lin_se
+                            UNTRMT_ctmt[10],  # cap_elo
+                            UNTRMT_ctmt[11],  # cap_cha
+                            UNTRMT_ctmt[12],  # tap
+                            UNTRMT_ctmt[13],  # pot_nom
+                            UNTRMT_ctmt[14],  # per_fer
+                            UNTRMT_ctmt[15],  # per_tot
+                            UNTRMT_ctmt[16],  # ctmt
+                            UNTRMT_ctmt[17],  # tip_trafo
                             UNTRMT_ctmt[18],  # uni_tr_s
-                            EQTRMT_ctmt[0],  # pot_nom_eqtrd
-                            UNTRMT_ctmt[1],  # lig
-                            UNTRMT_ctmt[2],  # ten_pri
-                            UNTRMT_ctmt[3],  # ten_pri
-                            EQTRMT_ctmt[1],  # ten_pri
-                            EQTRMT_ctmt[2],  # ten_pri
-                            EQTRMT_ctmt[3],  # ten_pri
+                            EQTRMT_ctmt[0],  # cod_id
+                            UNTRMT_ctmt[1],  # pac_1
+                            UNTRMT_ctmt[2],  # pac_2
+                            UNTRMT_ctmt[3],  # pac_3
+                            EQTRMT_ctmt[1],  # fas_con
+                            EQTRMT_ctmt[2],  # pot_nom
+                            EQTRMT_ctmt[3],  # lig
                             EQTRMT_ctmt[4],  # ten_pri
-                            EQTRMT_ctmt[5],  # ten_pri
-                            EQTRMT_ctmt[6],  # ten_pri
-                            EQTRMT_ctmt[7],  # ten_pri
-                            EQTRMT_ctmt[8],  # ten_pri
-                            EQTRMT_ctmt[9],  # ten_pri
-                            EQTRMT_ctmt[10],  # ten_pri
-                            EQTRMT_ctmt[11],  # r
-                            EQTRMT_ctmt[12],  # xhl
-                            EQTRMT_ctmt[13]  # ten_pri
+                            EQTRMT_ctmt[5],  # ten_sec
+                            EQTRMT_ctmt[6],  # ten_ter
+                            EQTRMT_ctmt[7],  # lig_fas_p
+                            EQTRMT_ctmt[8],  # lig_fas_s
+                            EQTRMT_ctmt[9],  # lig_fas_t
+                            EQTRMT_ctmt[10],  # per_fer
+                            EQTRMT_ctmt[11],  # per_tot
+                            EQTRMT_ctmt[12],  # r
+                            EQTRMT_ctmt[13]  # xhl
                         )
                         lista_TRMTs_ctmt.append(TRMT_ctmt)
 

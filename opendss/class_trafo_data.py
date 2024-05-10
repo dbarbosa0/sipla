@@ -1,3 +1,5 @@
+from math import sqrt
+
 class trafo_data:
     def __init__(self):
         self.ajusteTrafos = {}
@@ -22,6 +24,7 @@ class trafo_data:
                     "1": [dados_db[ctd].ten_lin_se]}  # TALVEZ TENHA SITUAÇÕES QUE SERÃO MONO/ ERRROS
 
             elif len(dados_db[ctd].fas_con_s) == 3:
+                print('Debug 8')
                 if dados_db[ctd].ten_lin_se in [0.0, 0.127]:
                     dados_db[ctd] = dados_db[ctd]._replace(ten_lin_se=0.127)
                     self.ajusteTrafos[dados_db[ctd].cod_id] = {"1": [0.127]}
@@ -67,8 +70,16 @@ class trafo_data:
         print("CHAVES", self.ajusteTrafos.keys())
         for ctd in range(0, len(dados_db)):
             if dados_db[ctd].uni_tr in self.ajusteTrafos.keys():
-                dados_db[ctd] = dados_db[ctd]._replace(
-                    ten_forn=self.ajusteTrafos[dados_db[ctd].uni_tr][str(len(dados_db[ctd].fas_con) - 1)][0])
+
+                print(f'Debug9:{self.ajusteTrafos[dados_db[ctd].uni_tr]}')
+                try:
+                    dados_db[ctd] = dados_db[ctd]._replace(
+                        ten_forn=self.ajusteTrafos[dados_db[ctd].uni_tr][str(len(dados_db[ctd].fas_con) - 1)][0])
+                except KeyError:
+                    # Tensões de linha implementada apenas em caso de erros na BDGD no registro do número de fases do
+                    # transformador (ex: um transformador AN alimentando uma carga ABC)
+                    dados_db[ctd] = dados_db[ctd]._replace(
+                        ten_forn=self.ajusteTrafos[dados_db[ctd].uni_tr]['1'][0] * sqrt(3))
 
     def ajuste_tensao_cargas_MT(self, dados_trafo):
         for ctd in range(0, len(dados_trafo)):

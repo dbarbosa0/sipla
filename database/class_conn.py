@@ -2,6 +2,7 @@ import class_exception
 import sqlite3
 import platform
 
+
 class C_DBaseConn:  # Classe de banco de dados
 
     def __init__(self):
@@ -15,7 +16,7 @@ class C_DBaseConn:  # Classe de banco de dados
     def DataBaseInfo(self, nDataBaseInfo):
         self._DataBaseInfo = nDataBaseInfo
 
-    def getSQLDB(self, nomeBancoDados, strSQL):
+    def getSQLDB(self, nomeBancoDados: str, strSQL: str):
 
         try:
             # Conectando em apenas leitura!
