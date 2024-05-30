@@ -161,7 +161,7 @@ class C_ActPow_Config_StorageController_Dialog(QDialog): ## Classe Dialog config
     def InitUI(self):
         self.setWindowTitle(self.titleWindow)  # titulo janela
         self.setWindowIcon(QIcon(self.iconWindow))  # ícone da janela
-        self.setWindowModality(Qt.ApplicationModal)
+        self.setWindowModality(Qt.WindowModality.ApplicationModal)
         self.setStyle(QStyleFactory.create('Cleanlooks'))  # Estilo da Interface
         self.setFixedWidth(380)
         self.setMaximumHeight(270)
@@ -245,7 +245,7 @@ class C_ActPow_Config_StorageController_Dialog(QDialog): ## Classe Dialog config
 
         ###### Botões dos Parâmetros
         self.StorControl_Btns_Layout = QHBoxLayout()
-        self.StorControl_Btns_Layout.setAlignment(Qt.AlignRight)
+        self.StorControl_Btns_Layout.setAlignment(Qt.AlignmentFlag.AlignRight)
 
         self.StorControl_Btns_Cancel_Btn = QPushButton("Cancelar")
         self.StorControl_Btns_Cancel_Btn.setIcon(QIcon('img/icon_cancel.png'))
@@ -267,7 +267,7 @@ class C_ActPow_Config_StorageController_Dialog(QDialog): ## Classe Dialog config
 
         ###### Botões Dialogs para configurar os modos de carga de descarga
         self.Dialog_Btns_ChargeDischarge_Layout = QHBoxLayout()
-        # self.Dialog_Btns_ChargeDischarge_Layout.setAlignment(Qt.AlignRight)
+        # self.Dialog_Btns_ChargeDischarge_Layout.setAlignment(Qt.AlignmentFlag.AlignRight)
 
         self.Dialog_Btns_Charge_Btn = QPushButton("Configurar Modo de Carga")
         self.Dialog_Btns_Charge_Btn.clicked.connect(self.configChargeDialog)
@@ -281,7 +281,7 @@ class C_ActPow_Config_StorageController_Dialog(QDialog): ## Classe Dialog config
 
         ###### Botões
         self.Dialog_Btns_Layout = QHBoxLayout()
-        self.Dialog_Btns_Layout.setAlignment(Qt.AlignRight)
+        self.Dialog_Btns_Layout.setAlignment(Qt.AlignmentFlag.AlignRight)
 
         self.Dialog_Btns_Cancel_Btn = QPushButton("Cancelar")
         self.Dialog_Btns_Cancel_Btn.setIcon(QIcon('img/icon_cancel.png'))

@@ -190,8 +190,8 @@ class C_MainActions():
         #     self.getSE_AT_DB()
         #     self.updateStatusBar()
         # else:
-        #     QMessageBox(QMessageBox.Warning, "DataBase Configuration", \
-        #                 "A Conexão com o Banco de Dados deve ser configurada!", QMessageBox.Ok).exec()
+        #     QMessageBox(QMessageBox.Icon.Warning, "DataBase Configuration", \
+        #                 "A Conexão com o Banco de Dados deve ser configurada!", QMessageBox.StandardButton.Ok).exec()
         print(self.DataBase_DialogSettings.databaseInfo)
         self.DataBaseConn.DataBaseInfo = self.DataBase_DialogSettings.databaseInfo
 
@@ -199,8 +199,8 @@ class C_MainActions():
             self.getSE_AT_DB()
             self.updateStatusBar()
         else:
-            QMessageBox(QMessageBox.Warning, "DataBase Configuration",
-                        "A Conexão com o Banco de Dados deve ser configurada!", QMessageBox.Ok).exec()
+            QMessageBox(QMessageBox.Icon.Warning, "DataBase Configuration",
+                        "A Conexão com o Banco de Dados deve ser configurada!", QMessageBox.StandardButton.Ok).exec()
 
     def configDataBase(self):
         self.DataBase_DialogSettings.exec()
@@ -277,8 +277,8 @@ class C_MainActions():
 
         ## testando o Daily
         if (self.OpenDSS_DialogSettings.dataInfo["Mode"] == "Daily") and (not self.OpenDSS_DialogSettings.dataInfo["LoadShapes"]):
-            QMessageBox(QMessageBox.Information, "OpenDSS Configuration", \
-                        "A(s) Curva(s) de Carga deve(m) ser carregada(s) no modo Daily!", QMessageBox.Ok).exec()
+            QMessageBox(QMessageBox.Icon.Information, "OpenDSS Configuration", \
+                        "A(s) Curva(s) de Carga deve(m) ser carregada(s) no modo Daily!", QMessageBox.StandardButton.Ok).exec()
         else:
             self.execCreateDSS() ## Cria o arquivo que será utilizado pelo OpenDSS e passa os parâmtros para rodar apenas o que foi selecionado
             self.OpenDSS.exec_OpenDSS()

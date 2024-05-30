@@ -588,7 +588,7 @@ class C_OpenDSS():  # classe OpenDSSDirect
     def exec_OpenDSS(self):
 
         ##Indicação de funcionamento 
-        QtWidgets.QApplication.setOverrideCursor(QtGui.QCursor(QtCore.Qt.WaitCursor))
+        QtWidgets.QApplication.setOverrideCursor(QtGui.QCursor(QtCore.Qt.CursorShape.WaitCursor))
 
         start_time = time.time()
 

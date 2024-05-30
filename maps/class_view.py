@@ -88,7 +88,7 @@ class C_Viewer():
 
     def createMap(self):
 
-        QtWidgets.QApplication.setOverrideCursor(QtGui.QCursor(QtCore.Qt.WaitCursor))
+        QtWidgets.QApplication.setOverrideCursor(QtGui.QCursor(QtCore.Qt.CursorShape.WaitCursor))
 
         self.DataBaseCoord.DataBaseConn = self.DataBaseConn
 

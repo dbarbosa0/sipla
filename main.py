@@ -59,9 +59,9 @@ class mainWindow(QMainWindow):
         self.setCentralWidget(self.mainPainelCentral)
 
         ## Dock
-        self.addDockWidget(Qt.LeftDockWidgetArea, self.mainDockNet)
-        self.addDockWidget(Qt.BottomDockWidgetArea, self.mainDockResults)
-        self.setDockOptions(QMainWindow.AnimatedDocks)
+        self.addDockWidget(Qt.DockWidgetArea.LeftDockWidgetArea, self.mainDockNet)
+        self.addDockWidget(Qt.DockWidgetArea.BottomDockWidgetArea, self.mainDockResults)
+        self.setDockOptions(QMainWindow.DockOption.AnimatedDocks)
         self.mainDockNet.mainActions = self.mainActions
 
 
@@ -87,7 +87,7 @@ if __name__ == '__main__':
 
     # Create and display the splash screen
     splash_pix = QPixmap('img/Logo_SIPLA.png')
-    splash = QSplashScreen(splash_pix, Qt.WindowStaysOnTopHint)
+    splash = QSplashScreen(splash_pix, Qt.WindowType.WindowStaysOnTopHint)
     splash.setMask(splash_pix.mask())
     splash.show()
     siplaApp.processEvents()

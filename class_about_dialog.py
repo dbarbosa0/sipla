@@ -21,13 +21,13 @@ class C_AboutDialog(QDialog):
 
         self.setWindowTitle(self.titleWindow)
         self.setWindowIcon(QIcon(self.iconWindow))  # ícone da janela
-        self.setWindowModality(Qt.ApplicationModal)
+        self.setWindowModality(Qt.WindowModality.ApplicationModal)
         self.setStyle(QStyleFactory.create('Cleanlooks'))  # Estilo da Interface
         self.adjustSize()
 
 
         self.Dialog_Layout = QVBoxLayout() #Layout da Dialog
-        self.Dialog_Layout.setAlignment(Qt.AlignCenter)
+        self.Dialog_Layout.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.setLayout(self.Dialog_Layout)
 
         logoWidget_qpixmap = QPixmap('img/Logo_SIPLA1.png')
@@ -49,7 +49,7 @@ class C_AboutDialog(QDialog):
         self.Dialog_Layout.addWidget(obsWidget_Label)
 
 
-        self.buttonBox = QDialogButtonBox(QDialogButtonBox.Ok)
+        self.buttonBox = QDialogButtonBox(QDialogButtonBox.StandardButton.Ok)
         self.buttonBox.accepted.connect(self.accept)
         self.Dialog_Layout.addWidget(self.buttonBox)
 

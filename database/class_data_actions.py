@@ -529,11 +529,13 @@ class C_DBaseData():
                 case "2017":
                     sqlQueryUNTRMT = ("SELECT cod_id, pac_1, pac_2, pac_3, fas_con_p, fas_con_s, fas_con_t, sit_ativ," +
                                       " tip_unid, ten_lin_se, cap_elo, cap_cha, tap, pot_nom, per_fer, per_tot, ctmt," +
-                                      " tip_trafo, uni_tr_s FROM untrd WHERE pac_1 LIKE '%" + codCT_MT +
+                                      " tip_trafo, uni_tr_s FROM untrd WHERE ctmt = '" + codCT_MT +
                                       " ORDER BY pac_1")
+                    UNTRMTs_ctmt = self.DataBaseConn.getSQLDB("UNTRD", sqlQueryUNTRMT)
+                    cod_id_untrmts = [untrmt[1] for untrmt in UNTRMTs_ctmt.fetchall()]
                     sqlQueryEQTRMT = ("SELECT cod_id, pac_1, pac_2, pac_3, fas_con, pot_nom, lig, ten_pri, ten_sec, " +
                                       "ten_ter, lig_fas_p, lig_fas_s, lig_fas_t, per_fer, per_tot, r, xhl " +
-                                      "FROM  eqtrd WHERE pac_1 LIKE '%" + codCT_MT + " ORDER BY pac_1")
+                                      "FROM eqtrd WHERE pac_1 IN(" + str(cod_id_untrmts)[1:-1] + ") ORDER BY pac_1")
                     UNTRMTs_ctmt = self.DataBaseConn.getSQLDB("UNTRD", sqlQueryUNTRMT)
                     EQTRMTs_ctmt = self.DataBaseConn.getSQLDB("EQTRD", sqlQueryEQTRMT)
 
@@ -582,7 +584,7 @@ class C_DBaseData():
                 case "2021":
                     sqlQueryUNTRMT = ("SELECT cod_id, pac_1, pac_2, pac_3, fas_con_p, fas_con_s, fas_con_t, sit_ativ," +
                                       " tip_unid, ten_lin_se, cap_elo, cap_cha, tap, pot_nom, per_fer, per_tot, ctmt," +
-                                      " tip_trafo, uni_tr_at FROM untrmt WHERE pac_1 LIKE '%" + codCT_MT +
+                                      " tip_trafo, uni_tr_at FROM untrmt WHERE ctmt = '" + codCT_MT +
                                       " ORDER BY cod_id")
                     UNTRMTs_ctmt = self.DataBaseConn.getSQLDB("UNTRMT", sqlQueryUNTRMT)
                     cod_id_untrmts = [untrmt[0] for untrmt in UNTRMTs_ctmt.fetchall()]

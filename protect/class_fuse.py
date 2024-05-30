@@ -21,7 +21,7 @@ class Fuse(QWidget):
         self.Edit_Fuse = EditFuse(self)
         self.FuseSettings_GroupBox = QGroupBox('Selecionar Fusível')
         self.FuseSettings_GroupBox_Layout = QVBoxLayout()
-        self.FuseSettings_GroupBox_Layout.setAlignment(Qt.AlignCenter)
+        self.FuseSettings_GroupBox_Layout.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
         self.FuseSelect_Combobox = QComboBox()
         self.FuseSelect_Combobox.setMaximumWidth(150)
@@ -35,7 +35,7 @@ class Fuse(QWidget):
 
         #  Btns
         self.Tab_Btns_Layout = QHBoxLayout()
-        self.Tab_Btns_Layout.setAlignment(Qt.AlignCenter)
+        self.Tab_Btns_Layout.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
         self.Remover_Btn = QPushButton("Remover")
         self.Remover_Btn.setIcon(QIcon('img/icon_remove.png'))
@@ -154,7 +154,7 @@ class EditFuse(QDialog):
 
         self.setWindowTitle(self.titleWindow)
         self.setWindowIcon(QIcon(self.iconWindow))  # ícone da janela
-        self.setWindowModality(Qt.ApplicationModal)
+        self.setWindowModality(Qt.WindowModality.ApplicationModal)
         self.setStyle(QStyleFactory.create('Cleanlooks'))  # Estilo da Interface
         self.resize(200, 200)
         self.move(860, 170)
@@ -169,7 +169,7 @@ class EditFuse(QDialog):
         # Parâmetros Intrínsecos do Fusível
         self.Edit_Fuse_GroupBox = QGroupBox('Geral')
         self.Edit_Fuse_GroupBox_Layout = QGridLayout()
-        self.Edit_Fuse_GroupBox_Layout.setAlignment(Qt.AlignCenter)
+        self.Edit_Fuse_GroupBox_Layout.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
         self.FuseName_LineEdit = QLineEdit()
         self.FuseName_LineEdit_Label = QLabel("Dispositivo")
@@ -209,7 +209,7 @@ class EditFuse(QDialog):
         # Parâmetros de conexões do Fusível
         self.Conn_Fuse_GroupBox = QGroupBox('Conexões ')
         self.Conn_Fuse_GroupBox_Layout = QGridLayout()
-        self.Conn_Fuse_GroupBox_Layout.setAlignment(Qt.AlignCenter)
+        self.Conn_Fuse_GroupBox_Layout.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
         self.MonitObj_ComboBox = QComboBox()
         self.MonitObj_ComboBox.setMinimumWidth(150)
@@ -246,7 +246,7 @@ class EditFuse(QDialog):
         # Curvas TCC
         self.TCCCurves_Fuse_GroupBox = QGroupBox('Curvas TCC')
         self.TCCCurves_Fuse_GroupBox_Layout = QGridLayout()
-        self.TCCCurves_Fuse_GroupBox_Layout.setAlignment(Qt.AlignCenter)
+        self.TCCCurves_Fuse_GroupBox_Layout.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
         self.FuseCurveList = self.curvelist
         self.FuseCurve_ComboBox = QComboBox()
@@ -387,7 +387,7 @@ class EditFuse(QDialog):
                     bluergb = (0, 0, 255, 255)
                     self.graphWidget.plot(pointsXList, pointsYList, name=name, pen=pen, symbol='o', symbolSize=10, symbolBrush=bluergb)
                 except ValueError:
-                    QMessageBox(QMessageBox.Warning, "Curva TCC - Fusível", "Erro ao carregar curva.", QMessageBox.Ok).exec()
+                    QMessageBox(QMessageBox.Icon.Warning, "Curva TCC - Fusível", "Erro ao carregar curva.", QMessageBox.StandardButton.Ok).exec()
                     self.PlotState = not self.PlotState
 
         if not self.PlotState:
@@ -458,9 +458,9 @@ class EditFuse(QDialog):
         for ctd in self.Fuse_parent.FuseDataInfo:
             if ctd["Name"] == self.Fuse_parent.FuseSelect_Combobox.currentText():
                 self.Fuse_parent.FuseDataInfo.remove(ctd)
-                QMessageBox(QMessageBox.Warning, "Fusível",
+                QMessageBox(QMessageBox.Icon.Warning, "Fusível",
                             "Fusível " + ctd["Name"] + " removido com sucesso!",
-                            QMessageBox.Ok).exec()
+                            QMessageBox.StandardButton.Ok).exec()
         self.clearFuseParameters()
 
         self.Fuse_parent.FuseSelect_Combobox.clear()
@@ -509,13 +509,13 @@ class EditFuse(QDialog):
             if not ctdExist:
                 self.Fuse_parent.FuseDataInfo.append(datainfo)
                 self.Fuse_parent.AddFuseDataInfo.append(datainfo)
-                QMessageBox(QMessageBox.Information, "Fusível",
+                QMessageBox(QMessageBox.Icon.Information, "Fusível",
                             "Fusível " + datainfo["Name"] + " inserido com sucesso!",
-                            QMessageBox.Ok).exec()
+                            QMessageBox.StandardButton.Ok).exec()
             else:
-                QMessageBox(QMessageBox.Warning, "Fusível",
+                QMessageBox(QMessageBox.Icon.Warning, "Fusível",
                             "Fusível " + datainfo["Name"] + " já existe! \nFavor verificar!",
-                            QMessageBox.Ok).exec()
+                            QMessageBox.StandardButton.Ok).exec()
         else:
             for ctd in self.Fuse_parent.FuseDataInfo:
                 if ctd["Name"] == datainfo["Name"]:
@@ -534,9 +534,9 @@ class EditFuse(QDialog):
                     ctd["FuseCurve"] = datainfo["FuseCurve"]
                     ctd["RatedCurrent"] = datainfo["RatedCurrent"]
 
-                    QMessageBox(QMessageBox.Information, "Fusível",
+                    QMessageBox(QMessageBox.Icon.Information, "Fusível",
                                 "Fusível " + ctd["Name"] + " atualizado com sucesso!",
-                                QMessageBox.Ok).exec()
+                                QMessageBox.StandardButton.Ok).exec()
 
         self.Fuse_parent.updateProtectDialog()
         self.adjustSize()

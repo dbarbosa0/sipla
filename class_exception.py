@@ -11,9 +11,9 @@ class ConnDataBaseError(C_Error):
     def __init__(self, msgText):
         super(ConnDataBaseError, self).__init__()
         # Display the errors
-        msg = QMessageBox(QMessageBox.Warning, "Data Base Connection Error",
+        msg = QMessageBox(QMessageBox.Icon.Warning, "Data Base Connection Error",
                           msgText,
-                          QMessageBox.Ok)
+                          QMessageBox.StandardButton.Ok)
         msg.setWindowIcon(QtGui.QIcon("Imagens/logo.png"))
         msg.exec_()
 
@@ -21,9 +21,9 @@ class ExecDataBaseError(C_Error):
     def __init__(self, msgText):
         super(ExecDataBaseError, self).__init__()
         # Display the errors
-        msg = QMessageBox(QMessageBox.Warning, "Data Base Execution Error",
+        msg = QMessageBox(QMessageBox.Icon.Warning, "Data Base Execution Error",
                           msgText,
-                          QMessageBox.Ok)
+                          QMessageBox.StandardButton.Ok)
         msg.setWindowIcon(QtGui.QIcon("Imagens/logo.png"))
         msg.exec_()
 
@@ -33,9 +33,9 @@ class FileDataBaseError(C_Error):
         if errorText is None:
             errorText = ""
         # Display the errors
-        msg = QMessageBox(QMessageBox.Warning, "Data Base Error",
+        msg = QMessageBox(QMessageBox.Icon.Warning, "Data Base Error",
                           msgText + "\n" + errorText,
-                          QMessageBox.Ok)
+                          QMessageBox.StandardButton.Ok)
         msg.setWindowIcon(QtGui.QIcon("Imagens/logo.png"))
         msg.exec_()
 
@@ -46,9 +46,9 @@ class ExecOpenDSS(C_Error):
 
         super(ExecOpenDSS, self).__init__(errorText)
         # Display the errors
-        msg = QMessageBox(QMessageBox.Warning, "OpenDSS Execution Error",
+        msg = QMessageBox(QMessageBox.Icon.Warning, "OpenDSS Execution Error",
                           msgText + "\n" + errorText,
-                          QMessageBox.Ok)
+                          QMessageBox.StandardButton.Ok)
         msg.setWindowIcon(QtGui.QIcon("Imagens/logo.png"))
         msg.exec_()
 
@@ -59,9 +59,9 @@ class ExecSelectionFields(C_Error):
 
         super(ExecSelectionFields, self).__init__(errorText)
         # Display the errors
-        msg = QMessageBox(QMessageBox.Warning, "Selection Error",
+        msg = QMessageBox(QMessageBox.Icon.Warning, "Selection Error",
                           msgText + "\n" + errorText,
-                          QMessageBox.Ok)
+                          QMessageBox.StandardButton.Ok)
         msg.setWindowIcon(QtGui.QIcon("Imagens/logo.png"))
         msg.exec_()
 
@@ -72,9 +72,9 @@ class ExecConfigOpenDSS(C_Error):
 
         super(ExecConfigOpenDSS, self).__init__(errorText)
         # Display the errors
-        msg = QMessageBox(QMessageBox.Warning, "OpenDSS Configuration Error",
+        msg = QMessageBox(QMessageBox.Icon.Warning, "OpenDSS Configuration Error",
                           msgText + "\n" + errorText,
-                          QMessageBox.Ok)
+                          QMessageBox.StandardButton.Ok)
         msg.setWindowIcon(QtGui.QIcon("Imagens/logo.png"))
         msg.exec_()
 
@@ -83,8 +83,8 @@ class ExecEnergyMeter(C_Error):
     def __init__(self, msgText):
         super(ExecEnergyMeter, self).__init__()
         # Display the errors
-        msg = QMessageBox(QMessageBox.Warning, "Insert Error",
+        msg = QMessageBox(QMessageBox.Icon.Warning, "Insert Error",
                           msgText,
-                          QMessageBox.Ok)
+                          QMessageBox.StandardButton.Ok)
         msg.setWindowIcon(QtGui.QIcon("Imagens/logo.png"))
         msg.exec_()

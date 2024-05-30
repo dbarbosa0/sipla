@@ -22,7 +22,7 @@ class Subestacao(QDialog):
     def InitUI(self):
         self.setWindowTitle(self.titleWindow)
         self.setWindowIcon(QIcon(self.iconWindow))  # ícone da janela
-        self.setWindowModality(Qt.ApplicationModal)
+        self.setWindowModality(Qt.WindowModality.ApplicationModal)
         self.setStyle(QStyleFactory.create('Cleanlooks'))  # Estilo da Interface
         self.resize(400, 475)
 
@@ -35,7 +35,7 @@ class Subestacao(QDialog):
 
         ### Botões das Configurações
         self.Config_Btns_Layout = QHBoxLayout()
-        self.Config_Btns_Layout.setAlignment(Qt.AlignRight)
+        self.Config_Btns_Layout.setAlignment(Qt.AlignmentFlag.AlignRight)
         # Botao Restaurar Default
         self.Config_Btns_Default_Btn = QPushButton("Restaurar Default")  # Botão Default dentro do GroupBox
         self.Config_Btns_Default_Btn.setFixedHeight(30)

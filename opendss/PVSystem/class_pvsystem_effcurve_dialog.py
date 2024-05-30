@@ -35,7 +35,7 @@ class C_Config_EffCurve_Dialog(QDialog):
     def InitUI(self):
         self.setWindowTitle(self.titleWindow)
         self.setWindowIcon(QIcon(self.iconWindow))  # ícone da janela
-        self.setWindowModality(Qt.ApplicationModal)
+        self.setWindowModality(Qt.WindowModality.ApplicationModal)
         self.setStyle(QStyleFactory.create('Cleanlooks'))  # Estilo da Interface
         self.resize(850, 475)
 
@@ -96,7 +96,7 @@ Pontos Y: Eficiência do inversor em p.u.")
 
         # Botões
         self.Dialog_Btns_Layout = QHBoxLayout()
-        self.Dialog_Btns_Layout.setAlignment(Qt.AlignRight)
+        self.Dialog_Btns_Layout.setAlignment(Qt.AlignmentFlag.AlignRight)
 
         self.Dialog_Btns_Cancel_Btn = QPushButton("Cancelar")
         self.Dialog_Btns_Cancel_Btn.setIcon(QIcon('img/icon_cancel.png'))
@@ -137,19 +137,19 @@ Pontos Y: Eficiência do inversor em p.u.")
 
     def removeEffCurve(self):
         msg = QMessageBox()
-        msg.setIcon(QMessageBox.Question)
+        msg.setIcon(QMessageBox.Icon.Question)
         msg.setText("Você deseja remover a(s) curva(s) selecionada(s)?")
         msg.setWindowTitle('Curvas de Carga')
-        msg.setStandardButtons(QMessageBox.Yes | QMessageBox.No)
+        msg.setStandardButtons(QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No)
         retval = msg.exec_()
 
         contChecked = 0
-        if retval == QMessageBox.Yes:
+        if retval == QMessageBox.StandardButton.Yes:
 
             for ctd in range(self.EffCurve_GroupBox_TreeWidget.topLevelItemCount(), 0, -1):
                 Item = self.EffCurve_GroupBox_TreeWidget.topLevelItem(ctd - 1)
 
-                if Item.checkState(0) == Qt.Checked:
+                if Item.checkState(0) == Qt.CheckState.Checked:
                     self.EffCurve_GroupBox_TreeWidget.takeTopLevelItem(ctd - 1)
                     for index, item in enumerate(self.list_curve_names):
                         if item == Item.name:
@@ -184,7 +184,7 @@ Pontos Y: Eficiência do inversor em p.u.")
         for ctd in range(0, self.EffCurve_GroupBox_TreeWidget.topLevelItemCount()):
             Item = self.EffCurve_GroupBox_TreeWidget.topLevelItem(ctd)
 
-            if Item.checkState(0) == Qt.Checked:
+            if Item.checkState(0) == Qt.CheckState.Checked:
                 pen = pyqtgraph.mkPen(color=Item.getColorRGB())
                 pointsXList = Item.getPointsXList()
                 pointsYList = Item.getPointsYList()
@@ -234,7 +234,7 @@ class Config_EffCurve_GroupBox_TreeWidget_Item(QTreeWidgetItem):
         # Column 0 - Text:
 
         self.setText(0, name)
-        self.setCheckState(0, Qt.Unchecked)
+        self.setCheckState(0, Qt.CheckState.Unchecked)
 
         self.color = color
 

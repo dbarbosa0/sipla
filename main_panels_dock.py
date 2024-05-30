@@ -83,9 +83,9 @@ class C_NetPanel(QDockWidget):
         # self.NetPanel_Fields_GroupBox_TreeWidget.setColumnWidth(250,30)
         self.NetPanel_Fields_GroupBox_Select_TreeWidget.header().resizeSection(0, 180)
         self.NetPanel_Fields_GroupBox_Select_TreeWidget.header().resizeSection(1, 70)
-        self.NetPanel_Fields_GroupBox_Select_TreeWidget.headerItem().setTextAlignment(1, Qt.AlignCenter)
+        self.NetPanel_Fields_GroupBox_Select_TreeWidget.headerItem().setTextAlignment(1, Qt.AlignmentFlag.AlignCenter)
         self.NetPanel_Fields_GroupBox_Select_TreeWidget.header().resizeSection(2, 15)
-        self.NetPanel_Fields_GroupBox_Select_TreeWidget.headerItem().setTextAlignment(2, Qt.AlignCenter)
+        self.NetPanel_Fields_GroupBox_Select_TreeWidget.headerItem().setTextAlignment(2, Qt.AlignmentFlag.AlignCenter)
         self.NetPanel_Fields_GroupBox_Select_TreeWidget.header().resizeSection(3, 15)
         self.NetPanel_Fields_GroupBox_Select_TreeWidget.header().resizeSection(4, 15)
         self.NetPanel_Fields_GroupBox_Select_TreeWidget.itemClicked.connect(self.checkOnSelectAllFields)
@@ -173,7 +173,7 @@ class C_NetPanel(QDockWidget):
 
         for ctd in range(0, self.NetPanel_Fields_GroupBox_Select_TreeWidget.topLevelItemCount()):
             Item = self.NetPanel_Fields_GroupBox_Select_TreeWidget.topLevelItem(ctd)
-            if Item.checkState(0) == Qt.Checked:
+            if Item.checkState(0) == Qt.CheckState.Checked:
                 listFields.append(Item.name)
                 listFieldsID.append(ctd)
             print("listFields", listFields)
@@ -190,7 +190,7 @@ class C_NetPanel(QDockWidget):
         for ctd in range(0, self.NetPanel_Fields_GroupBox_Select_TreeWidget.topLevelItemCount()):
             Item = self.NetPanel_Fields_GroupBox_Select_TreeWidget.topLevelItem(ctd)
 
-            if Item.checkState(0) == Qt.Checked:
+            if Item.checkState(0) == Qt.CheckState.Checked:
                 listFieldsColors.append(Item.getColor())
 
         return listFieldsColors
@@ -208,7 +208,7 @@ class C_NetPanel(QDockWidget):
 
             Item = ItemParent.child(ctd)
 
-            if Item.checkState(0) == Qt.Checked:
+            if Item.checkState(0) == Qt.CheckState.Checked:
                 listTDFields.append(Item.name)
 
         return listTDFields
@@ -239,7 +239,7 @@ class C_NetPanel(QDockWidget):
 
             Item = ItemParent.child(ctd)
 
-            if Item.checkState(0) == Qt.Checked:
+            if Item.checkState(0) == Qt.CheckState.Checked:
                 listTDFieldsColors.append(Item.getColor())
 
         return listTDFieldsColors
@@ -306,7 +306,7 @@ class C_NetPanel(QDockWidget):
         for ctd in range(0, self.NetPanel_Fields_GroupBox_Select_TreeWidget.topLevelItemCount()):
             Item = self.NetPanel_Fields_GroupBox_Select_TreeWidget.topLevelItem(ctd)
 
-            if Item.checkState(0) == Qt.Checked:
+            if Item.checkState(0) == Qt.CheckState.Checked:
                 self.Deck_GroupBox_MapView_Btn.setEnabled(True)
 
             self.mainActions.updateToobarMenu()
@@ -328,12 +328,12 @@ class C_NetPanel(QDockWidget):
         ctdChecked = True
         for ctd in range(0, self.NetPanel_Fields_GroupBox_Select_TreeWidget.topLevelItemCount()):
             Item = self.NetPanel_Fields_GroupBox_Select_TreeWidget.topLevelItem(ctd)
-            if Item.checkState(0) == Qt.Unchecked:
-                self.NetPanel_Fields_GroupBox_Select_Checkbox_SelectAll.setCheckState(Qt.Unchecked)
+            if Item.checkState(0) == Qt.CheckState.Unchecked:
+                self.NetPanel_Fields_GroupBox_Select_Checkbox_SelectAll.setCheckState(Qt.CheckState.Unchecked)
                 ctdChecked = False
 
         if ctdChecked:
-            self.NetPanel_Fields_GroupBox_Select_Checkbox_SelectAll.setCheckState(Qt.Checked)
+            self.NetPanel_Fields_GroupBox_Select_Checkbox_SelectAll.setCheckState(Qt.CheckState.Checked)
 
         self.setDisabled_NetPanel_Fields_GroupBox_Select_Btn()
 
@@ -357,8 +357,8 @@ class NetPanel_Fields_GroupBox_Select_TreeWidget_Item(QTreeWidgetItem):
 
         ## Column 0 - Text:
         self.setText(0, name)
-        self.setFlags(self.flags() | Qt.ItemIsUserCheckable)
-        self.setCheckState(0, Qt.Unchecked)
+        self.setFlags(self.flags() | Qt.ItemFlag.ItemIsUserCheckable)
+        self.setCheckState(0, Qt.CheckState.Unchecked)
         self.color = color
         self.codField = codField
         self.listTrafos = listTrafosAL
@@ -455,18 +455,18 @@ class NetPanel_Fields_GroupBox_Select_TreeWidget_Item(QTreeWidgetItem):
 
         else:
             msgBox = QMessageBox()
-            msgBox.setIcon(QMessageBox.Information)
+            msgBox.setIcon(QMessageBox.Icon.Information)
             msgBox.setWindowTitle("Rede de Baixa Tensão")
-            msgBox.setStandardButtons(QMessageBox.Ok)
+            msgBox.setStandardButtons(QMessageBox.StandardButton.Ok)
             msgBox.setText("Todas as Redes de Baixa Tensão já foram selecionadas!")
             msgBox.exec()
 
     def removerTrafo(self):
 
         msgBox = QMessageBox()
-        msgBox.setIcon(QMessageBox.Information)
+        msgBox.setIcon(QMessageBox.Icon.Information)
         msgBox.setWindowTitle("Rede de Baixa Tensão")
-        msgBox.setStandardButtons(QMessageBox.Ok)
+        msgBox.setStandardButtons(QMessageBox.StandardButton.Ok)
 
         if self.childCount() > 0:
 
@@ -474,7 +474,7 @@ class NetPanel_Fields_GroupBox_Select_TreeWidget_Item(QTreeWidgetItem):
 
             for ctd in reversed(range(0, self.childCount())):
                 Item = self.child(ctd)
-                if Item.checkState(0) == Qt.Checked:
+                if Item.checkState(0) == Qt.CheckState.Checked:
                     self.removeChild(Item)
                     contChecked += 1
 
@@ -501,12 +501,12 @@ class NetPanel_Fields_GroupBox_Select_TreeWidget_Item(QTreeWidgetItem):
 
         for ctd in range(0, self.childCount()):
             Item = self.child(ctd)
-            if Item.checkState(0) == Qt.Unchecked:
-                self.TreeWidget_Item_CheckALL_Btn.setCheckState(Qt.Unchecked)
+            if Item.checkState(0) == Qt.CheckState.Unchecked:
+                self.TreeWidget_Item_CheckALL_Btn.setCheckState(Qt.CheckState.Unchecked)
                 ctdChecked = False
 
         if ctdChecked:
-            self.TreeWidget_Item_CheckALL_Btn.setCheckState(Qt.Checked)
+            self.TreeWidget_Item_CheckALL_Btn.setCheckState(Qt.CheckState.Checked)
 
 
 class NetPanel_Fields_GroupBox_Select_TreeWidget_Child_Item(QTreeWidgetItem):
@@ -520,8 +520,8 @@ class NetPanel_Fields_GroupBox_Select_TreeWidget_Child_Item(QTreeWidgetItem):
 
         ## Column 0 - Text:
         self.setText(0, name)
-        self.setFlags(self.flags() | Qt.ItemIsUserCheckable)
-        self.setCheckState(0, Qt.Checked)
+        self.setFlags(self.flags() | Qt.ItemFlag.ItemIsUserCheckable)
+        self.setCheckState(0, Qt.CheckState.Checked)
         self.color = color
 
         ## Column 1 - Button:

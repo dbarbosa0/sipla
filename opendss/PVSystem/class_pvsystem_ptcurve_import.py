@@ -30,7 +30,7 @@ class C_PT_Curve_Import(QDialog):
     def InitUI(self):
         self.setWindowTitle(self.titleWindow)
         self.setWindowIcon(QIcon(self.iconWindow))  # ícone da janela
-        self.setWindowModality(Qt.ApplicationModal)
+        self.setWindowModality(Qt.WindowModality.ApplicationModal)
         self.setStyle(QStyleFactory.create('Cleanlooks'))  # Estilo da Interface
         self.adjustSize()
         self.Dialog_Layout = QVBoxLayout()  # Layout da Dialog
@@ -42,7 +42,7 @@ class C_PT_Curve_Import(QDialog):
 
         # Confirm Buttons groupbox
         self.PT_Curve_Confirm_Btns_Layout = QHBoxLayout()
-        self.PT_Curve_Confirm_Btns_Layout.setAlignment(Qt.AlignRight)
+        self.PT_Curve_Confirm_Btns_Layout.setAlignment(Qt.AlignmentFlag.AlignRight)
 
         # Manual mode groupbox
         self.PT_Curve_Manual_Mode_GroupBox = QGroupBox("Modo Manual")

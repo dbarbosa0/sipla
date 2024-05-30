@@ -23,11 +23,11 @@ class C_Config_VoltVar_XYCurve_Dialog(QDialog):
     def InitUI(self):
         self.setWindowTitle(self.titleWindow)
         self.setWindowIcon(QIcon(self.iconWindow))  # ícone da janela
-        self.setWindowModality(Qt.ApplicationModal)
+        self.setWindowModality(Qt.WindowModality.ApplicationModal)
         self.setStyle(QStyleFactory.create('Cleanlooks'))  # Estilo da Interface
         self.resize(850, 475)
 
-        self.setWindowFlags(self.windowFlags() | Qt.WindowMinMaxButtonsHint)
+        self.setWindowFlags(self.windowFlags() | Qt.WindowType.WindowMinMaxButtonsHint)
 
         self.Dialog_Layout = QGridLayout()  # Layout da Dialog
 
@@ -87,7 +87,7 @@ class C_Config_VoltVar_XYCurve_Dialog(QDialog):
 
         ###### Botões
         self.Dialog_Btns_Layout = QHBoxLayout()
-        self.Dialog_Btns_Layout.setAlignment(Qt.AlignRight)
+        self.Dialog_Btns_Layout.setAlignment(Qt.AlignmentFlag.AlignRight)
 
         self.Dialog_Btns_Cancel_Btn = QPushButton("Cancelar")
         self.Dialog_Btns_Cancel_Btn.setIcon(QIcon('img/icon_cancel.png'))
@@ -107,19 +107,19 @@ class C_Config_VoltVar_XYCurve_Dialog(QDialog):
 
     def removeXYCurve(self):
         msg = QMessageBox()
-        msg.setIcon(QMessageBox.Question)
+        msg.setIcon(QMessageBox.Icon.Question)
         msg.setText("Você deseja remover a(s) curva(s) selecionada(s)?")
         msg.setWindowTitle('Curva XY')
-        msg.setStandardButtons(QMessageBox.Yes | QMessageBox.No)
+        msg.setStandardButtons(QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No)
         retval = msg.exec_()
 
         contChecked = 0
-        if retval == QMessageBox.Yes:
+        if retval == QMessageBox.StandardButton.Yes:
 
             for ctd in range(self.XYCurve_GroupBox_TreeWidget.topLevelItemCount(), 0, -1):
                 Item = self.XYCurve_GroupBox_TreeWidget.topLevelItem(ctd - 1)
 
-                if Item.checkState(0) == Qt.Checked:
+                if Item.checkState(0) == Qt.CheckState.Checked:
                     self.XYCurve_GroupBox_TreeWidget.takeTopLevelItem(ctd - 1)
                     contChecked += 1
 
@@ -189,7 +189,7 @@ class C_Config_VoltVar_XYCurve_Dialog(QDialog):
 
             Item = self.XYCurve_GroupBox_TreeWidget.topLevelItem(ctd)
 
-            if Item.checkState(0) == Qt.Checked:
+            if Item.checkState(0) == Qt.CheckState.Checked:
                 if self.checkXYCurve(Item.name, Item.getPointsX(), Item.getPointsY()):
                     pen = pyqtgraph.mkPen(color = Item.getColorRGB())
 
@@ -209,7 +209,7 @@ class C_Config_VoltVar_XYCurve_Dialog(QDialog):
         checkCont = 0
 
         for ctd in range(0, self.XYCurve_GroupBox_TreeWidget.topLevelItemCount()):
-            if self.XYCurve_GroupBox_TreeWidget.topLevelItem(ctd).checkState(0) == Qt.Checked:
+            if self.XYCurve_GroupBox_TreeWidget.topLevelItem(ctd).checkState(0) == Qt.CheckState.Checked:
                 checkCont += 1
                 Item = self.XYCurve_GroupBox_TreeWidget.topLevelItem(ctd)
 
@@ -272,8 +272,8 @@ class Config_XYCurve_GroupBox_TreeWidget_Item(QTreeWidgetItem):
 
 
         self.setText(0, name)
-        self.setFlags(self.flags() | Qt.ItemIsUserCheckable | Qt.ItemIsEditable)
-        self.setCheckState(0, Qt.Unchecked)
+        self.setFlags(self.flags() | Qt.ItemFlag.ItemIsUserCheckable | Qt.ItemFlag.ItemIsEditable)
+        self.setCheckState(0, Qt.CheckState.Unchecked)
 
         self.color = color
 

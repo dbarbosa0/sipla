@@ -56,7 +56,7 @@ class C_ActPow_LoadShape_DispMode_Dialog(QDialog): ## Classe Dialog Despacho Loa
     def InitUI(self):
         self.setWindowTitle(self.titleWindow)  # titulo janela
         self.setWindowIcon(QIcon(self.iconWindow))  # ícone da janela
-        self.setWindowModality(Qt.ApplicationModal)
+        self.setWindowModality(Qt.WindowModality.ApplicationModal)
         self.setStyle(QStyleFactory.create('Cleanlooks'))  # Estilo da Interface
         self.setFixedWidth(380)
         self.setMaximumHeight(270)
@@ -141,7 +141,7 @@ class C_ActPow_LoadShape_DispMode_Dialog(QDialog): ## Classe Dialog Despacho Loa
 
         ###### Botões dos Parâmetros
         self.StorControl_Btns_Layout = QHBoxLayout()
-        self.StorControl_Btns_Layout.setAlignment(Qt.AlignRight)
+        self.StorControl_Btns_Layout.setAlignment(Qt.AlignmentFlag.AlignRight)
 
         self.StorControl_Btns_Cancel_Btn = QPushButton("Cancelar")
         self.StorControl_Btns_Cancel_Btn.setIcon(QIcon('img/icon_cancel.png'))
@@ -171,7 +171,7 @@ class C_ActPow_LoadShape_DispMode_Dialog(QDialog): ## Classe Dialog Despacho Loa
 
         ###### Botões
         self.Dialog_Btns_Layout = QHBoxLayout()
-        self.Dialog_Btns_Layout.setAlignment(Qt.AlignRight)
+        self.Dialog_Btns_Layout.setAlignment(Qt.AlignmentFlag.AlignRight)
 
         self.Dialog_Btns_Cancel_Btn = QPushButton("Cancelar")
         self.Dialog_Btns_Cancel_Btn.setIcon(QIcon('img/icon_cancel.png'))

@@ -27,7 +27,7 @@ class C_MainPanel(QWidget):
         interceptor = Interceptor()
         self.MapPainel_WebView.page().profile().setUrlRequestInterceptor(interceptor)
 
-        self.MapPainel_WebView.setContextMenuPolicy(Qt.NoContextMenu)
+        self.MapPainel_WebView.setContextMenuPolicy(Qt.ContextMenuPolicy.NoContextMenu)
 
         self.MapPainel_hLayout.addWidget(self.MapPainel_WebView)
         self.MapPainel_GroupBox.setLayout(self.MapPainel_hLayout)

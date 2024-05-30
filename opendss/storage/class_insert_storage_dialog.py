@@ -38,7 +38,7 @@ class C_Insert_Storage_Dialog(QDialog):  ## Classe Dialog principal
     def InitUI(self):
         self.setWindowTitle(self.titleWindow)  # titulo janela
         self.setWindowIcon(QIcon(self.iconWindow))  # ícone da janela
-        self.setWindowModality(Qt.ApplicationModal)
+        self.setWindowModality(Qt.WindowModality.ApplicationModal)
         self.setStyle(QStyleFactory.create('Cleanlooks'))  # Estilo da Interface
 
         self.Dialog_Layout = QHBoxLayout()  # Layout da Dialog
@@ -107,7 +107,7 @@ class C_Insert_Storage_Dialog(QDialog):  ## Classe Dialog principal
 
         ### Botões das Configurações
         self.Config_Btns_Layout = QHBoxLayout()
-        self.Config_Btns_Layout.setAlignment(Qt.AlignRight)
+        self.Config_Btns_Layout.setAlignment(Qt.AlignmentFlag.AlignRight)
         # Botao Restaurar Default
         self.Config_Btns_Default_Btn = QPushButton("Restaurar Default")  # Botão Default dentro do GroupBox
         self.Config_Btns_Default_Btn.setFixedHeight(30)
@@ -152,7 +152,7 @@ class C_Insert_Storage_Dialog(QDialog):  ## Classe Dialog principal
         for ctd in range(self.Storages_GroupBox_TreeWidget.topLevelItemCount() - 1, -1, -1):
             Item = self.Storages_GroupBox_TreeWidget.topLevelItem(ctd)
 
-            if Item.checkState(0) == Qt.Checked:
+            if Item.checkState(0) == Qt.CheckState.Checked:
                 self.Storages_GroupBox_TreeWidget.takeTopLevelItem(ctd)
                 for i in self.Storages:
                     if i["StorageName"] == Item.text(0):
@@ -178,7 +178,7 @@ class C_Insert_Storage_Dialog(QDialog):  ## Classe Dialog principal
         checkCont = 0
         try:
             for ctd in range(self.Storages_GroupBox_TreeWidget.topLevelItemCount() - 1, -1, -1):
-                if self.Storages_GroupBox_TreeWidget.topLevelItem(ctd).checkState(0) == Qt.Checked:
+                if self.Storages_GroupBox_TreeWidget.topLevelItem(ctd).checkState(0) == Qt.CheckState.Checked:
                     checkCont += 1
                     Item = self.Storages_GroupBox_TreeWidget.topLevelItem(ctd)
 
@@ -505,9 +505,9 @@ class C_Insert_Storage_Dialog(QDialog):  ## Classe Dialog principal
                 msg.information(self, "Insert Storage", "Selecione uma curva de eficiência do Inversor!")
 
             elif self.DispModeActPowDialog.None_Radio_Btn.isChecked():
-                QMessageBox(QMessageBox.Information, "Insert Storage",
+                QMessageBox(QMessageBox.Icon.Information, "Insert Storage",
                             "Configure algum Modo de Despacho!",
-                            QMessageBox.Ok).exec()
+                            QMessageBox.StandardButton.Ok).exec()
 
             else:
                 countName = 0
@@ -1209,8 +1209,8 @@ class Storage_TreeWidget_Item(QTreeWidgetItem):
 
         ## Column 0 - Text:
         self.setText(0, name)
-        self.setFlags(self.flags() | Qt.ItemIsUserCheckable | Qt.ItemIsEditable)
-        self.setCheckState(0, Qt.Unchecked)
+        self.setFlags(self.flags() | Qt.ItemFlag.ItemIsUserCheckable | Qt.ItemFlag.ItemIsEditable)
+        self.setCheckState(0, Qt.CheckState.Unchecked)
         ## Column 1 - Bus:
         self.setText(1, bus)
         ## Column 2 - Modo Despacho:

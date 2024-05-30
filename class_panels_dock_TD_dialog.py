@@ -25,7 +25,7 @@ class C_TDDialog(QDialog):
 
         self.setWindowTitle(self.titleWindow)
         self.setWindowIcon(QIcon(self.iconWindow))  # ícone da janela
-        self.setWindowModality(Qt.ApplicationModal)
+        self.setWindowModality(Qt.WindowModality.ApplicationModal)
         self.setStyle(QStyleFactory.create('Cleanlooks'))
         self.formLayout = QFormLayout()
         self.groupBox = QGroupBox()
@@ -92,8 +92,8 @@ class C_TDDialog(QDialog):
 
         self.completer = QCompleter(self.parametro)
         self.completer.setMaxVisibleItems(4)
-        self.completer.setCompletionMode(QCompleter.UnfilteredPopupCompletion)
-        self.completer.setCaseSensitivity(Qt.CaseSensitive)
+        self.completer.setCompletionMode(QCompleter.CompletionMode.UnfilteredPopupCompletion)
+        self.completer.setCaseSensitivity(Qt.CaseSensitivity.CaseSensitive)
         self.searchbar.setCompleter(self.completer)
         self.searchbar_Layout.addWidget(self.searchbar)
         spacer = QSpacerItem(1, 100)
@@ -111,7 +111,7 @@ class C_TDDialog(QDialog):
         self.Dilalog_Btns_marcar_todos_Btn.setFixedWidth(150)
         self.Dilalog_Btns_marcar_todos_Btn.clicked.connect(self.setDisabled_Trafos_GroupBox)
         self.Dilalog_marcar_todos_Layout.addWidget(self.Dilalog_Btns_marcar_todos_Btn)
-        self.Dilalog_marcar_todos_Layout.setAlignment(Qt.AlignLeft)
+        self.Dilalog_marcar_todos_Layout.setAlignment(Qt.AlignmentFlag.AlignLeft)
         self.controlsLayout.addLayout(self.Dilalog_marcar_todos_Layout, 0)
 
         self.Dilalog_Btns_Layout = QHBoxLayout()
@@ -126,7 +126,7 @@ class C_TDDialog(QDialog):
         self.Dilalog_Btns_Ok_Btn.clicked.connect(self.setID_TrafoDIST)
         self.Dilalog_Btns_Layout.addWidget(self.Dilalog_Btns_Ok_Btn)
 
-        self.Dilalog_Btns_Layout.setAlignment(Qt.AlignRight)
+        self.Dilalog_Btns_Layout.setAlignment(Qt.AlignmentFlag.AlignRight)
         self.controlsLayout.addLayout(self.Dilalog_Btns_Layout)
 
         #self.setLayout(self.controlsLayout)
@@ -153,7 +153,7 @@ class C_TDDialog(QDialog):
 
     def keyPressEvent(self, event):
         self.naiads = self.searchbar.text()
-        if event.key() == Qt.Key_Return:
+        if event.key() == Qt.Key.Key_Return:
             if self.naiads != '':
                 for i in range(len(self.listanmomes)):
                     if self.naiads == self.listanmomes[i]:
@@ -167,7 +167,7 @@ class C_TDDialog(QDialog):
                         self.searchbar.clear()
             else:
                 self.setID_TrafoDIST()
-        if event.key() == Qt.Key_Escape:
+        if event.key() == Qt.Key.Key_Escape:
             print('esc')
             self.close()
 

@@ -33,7 +33,7 @@ class C_Config_PVSystem_Dialog(QDialog):
     def InitUI(self):
         self.setWindowTitle(self.titleWindow)  # titulo janela
         self.setWindowIcon(QIcon(self.iconWindow))  # ícone da janela
-        self.setWindowModality(Qt.ApplicationModal)
+        self.setWindowModality(Qt.WindowModality.ApplicationModal)
         self.setStyle(QStyleFactory.create('Cleanlooks'))  # Estilo da Interface
         self.adjustSize()
         self.Dialog_Layout = QVBoxLayout()  # Layout da Dialog
@@ -92,7 +92,7 @@ class C_Config_PVSystem_Dialog(QDialog):
 
         ### Botões das Configurações
         self.Config_Btns_Layout = QHBoxLayout()
-        self.Config_Btns_Layout.setAlignment(Qt.AlignRight)
+        self.Config_Btns_Layout.setAlignment(Qt.AlignmentFlag.AlignRight)
         # Botao Restaurar Default
         self.Config_Btns_Default_Btn = QPushButton("Restaurar Default")  # Botão Default dentro do GroupBox
         self.Config_Btns_Default_Btn.setFixedHeight(30)
@@ -135,7 +135,7 @@ class C_Config_PVSystem_Dialog(QDialog):
         for ctd in range(self.PVsystem_GroupBox_TreeWidget.topLevelItemCount() - 1, -1, -1):
             Item = self.PVsystem_GroupBox_TreeWidget.topLevelItem(ctd)
 
-            if Item.checkState(0) == Qt.Checked:
+            if Item.checkState(0) == Qt.CheckState.Checked:
                 self.PVsystem_GroupBox_TreeWidget.takeTopLevelItem(ctd)
                 for i in self.PVSystem_List:
                     if i["name"] == Item.text(0):
@@ -145,7 +145,7 @@ class C_Config_PVSystem_Dialog(QDialog):
         self.update_dialog()
         checkCont = 0
         for ctd in range(self.PVsystem_GroupBox_TreeWidget.topLevelItemCount() - 1, - 1, - 1):
-            if self.PVsystem_GroupBox_TreeWidget.topLevelItem(ctd).checkState(0) == Qt.Checked:
+            if self.PVsystem_GroupBox_TreeWidget.topLevelItem(ctd).checkState(0) == Qt.CheckState.Checked:
                 checkCont += 1
                 Item = self.PVsystem_GroupBox_TreeWidget.topLevelItem(ctd)
 
@@ -715,8 +715,8 @@ class PVSystem_TreeWidget_Item(QTreeWidgetItem):
 
         ## Column 0 - Text:
         self.setText(0, name)
-        self.setFlags(self.flags() | Qt.ItemIsUserCheckable)
-        self.setCheckState(0, Qt.Unchecked)
+        self.setFlags(self.flags() | Qt.ItemFlag.ItemIsUserCheckable)
+        self.setCheckState(0, Qt.CheckState.Unchecked)
         ## Column 1 - Potência:
         self.setText(1, pot)
         ## Column 2 - Barra:

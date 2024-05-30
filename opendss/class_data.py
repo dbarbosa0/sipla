@@ -1090,7 +1090,17 @@ class C_Data():  # classe OpenDSS
                     else:
                         tipo_curva = 'MT-Tipo9'
 
-                curva_loadshape = loadshape[tipo_curva]
+                try:
+                    curva_loadshape = loadshape[tipo_curva]
+                except KeyError:
+                    if tipo_curva.startswith('CONS.PRO'): # Consumo próprio da distribuidora
+                        curva_loadshape = loadshape['COM-Tipo1']
+                    elif tipo_curva.startswith('COM >'):  # Consumo próprio da distribuidora
+                        curva_loadshape = loadshape['COM-Tipo1']
+                    else:
+                        raise KeyError('Curva de carga não existente')
+
+
                 # print('entrando', dados_db[ctd].ctmt, lista_de_identificadores_dos_alimentadores, dados_db[ctd].sit_ativ)
                 if dados_db[ctd].ctmt in lista_de_identificadores_dos_alimentadores and dados_db[ctd].sit_ativ == 'AT':
                     # print('entrou')
@@ -1208,7 +1218,11 @@ class C_Data():  # classe OpenDSS
                 memoFileUC.append("! Transformador de Distribuição: " + ctd)
                 memoFileUC.append("!    kVA: " + str(tmpUniTr[ctd][-2]))
                 memoFileUC.append("!    Carga Total [kW]: {:03.2f}".format(tmpUniTr[ctd][-1]))
-                memoFileUC.append("!    Carregamento [%]: {:03.2f}".format(tmpUniTr[ctd][-1] * 100 / tmpUniTr[ctd][-2]))
+                try:
+                    memoFileUC.append("!    Carregamento [%]: {:03.2f}".format(tmpUniTr[ctd][-1] *
+                                                                               100 / tmpUniTr[ctd][-2]))
+                except ZeroDivisionError:
+                    memoFileUC.append("!    Carregamento [%]: {--} (Não há dados sobre a potencia nominal")
 
             #########################
             return memoFileUC
@@ -1299,6 +1313,7 @@ class C_Data():  # classe OpenDSS
             for ctd in range(0, len(dados_db)):
                 # self.identificadorTrafo.append(dados_db[ctd].cod_id)
                 self.identificadorTrafo[dados_db[ctd].cod_id] = [dados_db[ctd].ten_lin_se, dados_db[ctd].fas_con_s]
+                print(f'Debugb:{dados_db[ctd].ctmt}=={lista_de_identificadores_dos_alimentadores}')
                 if dados_db[ctd].ctmt in lista_de_identificadores_dos_alimentadores:
                     [num_de_fases, pac_1, pac_2_1, pac_2_2, windings] = self.getFasesConexao_trafodist(
                         dados_db[ctd].fas_con_s, dados_db[ctd].pac_1,
@@ -1311,9 +1326,10 @@ class C_Data():  # classe OpenDSS
                     tensao_sec_2 = tensao_sec_1
                     pot_nominal = tpotatr.TPOTAPRT[dados_db[ctd].pot_nom_eqtrd]
                     pot_nominal_bifase = tpotatr.TPOTAPRT_bifase[dados_db[ctd].pot_nom_eqtrd]
-                    ligacao = tlig.TLIG[dados_db[ctd].lig]
-                    ligacao_bifase = tlig.TLIG_BIFASICO[dados_db[ctd].lig]
+
+
                     if num_de_fases == '1' and windings == 3:
+                        ligacao_bifase = tlig.TLIG_BIFASICO[dados_db[ctd].lig]
                         memoFileTD.append("! ALIMENTADOR: " + dados_db[ctd].ctmt)
                         # UNTRD
                         tmp = "New Transformer.{0}".format(dados_db[ctd].cod_id) + " windings={0}".format(windings)
@@ -1342,6 +1358,7 @@ class C_Data():  # classe OpenDSS
                         self.insertElementList("Transformer.{0}".format(dados_db[ctd].cod_id))
 
                     else:  # num_de_fases == '3':
+                        ligacao = tlig.TLIG[dados_db[ctd].lig]
                         memoFileTD.append("! ALIMENTADOR: " + dados_db[ctd].ctmt)
                         # UNTRD
                         tmp = "New Transformer.{0}".format(dados_db[ctd].cod_id) + " windings={0}".format(windings)
@@ -1714,7 +1731,7 @@ class C_Data():  # classe OpenDSS
             if ctd == 0:
                 self.lista_CTMT = self.media_tensao_do_circuito[ctd].cod_id + "'"
             else:
-                self.lista_CTMT = self.lista_CTMT + " OR pac_1 LIKE '%" + self.media_tensao_do_circuito[
+                self.lista_CTMT = self.lista_CTMT + " OR ctmt = '" + self.media_tensao_do_circuito[
                     ctd].cod_id + "'"
 
     def Ajuste_cargas_bifasicas(self, trafo_dist, ten_forn):

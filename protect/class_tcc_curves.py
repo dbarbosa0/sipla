@@ -66,11 +66,11 @@ class C_Config_Curves_Dialog(QDialog):
 
         self.setWindowTitle(self.titleWindow)
         self.setWindowIcon(QIcon(self.iconWindow))  # ícone da janela
-        self.setWindowModality(Qt.ApplicationModal)
+        self.setWindowModality(Qt.WindowModality.ApplicationModal)
         self.setStyle(QStyleFactory.create('Cleanlooks'))  # Estilo da Interface
         self.resize(800, 500)
 
-        self.setWindowFlags(self.windowFlags() | Qt.WindowMinMaxButtonsHint)
+        self.setWindowFlags(self.windowFlags() | Qt.WindowType.WindowMinMaxButtonsHint)
 
         self.Dialog_Layout = QGridLayout()  # Layout da Dialog
 
@@ -161,7 +161,7 @@ class C_Config_Curves_Dialog(QDialog):
 
         ###### Botões
         self.Dialog_Btns_Layout = QHBoxLayout()
-        self.Dialog_Btns_Layout.setAlignment(Qt.AlignRight)
+        self.Dialog_Btns_Layout.setAlignment(Qt.AlignmentFlag.AlignRight)
 
         self.Dialog_Btns_Cancel_Btn = QPushButton("Cancelar")
         self.Dialog_Btns_Cancel_Btn.setIcon(QIcon('img/icon_cancel.png'))
@@ -300,7 +300,7 @@ class C_Config_Curves_Dialog(QDialog):
 
             Item = self.Curves_GroupBox_TreeWidget.topLevelItem(ctd)
 
-            if Item.checkState(0) == Qt.Checked:
+            if Item.checkState(0) == Qt.CheckState.Checked:
 
                 pen = pyqtgraph.mkPen(color = Item.getColorRGB(), width=2)
                 pointsXList = Item.getPointsList(2)
@@ -317,7 +317,7 @@ class C_Config_Curves_Dialog(QDialog):
             current = float(self.Curves_GroupBox_LineEdit_Current.text())
             tempo = [0.01,100]
             corrente = [current,current]
-            pen = pyqtgraph.mkPen(color='r', width=1, style=pyqtgraph.QtCore.Qt.DashLine)
+            pen = pyqtgraph.mkPen(color='r', width=1, style=pyqtgraph.QtCore.Qt.PenStyle.DashLine)
             redrgb = (255, 0, 0, 255)
             self.graphWidget.plot(corrente, tempo, name="Icc", pen=pen, symbol='x', symbolSize=10,
                                   symbolBrush=redrgb)
@@ -363,18 +363,18 @@ class C_Config_Curves_Dialog(QDialog):
     def removeTCCCurves(self):
 
         msg = QMessageBox()
-        msg.setIcon(QMessageBox.Question)
+        msg.setIcon(QMessageBox.Icon.Question)
         msg.setText("Você deseja remover a(s) curva(s) selecionada(s)?")
         msg.setWindowTitle('Curvas TCC')
-        msg.setStandardButtons(QMessageBox.Yes | QMessageBox.No)
+        msg.setStandardButtons(QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No)
         retval = msg.exec_()
 
         contChecked = 0
-        if retval == QMessageBox.Yes:
+        if retval == QMessageBox.StandardButton.Yes:
             for ctd in range(self.Curves_GroupBox_TreeWidget.topLevelItemCount() - 1, -1 , -1):
                 Item = self.Curves_GroupBox_TreeWidget.topLevelItem(ctd)
 
-                if Item.checkState(0) == Qt.Checked:
+                if Item.checkState(0) == Qt.CheckState.Checked:
                     self.Curves_GroupBox_TreeWidget.takeTopLevelItem(ctd)
                     contChecked += 1
 
@@ -425,7 +425,7 @@ class Config_TCCCurves_GroupBox_TreeWidget_Item(QTreeWidgetItem):
 
 
         self.setText(0, name)
-        self.setFlags(self.flags() | Qt.ItemIsUserCheckable | Qt.ItemIsEditable)
+        self.setFlags(self.flags() | Qt.ItemFlag.ItemIsUserCheckable | Qt.ItemFlag.ItemIsEditable)
         self.setCheckState(0, check)
 
         self.color = color
