@@ -1,6 +1,6 @@
-from PyQt6.QtGui import QIcon
-from PyQt6.QtWidgets import QStyleFactory, QRadioButton, QDialog, QGridLayout, QGroupBox, \
-    QVBoxLayout, QCheckBox, QTabWidget, QDoubleSpinBox, QLabel, QComboBox, QDesktopWidget, QLineEdit, QPushButton, QHBoxLayout, QMessageBox, QTreeWidgetItem, QTreeWidget
+from PyQt6.QtGui import QIcon, QGuiApplication
+from PyQt6.QtWidgets import QStyleFactory, QRadioButton, QDialog, QGridLayout, QGroupBox, QAbstractSpinBox, \
+    QVBoxLayout, QCheckBox, QTabWidget, QDoubleSpinBox, QLabel, QComboBox, QWidget, QLineEdit, QPushButton, QHBoxLayout, QMessageBox, QTreeWidgetItem, QTreeWidget
 from PyQt6.QtCore import Qt
 
 import random
@@ -442,7 +442,7 @@ class C_Config_PVSystem_Dialog(QDialog):
 
     def centralize(self):
         qr = self.frameGeometry()
-        centerpoint = QDesktopWidget().availableGeometry().center()
+        centerpoint = QGuiApplication.primaryScreen().availableGeometry().center()
         qr.moveCenter(centerpoint)
         self.move(qr.topLeft())
 
@@ -518,49 +518,49 @@ class PVSystem(QDialog):
         self.PVSystem_PVdata_Voltage.setDecimals(2)
         self.PVSystem_PVdata_Voltage.setRange(0.01, 1000)
         self.PVSystem_PVdata_Voltage.setToolTip("Aceita valores entre 0,01 e 1000")
-        self.PVSystem_PVdata_Voltage.setButtonSymbols(2)
+        self.PVSystem_PVdata_Voltage.setButtonSymbols(QAbstractSpinBox.ButtonSymbols.NoButtons)
         self.PVSystem_PVdata_Voltage.setValue(4.6)
         self.PVSystem_PVdata_Irrad = QDoubleSpinBox()
         self.PVSystem_PVdata_Irrad.setDecimals(2)
         self.PVSystem_PVdata_Irrad.setRange(0, 1)
         self.PVSystem_PVdata_Irrad.setToolTip("Aceita valores entre 0 e 1")
-        self.PVSystem_PVdata_Irrad.setButtonSymbols(2)
+        self.PVSystem_PVdata_Irrad.setButtonSymbols(QAbstractSpinBox.ButtonSymbols.NoButtons)
         self.PVSystem_PVdata_Irrad.setValue(1)
         self.PVSystem_PVdata_Ppmp = QDoubleSpinBox()
         self.PVSystem_PVdata_Ppmp.setDecimals(2)
         self.PVSystem_PVdata_Ppmp.setRange(0.01, 1000)
         self.PVSystem_PVdata_Ppmp.setToolTip("Aceita valores entre 0,01 e 1000")
-        self.PVSystem_PVdata_Ppmp.setButtonSymbols(2)
+        self.PVSystem_PVdata_Ppmp.setButtonSymbols(QAbstractSpinBox.ButtonSymbols.NoButtons)
         self.PVSystem_PVdata_Ppmp.setValue(500)
         self.PVSystem_PVdata_KVA = QDoubleSpinBox()
         self.PVSystem_PVdata_KVA.setDecimals(2)
         self.PVSystem_PVdata_KVA.setRange(0.01, 1000)
         self.PVSystem_PVdata_KVA.setToolTip("Aceita valores entre 0,01 e 1000")
-        self.PVSystem_PVdata_KVA.setButtonSymbols(2)
+        self.PVSystem_PVdata_KVA.setButtonSymbols(QAbstractSpinBox.ButtonSymbols.NoButtons)
         self.PVSystem_PVdata_KVA.setValue(500)
         self.PVSystem_PVdata_Temp = QDoubleSpinBox()
         self.PVSystem_PVdata_Temp.setDecimals(2)
         self.PVSystem_PVdata_Temp.setRange(0, 100)
         self.PVSystem_PVdata_Temp.setToolTip("Aceita valores entre 0 e 100")
-        self.PVSystem_PVdata_Temp.setButtonSymbols(2)
+        self.PVSystem_PVdata_Temp.setButtonSymbols(QAbstractSpinBox.ButtonSymbols.NoButtons)
         self.PVSystem_PVdata_Temp.setValue(25)
         self.PVSystem_PVdata_PF = QDoubleSpinBox()
         self.PVSystem_PVdata_PF.setDecimals(2)
         self.PVSystem_PVdata_PF.setRange(-1, 1)
         self.PVSystem_PVdata_PF.setToolTip("Aceita valores entre -1 e 1")
-        self.PVSystem_PVdata_PF.setButtonSymbols(2)
+        self.PVSystem_PVdata_PF.setButtonSymbols(QAbstractSpinBox.ButtonSymbols.NoButtons)
         self.PVSystem_PVdata_PF.setValue(1)
         self.PVSystem_PVdata_Cutin = QDoubleSpinBox()
         self.PVSystem_PVdata_Cutin.setDecimals(2)
         self.PVSystem_PVdata_Cutin.setRange(0, 100)
         self.PVSystem_PVdata_Cutin.setToolTip("Aceita valores entre 0 e 100")
-        self.PVSystem_PVdata_Cutin.setButtonSymbols(2)
+        self.PVSystem_PVdata_Cutin.setButtonSymbols(QAbstractSpinBox.ButtonSymbols.NoButtons)
         self.PVSystem_PVdata_Cutin.setValue(0.1)
         self.PVSystem_PVdata_Cutout = QDoubleSpinBox()
         self.PVSystem_PVdata_Cutout.setDecimals(2)
         self.PVSystem_PVdata_Cutout.setRange(0, 100)
         self.PVSystem_PVdata_Cutout.setToolTip("Aceita valores entre 0 e 100")
-        self.PVSystem_PVdata_Cutout.setButtonSymbols(2)
+        self.PVSystem_PVdata_Cutout.setButtonSymbols(QAbstractSpinBox.ButtonSymbols.NoButtons)
         self.PVSystem_PVdata_Cutout.setValue(0.1)
 
         # Comboboxs

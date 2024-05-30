@@ -111,7 +111,7 @@ class C_Config_VoltVar_XYCurve_Dialog(QDialog):
         msg.setText("Você deseja remover a(s) curva(s) selecionada(s)?")
         msg.setWindowTitle('Curva XY')
         msg.setStandardButtons(QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No)
-        retval = msg.exec_()
+        retval = msg.exec()
 
         contChecked = 0
         if retval == QMessageBox.StandardButton.Yes:

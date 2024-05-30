@@ -1,6 +1,6 @@
 from PyQt6.QtGui import QColor, QIcon, QDoubleValidator
 from PyQt6.QtWidgets import QStyleFactory, QDialog, QGridLayout, \
-    QPushButton, QMessageBox, QLabel, QHBoxLayout, QDoubleSpinBox
+    QPushButton, QMessageBox, QLabel, QHBoxLayout, QDoubleSpinBox, QAbstractSpinBox
 from PyQt6.QtCore import Qt
 
 import config as cfg
@@ -48,35 +48,35 @@ class C_ActPow_Discharge_Schedule_DispMode_Dialog(QDialog): ## Classe Dialog Des
         self.timeDischargeTrigger = QLabel("Discharge Trigger:")
         self.Dialog_Layout.addWidget(self.timeDischargeTrigger, 2, 1, 1, 1)
         self.timeDischargeTrigger_DoubleSpinBox = QDoubleSpinBox()
-        self.timeDischargeTrigger_DoubleSpinBox.setButtonSymbols(2)
+        self.timeDischargeTrigger_DoubleSpinBox.setButtonSymbols(QAbstractSpinBox.ButtonSymbols.NoButtons)
         self.timeDischargeTrigger_DoubleSpinBox.setDecimals(3)
         self.timeDischargeTrigger_DoubleSpinBox.setRange(0.001, 999999999)
         self.Dialog_Layout.addWidget(self.timeDischargeTrigger_DoubleSpinBox, 2, 2, 1, 1)
         self.Tup_Label = QLabel("Duração da subida da rampa:")
         self.Dialog_Layout.addWidget(self.Tup_Label, 3, 1, 1, 1)
         self.Tup_DoubleSpinBox = QDoubleSpinBox()
-        self.Tup_DoubleSpinBox.setButtonSymbols(2)
+        self.Tup_DoubleSpinBox.setButtonSymbols(QAbstractSpinBox.ButtonSymbols.NoButtons)
         self.Tup_DoubleSpinBox.setDecimals(3)
         self.Tup_DoubleSpinBox.setRange(0.001, 999999999)
         self.Dialog_Layout.addWidget(self.Tup_DoubleSpinBox, 3, 2, 1, 1)
         self.Tflat_Label = QLabel("Duração do platô:")
         self.Dialog_Layout.addWidget(self.Tflat_Label, 4, 1, 1, 1)
         self.Tflat_DoubleSpinBox = QDoubleSpinBox()
-        self.Tflat_DoubleSpinBox.setButtonSymbols(2)
+        self.Tflat_DoubleSpinBox.setButtonSymbols(QAbstractSpinBox.ButtonSymbols.NoButtons)
         self.Tflat_DoubleSpinBox.setDecimals(3)
         self.Tflat_DoubleSpinBox.setRange(0.001, 999999999)
         self.Dialog_Layout.addWidget(self.Tflat_DoubleSpinBox, 4, 2, 1, 1)
         self.Tdn_Label = QLabel("Duração da descida da rampa:")
         self.Dialog_Layout.addWidget(self.Tdn_Label, 5, 1, 1, 1)
         self.Tdn_DoubleSpinBox = QDoubleSpinBox()
-        self.Tdn_DoubleSpinBox.setButtonSymbols(2)
+        self.Tdn_DoubleSpinBox.setButtonSymbols(QAbstractSpinBox.ButtonSymbols.NoButtons)
         self.Tdn_DoubleSpinBox.setDecimals(3)
         self.Tdn_DoubleSpinBox.setRange(0.001, 999999999)
         self.Dialog_Layout.addWidget(self.Tdn_DoubleSpinBox, 5, 2, 1, 1)
         self.RateDischarge_Label = QLabel("Taxa de descarregamento (%):")
         self.Dialog_Layout.addWidget(self.RateDischarge_Label, 6, 1, 1, 1)
         self.RateDischarge_DoubleSpinBox = QDoubleSpinBox()
-        self.RateDischarge_DoubleSpinBox.setButtonSymbols(2)
+        self.RateDischarge_DoubleSpinBox.setButtonSymbols(QAbstractSpinBox.ButtonSymbols.NoButtons)
         self.RateDischarge_DoubleSpinBox.setDecimals(3)
         self.RateDischarge_DoubleSpinBox.setRange(0.001, 999999999)
         self.Dialog_Layout.addWidget(self.RateDischarge_DoubleSpinBox, 6, 2, 1, 1)

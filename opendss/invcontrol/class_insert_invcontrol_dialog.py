@@ -1,7 +1,7 @@
-from PyQt6.QtGui import QIcon
+from PyQt6.QtGui import QIcon, QGuiApplication
 from PyQt6.QtWidgets import QStyleFactory, QDialog, QGridLayout, QGroupBox, QVBoxLayout, QTreeWidgetItem, \
     QPushButton, QTreeWidget, QMessageBox, QLabel, QLineEdit, \
-    QComboBox, QTabWidget, QWidget, QHBoxLayout, QDoubleSpinBox, QSpinBox, QDesktopWidget
+    QComboBox, QTabWidget, QWidget, QHBoxLayout, QDoubleSpinBox, QSpinBox, QWidget, QAbstractSpinBox
 from PyQt6.QtCore import Qt
 
 import random
@@ -537,7 +537,7 @@ class C_Insert_InvControl_Dialog(QDialog):
 
     def centralize(self):
         qr = self.frameGeometry()
-        centerpoint = QDesktopWidget().availableGeometry().center()
+        centerpoint = QGuiApplication.primaryScreen().availableGeometry().center()
         qr.moveCenter(centerpoint)
         self.move(qr.topLeft())
 
@@ -600,7 +600,7 @@ class InvConfig(QWidget):
         self.VoltVar_GroupBox_DeltaQFactor_DoubleSpinBox.setDecimals(2)
         self.VoltVar_GroupBox_DeltaQFactor_DoubleSpinBox.setRange(-1, 1)
         self.VoltVar_GroupBox_DeltaQFactor_DoubleSpinBox.setToolTip("Aceita valores entre -1,00 e 1,00")
-        self.VoltVar_GroupBox_DeltaQFactor_DoubleSpinBox.setButtonSymbols(2)
+        self.VoltVar_GroupBox_DeltaQFactor_DoubleSpinBox.setButtonSymbols(QAbstractSpinBox.ButtonSymbols.NoButtons)
         self.VoltVar_GroupBox_Layout.addWidget(self.VoltVar_GroupBox_DeltaQFactor_Label, 3, 0, 1, 1)
         self.VoltVar_GroupBox_Layout.addWidget(self.VoltVar_GroupBox_DeltaQFactor_DoubleSpinBox, 3, 1, 1, 2)
         # Configurar VarChangeTolerance (p.u.)
@@ -609,7 +609,7 @@ class InvConfig(QWidget):
         self.VoltVar_GroupBox_VarChangeTolerance_DoubleSpinBox.setDecimals(3)
         self.VoltVar_GroupBox_VarChangeTolerance_DoubleSpinBox.setRange(-100, 100)
         self.VoltVar_GroupBox_VarChangeTolerance_DoubleSpinBox.setToolTip("Aceita valores entre -100,000 e 100,000")
-        self.VoltVar_GroupBox_VarChangeTolerance_DoubleSpinBox.setButtonSymbols(2)
+        self.VoltVar_GroupBox_VarChangeTolerance_DoubleSpinBox.setButtonSymbols(QAbstractSpinBox.ButtonSymbols.NoButtons)
         self.VoltVar_GroupBox_Layout.addWidget(self.VoltVar_GroupBox_VarChangeTolerance_Label, 4, 0, 1, 1)
         self.VoltVar_GroupBox_Layout.addWidget(self.VoltVar_GroupBox_VarChangeTolerance_DoubleSpinBox, 4, 1, 1, 2)
         # Configurar VoltageChangeTolerance (p.u.)
@@ -618,7 +618,7 @@ class InvConfig(QWidget):
         self.VoltVar_GroupBox_VoltageChangeTolerance_DoubleSpinBox.setDecimals(4)
         self.VoltVar_GroupBox_VoltageChangeTolerance_DoubleSpinBox.setRange(-100, 100)
         self.VoltVar_GroupBox_VoltageChangeTolerance_DoubleSpinBox.setToolTip("Aceita valores entre -100,0000 e 100,0000")
-        self.VoltVar_GroupBox_VoltageChangeTolerance_DoubleSpinBox.setButtonSymbols(2)
+        self.VoltVar_GroupBox_VoltageChangeTolerance_DoubleSpinBox.setButtonSymbols(QAbstractSpinBox.ButtonSymbols.NoButtons)
         self.VoltVar_GroupBox_Layout.addWidget(self.VoltVar_GroupBox_VoltageChangeTolerance_Label, 5, 0, 1, 1)
         self.VoltVar_GroupBox_Layout.addWidget(self.VoltVar_GroupBox_VoltageChangeTolerance_DoubleSpinBox, 5, 1, 1, 2)
         # Configurar hysteresis_offset
@@ -627,7 +627,7 @@ class InvConfig(QWidget):
         self.VoltVar_GroupBox_HysteresisOffSet_DoubleSpinBox.setDecimals(2)
         self.VoltVar_GroupBox_HysteresisOffSet_DoubleSpinBox.setRange(-100, 100)
         self.VoltVar_GroupBox_HysteresisOffSet_DoubleSpinBox.setToolTip("Aceita valores entre -100,00 e 100,00")
-        self.VoltVar_GroupBox_HysteresisOffSet_DoubleSpinBox.setButtonSymbols(2)
+        self.VoltVar_GroupBox_HysteresisOffSet_DoubleSpinBox.setButtonSymbols(QAbstractSpinBox.ButtonSymbols.NoButtons)
         self.VoltVar_GroupBox_Layout.addWidget(self.VoltVar_GroupBox_HysteresisOffSet_Label, 6, 0, 1, 1)
         self.VoltVar_GroupBox_Layout.addWidget(self.VoltVar_GroupBox_HysteresisOffSet_DoubleSpinBox, 6, 1, 1, 2)
         # Configurar voltage_curvex_ref
@@ -643,7 +643,7 @@ class InvConfig(QWidget):
         self.VoltVar_GroupBox_AvgWindowLen_SpinBox = QSpinBox()
         self.VoltVar_GroupBox_AvgWindowLen_SpinBox.setRange(0, 100)
         self.VoltVar_GroupBox_AvgWindowLen_SpinBox.setToolTip("Aceita valores entre 0 e 100")
-        self.VoltVar_GroupBox_AvgWindowLen_SpinBox.setButtonSymbols(2)
+        self.VoltVar_GroupBox_AvgWindowLen_SpinBox.setButtonSymbols(QAbstractSpinBox.ButtonSymbols.NoButtons)
         self.VoltVar_GroupBox_AvgWindowLen_SpinBox.setEnabled(False)
         self.VoltVar_GroupBox_AvgWindowLen_ComboBox = QComboBox()
         self.VoltVar_GroupBox_AvgWindowLen_ComboBox.addItems(["s", "m", "h"])
@@ -665,7 +665,7 @@ class InvConfig(QWidget):
         self.VoltVar_GroupBox_LPFtau_DoubleSpinBox.setDecimals(3)
         self.VoltVar_GroupBox_LPFtau_DoubleSpinBox.setRange(-100, 100)
         self.VoltVar_GroupBox_LPFtau_DoubleSpinBox.setToolTip("Aceita valores entre -100,000 e 100,000")
-        self.VoltVar_GroupBox_LPFtau_DoubleSpinBox.setButtonSymbols(2)
+        self.VoltVar_GroupBox_LPFtau_DoubleSpinBox.setButtonSymbols(QAbstractSpinBox.ButtonSymbols.NoButtons)
         self.VoltVar_GroupBox_LPFtau_DoubleSpinBox.setEnabled(False)
         self.VoltVar_GroupBox_Layout.addWidget(self.VoltVar_GroupBox_LPFtau_Label, 10, 0, 1, 1)
         self.VoltVar_GroupBox_Layout.addWidget(self.VoltVar_GroupBox_LPFtau_DoubleSpinBox, 10, 1, 1, 2)
@@ -675,7 +675,7 @@ class InvConfig(QWidget):
         self.VoltVar_GroupBox_RiseFallLimit_DoubleSpinBox.setDecimals(3)
         self.VoltVar_GroupBox_RiseFallLimit_DoubleSpinBox.setRange(-1, 100)
         self.VoltVar_GroupBox_RiseFallLimit_DoubleSpinBox.setToolTip("Aceita valores entre -1,000 e 100,000")
-        self.VoltVar_GroupBox_RiseFallLimit_DoubleSpinBox.setButtonSymbols(2)
+        self.VoltVar_GroupBox_RiseFallLimit_DoubleSpinBox.setButtonSymbols(QAbstractSpinBox.ButtonSymbols.NoButtons)
         self.VoltVar_GroupBox_RiseFallLimit_DoubleSpinBox.setEnabled(False)
         self.VoltVar_GroupBox_Layout.addWidget(self.VoltVar_GroupBox_RiseFallLimit_Label, 11, 0, 1, 1)
         self.VoltVar_GroupBox_Layout.addWidget(self.VoltVar_GroupBox_RiseFallLimit_DoubleSpinBox, 11, 1, 1, 2)
@@ -714,7 +714,7 @@ class InvConfig(QWidget):
         self.VoltWatt_GroupBox_DeltaPFactor_DoubleSpinBox.setDecimals(2)
         self.VoltWatt_GroupBox_DeltaPFactor_DoubleSpinBox.setRange(-1, 1)
         self.VoltWatt_GroupBox_DeltaPFactor_DoubleSpinBox.setToolTip("Aceita valores entre -1,00 e 1,00")
-        self.VoltWatt_GroupBox_DeltaPFactor_DoubleSpinBox.setButtonSymbols(2)
+        self.VoltWatt_GroupBox_DeltaPFactor_DoubleSpinBox.setButtonSymbols(QAbstractSpinBox.ButtonSymbols.NoButtons)
         self.VoltWatt_GroupBox_Layout.addWidget(self.VoltWatt_GroupBox_DeltaPFactor_Label, 3, 0, 1, 1)
         self.VoltWatt_GroupBox_Layout.addWidget(self.VoltWatt_GroupBox_DeltaPFactor_DoubleSpinBox, 3, 1, 1, 2)
         # Configurar ActivePChangeTolerance
@@ -723,7 +723,7 @@ class InvConfig(QWidget):
         self.VoltWatt_GroupBox_ActivePChangeTolerance_DoubleSpinBox.setDecimals(2)
         self.VoltWatt_GroupBox_ActivePChangeTolerance_DoubleSpinBox.setRange(-100, 100)
         self.VoltWatt_GroupBox_ActivePChangeTolerance_DoubleSpinBox.setToolTip("Aceita valores entre -100,00 e 100,00")
-        self.VoltWatt_GroupBox_ActivePChangeTolerance_DoubleSpinBox.setButtonSymbols(2)
+        self.VoltWatt_GroupBox_ActivePChangeTolerance_DoubleSpinBox.setButtonSymbols(QAbstractSpinBox.ButtonSymbols.NoButtons)
         self.VoltWatt_GroupBox_Layout.addWidget(self.VoltWatt_GroupBox_ActivePChangeTolerance_Label, 4, 0, 1, 1)
         self.VoltWatt_GroupBox_Layout.addWidget(self.VoltWatt_GroupBox_ActivePChangeTolerance_DoubleSpinBox, 4, 1, 1, 2)
         # Configurar voltage_curvex_ref
@@ -739,7 +739,7 @@ class InvConfig(QWidget):
         self.VoltWatt_GroupBox_AvgWindowLen_SpinBox = QSpinBox()
         self.VoltWatt_GroupBox_AvgWindowLen_SpinBox.setRange(0, 100)
         self.VoltWatt_GroupBox_AvgWindowLen_SpinBox.setToolTip("Aceita valores entre 0 e 100")
-        self.VoltWatt_GroupBox_AvgWindowLen_SpinBox.setButtonSymbols(2)
+        self.VoltWatt_GroupBox_AvgWindowLen_SpinBox.setButtonSymbols(QAbstractSpinBox.ButtonSymbols.NoButtons)
         self.VoltWatt_GroupBox_AvgWindowLen_SpinBox.setEnabled(False)
         self.VoltWatt_GroupBox_AvgWindowLen_ComboBox = QComboBox()
         self.VoltWatt_GroupBox_AvgWindowLen_ComboBox.addItems(["s", "m", "h"])
@@ -761,7 +761,7 @@ class InvConfig(QWidget):
         self.VoltWatt_GroupBox_LPFtau_DoubleSpinBox.setDecimals(3)
         self.VoltWatt_GroupBox_LPFtau_DoubleSpinBox.setRange(-100, 100)
         self.VoltWatt_GroupBox_LPFtau_DoubleSpinBox.setToolTip("Aceita valores entre -100,000 e 100,000")
-        self.VoltWatt_GroupBox_LPFtau_DoubleSpinBox.setButtonSymbols(2)
+        self.VoltWatt_GroupBox_LPFtau_DoubleSpinBox.setButtonSymbols(QAbstractSpinBox.ButtonSymbols.NoButtons)
         self.VoltWatt_GroupBox_LPFtau_DoubleSpinBox.setEnabled(False)
         self.VoltWatt_GroupBox_Layout.addWidget(self.VoltWatt_GroupBox_LPFtau_Label,8, 0, 1, 1)
         self.VoltWatt_GroupBox_Layout.addWidget(self.VoltWatt_GroupBox_LPFtau_DoubleSpinBox, 8, 1, 1, 2)
@@ -771,7 +771,7 @@ class InvConfig(QWidget):
         self.VoltWatt_GroupBox_RiseFallLimit_DoubleSpinBox.setDecimals(3)
         self.VoltWatt_GroupBox_RiseFallLimit_DoubleSpinBox.setRange(-1, 100)
         self.VoltWatt_GroupBox_RiseFallLimit_DoubleSpinBox.setToolTip("Aceita valores entre -1,000 e 100,000")
-        self.VoltWatt_GroupBox_RiseFallLimit_DoubleSpinBox.setButtonSymbols(2)
+        self.VoltWatt_GroupBox_RiseFallLimit_DoubleSpinBox.setButtonSymbols(QAbstractSpinBox.ButtonSymbols.NoButtons)
         self.VoltWatt_GroupBox_RiseFallLimit_DoubleSpinBox.setEnabled(False)
         self.VoltWatt_GroupBox_Layout.addWidget(self.VoltWatt_GroupBox_RiseFallLimit_Label, 9, 0, 1, 1)
         self.VoltWatt_GroupBox_Layout.addWidget(self.VoltWatt_GroupBox_RiseFallLimit_DoubleSpinBox, 9, 1, 1, 2)

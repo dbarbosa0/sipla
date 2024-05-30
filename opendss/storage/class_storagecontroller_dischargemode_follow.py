@@ -1,6 +1,6 @@
 from PyQt6.QtGui import QIcon, QDoubleValidator
 from PyQt6.QtWidgets import QStyleFactory, QDialog, QGridLayout, \
-    QPushButton, QMessageBox, QCheckBox, QLabel, QLineEdit, QComboBox, QHBoxLayout, QDoubleSpinBox
+    QPushButton, QMessageBox, QCheckBox, QLabel, QLineEdit, QComboBox, QHBoxLayout, QDoubleSpinBox, QAbstractSpinBox
 from PyQt6.QtCore import Qt
 
 import config as cfg
@@ -52,14 +52,14 @@ Ao atingir o horário do Discharge Trigger, a frota de Storages é despachada a 
 elemento monitorado abaixo da Potência medida no momento do Trigger ou dentro da faixa aceitável.")
         self.Dialog_Layout.addWidget(self.timeDischargeTrigger_Label, 2, 1, 1, 1)
         self.timeDischargeTrigger_DoubleSpinBox = QDoubleSpinBox()
-        self.timeDischargeTrigger_DoubleSpinBox.setButtonSymbols(2)
+        self.timeDischargeTrigger_DoubleSpinBox.setButtonSymbols(QAbstractSpinBox.ButtonSymbols.NoButtons)
         self.timeDischargeTrigger_DoubleSpinBox.setDecimals(3)
         self.timeDischargeTrigger_DoubleSpinBox.setRange(0.001, 999999999)
         self.Dialog_Layout.addWidget(self.timeDischargeTrigger_DoubleSpinBox, 2, 2, 1, 2)
         self.Band_Label = QLabel("Largura da faixa:")
         self.Dialog_Layout.addWidget(self.Band_Label, 3, 1, 1, 1)
         self.Band_DoubleSpinBox = QDoubleSpinBox()
-        self.Band_DoubleSpinBox.setButtonSymbols(2)
+        self.Band_DoubleSpinBox.setButtonSymbols(QAbstractSpinBox.ButtonSymbols.NoButtons)
         self.Band_DoubleSpinBox.setDecimals(3)
         self.Band_DoubleSpinBox.setRange(0.001, 999999999)
         self.Dialog_Layout.addWidget(self.Band_DoubleSpinBox, 3, 2, 1, 1)
@@ -70,7 +70,7 @@ elemento monitorado abaixo da Potência medida no momento do Trigger ou dentro d
         self.kWThreshold_CheckBox.clicked.connect(self.EnableDisablekWThreshold)
         self.Dialog_Layout.addWidget(self.kWThreshold_CheckBox, 4, 1, 1, 1)
         self.kWThreshold_DoubleSpinBox = QDoubleSpinBox()
-        self.kWThreshold_DoubleSpinBox.setButtonSymbols(2)
+        self.kWThreshold_DoubleSpinBox.setButtonSymbols(QAbstractSpinBox.ButtonSymbols.NoButtons)
         self.kWThreshold_DoubleSpinBox.setDecimals(3)
         self.kWThreshold_DoubleSpinBox.setRange(0.001, 999999999)
         self.kWThreshold_DoubleSpinBox.setEnabled(False)

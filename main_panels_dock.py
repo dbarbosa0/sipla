@@ -605,7 +605,7 @@ class TableVoltageResults(QTableWidget):
 
         self.setHorizontalHeaderLabels(columnsTable)
 
-        self.setEditTriggers(QTableWidget.NoEditTriggers)
+        self.setEditTriggers(QTableWidget.EditTrigger.NoEditTriggers)
 
 
 

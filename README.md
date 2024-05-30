@@ -7,20 +7,16 @@ Para executar o software, os seguintes pacotes são necessários:
 
 ```
 pip install PyQt6
-pip install PyQtWebEngine
+pip install PyQt6-WebEngine
 pip install numpy
 pip install scipy
 pip install matplotlib
 pip install Unidecode
 pip install mysqlclient
 pip install fiona
-```
-
-
-```
-pip install git+https://github.com/pyqtgraph/pyqtgraph@develop
+pip install pyqtgraph
 pip install folium
-pip install 'OpenDSSDirect.py[extras]'
+pip install opendssdirect.py
 ```
 
 ### [Microsoft Windows](https://www.microsoft.com/windows/)

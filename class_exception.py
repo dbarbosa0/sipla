@@ -15,7 +15,7 @@ class ConnDataBaseError(C_Error):
                           msgText,
                           QMessageBox.StandardButton.Ok)
         msg.setWindowIcon(QtGui.QIcon("Imagens/logo.png"))
-        msg.exec_()
+        msg.exec()
 
 class ExecDataBaseError(C_Error):
     def __init__(self, msgText):
@@ -25,7 +25,7 @@ class ExecDataBaseError(C_Error):
                           msgText,
                           QMessageBox.StandardButton.Ok)
         msg.setWindowIcon(QtGui.QIcon("Imagens/logo.png"))
-        msg.exec_()
+        msg.exec()
 
 class FileDataBaseError(C_Error):
     def __init__(self, msgText, errorText = None):
@@ -37,7 +37,7 @@ class FileDataBaseError(C_Error):
                           msgText + "\n" + errorText,
                           QMessageBox.StandardButton.Ok)
         msg.setWindowIcon(QtGui.QIcon("Imagens/logo.png"))
-        msg.exec_()
+        msg.exec()
 
 class ExecOpenDSS(C_Error):
     def __init__(self, msgText, errorText = None):
@@ -50,7 +50,7 @@ class ExecOpenDSS(C_Error):
                           msgText + "\n" + errorText,
                           QMessageBox.StandardButton.Ok)
         msg.setWindowIcon(QtGui.QIcon("Imagens/logo.png"))
-        msg.exec_()
+        msg.exec()
 
 class ExecSelectionFields(C_Error):
     def __init__(self, msgText, errorText = None):
@@ -63,7 +63,7 @@ class ExecSelectionFields(C_Error):
                           msgText + "\n" + errorText,
                           QMessageBox.StandardButton.Ok)
         msg.setWindowIcon(QtGui.QIcon("Imagens/logo.png"))
-        msg.exec_()
+        msg.exec()
 
 class ExecConfigOpenDSS(C_Error):
     def __init__(self, msgText, errorText = None):
@@ -76,7 +76,7 @@ class ExecConfigOpenDSS(C_Error):
                           msgText + "\n" + errorText,
                           QMessageBox.StandardButton.Ok)
         msg.setWindowIcon(QtGui.QIcon("Imagens/logo.png"))
-        msg.exec_()
+        msg.exec()
 
 
 class ExecEnergyMeter(C_Error):
@@ -87,4 +87,4 @@ class ExecEnergyMeter(C_Error):
                           msgText,
                           QMessageBox.StandardButton.Ok)
         msg.setWindowIcon(QtGui.QIcon("Imagens/logo.png"))
-        msg.exec_()
+        msg.exec()

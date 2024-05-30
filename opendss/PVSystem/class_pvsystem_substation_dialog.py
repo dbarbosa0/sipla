@@ -1,6 +1,6 @@
 from PyQt6.QtGui import QIcon
 from PyQt6.QtWidgets import QStyleFactory, QDialog, QGridLayout, QGroupBox, QLineEdit, QLabel, QDoubleSpinBox, QComboBox, QHBoxLayout, \
-    QPushButton, QMessageBox
+    QPushButton, QMessageBox, QAbstractSpinBox
 
 from PyQt6.QtCore import Qt
 
@@ -75,32 +75,32 @@ class Subestacao(QDialog):
         self.Subestacao_XHL.setDecimals(2)
         self.Subestacao_XHL.setRange(0.01, 1000)
         self.Subestacao_XHL.setToolTip("Aceita valores entre 0,00 e 1000")
-        self.Subestacao_XHL.setButtonSymbols(2)
+        self.Subestacao_XHL.setButtonSymbols(QAbstractSpinBox.ButtonSymbols.NoButtons)
         self.Subestacao_XHL.setValue(4.6)
         self.Subestacao_Bus1_LineEdit = QLineEdit()
         self.Subestacao_VPrimary = QDoubleSpinBox()
         self.Subestacao_VPrimary.setDecimals(2)
         self.Subestacao_VPrimary.setRange(0.01, 1000)
         self.Subestacao_VPrimary.setToolTip("Aceita valores entre 0,01 e 1000")
-        self.Subestacao_VPrimary.setButtonSymbols(2)
+        self.Subestacao_VPrimary.setButtonSymbols(QAbstractSpinBox.ButtonSymbols.NoButtons)
         self.Subestacao_VPrimary.setValue(4.6)
         self.Subestacao_KVAPrimary = QDoubleSpinBox()
         self.Subestacao_KVAPrimary.setDecimals(2)
         self.Subestacao_KVAPrimary.setRange(0.01, 1000)
         self.Subestacao_KVAPrimary.setToolTip("Aceita valores entre 0,01 e 1000")
-        self.Subestacao_KVAPrimary.setButtonSymbols(2)
+        self.Subestacao_KVAPrimary.setButtonSymbols(QAbstractSpinBox.ButtonSymbols.NoButtons)
         self.Subestacao_KVAPrimary.setValue(4.6)
         self.Subestacao_VSecond = QDoubleSpinBox()
         self.Subestacao_VSecond.setDecimals(2)
         self.Subestacao_VSecond.setRange(0.01, 1000)
         self.Subestacao_VSecond.setToolTip("Aceita valores entre 0,01 e 1000")
-        self.Subestacao_VSecond.setButtonSymbols(2)
+        self.Subestacao_VSecond.setButtonSymbols(QAbstractSpinBox.ButtonSymbols.NoButtons)
         self.Subestacao_VSecond.setValue(4.6)
         self.Subestacao_KVASecond = QDoubleSpinBox()
         self.Subestacao_KVASecond.setDecimals(2)
         self.Subestacao_KVASecond.setRange(0.01, 1000)
         self.Subestacao_KVASecond.setToolTip("Aceita valores entre 0,01 e 1000")
-        self.Subestacao_KVASecond.setButtonSymbols(2)
+        self.Subestacao_KVASecond.setButtonSymbols(QAbstractSpinBox.ButtonSymbols.NoButtons)
         self.Subestacao_KVASecond.setValue(4.6)
 
         # Comboboxs

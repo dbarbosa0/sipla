@@ -1,6 +1,6 @@
-from PyQt6.QtGui import QIcon
+from PyQt6.QtGui import QIcon, QGuiApplication
 from PyQt6.QtWidgets import QStyleFactory, QDialog, QGridLayout, QGroupBox, QVBoxLayout, \
-    QPushButton, QLabel, QRadioButton, QButtonGroup, QDesktopWidget
+    QPushButton, QLabel, QRadioButton, QButtonGroup, QWidget
 from PyQt6.QtCore import Qt
 
 import opendss.class_opendss
@@ -321,6 +321,6 @@ class C_Active_Pow_DispMode_Dialog(QDialog): ## Classe Dialog Despacho da Potenc
 
     def centralize(self):
         qr = self.frameGeometry()
-        centerpoint = QDesktopWidget().availableGeometry().center()
+        centerpoint = QGuiApplication.primaryScreen().availableGeometry().center()
         qr.moveCenter(centerpoint)
         self.move(qr.topLeft())

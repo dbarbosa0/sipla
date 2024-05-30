@@ -1,6 +1,6 @@
-from PyQt6.QtGui import QColor, QIcon
+from PyQt6.QtGui import QColor, QIcon, QGuiApplication
 from PyQt6.QtWidgets import QStyleFactory, QDialog, QGridLayout, QGroupBox, QHBoxLayout, QTreeWidgetItem, \
-    QPushButton, QTreeWidget, QColorDialog, QMessageBox, QInputDialog, QLabel, QDesktopWidget
+    QPushButton, QTreeWidget, QColorDialog, QMessageBox, QInputDialog, QLabel, QWidget
 from PyQt6.QtCore import Qt
 
 
@@ -161,7 +161,7 @@ Pontos Y: Eficiência do inversor em p.u.")
         msg.setText("Você deseja remover a(s) curva(s) selecionada(s)?")
         msg.setWindowTitle('Curvas de Carga')
         msg.setStandardButtons(QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No)
-        retval = msg.exec_()
+        retval = msg.exec()
 
         contChecked = 0
         if retval == QMessageBox.StandardButton.Yes:
@@ -283,7 +283,7 @@ Pontos Y: Eficiência do inversor em p.u.")
 
     def centralize(self):
         qr = self.frameGeometry()
-        centerpoint = QDesktopWidget().availableGeometry().center()
+        centerpoint = QGuiApplication.primaryScreen().availableGeometry().center()
         qr.moveCenter(centerpoint)
         self.move(qr.topLeft())
 

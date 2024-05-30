@@ -386,4 +386,4 @@ if __name__ == '__main__':
     Connector.DataBaseInfo = {'Geodb_DirDataBase': path_BDGD_geodb, 'Modelo': modelo_BDGD}
 
     Connector.initUI()
-    app.exec_()
+    app.exec()

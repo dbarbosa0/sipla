@@ -1,6 +1,6 @@
 from PyQt6.QtGui import QIcon, QDoubleValidator
 from PyQt6.QtWidgets import QStyleFactory, QDialog, QGridLayout,\
-    QPushButton, QMessageBox, QLabel, QLineEdit, QComboBox, QHBoxLayout, QDoubleSpinBox
+    QPushButton, QMessageBox, QLabel, QLineEdit, QComboBox, QHBoxLayout, QDoubleSpinBox, QAbstractSpinBox
 from PyQt6.QtCore import Qt
 
 import config as cfg
@@ -52,14 +52,14 @@ A frota de Storages é carregada a fim de manter a potência no elemento monitor
 dentro da faixa aceitável.")
         self.Dialog_Layout.addWidget(self.kWTargetLow_Label, 2, 1, 1, 1)
         self.kWTargetLow_DoubleSpinBox = QDoubleSpinBox()
-        self.kWTargetLow_DoubleSpinBox.setButtonSymbols(2)
+        self.kWTargetLow_DoubleSpinBox.setButtonSymbols(QAbstractSpinBox.ButtonSymbols.NoButtons)
         self.kWTargetLow_DoubleSpinBox.setDecimals(3)
         self.kWTargetLow_DoubleSpinBox.setRange(0.001, 999999999)
         self.Dialog_Layout.addWidget(self.kWTargetLow_DoubleSpinBox, 2, 2, 1, 2)
         self.BandLow_Label = QLabel("Largura da faixa:")
         self.Dialog_Layout.addWidget(self.BandLow_Label, 3, 1, 1, 1)
         self.BandLow_DoubleSpinBox = QDoubleSpinBox()
-        self.BandLow_DoubleSpinBox.setButtonSymbols(2)
+        self.BandLow_DoubleSpinBox.setButtonSymbols(QAbstractSpinBox.ButtonSymbols.NoButtons)
         self.BandLow_DoubleSpinBox.setDecimals(3)
         self.BandLow_DoubleSpinBox.setRange(0.001, 999999999)
         self.Dialog_Layout.addWidget(self.BandLow_DoubleSpinBox, 3, 2, 1, 1)

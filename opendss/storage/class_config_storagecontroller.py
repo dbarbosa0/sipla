@@ -1,7 +1,7 @@
 from PyQt6.QtGui import QIcon
 from PyQt6.QtWidgets import QStyleFactory, QDialog, QGridLayout, QGroupBox, QVBoxLayout, \
     QPushButton, QMessageBox, QLabel, QLineEdit, \
-    QComboBox, QHBoxLayout, QDoubleSpinBox
+    QComboBox, QHBoxLayout, QDoubleSpinBox, QAbstractSpinBox
 from PyQt6.QtCore import Qt
 
 import opendss.class_opendss
@@ -222,7 +222,7 @@ class C_ActPow_Config_StorageController_Dialog(QDialog): ## Classe Dialog config
         self.StorControl_Reserve_DoubleSpinBox = QDoubleSpinBox()
         self.StorControl_Reserve_DoubleSpinBox.setDecimals(3)
         self.StorControl_Reserve_DoubleSpinBox.setRange(0.0, 100.0)
-        self.StorControl_Reserve_DoubleSpinBox.setButtonSymbols(2)
+        self.StorControl_Reserve_DoubleSpinBox.setButtonSymbols(QAbstractSpinBox.ButtonSymbols.NoButtons)
         self.StorControl_DispFactor_DoubleSpinBox = QDoubleSpinBox()
         self.StorControl_DispFactor_DoubleSpinBox.setValue(1.0)
         self.StorControl_DispFactor_DoubleSpinBox.setRange(0.0, 1.0)

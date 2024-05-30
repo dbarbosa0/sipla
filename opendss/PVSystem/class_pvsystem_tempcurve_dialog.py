@@ -143,7 +143,7 @@ Pontos Y: Temperatura (°C)")
         msg.setText("Você deseja remover a(s) curva(s) selecionada(s)?")
         msg.setWindowTitle('Curvas de Carga')
         msg.setStandardButtons(QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No)
-        retval = msg.exec_()
+        retval = msg.exec()
 
         contChecked = 0
         if retval == QMessageBox.StandardButton.Yes:

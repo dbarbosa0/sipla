@@ -1,6 +1,6 @@
-from PyQt6.QtGui import QColor, QIcon, QDoubleValidator
+from PyQt6.QtGui import QColor, QIcon, QDoubleValidator, QGuiApplication
 from PyQt6.QtWidgets import QStyleFactory, QDialog, QGridLayout, \
-    QPushButton, QLabel, QHBoxLayout,  QRadioButton, QButtonGroup, QDesktopWidget, QDoubleSpinBox
+    QPushButton, QLabel, QHBoxLayout,  QRadioButton, QButtonGroup, QWidget, QDoubleSpinBox, QAbstractSpinBox
 from PyQt6.QtCore import Qt
 
 import config as cfg
@@ -38,7 +38,7 @@ class C_Reactive_Pow_DispMode_Dialog(QDialog): ## Classe Dialog Despacho da Pote
         self.FPConst_DoubleSpinBox = QDoubleSpinBox()
         self.FPConst_DoubleSpinBox.setRange(0.001, 1.0)
         self.FPConst_DoubleSpinBox.setDecimals(3)
-        self.FPConst_DoubleSpinBox.setButtonSymbols(2)
+        self.FPConst_DoubleSpinBox.setButtonSymbols(QAbstractSpinBox.ButtonSymbols.NoButtons)
         self.FPConst_DoubleSpinBox.setValue(1.0)
         self.Dialog_Layout.addWidget(self.FPConst_DoubleSpinBox, 2, 2, 1, 1)
 
@@ -50,7 +50,7 @@ class C_Reactive_Pow_DispMode_Dialog(QDialog): ## Classe Dialog Despacho da Pote
         self.kvarConst_DoubleSpinBox = QDoubleSpinBox()
         self.kvarConst_DoubleSpinBox.setRange(0.001, 999999999)
         self.kvarConst_DoubleSpinBox.setDecimals(3)
-        self.kvarConst_DoubleSpinBox.setButtonSymbols(2)
+        self.kvarConst_DoubleSpinBox.setButtonSymbols(QAbstractSpinBox.ButtonSymbols.NoButtons)
         self.kvarConst_DoubleSpinBox.setEnabled(False)
         self.Dialog_Layout.addWidget(self.kvarConst_DoubleSpinBox, 3, 2, 1, 1)
 
@@ -93,6 +93,6 @@ class C_Reactive_Pow_DispMode_Dialog(QDialog): ## Classe Dialog Despacho da Pote
 
     def centralize(self):
         qr = self.frameGeometry()
-        centerpoint = QDesktopWidget().availableGeometry().center()
+        centerpoint = QGuiApplication.primaryScreen().availableGeometry().center()
         qr.moveCenter(centerpoint)
         self.move(qr.topLeft())

@@ -1,6 +1,6 @@
 from PyQt6.QtGui import  QIcon, QDoubleValidator
 from PyQt6.QtWidgets import QStyleFactory, QDialog, QGridLayout, \
-    QPushButton, QMessageBox, QLabel, QLineEdit, QHBoxLayout, QDoubleSpinBox
+    QPushButton, QMessageBox, QLabel, QLineEdit, QHBoxLayout, QDoubleSpinBox, QAbstractSpinBox
 from PyQt6.QtCore import Qt
 
 import config as cfg
@@ -48,14 +48,14 @@ class C_ActPow_Discharge_Time_DispMode_Dialog(QDialog): ## Classe Dialog Despach
         self.timeDischargeTrigger = QLabel("Discharge Trigger:")
         self.Dialog_Layout.addWidget(self.timeDischargeTrigger, 2, 1, 1, 1)
         self.timeDischargeTrigger_DoubleSpinBox = QDoubleSpinBox()
-        self.timeDischargeTrigger_DoubleSpinBox.setButtonSymbols(2)
+        self.timeDischargeTrigger_DoubleSpinBox.setButtonSymbols(QAbstractSpinBox.ButtonSymbols.NoButtons)
         self.timeDischargeTrigger_DoubleSpinBox.setDecimals(3)
         self.timeDischargeTrigger_DoubleSpinBox.setRange(0.001, 999999999)
         self.Dialog_Layout.addWidget(self.timeDischargeTrigger_DoubleSpinBox, 2, 2, 1, 1)
         self.RateDischarge_Label = QLabel("Taxa de descarregamento (%):")
         self.Dialog_Layout.addWidget(self.RateDischarge_Label, 3, 1, 1, 1)
         self.RateDischarge_DoubleSpinBox = QDoubleSpinBox()
-        self.RateDischarge_DoubleSpinBox.setButtonSymbols(2)
+        self.RateDischarge_DoubleSpinBox.setButtonSymbols(QAbstractSpinBox.ButtonSymbols.NoButtons)
         self.RateDischarge_DoubleSpinBox.setDecimals(3)
         self.RateDischarge_DoubleSpinBox.setRange(0.001, 999999999)
         self.Dialog_Layout.addWidget(self.RateDischarge_DoubleSpinBox, 3, 2, 1, 1)

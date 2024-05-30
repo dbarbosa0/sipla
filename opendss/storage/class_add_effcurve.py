@@ -1,7 +1,7 @@
-from PyQt6.QtGui import QIcon
+from PyQt6.QtGui import QIcon, QGuiApplication
 from PyQt6.QtWidgets import QStyleFactory, QDialog, QGridLayout, QGroupBox, QVBoxLayout, QRadioButton, \
     QPushButton, QHBoxLayout, QFileDialog, QMessageBox, QLineEdit, QLabel, \
-    QDesktopWidget
+    QWidget
 from PyQt6.QtCore import Qt
 
 import csv
@@ -235,6 +235,6 @@ class C_Add_EffCurve(QDialog):
 
     def centralize(self):
         qr = self.frameGeometry()
-        centerpoint = QDesktopWidget().availableGeometry().center()
+        centerpoint = QGuiApplication.primaryScreen().availableGeometry().center()
         qr.moveCenter(centerpoint)
         self.move(qr.topLeft())

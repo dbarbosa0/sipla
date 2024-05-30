@@ -1,5 +1,5 @@
 from PyQt6.QtGui import QIcon
-from PyQt6.QtWidgets import QStyleFactory, QDialog, QGridLayout, QPushButton, QCheckBox, QLabel, QDoubleSpinBox
+from PyQt6.QtWidgets import QStyleFactory, QDialog, QGridLayout, QPushButton, QCheckBox, QLabel, QDoubleSpinBox, QAbstractSpinBox
 from PyQt6.QtCore import Qt
 
 import opendss.class_opendss
@@ -38,7 +38,7 @@ class C_ActPow_Follow_DispMode_Dialog(QDialog): ## Classe Dialog Despacho Follow
         self.TimeTrigger_DoubleSpinBox.setRange(0.0, 1000.0)
         self.TimeTrigger_DoubleSpinBox.setDecimals(3)
         self.TimeTrigger_DoubleSpinBox.setValue(2.00)
-        self.TimeTrigger_DoubleSpinBox.setButtonSymbols(2)
+        self.TimeTrigger_DoubleSpinBox.setButtonSymbols(QAbstractSpinBox.ButtonSymbols.NoButtons)
         self.TimeTrigger_DoubleSpinBox.setEnabled(False)
         self.Dialog_Layout.addWidget(self.TimeTrigger_DoubleSpinBox, 2, 2, 1, 1)
         self.DispatchCurve_Btn = QPushButton("Selecionar curva de despacho")

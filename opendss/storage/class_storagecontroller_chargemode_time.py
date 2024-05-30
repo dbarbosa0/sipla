@@ -1,6 +1,6 @@
 from PyQt6.QtGui import QIcon, QDoubleValidator
 from PyQt6.QtWidgets import QStyleFactory, QDialog, QGridLayout, \
-    QPushButton, QMessageBox, QLabel, QLineEdit, QHBoxLayout, QDoubleSpinBox
+    QPushButton, QMessageBox, QLabel, QLineEdit, QHBoxLayout, QDoubleSpinBox, QAbstractSpinBox
 from PyQt6.QtCore import Qt
 
 import config as cfg
@@ -49,14 +49,14 @@ class C_ActPow_Charge_Time_DispMode_Dialog(QDialog): ## Classe Dialog Despacho C
         self.timeChargeTrigger = QLabel("Charge Trigger:")
         self.Dialog_Layout.addWidget(self.timeChargeTrigger, 2, 1, 1, 1)
         self.timeChargeTrigger_DoubleSpinBox = QDoubleSpinBox()
-        self.timeChargeTrigger_DoubleSpinBox.setButtonSymbols(2)
+        self.timeChargeTrigger_DoubleSpinBox.setButtonSymbols(QAbstractSpinBox.ButtonSymbols.NoButtons)
         self.timeChargeTrigger_DoubleSpinBox.setDecimals(3)
         self.timeChargeTrigger_DoubleSpinBox.setRange(0.001, 999999999)
         self.Dialog_Layout.addWidget(self.timeChargeTrigger_DoubleSpinBox, 2, 2, 1, 1)
         self.RateCharge_Label = QLabel("Taxa de carregamento (%):")
         self.Dialog_Layout.addWidget(self.RateCharge_Label, 3, 1, 1, 1)
         self.RateCharge_DoubleSpinBox = QDoubleSpinBox()
-        self.RateCharge_DoubleSpinBox.setButtonSymbols(2)
+        self.RateCharge_DoubleSpinBox.setButtonSymbols(QAbstractSpinBox.ButtonSymbols.NoButtons)
         self.RateCharge_DoubleSpinBox.setDecimals(3)
         self.RateCharge_DoubleSpinBox.setRange(0.001, 999999999)
         self.Dialog_Layout.addWidget(self.RateCharge_DoubleSpinBox, 3, 2, 1, 1)
