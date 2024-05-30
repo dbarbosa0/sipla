@@ -1,8 +1,8 @@
-from PyQt5.QtGui import QIcon
-from PyQt5.QtWidgets import QStyleFactory, QDialog, QFileDialog, QGroupBox, QHBoxLayout,\
+from PyQt6.QtGui import QIcon
+from PyQt6.QtWidgets import QStyleFactory, QDialog, QFileDialog, QGroupBox, QHBoxLayout,\
     QPushButton, QVBoxLayout, QLabel, QLineEdit, QRadioButton, QMessageBox,\
     QGridLayout, QCheckBox
-from PyQt5.QtCore import Qt
+from PyQt6.QtCore import Qt
 
 import configparser
 import class_exception

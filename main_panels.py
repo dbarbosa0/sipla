@@ -1,10 +1,10 @@
-from PyQt5.QtWidgets import QWidget, QGridLayout, QGroupBox, QHBoxLayout
-from PyQt5.QtWebEngineWidgets import QWebEngineView
-from PyQt5.QtCore import Qt, QUrl
+from PyQt6.QtWidgets import QWidget, QGridLayout, QGroupBox, QHBoxLayout
+from PyQt6.QtWebEngineWidgets import QWebEngineView
+from PyQt6.QtCore import Qt, QUrl
 import folium
 import io, config
 
-from PyQt5.QtWebEngineCore import QWebEngineUrlRequestInterceptor
+from PyQt6.QtWebEngineCore import QWebEngineUrlRequestInterceptor
 
 
 class Interceptor(QWebEngineUrlRequestInterceptor):

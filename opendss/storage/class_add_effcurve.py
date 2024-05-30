@@ -1,8 +1,8 @@
-from PyQt5.QtGui import QIcon
-from PyQt5.QtWidgets import QStyleFactory, QDialog, QGridLayout, QGroupBox, QVBoxLayout, QRadioButton, \
+from PyQt6.QtGui import QIcon
+from PyQt6.QtWidgets import QStyleFactory, QDialog, QGridLayout, QGroupBox, QVBoxLayout, QRadioButton, \
     QPushButton, QHBoxLayout, QFileDialog, QMessageBox, QLineEdit, QLabel, \
     QDesktopWidget
-from PyQt5.QtCore import Qt
+from PyQt6.QtCore import Qt
 
 import csv
 import platform

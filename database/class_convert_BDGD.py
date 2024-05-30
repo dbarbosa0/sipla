@@ -1,7 +1,7 @@
-from PyQt5.QtGui import QIcon
-from PyQt5.QtWidgets import QStyleFactory, QGroupBox, QHBoxLayout, QPushButton, QVBoxLayout, QLabel, \
+from PyQt6.QtGui import QIcon
+from PyQt6.QtWidgets import QStyleFactory, QGroupBox, QHBoxLayout, QPushButton, QVBoxLayout, QLabel, \
     QGridLayout, QWidget, QProgressBar, QApplication
-from PyQt5.QtCore import Qt
+from PyQt6.QtCore import Qt
 import sqlite3
 from timeit import default_timer as timer
 import sys

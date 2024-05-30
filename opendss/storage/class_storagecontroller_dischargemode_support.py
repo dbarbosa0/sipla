@@ -1,8 +1,8 @@
-from PyQt5.QtGui import  QIcon, QDoubleValidator
-from PyQt5.QtWidgets import QStyleFactory, QDialog, QGridLayout, \
+from PyQt6.QtGui import  QIcon, QDoubleValidator
+from PyQt6.QtWidgets import QStyleFactory, QDialog, QGridLayout, \
     QPushButton, QMessageBox, QLabel, QLineEdit, QDoubleSpinBox, \
     QComboBox, QHBoxLayout
-from PyQt5.QtCore import Qt, QLocale
+from PyQt6.QtCore import Qt, QLocale
 
 import config as cfg
 

@@ -1,7 +1,7 @@
 import io
 import folium
 import folium.plugins
-from PyQt5 import QtWebEngineWidgets, QtWidgets, QtCore, QtGui
+from PyQt6 import QtWebEngineWidgets, QtWidgets, QtCore, QtGui
 
 import database.class_coord
 import database.class_conn

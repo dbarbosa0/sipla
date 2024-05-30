@@ -1,8 +1,8 @@
-from PyQt5.QtWidgets import QLabel, QFormLayout, QGroupBox, QDockWidget, QGridLayout, QComboBox, QPushButton, QCheckBox, \
+from PyQt6.QtWidgets import QLabel, QFormLayout, QGroupBox, QDockWidget, QGridLayout, QComboBox, QPushButton, QCheckBox, \
     QVBoxLayout, QTreeWidget, QTreeWidgetItem, QColorDialog, QTabWidget, QTableWidget, QMessageBox
-from PyQt5.QtCore import Qt
+from PyQt6.QtCore import Qt
 import random
-from PyQt5.QtGui import QColor, QIcon
+from PyQt6.QtGui import QColor, QIcon
 import main_actions
 import class_exception
 import config

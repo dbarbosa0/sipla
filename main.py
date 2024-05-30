@@ -1,8 +1,8 @@
 import sys, time
 
-from PyQt5.QtCore import Qt
-from PyQt5.QtGui import QIcon, QPixmap
-from PyQt5.QtWidgets import QApplication, QMainWindow, QStyleFactory, QSplashScreen
+from PyQt6.QtCore import Qt
+from PyQt6.QtGui import QIcon, QPixmap
+from PyQt6.QtWidgets import QApplication, QMainWindow, QStyleFactory, QSplashScreen
 
 
 #import opendss.class_insert_dialog

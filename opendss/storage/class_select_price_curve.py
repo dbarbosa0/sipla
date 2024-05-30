@@ -1,7 +1,7 @@
-from PyQt5.QtGui import QColor, QIcon
-from PyQt5.QtWidgets import QStyleFactory, QDialog, QGridLayout, QGroupBox, QHBoxLayout, QTreeWidgetItem, \
+from PyQt6.QtGui import QColor, QIcon
+from PyQt6.QtWidgets import QStyleFactory, QDialog, QGridLayout, QGroupBox, QHBoxLayout, QTreeWidgetItem, \
     QPushButton, QTreeWidget, QFileDialog, QColorDialog, QMessageBox, QInputDialog, QLabel, QComboBox, QSpinBox
-from PyQt5.QtCore import Qt
+from PyQt6.QtCore import Qt
 
 import csv
 import random

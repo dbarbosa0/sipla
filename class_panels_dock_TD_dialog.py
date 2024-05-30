@@ -1,11 +1,11 @@
-from PyQt5.QtGui import QIcon, QFont
-from PyQt5.QtWidgets import (QDialog,
+from PyQt6.QtGui import QIcon, QFont
+from PyQt6.QtWidgets import (QDialog,
                              QLineEdit, QLabel, QPushButton,
                              QScrollArea, QCheckBox,
                              QHBoxLayout, QVBoxLayout, QSpacerItem, QCompleter,
                              QFormLayout, QGroupBox, QStyleFactory
                              )
-from PyQt5.QtCore import Qt
+from PyQt6.QtCore import Qt
 import config as cfg
 from customwidgets import OnOffWidget
 

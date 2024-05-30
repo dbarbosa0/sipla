@@ -1,8 +1,8 @@
-from PyQt5.QtGui import QIcon, QDoubleValidator
-from PyQt5.QtWidgets import QStyleFactory, QDialog, QGridLayout, QGroupBox, QVBoxLayout, QTreeWidgetItem, \
+from PyQt6.QtGui import QIcon, QDoubleValidator
+from PyQt6.QtWidgets import QStyleFactory, QDialog, QGridLayout, QGroupBox, QVBoxLayout, QTreeWidgetItem, \
     QPushButton, QTreeWidget, QMessageBox, QLabel, QLineEdit, \
     QComboBox, QTabWidget, QWidget, QHBoxLayout, QDesktopWidget, QDoubleSpinBox
-from PyQt5.QtCore import Qt
+from PyQt6.QtCore import Qt
 
 import random
 import class_exception

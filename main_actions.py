@@ -1,4 +1,4 @@
-from PyQt5.QtWidgets import QStatusBar, QMessageBox
+from PyQt6.QtWidgets import QStatusBar, QMessageBox
 
 ###
 import database.class_conn

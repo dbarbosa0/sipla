@@ -1,7 +1,7 @@
-from PyQt5.QtGui import QIcon
-from PyQt5.QtWidgets import QStyleFactory, QRadioButton, QDialog, QGridLayout, QGroupBox, \
+from PyQt6.QtGui import QIcon
+from PyQt6.QtWidgets import QStyleFactory, QRadioButton, QDialog, QGridLayout, QGroupBox, \
     QVBoxLayout, QCheckBox, QTabWidget, QDoubleSpinBox, QLabel, QComboBox, QDesktopWidget, QLineEdit, QPushButton, QHBoxLayout, QMessageBox, QTreeWidgetItem, QTreeWidget
-from PyQt5.QtCore import Qt
+from PyQt6.QtCore import Qt
 
 import random
 import unidecode

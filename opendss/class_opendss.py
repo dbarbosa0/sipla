@@ -1,8 +1,8 @@
 import os
 import platform
-from PyQt5.QtWidgets import QFileDialog
-from PyQt5.QtWidgets import QTableWidgetItem, QTableWidget
-from PyQt5 import QtWidgets, QtCore, QtGui
+from PyQt6.QtWidgets import QFileDialog
+from PyQt6.QtWidgets import QTableWidgetItem, QTableWidget
+from PyQt6 import QtWidgets, QtCore, QtGui
 import cmath
 
 import opendss.class_conn

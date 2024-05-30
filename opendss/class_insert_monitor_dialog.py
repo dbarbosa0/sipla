@@ -1,8 +1,8 @@
-from PyQt5.QtGui import QIcon
-from PyQt5.QtWidgets import QStyleFactory, QDialog, QGridLayout, QGroupBox, \
+from PyQt6.QtGui import QIcon
+from PyQt6.QtWidgets import QStyleFactory, QDialog, QGridLayout, QGroupBox, \
    QVBoxLayout, QLabel, QComboBox, QLineEdit, QPushButton, QHBoxLayout, QMessageBox
 
-from PyQt5.QtCore import Qt
+from PyQt6.QtCore import Qt
 
 import opendss.class_opendss
 import config as cfg

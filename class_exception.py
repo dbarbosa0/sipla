@@ -1,6 +1,6 @@
-from PyQt5 import QtGui
-from  PyQt5.QtWidgets import QMessageBox
-from PyQt5.QtGui import QIcon
+from PyQt6 import QtGui
+from  PyQt6.QtWidgets import QMessageBox
+from PyQt6.QtGui import QIcon
 
 
 # define Python user-defined exceptions

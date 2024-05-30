@@ -1,6 +1,6 @@
-from PyQt5.QtGui import QIcon, QFont, QPixmap
-from PyQt5.QtWidgets import QStyleFactory, QDialog,  QVBoxLayout,  QLabel, QDialogButtonBox
-from PyQt5.QtCore import Qt
+from PyQt6.QtGui import QIcon, QFont, QPixmap
+from PyQt6.QtWidgets import QStyleFactory, QDialog,  QVBoxLayout,  QLabel, QDialogButtonBox
+from PyQt6.QtCore import Qt
 
 import config as cfg
 

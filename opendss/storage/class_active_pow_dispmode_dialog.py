@@ -1,7 +1,7 @@
-from PyQt5.QtGui import QIcon
-from PyQt5.QtWidgets import QStyleFactory, QDialog, QGridLayout, QGroupBox, QVBoxLayout, \
+from PyQt6.QtGui import QIcon
+from PyQt6.QtWidgets import QStyleFactory, QDialog, QGridLayout, QGroupBox, QVBoxLayout, \
     QPushButton, QLabel, QRadioButton, QButtonGroup, QDesktopWidget
-from PyQt5.QtCore import Qt
+from PyQt6.QtCore import Qt
 
 import opendss.class_opendss
 import opendss.storage.class_select_dispatch_curve

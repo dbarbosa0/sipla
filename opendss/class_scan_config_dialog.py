@@ -1,8 +1,8 @@
 # Carvalho Tag
-from PyQt5.QtGui import QIcon
-from PyQt5.QtWidgets import QStyleFactory, QDialog, QGroupBox, QHBoxLayout, \
+from PyQt6.QtGui import QIcon
+from PyQt6.QtWidgets import QStyleFactory, QDialog, QGroupBox, QHBoxLayout, \
     QPushButton, QVBoxLayout, QTabWidget, QComboBox, QLineEdit,  QWidget, QMessageBox
-from PyQt5.QtCore import Qt
+from PyQt6.QtCore import Qt
 
 import configparser
 import class_exception
