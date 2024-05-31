@@ -1,7 +1,7 @@
-from PyQt5.QtGui import QIcon
-from PyQt5.QtWidgets import QStyleFactory, QDialog, QGridLayout, QGroupBox, QHBoxLayout, QTreeWidgetItem, \
+from PyQt6.QtGui import QIcon
+from PyQt6.QtWidgets import QStyleFactory, QDialog, QGridLayout, QGroupBox, QHBoxLayout, QTreeWidgetItem, \
     QPushButton, QTreeWidget, QMessageBox
-from PyQt5.QtCore import Qt
+from PyQt6.QtCore import Qt
 
 import config as cfg
 import opendss.class_opendss
@@ -25,10 +25,10 @@ class C_Config_ElementList_Dialog(QDialog):
     def InitUI(self):
         self.setWindowTitle(self.titleWindow)
         self.setWindowIcon(QIcon(self.iconWindow))  # ícone da janela
-        self.setWindowModality(Qt.ApplicationModal)
+        self.setWindowModality(Qt.WindowModality.ApplicationModal)
         self.setStyle(QStyleFactory.create('Cleanlooks'))  # Estilo da Interface
 
-        self.setWindowFlags(self.windowFlags() | Qt.WindowMinMaxButtonsHint)
+        self.setWindowFlags(self.windowFlags() | Qt.WindowType.WindowMinMaxButtonsHint)
 
         self.Dialog_Layout = QGridLayout()  # Layout da Dialog
 
@@ -45,7 +45,7 @@ class C_Config_ElementList_Dialog(QDialog):
 
         ###### Botões
         self.Dialog_Btns_Layout = QHBoxLayout()
-        self.Dialog_Btns_Layout.setAlignment(Qt.AlignRight)
+        self.Dialog_Btns_Layout.setAlignment(Qt.AlignmentFlag.AlignRight)
 
         self.Dialog_Btns_Cancel_Btn = QPushButton("Cancelar")
         self.Dialog_Btns_Cancel_Btn.setIcon(QIcon('img/icon_cancel.png'))
@@ -71,7 +71,7 @@ class C_Config_ElementList_Dialog(QDialog):
         self.namelist.clear()
         checkCont = 0
         for ctd in range(0, self.ElementList_GroupBox_TreeWidget.topLevelItemCount()):
-            if self.ElementList_GroupBox_TreeWidget.topLevelItem(ctd).checkState(0) == Qt.Checked:
+            if self.ElementList_GroupBox_TreeWidget.topLevelItem(ctd).checkState(0) == Qt.CheckState.Checked:
                 checkCont += 1
 
         if checkCont == 0:
@@ -81,7 +81,7 @@ class C_Config_ElementList_Dialog(QDialog):
         else:
             for ctd in range(0, self.ElementList_GroupBox_TreeWidget.topLevelItemCount()):
                 Item = self.ElementList_GroupBox_TreeWidget.topLevelItem(ctd)
-                if Item.checkState(0) == Qt.Checked:
+                if Item.checkState(0) == Qt.CheckState.Checked:
                     self.Derlist.append(str(Item.text(1)) + "." + str(Item.text(0)))
                     self.namelist.append(Item.text(0))
             self.close()
@@ -109,8 +109,8 @@ class ElementList_TreeWidget_Item(QTreeWidgetItem):
 
         ## Column 0 - Name:
         self.setText(0, name)
-        self.setFlags(self.flags() | Qt.ItemIsUserCheckable)
-        self.setCheckState(0, Qt.Unchecked)
+        self.setFlags(self.flags() | Qt.ItemFlag.ItemIsUserCheckable)
+        self.setCheckState(0, Qt.CheckState.Unchecked)
 
         ## Column 1 - Element:
         self.setText(1, element)

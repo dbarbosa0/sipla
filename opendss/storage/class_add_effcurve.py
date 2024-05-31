@@ -1,8 +1,8 @@
-from PyQt5.QtGui import QIcon
-from PyQt5.QtWidgets import QStyleFactory, QDialog, QGridLayout, QGroupBox, QVBoxLayout, QRadioButton, \
+from PyQt6.QtGui import QIcon, QGuiApplication
+from PyQt6.QtWidgets import QStyleFactory, QDialog, QGridLayout, QGroupBox, QVBoxLayout, QRadioButton, \
     QPushButton, QHBoxLayout, QFileDialog, QMessageBox, QLineEdit, QLabel, \
-    QDesktopWidget
-from PyQt5.QtCore import Qt
+    QWidget
+from PyQt6.QtCore import Qt
 
 import csv
 import platform
@@ -25,7 +25,7 @@ class C_Add_EffCurve(QDialog):
     def InitUI(self):
         self.setWindowTitle(self.titleWindow)
         self.setWindowIcon(QIcon(self.iconWindow))  # ícone da janela
-        self.setWindowModality(Qt.ApplicationModal)
+        self.setWindowModality(Qt.WindowModality.ApplicationModal)
         self.setStyle(QStyleFactory.create('Cleanlooks'))  # Estilo da Interface
         self.adjustSize()
         self.Dialog_Layout = QVBoxLayout()  # Layout da Dialog
@@ -37,7 +37,7 @@ class C_Add_EffCurve(QDialog):
 
         # Confirm Buttons groupbox
         self.Eff_Curve_Confirm_Btns_Layout = QHBoxLayout()
-        self.Eff_Curve_Confirm_Btns_Layout.setAlignment(Qt.AlignRight)
+        self.Eff_Curve_Confirm_Btns_Layout.setAlignment(Qt.AlignmentFlag.AlignRight)
 
         # Manual mode groupbox
         self.Eff_Curve_Manual_Mode_GroupBox = QGroupBox("Modo Manual")
@@ -235,6 +235,6 @@ class C_Add_EffCurve(QDialog):
 
     def centralize(self):
         qr = self.frameGeometry()
-        centerpoint = QDesktopWidget().availableGeometry().center()
+        centerpoint = QGuiApplication.primaryScreen().availableGeometry().center()
         qr.moveCenter(centerpoint)
         self.move(qr.topLeft())

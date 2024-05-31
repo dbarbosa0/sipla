@@ -1,7 +1,7 @@
-from PyQt5.QtGui import QIcon
-from PyQt5.QtWidgets import QStyleFactory, QDialog, QGridLayout, QGroupBox, QVBoxLayout, \
-    QPushButton, QLabel, QRadioButton, QButtonGroup, QDesktopWidget
-from PyQt5.QtCore import Qt
+from PyQt6.QtGui import QIcon, QGuiApplication
+from PyQt6.QtWidgets import QStyleFactory, QDialog, QGridLayout, QGroupBox, QVBoxLayout, \
+    QPushButton, QLabel, QRadioButton, QButtonGroup, QWidget
+from PyQt6.QtCore import Qt
 
 import opendss.class_opendss
 import opendss.storage.class_select_dispatch_curve
@@ -36,7 +36,7 @@ class C_Active_Pow_DispMode_Dialog(QDialog): ## Classe Dialog Despacho da Potenc
     def InitUI(self):
         self.setWindowTitle(self.titleWindow) # titulo janela
         self.setWindowIcon(QIcon(self.iconWindow))  # ícone da janela
-        self.setWindowModality(Qt.ApplicationModal)
+        self.setWindowModality(Qt.WindowModality.ApplicationModal)
         self.setStyle(QStyleFactory.create('Cleanlooks'))  # Estilo da Interface
 
         self.Dialog_Layout = QGridLayout()
@@ -321,6 +321,6 @@ class C_Active_Pow_DispMode_Dialog(QDialog): ## Classe Dialog Despacho da Potenc
 
     def centralize(self):
         qr = self.frameGeometry()
-        centerpoint = QDesktopWidget().availableGeometry().center()
+        centerpoint = QGuiApplication.primaryScreen().availableGeometry().center()
         qr.moveCenter(centerpoint)
         self.move(qr.topLeft())

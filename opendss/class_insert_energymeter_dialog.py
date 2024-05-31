@@ -1,8 +1,8 @@
-from PyQt5.QtGui import QIcon
-from PyQt5.QtWidgets import QStyleFactory, QDialog, QGridLayout, QGroupBox, \
+from PyQt6.QtGui import QIcon
+from PyQt6.QtWidgets import QStyleFactory, QDialog, QGridLayout, QGroupBox, \
    QVBoxLayout, QTabWidget, QLabel, QComboBox, QWidget, QLineEdit, QPushButton, QHBoxLayout, QMessageBox
 
-from PyQt5.QtCore import Qt
+from PyQt6.QtCore import Qt
 
 import opendss.class_opendss
 import config as cfg
@@ -24,7 +24,7 @@ class C_Insert_EnergyMeter_Dialog(QDialog): ## Classe Dialog principal
     def InitUI(self):
         self.setWindowTitle(self.titleWindow) # titulo janela
         self.setWindowIcon(QIcon(self.iconWindow))  # ícone da janela
-        self.setWindowModality(Qt.ApplicationModal)
+        self.setWindowModality(Qt.WindowModality.ApplicationModal)
         self.setStyle(QStyleFactory.create('Cleanlooks'))  # Estilo da Interface
         self.adjustSize()
         self.Dialog_Layout = QVBoxLayout() #Layout da Dialog
@@ -147,7 +147,7 @@ class C_Insert_EnergyMeter_Dialog(QDialog): ## Classe Dialog principal
         
         ###### Botões dos Parâmetros
         self.EnergyMeter_Btns_Layout = QHBoxLayout()
-        self.EnergyMeter_Btns_Layout.setAlignment(Qt.AlignRight)
+        self.EnergyMeter_Btns_Layout.setAlignment(Qt.AlignmentFlag.AlignRight)
 
         self.EnergyMeter_Btns_Cancel_Btn = QPushButton("Cancelar")
         self.EnergyMeter_Btns_Cancel_Btn.setIcon(QIcon('img/icon_cancel.png'))
@@ -171,7 +171,7 @@ class C_Insert_EnergyMeter_Dialog(QDialog): ## Classe Dialog principal
 
         ###### Botões
         self.Dialog_Btns_Layout = QHBoxLayout()
-        self.Dialog_Btns_Layout.setAlignment(Qt.AlignRight)
+        self.Dialog_Btns_Layout.setAlignment(Qt.AlignmentFlag.AlignRight)
 
         self.Dialog_Btns_Cancel_Btn = QPushButton("Cancelar")
         self.Dialog_Btns_Cancel_Btn.setIcon(QIcon('img/icon_cancel.png'))
@@ -254,8 +254,8 @@ class C_Insert_EnergyMeter_Dialog(QDialog): ## Classe Dialog principal
     def editEnergyMeter(self):
 
         if self.EnergyMeter_GroupBox_MEnergy_ComboBox.currentText() == "":
-            QMessageBox(QMessageBox.Warning, "Energy Meter", "Pelo menos um Energy Meter deve ser selecionado!",
-                        QMessageBox.Ok).exec()
+            QMessageBox(QMessageBox.Icon.Warning, "Energy Meter", "Pelo menos um Energy Meter deve ser selecionado!",
+                        QMessageBox.StandardButton.Ok).exec()
         else:
             self.clearEnergyMeterParameters()
 
@@ -283,8 +283,8 @@ class C_Insert_EnergyMeter_Dialog(QDialog): ## Classe Dialog principal
         for ctd in self.EnergyMeters:
             if ctd["Name"] == self.EnergyMeter_GroupBox_MEnergy_ComboBox.currentText():
                 self.EnergyMeters.remove(ctd)
-                QMessageBox(QMessageBox.Warning, "Energy Monitor", "Energy Monitor " + ctd["Name"] + " removido com sucesso!",
-                            QMessageBox.Ok).exec()
+                QMessageBox(QMessageBox.Icon.Warning, "Energy Monitor", "Energy Monitor " + ctd["Name"] + " removido com sucesso!",
+                            QMessageBox.StandardButton.Ok).exec()
 
         self.updateDialog()
                 
@@ -312,12 +312,12 @@ class C_Insert_EnergyMeter_Dialog(QDialog): ## Classe Dialog principal
                     ctdExist = True
             if not ctdExist:
                 self.EnergyMeters.append(energyMeter)
-                QMessageBox(QMessageBox.Information, "Energy Meter", "Energy Meter " + energyMeter["Name"] + " inserido com sucesso!",
-                            QMessageBox.Ok).exec()
+                QMessageBox(QMessageBox.Icon.Information, "Energy Meter", "Energy Meter " + energyMeter["Name"] + " inserido com sucesso!",
+                            QMessageBox.StandardButton.Ok).exec()
             else:
-                QMessageBox(QMessageBox.Warning, "Energy Meter",
+                QMessageBox(QMessageBox.Icon.Warning, "Energy Meter",
                             "Energy Meter " + energyMeter["Name"] + " já existe! \nFavor verificar!",
-                            QMessageBox.Ok).exec()
+                            QMessageBox.StandardButton.Ok).exec()
         else:
             for ctd in self.EnergyMeters:
                 if ctd["Name"] == energyMeter["Name"]:
@@ -334,9 +334,9 @@ class C_Insert_EnergyMeter_Dialog(QDialog): ## Classe Dialog principal
                     ctd["Action"] = energyMeter["Action"]
                     ctd["Enabled"] = energyMeter["Enabled"]
 
-                    QMessageBox(QMessageBox.Information, "Energy Meter",
+                    QMessageBox(QMessageBox.Icon.Information, "Energy Meter",
                                 "Energy Meter " + ctd["Name"] + " atualizado com sucesso!",
-                                QMessageBox.Ok).exec()
+                                QMessageBox.StandardButton.Ok).exec()
 
         self.updateDialog()
         self.EnableDisableParameters(False)

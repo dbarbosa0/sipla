@@ -1,4 +1,4 @@
-from PyQt5.QtWidgets import QStatusBar, QLabel, QDockWidget,QFrame, QComboBox
+from PyQt6.QtWidgets import QStatusBar, QLabel, QDockWidget,QFrame, QComboBox
 import platform
 
 import config as cfg

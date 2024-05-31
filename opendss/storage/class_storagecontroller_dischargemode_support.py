@@ -1,8 +1,8 @@
-from PyQt5.QtGui import  QIcon, QDoubleValidator
-from PyQt5.QtWidgets import QStyleFactory, QDialog, QGridLayout, \
+from PyQt6.QtGui import  QIcon, QDoubleValidator
+from PyQt6.QtWidgets import QStyleFactory, QDialog, QGridLayout, \
     QPushButton, QMessageBox, QLabel, QLineEdit, QDoubleSpinBox, \
-    QComboBox, QHBoxLayout
-from PyQt5.QtCore import Qt, QLocale
+    QComboBox, QHBoxLayout, QAbstractSpinBox
+from PyQt6.QtCore import Qt, QLocale
 
 import config as cfg
 
@@ -40,7 +40,7 @@ class C_ActPow_Discharge_Support_DispMode_Dialog(QDialog):# Classe Dialog Despac
     def InitUI(self):
         self.setWindowTitle(self.titleWindow)  # titulo janela
         self.setWindowIcon(QIcon(self.iconWindow))  # ícone da janela
-        self.setWindowModality(Qt.ApplicationModal)
+        self.setWindowModality(Qt.WindowModality.ApplicationModal)
         self.setStyle(QStyleFactory.create('Cleanlooks'))  # Estilo da Interface
 
         self.Dialog_Layout = QGridLayout()
@@ -53,14 +53,14 @@ A frota de Storages é despachada a fim de manter a potência no elemento monito
 dentro da faixa aceitável.")
         self.Dialog_Layout.addWidget(self.kWTarget_Label, 2, 1, 1, 1)
         self.kWTarget_DoubleSpinBox = QDoubleSpinBox()
-        self.kWTarget_DoubleSpinBox.setButtonSymbols(2)
+        self.kWTarget_DoubleSpinBox.setButtonSymbols(QAbstractSpinBox.ButtonSymbols.NoButtons)
         self.kWTarget_DoubleSpinBox.setDecimals(3)
         self.kWTarget_DoubleSpinBox.setRange(0.001, 999999999)
         self.Dialog_Layout.addWidget(self.kWTarget_DoubleSpinBox, 2, 2, 1, 2)
         self.Band_Label = QLabel("Largura da faixa:")
         self.Dialog_Layout.addWidget(self.Band_Label, 3, 1, 1, 1)
         self.Band_DoubleSpinBox = QDoubleSpinBox()
-        self.Band_DoubleSpinBox.setButtonSymbols(2)
+        self.Band_DoubleSpinBox.setButtonSymbols(QAbstractSpinBox.ButtonSymbols.NoButtons)
         self.Band_DoubleSpinBox.setDecimals(3)
         self.Band_DoubleSpinBox.setRange(0.001, 999999999)
         self.Dialog_Layout.addWidget(self.Band_DoubleSpinBox, 3, 2, 1, 1)

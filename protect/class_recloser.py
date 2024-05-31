@@ -2,10 +2,10 @@ import csv
 import platform
 
 import pyqtgraph
-from PyQt5.QtGui import QIcon
-from PyQt5.QtWidgets import QStyleFactory, QDialog, QGroupBox, QGridLayout, QHBoxLayout, \
+from PyQt6.QtGui import QIcon
+from PyQt6.QtWidgets import QStyleFactory, QDialog, QGroupBox, QGridLayout, QHBoxLayout, \
     QPushButton, QVBoxLayout, QComboBox, QLineEdit, QWidget, QLabel, QMessageBox, QFileDialog
-from PyQt5.QtCore import Qt
+from PyQt6.QtCore import Qt
 import unidecode
 
 import class_exception
@@ -22,7 +22,7 @@ class Recloser(QWidget):
         self.Edit_Recloser = EditRecloser(self)
         self.RecloserSettings_GroupBox = QGroupBox('Selecionar Religador')
         self.RecloserSettings_GroupBox_Layout = QVBoxLayout()
-        self.RecloserSettings_GroupBox_Layout.setAlignment(Qt.AlignCenter)
+        self.RecloserSettings_GroupBox_Layout.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
         self.RecloserSelect_Combobox = QComboBox()
         self.RecloserSelect_Combobox.setMaximumWidth(150)
@@ -37,7 +37,7 @@ class Recloser(QWidget):
 
         #  Btns
         self.Tab_Btns_Layout = QHBoxLayout()
-        self.Tab_Btns_Layout.setAlignment(Qt.AlignCenter)
+        self.Tab_Btns_Layout.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
         self.Remover_Btn = QPushButton("Remover")
         self.Remover_Btn.setIcon(QIcon('img/icon_remove.png'))
@@ -216,7 +216,7 @@ class EditRecloser(QDialog):
 
         self.setWindowTitle(self.titleWindow)
         self.setWindowIcon(QIcon(self.iconWindow))  # ícone da janela
-        self.setWindowModality(Qt.ApplicationModal)
+        self.setWindowModality(Qt.WindowModality.ApplicationModal)
         self.setStyle(QStyleFactory.create(
             'Cleanlooks'))  # Estilo da Interface
         self.resize(200, 200)
@@ -232,7 +232,7 @@ class EditRecloser(QDialog):
         # Parâmetros Intrínsecos do religador
         self.Edit_Recloser_GroupBox = QGroupBox('Geral')
         self.Edit_Recloser_GroupBox_Layout = QGridLayout()
-        self.Edit_Recloser_GroupBox_Layout.setAlignment(Qt.AlignCenter)
+        self.Edit_Recloser_GroupBox_Layout.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
         self.RecloserName_LineEdit = QLineEdit()
         self.RecloserName_LineEdit_Label = QLabel("Dispositivo")
@@ -311,7 +311,7 @@ class EditRecloser(QDialog):
         # Parâmetros de conexões do religador
         self.Conn_Recloser_GroupBox = QGroupBox('Conexões ')
         self.Conn_Recloser_GroupBox_Layout = QGridLayout()
-        self.Conn_Recloser_GroupBox_Layout.setAlignment(Qt.AlignCenter)
+        self.Conn_Recloser_GroupBox_Layout.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
         self.MonitObj_ComboBox = QComboBox()
         self.MonitObj_ComboBox.setMinimumWidth(150)
@@ -357,7 +357,7 @@ class EditRecloser(QDialog):
         # Curvas TCC
         self.TCCCurves_Recloser_GroupBox = QGroupBox('Curvas TCC')
         self.TCCCurves_Recloser_GroupBox_Layout = QGridLayout()
-        self.TCCCurves_Recloser_GroupBox_Layout.setAlignment(Qt.AlignCenter)
+        self.TCCCurves_Recloser_GroupBox_Layout.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
         self.TccRecloserList = self.curvelist
 
@@ -379,19 +379,19 @@ class EditRecloser(QDialog):
         self.GroundTrip_LineEdit.setMaximumWidth(50)
         self.GroundTrip_LineEdit.setPlaceholderText("1.0")
         self.GroundTrip_LineEdit_Label = QLabel("Ground Multiplier")
-        self.GroundTrip_LineEdit_Label.setAlignment(Qt.AlignRight)
+        self.GroundTrip_LineEdit_Label.setAlignment(Qt.AlignmentFlag.AlignRight)
 
         self.GroundDelayTimeDial_LineEdit = QLineEdit()
         self.GroundDelayTimeDial_LineEdit.setMaximumWidth(50)
         self.GroundDelayTimeDial_LineEdit.setPlaceholderText("1.0")
         self.GroundDelayTimeDial_LineEdit_Label = QLabel("Time dial")
-        self.GroundDelayTimeDial_LineEdit_Label.setAlignment(Qt.AlignRight)
+        self.GroundDelayTimeDial_LineEdit_Label.setAlignment(Qt.AlignmentFlag.AlignRight)
 
         self.GroundFastTimeDial_LineEdit = QLineEdit()
         self.GroundFastTimeDial_LineEdit.setMaximumWidth(50)
         self.GroundFastTimeDial_LineEdit.setPlaceholderText("1.0")
         self.GroundFastTimeDial_LineEdit_Label = QLabel("Time dial")
-        self.GroundFastTimeDial_LineEdit_Label.setAlignment(Qt.AlignRight)
+        self.GroundFastTimeDial_LineEdit_Label.setAlignment(Qt.AlignmentFlag.AlignRight)
 
         self.PhaseDelayList = self.TccRecloserList
         self.PhaseDelay_ComboBox = QComboBox()
@@ -411,19 +411,19 @@ class EditRecloser(QDialog):
         self.PhaseTrip_LineEdit.setMaximumWidth(50)
         self.PhaseTrip_LineEdit.setPlaceholderText("1.0")
         self.PhaseTrip_LineEdit_Label = QLabel("Phase Multiplier")
-        self.PhaseTrip_LineEdit_Label.setAlignment(Qt.AlignRight)
+        self.PhaseTrip_LineEdit_Label.setAlignment(Qt.AlignmentFlag.AlignRight)
 
         self.PhaseDelayTimeDial_LineEdit = QLineEdit()
         self.PhaseDelayTimeDial_LineEdit.setMaximumWidth(50)
         self.PhaseDelayTimeDial_LineEdit.setPlaceholderText("1.0")
         self.PhaseDelayTimeDial_LineEdit_Label = QLabel("Time dial")
-        self.PhaseDelayTimeDial_LineEdit_Label.setAlignment(Qt.AlignRight)
+        self.PhaseDelayTimeDial_LineEdit_Label.setAlignment(Qt.AlignmentFlag.AlignRight)
 
         self.PhaseFastTimeDial_LineEdit = QLineEdit()
         self.PhaseFastTimeDial_LineEdit.setMaximumWidth(50)
         self.PhaseFastTimeDial_LineEdit.setPlaceholderText("1.0")
         self.PhaseFastTimeDial_LineEdit_Label = QLabel("Time dial")
-        self.PhaseFastTimeDial_LineEdit_Label.setAlignment(Qt.AlignRight)
+        self.PhaseFastTimeDial_LineEdit_Label.setAlignment(Qt.AlignmentFlag.AlignRight)
 
         self.TCCCurves_Recloser_GroupBox_Layout.addWidget(
             self.PhaseTrip_LineEdit_Label, 0, 2, 1, 1)
@@ -618,8 +618,8 @@ class EditRecloser(QDialog):
                         self.graphWidget.plot(
                             pointsXList, pointsYList, name=name, pen=pen, symbol='o', symbolSize=1, symbolBrush=bluergb)
                     except ValueError:
-                        QMessageBox(QMessageBox.Warning, "Curva TCC - Fusível",
-                                    "Erro ao carregar curva", QMessageBox.Ok).exec()
+                        QMessageBox(QMessageBox.Icon.Warning, "Curva TCC - Fusível",
+                                    "Erro ao carregar curva", QMessageBox.StandardButton.Ok).exec()
                         self.PlotState = not self.PlotState
                 # Phase Fast
                 if get_combobox(self.PhaseFast_ComboBox):
@@ -652,8 +652,8 @@ class EditRecloser(QDialog):
                         self.graphWidget.plot(
                             pointsXList, pointsYList, name=name, pen=pen, symbol='o', symbolSize=1, symbolBrush=redrgb)
                     except ValueError:
-                        QMessageBox(QMessageBox.Warning, "Curva TCC - Fusível",
-                                    "Erro ao carregar curva", QMessageBox.Ok).exec()
+                        QMessageBox(QMessageBox.Icon.Warning, "Curva TCC - Fusível",
+                                    "Erro ao carregar curva", QMessageBox.StandardButton.Ok).exec()
                         self.PlotState = not self.PlotState
 
                 # Ground Delay
@@ -687,8 +687,8 @@ class EditRecloser(QDialog):
                         self.graphWidget.plot(
                             pointsXList, pointsYList, name=name, pen=pen, symbol='o', symbolSize=1, symbolBrush=greenrgb)
                     except ValueError:
-                        QMessageBox(QMessageBox.Warning, "Curva TCC - Fusível",
-                                    "Erro ao carregar curva", QMessageBox.Ok).exec()
+                        QMessageBox(QMessageBox.Icon.Warning, "Curva TCC - Fusível",
+                                    "Erro ao carregar curva", QMessageBox.StandardButton.Ok).exec()
                         self.PlotState = not self.PlotState
 
                 # Ground Fast
@@ -722,8 +722,8 @@ class EditRecloser(QDialog):
                         self.graphWidget.plot(
                             pointsXList, pointsYList, name=name, pen=pen, symbol='o', symbolSize=1, symbolBrush=yellowrgb)
                     except ValueError:
-                        QMessageBox(QMessageBox.Warning, "Curva TCC - Fusível",
-                                    "Erro ao carregar curva", QMessageBox.Ok).exec()
+                        QMessageBox(QMessageBox.Icon.Warning, "Curva TCC - Fusível",
+                                    "Erro ao carregar curva", QMessageBox.StandardButton.Ok).exec()
                         self.PlotState = not self.PlotState
 
         if not self.PlotState:
@@ -785,10 +785,10 @@ class EditRecloser(QDialog):
         for ctd in self.recloser_parent.RecloserDataInfo:
             if ctd["Name"] == self.recloser_parent.RecloserSelect_Combobox.currentText():
                 self.recloser_parent.RecloserDataInfo.remove(ctd)
-                QMessageBox(QMessageBox.Warning, "Religador",
+                QMessageBox(QMessageBox.Icon.Warning, "Religador",
                             "Religador " + ctd["Name"] +
                             " removido com sucesso!",
-                            QMessageBox.Ok).exec()
+                            QMessageBox.StandardButton.Ok).exec()
 
         self.recloser_parent.RecloserSelect_Combobox.clear()
         for dicio in self.recloser_parent.RecloserDataInfo:
@@ -875,15 +875,15 @@ class EditRecloser(QDialog):
             if not ctdExist:
                 self.recloser_parent.RecloserDataInfo.append(datainfo)
                 self.recloser_parent.AddRecloserDataInfo.append(datainfo)
-                QMessageBox(QMessageBox.Information, "Religador",
+                QMessageBox(QMessageBox.Icon.Information, "Religador",
                             "Religador " +
                             datainfo["Name"] + " inserido com sucesso!",
-                            QMessageBox.Ok).exec()
+                            QMessageBox.StandardButton.Ok).exec()
             else:
-                QMessageBox(QMessageBox.Warning, "Religador",
+                QMessageBox(QMessageBox.Icon.Warning, "Religador",
                             "Religador " + datainfo["Name"] +
                             " já existe! \nFavor verificar!",
-                            QMessageBox.Ok).exec()
+                            QMessageBox.StandardButton.Ok).exec()
         else:
             for ctd in self.recloser_parent.RecloserDataInfo:
                 if ctd["Name"] == datainfo["Name"]:
@@ -914,10 +914,10 @@ class EditRecloser(QDialog):
                     ctd["TDGrDelayed"] = datainfo["TDGrDelayed"]
                     ctd["TDGrFast"] = datainfo["TDGrFast"]
 
-                    QMessageBox(QMessageBox.Information, "Religador",
+                    QMessageBox(QMessageBox.Icon.Information, "Religador",
                                 "Religador " + ctd["Name"] +
                                 " atualizado com sucesso!",
-                                QMessageBox.Ok).exec()
+                                QMessageBox.StandardButton.Ok).exec()
 
         self.recloser_parent.updateProtectDialog()
         self.adjustSize()

@@ -1,8 +1,8 @@
-from PyQt5.QtGui import QIcon
-from PyQt5.QtWidgets import QStyleFactory, QDialog, QFileDialog, QGroupBox, QHBoxLayout,\
+from PyQt6.QtGui import QIcon
+from PyQt6.QtWidgets import QStyleFactory, QDialog, QFileDialog, QGroupBox, QHBoxLayout,\
     QPushButton, QVBoxLayout, QLabel, QLineEdit, QRadioButton, QMessageBox,\
     QGridLayout, QCheckBox
-from PyQt5.QtCore import Qt
+from PyQt6.QtCore import Qt
 
 import configparser
 import class_exception
@@ -11,6 +11,7 @@ import config as cfg
 import os
 import database.class_convert_BDGD as class_convert_BDGD
 import fiona
+
 
 class C_ConfigDialog(QDialog, class_data.dadosBDGD):
     def __init__(self):
@@ -35,7 +36,7 @@ class C_ConfigDialog(QDialog, class_data.dadosBDGD):
 
         self.setWindowTitle(self.titleWindow)
         self.setWindowIcon(QIcon(self.iconWindow))  # ícone da janela
-        self.setWindowModality(Qt.ApplicationModal)
+        self.setWindowModality(Qt.WindowModality.ApplicationModal)
         self.setStyle(QStyleFactory.create('Cleanlooks'))  # Estilo da Interface
         self.adjustSize()
 
@@ -65,7 +66,7 @@ class C_ConfigDialog(QDialog, class_data.dadosBDGD):
 
         ###### Botões
         self.Dilalog_Btns_Layout = QHBoxLayout()
-        self.Dilalog_Btns_Layout.setAlignment(Qt.AlignRight)
+        self.Dilalog_Btns_Layout.setAlignment(Qt.AlignmentFlag.AlignRight)
 
         self.Dilalog_Btns_Save_Btn = QPushButton("Salvar Parâmetros")
         self.Dilalog_Btns_Save_Btn.setIcon(QIcon('img/icon_save.png'))
@@ -165,11 +166,11 @@ class C_ConfigDialog(QDialog, class_data.dadosBDGD):
             self.loadParameters()
 
             if not self.databaseInfo["Sqlite_DirDataBase"]:
-                QMessageBox(QMessageBox.Information, "DataBase Configuration",
+                QMessageBox(QMessageBox.Icon.Information, "DataBase Configuration",
                             "Não foi possível salvar o diretório do BDGD: \n"
                             + "Primeiro, é necessário converter o BDGD para o formato apropriado.\n"
                             + "Pressione OK na tela de inserção do BDGD para iniciar a conversão!",
-                            QMessageBox.Ok).exec()
+                            QMessageBox.StandardButton.Ok).exec()
                 return
 
             config = configparser.ConfigParser()
@@ -189,8 +190,8 @@ class C_ConfigDialog(QDialog, class_data.dadosBDGD):
             with open('siplaconfigdatabase.ini', 'w') as configfile:
                 config.write(configfile)
 
-            QMessageBox(QMessageBox.Information, "DataBase Configuration", "Configurações Salvas com Sucesso!",
-                        QMessageBox.Ok).exec()
+            QMessageBox(QMessageBox.Icon.Information, "DataBase Configuration", "Configurações Salvas com Sucesso!",
+                        QMessageBox.StandardButton.Ok).exec()
 
         except:
             raise class_exception.FileDataBaseError("Configuração do Banco de Dados", "Erro ao salvar os parâmetros\
@@ -199,7 +200,7 @@ class C_ConfigDialog(QDialog, class_data.dadosBDGD):
     def OpenDataBase(self):
         nameDirDataBase = str(
             QFileDialog.getExistingDirectory(None, "Selecione o Diretório com o Danco de Dados", "Banco/",
-                                             QFileDialog.ShowDirsOnly))
+                                             QFileDialog.Option.ShowDirsOnly))
 
         self.GroupBox_BDGD_Edit.setText(nameDirDataBase)
 
@@ -217,10 +218,10 @@ class C_ConfigDialog(QDialog, class_data.dadosBDGD):
         """
         modelo_database = self.modelo_database(directory_database)
         if modelo_database == 'Modelo nao identificado':
-            QMessageBox(QMessageBox.Warning, "DataBase Configuration",
+            QMessageBox(QMessageBox.Icon.Warning, "DataBase Configuration",
                         "Não foi possível identificar o modelo do BDGD pela falta de uma das seguintes layers: \n"
                         + "    -> UNTRMT\n    -> UNTRD\n    -> UN_TR_D",
-                        QMessageBox.Ok).exec()
+                        QMessageBox.StandardButton.Ok).exec()
             return False
 
         layers_necessarias = self.get_layers_uteis_BDGD(modelo_database)
@@ -253,9 +254,9 @@ class C_ConfigDialog(QDialog, class_data.dadosBDGD):
                         layers_ausentes.append(layer)
 
         if layers_ausentes:
-            QMessageBox(QMessageBox.Warning, "DataBase Configuration",
+            QMessageBox(QMessageBox.Icon.Warning, "DataBase Configuration",
                         "O banco de dados não possui os seguintes layers : \n" + str(layers_ausentes),
-                        QMessageBox.Ok).exec()
+                        QMessageBox.StandardButton.Ok).exec()
             return False
         else:
             return True
@@ -275,21 +276,21 @@ class C_ConfigDialog(QDialog, class_data.dadosBDGD):
                 path_sqlite_convertido = os.path.join(directory_database, "SIPLA_" +
                                                       os.path.basename(directory_database) + '.sqlite')
                 print('ok2')
-                if os.path.isfile(path_sqlite_convertido + "\\" + "UNTRMT" + ".sqlite"):
+
+                if os.path.isfile(os.path.join(path_sqlite_convertido, "UNTRMT" + ".sqlite")):
                     return "Modelo Versao 1.0"
-                elif os.path.isfile(path_sqlite_convertido + "\\" + "UNTRD" + ".sqlite"):
+                elif os.path.isfile(os.path.join(path_sqlite_convertido, "UNTRD" + ".sqlite")):
                     return "Modelo Novo"
-                elif os.path.isfile(path_sqlite_convertido + "\\" + "UN_TR_D" + ".sqlite"):
+                elif os.path.isfile(os.path.join(path_sqlite_convertido, "UN_TR_D" + ".sqlite")):
                     return "Modelo Antigo"
             case '.sqlite':
                 print('ok3')
-                print(directory_database + "\\" + "UNTRMT" + ".sqlite")
-                print(os.path.isfile(directory_database + "\\" + "UNTRMT" + ".sqlite"))
-                if os.path.isfile(directory_database + "\\" + "UNTRMT" + ".sqlite"):
+
+                if os.path.isfile(os.path.join(directory_database, "UNTRMT" + ".sqlite")):
                     return "Modelo Versao 1.0"
-                elif os.path.isfile(directory_database + "\\" + "UNTRD" + ".sqlite"):
+                elif os.path.isfile(os.path.join(directory_database, "UNTRD" + ".sqlite")):
                     return "Modelo Novo"
-                elif os.path.isfile(directory_database + "\\" + "UN_TR_D" + ".sqlite"):
+                elif os.path.isfile(os.path.join(directory_database, "UN_TR_D" + ".sqlite")):
                     return "Modelo Antigo"
 
         return 'Modelo nao identificado'

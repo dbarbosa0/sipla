@@ -1,8 +1,8 @@
-from PyQt5.QtGui import QIcon
-from PyQt5.QtWidgets import QStyleFactory, QDialog, QGridLayout, QGroupBox, QVBoxLayout, \
+from PyQt6.QtGui import QIcon
+from PyQt6.QtWidgets import QStyleFactory, QDialog, QGridLayout, QGroupBox, QVBoxLayout, \
     QPushButton, QMessageBox, QLabel, QLineEdit, \
-    QComboBox, QHBoxLayout, QDoubleSpinBox
-from PyQt5.QtCore import Qt
+    QComboBox, QHBoxLayout, QDoubleSpinBox, QAbstractSpinBox
+from PyQt6.QtCore import Qt
 
 import opendss.class_opendss
 import opendss.storage.class_select_dispatch_curve
@@ -161,7 +161,7 @@ class C_ActPow_Config_StorageController_Dialog(QDialog): ## Classe Dialog config
     def InitUI(self):
         self.setWindowTitle(self.titleWindow)  # titulo janela
         self.setWindowIcon(QIcon(self.iconWindow))  # ícone da janela
-        self.setWindowModality(Qt.ApplicationModal)
+        self.setWindowModality(Qt.WindowModality.ApplicationModal)
         self.setStyle(QStyleFactory.create('Cleanlooks'))  # Estilo da Interface
         self.setFixedWidth(380)
         self.setMaximumHeight(270)
@@ -222,7 +222,7 @@ class C_ActPow_Config_StorageController_Dialog(QDialog): ## Classe Dialog config
         self.StorControl_Reserve_DoubleSpinBox = QDoubleSpinBox()
         self.StorControl_Reserve_DoubleSpinBox.setDecimals(3)
         self.StorControl_Reserve_DoubleSpinBox.setRange(0.0, 100.0)
-        self.StorControl_Reserve_DoubleSpinBox.setButtonSymbols(2)
+        self.StorControl_Reserve_DoubleSpinBox.setButtonSymbols(QAbstractSpinBox.ButtonSymbols.NoButtons)
         self.StorControl_DispFactor_DoubleSpinBox = QDoubleSpinBox()
         self.StorControl_DispFactor_DoubleSpinBox.setValue(1.0)
         self.StorControl_DispFactor_DoubleSpinBox.setRange(0.0, 1.0)
@@ -245,7 +245,7 @@ class C_ActPow_Config_StorageController_Dialog(QDialog): ## Classe Dialog config
 
         ###### Botões dos Parâmetros
         self.StorControl_Btns_Layout = QHBoxLayout()
-        self.StorControl_Btns_Layout.setAlignment(Qt.AlignRight)
+        self.StorControl_Btns_Layout.setAlignment(Qt.AlignmentFlag.AlignRight)
 
         self.StorControl_Btns_Cancel_Btn = QPushButton("Cancelar")
         self.StorControl_Btns_Cancel_Btn.setIcon(QIcon('img/icon_cancel.png'))
@@ -267,7 +267,7 @@ class C_ActPow_Config_StorageController_Dialog(QDialog): ## Classe Dialog config
 
         ###### Botões Dialogs para configurar os modos de carga de descarga
         self.Dialog_Btns_ChargeDischarge_Layout = QHBoxLayout()
-        # self.Dialog_Btns_ChargeDischarge_Layout.setAlignment(Qt.AlignRight)
+        # self.Dialog_Btns_ChargeDischarge_Layout.setAlignment(Qt.AlignmentFlag.AlignRight)
 
         self.Dialog_Btns_Charge_Btn = QPushButton("Configurar Modo de Carga")
         self.Dialog_Btns_Charge_Btn.clicked.connect(self.configChargeDialog)
@@ -281,7 +281,7 @@ class C_ActPow_Config_StorageController_Dialog(QDialog): ## Classe Dialog config
 
         ###### Botões
         self.Dialog_Btns_Layout = QHBoxLayout()
-        self.Dialog_Btns_Layout.setAlignment(Qt.AlignRight)
+        self.Dialog_Btns_Layout.setAlignment(Qt.AlignmentFlag.AlignRight)
 
         self.Dialog_Btns_Cancel_Btn = QPushButton("Cancelar")
         self.Dialog_Btns_Cancel_Btn.setIcon(QIcon('img/icon_cancel.png'))

@@ -1,7 +1,7 @@
-from PyQt5.QtGui import QColor, QIcon
-from PyQt5.QtWidgets import QStyleFactory, QDialog, QGridLayout, QGroupBox, QHBoxLayout, QTreeWidgetItem, \
+from PyQt6.QtGui import QColor, QIcon
+from PyQt6.QtWidgets import QStyleFactory, QDialog, QGridLayout, QGroupBox, QHBoxLayout, QTreeWidgetItem, \
     QPushButton, QTreeWidget, QColorDialog, QMessageBox, QCheckBox, QVBoxLayout, QComboBox, QLineEdit, QLabel
-from PyQt5.QtCore import Qt
+from PyQt6.QtCore import Qt
 
 import pyqtgraph
 import random
@@ -27,8 +27,8 @@ class C_Config_Plot_Dialog(QDialog):
 
         self.setWindowTitle(self.titleWindow)
         self.setWindowIcon(QIcon(self.iconWindow))  # ícone da janela
-        self.setWindowModality(Qt.ApplicationModal)
-        self.setWindowFlags(self.windowFlags() | Qt.WindowMinMaxButtonsHint)
+        self.setWindowModality(Qt.WindowModality.ApplicationModal)
+        self.setWindowFlags(self.windowFlags() | Qt.WindowType.WindowMinMaxButtonsHint)
         self.setStyle(QStyleFactory.create('Cleanlooks'))  # Estilo da Interface
         self.resize(800, 500)
 
@@ -111,7 +111,7 @@ class C_Config_Plot_Dialog(QDialog):
 
         ###### Botões
         self.Dialog_Btns_Layout = QHBoxLayout()
-        self.Dialog_Btns_Layout.setAlignment(Qt.AlignRight)
+        self.Dialog_Btns_Layout.setAlignment(Qt.AlignmentFlag.AlignRight)
 
         self.Dialog_Btns_Ok_Btn = QPushButton("OK")
         self.Dialog_Btns_Ok_Btn.setIcon(QIcon('img/icon_ok.png'))
@@ -140,12 +140,12 @@ class C_Config_Plot_Dialog(QDialog):
         ctdChecked = True
         for ctd in range(0, self.Monitor_Select_Variable_GroupBox_TreeWidget.topLevelItemCount()):
             Item = self.Monitor_Select_Variable_GroupBox_TreeWidget.topLevelItem(ctd)
-            if Item.checkState(0) == Qt.Unchecked:
-                self.Monitor_Select_Variable_SelectAll.setCheckState(Qt.Unchecked)
+            if Item.checkState(0) == Qt.CheckState.Unchecked:
+                self.Monitor_Select_Variable_SelectAll.setCheckState(Qt.CheckState.Unchecked)
                 ctdChecked = False
 
         if ctdChecked:
-            self.Monitor_Select_Variable_SelectAll.setCheckState(Qt.Checked)
+            self.Monitor_Select_Variable_SelectAll.setCheckState(Qt.CheckState.Checked)
 
 
 
@@ -192,7 +192,7 @@ class C_Config_Plot_Dialog(QDialog):
 
             Item = self.Monitor_Select_Variable_GroupBox_TreeWidget.topLevelItem(ctd)
 
-            if Item.checkState(0) == Qt.Checked:
+            if Item.checkState(0) == Qt.CheckState.Checked:
 
                 pen = pyqtgraph.mkPen(color = Item.getColorRGB(), style = Item.getStyle())
 
@@ -243,7 +243,7 @@ class Monitor_Select_Variable_GroupBox_TreeWidget_Item(QTreeWidgetItem):
 
 
         self.setText(0, name)
-        self.setFlags(self.flags() | Qt.ItemIsUserCheckable | Qt.ItemIsEditable)
+        self.setFlags(self.flags() | Qt.ItemFlag.ItemIsUserCheckable | Qt.ItemFlag.ItemIsEditable)
         self.setCheckState(0, check)
 
         self.color = color
@@ -280,7 +280,7 @@ class Monitor_Select_Variable_GroupBox_TreeWidget_Item(QTreeWidgetItem):
         return self.text(2)
 
     def getStyle(self):
-        listQT = [Qt.SolidLine, Qt.DashLine, Qt.DotLine, Qt.DashDotLine, Qt.DashDotDotLine]
+        listQT = [Qt.PenStyle.SolidLine, Qt.PenStyle.DashLine, Qt.PenStyle.DotLine, Qt.PenStyle.DashDotLine, Qt.PenStyle.DashDotDotLine]
 
         return listQT[self.TreeWidget_Line_Combox.currentIndex()]
 

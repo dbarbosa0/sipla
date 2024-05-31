@@ -1,7 +1,7 @@
-from PyQt5.QtGui import QColor, QIcon
-from PyQt5.QtWidgets import QStyleFactory, QDialog, QGridLayout, QGroupBox, QHBoxLayout, QTreeWidgetItem, \
+from PyQt6.QtGui import QColor, QIcon
+from PyQt6.QtWidgets import QStyleFactory, QDialog, QGridLayout, QGroupBox, QHBoxLayout, QTreeWidgetItem, \
     QPushButton, QTreeWidget, QFileDialog, QColorDialog, QMessageBox, QInputDialog, QLabel, QComboBox, QSpinBox
-from PyQt5.QtCore import Qt
+from PyQt6.QtCore import Qt
 
 import csv
 import random
@@ -30,11 +30,11 @@ class C_Config_PriceCurve_Dialog(QDialog):
 
         self.setWindowTitle(self.titleWindow)
         self.setWindowIcon(QIcon(self.iconWindow))  # ícone da janela
-        self.setWindowModality(Qt.ApplicationModal)
+        self.setWindowModality(Qt.WindowModality.ApplicationModal)
         self.setStyle(QStyleFactory.create('Cleanlooks'))  # Estilo da Interface
         #self.resize(800, 500)
 
-        self.setWindowFlags(self.windowFlags() | Qt.WindowMinMaxButtonsHint)
+        self.setWindowFlags(self.windowFlags() | Qt.WindowType.WindowMinMaxButtonsHint)
 
         self.Dialog_Layout = QGridLayout()  # Layout da Dialog
 
@@ -60,7 +60,7 @@ class C_Config_PriceCurve_Dialog(QDialog):
         self.Daily_GroupBox_Layout.addWidget(self.Daily_GroupBox_Stepsize_ComboBox, 1, 3, 1, 1)
 
         self.Dialog_Btns_Layout = QHBoxLayout()
-        self.Dialog_Btns_Layout.setAlignment(Qt.AlignRight)
+        self.Dialog_Btns_Layout.setAlignment(Qt.AlignmentFlag.AlignRight)
 
         self.Dialog_Btns_Cancel_Btn = QPushButton("Cancelar")
         self.Dialog_Btns_Cancel_Btn.setIcon(QIcon('img/icon_cancel.png'))
@@ -147,7 +147,7 @@ class C_Config_PriceCurve_Dialog(QDialog):
 
         ###### Botões
         self.Dialog_Btns_Layout = QHBoxLayout()
-        self.Dialog_Btns_Layout.setAlignment(Qt.AlignRight)
+        self.Dialog_Btns_Layout.setAlignment(Qt.AlignmentFlag.AlignRight)
 
         self.Dialog_Btns_Cancel_Btn = QPushButton("Cancelar")
         self.Dialog_Btns_Cancel_Btn.setIcon(QIcon('img/icon_cancel.png'))
@@ -233,7 +233,7 @@ class C_Config_PriceCurve_Dialog(QDialog):
             for ctd in range(0, self.PriceCurve_GroupBox_TreeWidget.topLevelItemCount()):
 
                 Item = self.PriceCurve_GroupBox_TreeWidget.topLevelItem(ctd)
-                if Item.checkState(0) == Qt.Checked:
+                if Item.checkState(0) == Qt.CheckState.Checked:
                     checkCont += 1
                     if checkCont > 1:
                         raise class_exception.ExecConfigOpenDSS("Erro na seleção da Curva de Preço ",
@@ -316,19 +316,19 @@ class C_Config_PriceCurve_Dialog(QDialog):
     def removePriceCurve(self):
 
         msg = QMessageBox()
-        msg.setIcon(QMessageBox.Question)
+        msg.setIcon(QMessageBox.Icon.Question)
         msg.setText("Você deseja remover a(s) curva(s) selecionada(s)?")
         msg.setWindowTitle('Curvas de Preço')
-        msg.setStandardButtons(QMessageBox.Yes | QMessageBox.No)
-        retval = msg.exec_()
+        msg.setStandardButtons(QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No)
+        retval = msg.exec()
 
         contChecked = 0
-        if retval == QMessageBox.Yes:
+        if retval == QMessageBox.StandardButton.Yes:
             for ctd in range(self.PriceCurve_GroupBox_TreeWidget.topLevelItemCount() -1 , -1, -1):
 
                 Item = self.PriceCurve_GroupBox_TreeWidget.topLevelItem(ctd)
 
-                if Item.checkState(0) == Qt.Checked:
+                if Item.checkState(0) == Qt.CheckState.Checked:
                     self.PriceCurve_GroupBox_TreeWidget.takeTopLevelItem(ctd)
                     contChecked += 1
 
@@ -412,7 +412,7 @@ class C_Config_PriceCurve_Dialog(QDialog):
 
             Item = self.PriceCurve_GroupBox_TreeWidget.topLevelItem(ctd)
 
-            if Item.checkState(0) == Qt.Checked:
+            if Item.checkState(0) == Qt.CheckState.Checked:
 
                 pen = pyqtgraph.mkPen(color = Item.getColorRGB())
                 pointsList = Item.getPointsList()
@@ -436,8 +436,8 @@ class Config_PriceCurve_GroupBox_TreeWidget_Item(QTreeWidgetItem):
 
 
         self.setText(0, unidecode.unidecode(name.replace(" ", "_")))
-        self.setFlags(self.flags() | Qt.ItemIsUserCheckable | Qt.ItemIsEditable)
-        self.setCheckState(0, Qt.Unchecked)
+        self.setFlags(self.flags() | Qt.ItemFlag.ItemIsUserCheckable | Qt.ItemFlag.ItemIsEditable)
+        self.setCheckState(0, Qt.CheckState.Unchecked)
 
         self.color = color
 

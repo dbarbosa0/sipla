@@ -1,5 +1,5 @@
-from PyQt5.QtWidgets import QDockWidget, QAction, QMenuBar, QToolBar
-from PyQt5.QtGui import QIcon
+from PyQt6.QtWidgets import QDockWidget, QMenuBar, QToolBar
+from PyQt6.QtGui import QIcon, QAction
 
 class C_MenuToolBar(QDockWidget):
     def __init__(self, MainWin = None):

@@ -1,8 +1,8 @@
 # Carvalho Tag
-from PyQt5.QtGui import QIcon
-from PyQt5.QtWidgets import QStyleFactory, QDialog, QGroupBox, QHBoxLayout, \
+from PyQt6.QtGui import QIcon
+from PyQt6.QtWidgets import QStyleFactory, QDialog, QGroupBox, QHBoxLayout, \
     QPushButton, QVBoxLayout, QTabWidget, QComboBox, QLineEdit,  QWidget, QMessageBox
-from PyQt5.QtCore import Qt
+from PyQt6.QtCore import Qt
 
 import configparser
 import class_exception
@@ -29,7 +29,7 @@ class C_SCAnalyze_ConfigDialog(QDialog):
 
         self.setWindowTitle(self.titleWindow)
         self.setWindowIcon(QIcon(self.iconWindow))  # ícone da janela
-        self.setWindowModality(Qt.ApplicationModal)
+        self.setWindowModality(Qt.WindowModality.ApplicationModal)
         self.setStyle(QStyleFactory.create('Cleanlooks'))  # Estilo da Interface
         self.resize(200, 200)
 
@@ -44,7 +44,7 @@ class C_SCAnalyze_ConfigDialog(QDialog):
 
         ###### Botões
         self.Dialog_Btns_Layout = QHBoxLayout()
-        self.Dialog_Btns_Layout.setAlignment(Qt.AlignCenter)
+        self.Dialog_Btns_Layout.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
         self.Dialog_Btns_Save_Btn = QPushButton("Save")
         self.Dialog_Btns_Save_Btn.setIcon(QIcon('img/icon_save.png'))
@@ -89,8 +89,8 @@ class C_SCAnalyze_ConfigDialog(QDialog):
             with open('scanconfig.ini', 'w') as configfile:
                 config.write(configfile)
 
-            QMessageBox(QMessageBox.Information, "SC Analyze Configuration", "Configurações Salvas com Sucesso!",
-                        QMessageBox.Ok).exec()
+            QMessageBox(QMessageBox.Icon.Information, "SC Analyze Configuration", "Configurações Salvas com Sucesso!",
+                        QMessageBox.StandardButton.Ok).exec()
 
         except:
             raise class_exception.ExecConfigOpenDSS("Configuração da Análise de Curto Circuito", "Erro ao salvar parâmetros!")

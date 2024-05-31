@@ -1,8 +1,8 @@
-from PyQt5.QtGui import QIcon
-from PyQt5.QtWidgets import QStyleFactory, QDialog, QGridLayout, QGroupBox, \
+from PyQt6.QtGui import QIcon
+from PyQt6.QtWidgets import QStyleFactory, QDialog, QGridLayout, QGroupBox, \
    QVBoxLayout, QLabel, QComboBox, QLineEdit, QPushButton, QHBoxLayout, QMessageBox
 
-from PyQt5.QtCore import Qt
+from PyQt6.QtCore import Qt
 
 import opendss.class_opendss
 import config as cfg
@@ -24,7 +24,7 @@ class C_Insert_Monitor_Dialog(QDialog): ## Classe Dialog principal
     def InitUI(self):
         self.setWindowTitle(self.titleWindow) # titulo janela
         self.setWindowIcon(QIcon(self.iconWindow))  # ícone da janela
-        self.setWindowModality(Qt.ApplicationModal)
+        self.setWindowModality(Qt.WindowModality.ApplicationModal)
         self.setStyle(QStyleFactory.create('Cleanlooks'))  # Estilo da Interface
         self.adjustSize()
         self.Dialog_Layout = QVBoxLayout() #Layout da Dialog
@@ -129,7 +129,7 @@ class C_Insert_Monitor_Dialog(QDialog): ## Classe Dialog principal
         
         ###### Botões dos Parâmetros
         self.Monitor_Btns_Layout = QHBoxLayout()
-        self.Monitor_Btns_Layout.setAlignment(Qt.AlignRight)
+        self.Monitor_Btns_Layout.setAlignment(Qt.AlignmentFlag.AlignRight)
 
         self.Monitor_Btns_Cancel_Btn = QPushButton("Cancelar")
         self.Monitor_Btns_Cancel_Btn.setIcon(QIcon('img/icon_cancel.png'))
@@ -153,7 +153,7 @@ class C_Insert_Monitor_Dialog(QDialog): ## Classe Dialog principal
 
         ###### Botões
         self.Dialog_Btns_Layout = QHBoxLayout()
-        self.Dialog_Btns_Layout.setAlignment(Qt.AlignRight)
+        self.Dialog_Btns_Layout.setAlignment(Qt.AlignmentFlag.AlignRight)
 
         self.Dialog_Btns_Cancel_Btn = QPushButton("Cancelar")
         self.Dialog_Btns_Cancel_Btn.setIcon(QIcon('img/icon_cancel.png'))
@@ -218,8 +218,8 @@ class C_Insert_Monitor_Dialog(QDialog): ## Classe Dialog principal
     def editMonitor(self):
 
         if self.Monitor_GroupBox_MEnergy_ComboBox.currentText() == "":
-            QMessageBox(QMessageBox.Warning, "Energy Monitor", "Pelo menos um Energy Monitor deve ser selecionado!",
-                        QMessageBox.Ok).exec()
+            QMessageBox(QMessageBox.Icon.Warning, "Energy Monitor", "Pelo menos um Energy Monitor deve ser selecionado!",
+                        QMessageBox.StandardButton.Ok).exec()
         else:
             self.clearMonitorParameters()
 
@@ -242,8 +242,8 @@ class C_Insert_Monitor_Dialog(QDialog): ## Classe Dialog principal
         for ctd in self.Monitors:
             if ctd["Name"] == self.Monitor_GroupBox_MEnergy_ComboBox.currentText():
                 self.Monitors.remove(ctd)
-                QMessageBox(QMessageBox.Warning, "Energy Monitor", "Energy Monitor " + ctd["Name"] + " removido com sucesso!",
-                            QMessageBox.Ok).exec()
+                QMessageBox(QMessageBox.Icon.Warning, "Energy Monitor", "Energy Monitor " + ctd["Name"] + " removido com sucesso!",
+                            QMessageBox.StandardButton.Ok).exec()
 
         self.updateDialog()
                 
@@ -266,12 +266,12 @@ class C_Insert_Monitor_Dialog(QDialog): ## Classe Dialog principal
                     ctdExist = True
             if not ctdExist:
                 self.Monitors.append(Monitor)
-                QMessageBox(QMessageBox.Information, "Energy Monitor", "Energy Monitor " + Monitor["Name"] + " inserido com sucesso!",
-                            QMessageBox.Ok).exec()
+                QMessageBox(QMessageBox.Icon.Information, "Energy Monitor", "Energy Monitor " + Monitor["Name"] + " inserido com sucesso!",
+                            QMessageBox.StandardButton.Ok).exec()
             else:
-                QMessageBox(QMessageBox.Warning, "Energy Monitor",
+                QMessageBox(QMessageBox.Icon.Warning, "Energy Monitor",
                             "Energy Monitor" + Monitor["Name"] + " já existe! \nFavor verificar!",
-                            QMessageBox.Ok).exec()
+                            QMessageBox.StandardButton.Ok).exec()
         else:
             for ctd in self.Monitors:
                 if ctd["Name"] == Monitor["Name"]:
@@ -283,9 +283,9 @@ class C_Insert_Monitor_Dialog(QDialog): ## Classe Dialog principal
                     ctd["Ppolar"] = Monitor["Ppolar"]
                     ctd["VIpolar"] = Monitor["VIpolar"]
 
-                    QMessageBox(QMessageBox.Information, "Energy Monitor",
+                    QMessageBox(QMessageBox.Icon.Information, "Energy Monitor",
                                 "Energy Monitor" + ctd["Name"] + " atualizado com sucesso!",
-                                QMessageBox.Ok).exec()
+                                QMessageBox.StandardButton.Ok).exec()
         self.updateDialog()
         self.EnableDisableParameters(False)
         self.adjustSize()

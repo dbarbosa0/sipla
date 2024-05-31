@@ -1,8 +1,8 @@
 import sys, time
 
-from PyQt5.QtCore import Qt
-from PyQt5.QtGui import QIcon, QPixmap
-from PyQt5.QtWidgets import QApplication, QMainWindow, QStyleFactory, QSplashScreen
+from PyQt6.QtCore import Qt
+from PyQt6.QtGui import QIcon, QPixmap
+from PyQt6.QtWidgets import QApplication, QMainWindow, QStyleFactory, QSplashScreen
 
 
 #import opendss.class_insert_dialog
@@ -16,6 +16,9 @@ import main_toolbar
 import main_actions
 import main_panels
 import main_panels_dock
+
+import platform
+import multiprocessing
 
 
 class mainWindow(QMainWindow):
@@ -56,9 +59,9 @@ class mainWindow(QMainWindow):
         self.setCentralWidget(self.mainPainelCentral)
 
         ## Dock
-        self.addDockWidget(Qt.LeftDockWidgetArea, self.mainDockNet)
-        self.addDockWidget(Qt.BottomDockWidgetArea, self.mainDockResults)
-        self.setDockOptions(QMainWindow.AnimatedDocks)
+        self.addDockWidget(Qt.DockWidgetArea.LeftDockWidgetArea, self.mainDockNet)
+        self.addDockWidget(Qt.DockWidgetArea.BottomDockWidgetArea, self.mainDockResults)
+        self.setDockOptions(QMainWindow.DockOption.AnimatedDocks)
         self.mainDockNet.mainActions = self.mainActions
 
 
@@ -76,11 +79,15 @@ class mainWindow(QMainWindow):
 
 
 if __name__ == '__main__':
+    # Define the method to create all multiprocessed processes in Linux
+    if platform.system() == 'Linux':
+        multiprocessing.set_start_method('fork')
+
     siplaApp = QApplication(sys.argv)
 
     # Create and display the splash screen
     splash_pix = QPixmap('img/Logo_SIPLA.png')
-    splash = QSplashScreen(splash_pix, Qt.WindowStaysOnTopHint)
+    splash = QSplashScreen(splash_pix, Qt.WindowType.WindowStaysOnTopHint)
     splash.setMask(splash_pix.mask())
     splash.show()
     siplaApp.processEvents()

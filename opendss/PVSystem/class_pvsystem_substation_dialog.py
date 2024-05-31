@@ -1,8 +1,8 @@
-from PyQt5.QtGui import QIcon
-from PyQt5.QtWidgets import QStyleFactory, QDialog, QGridLayout, QGroupBox, QLineEdit, QLabel, QDoubleSpinBox, QComboBox, QHBoxLayout, \
-    QPushButton, QMessageBox
+from PyQt6.QtGui import QIcon
+from PyQt6.QtWidgets import QStyleFactory, QDialog, QGridLayout, QGroupBox, QLineEdit, QLabel, QDoubleSpinBox, QComboBox, QHBoxLayout, \
+    QPushButton, QMessageBox, QAbstractSpinBox
 
-from PyQt5.QtCore import Qt
+from PyQt6.QtCore import Qt
 
 import unidecode
 import config as cfg
@@ -22,7 +22,7 @@ class Subestacao(QDialog):
     def InitUI(self):
         self.setWindowTitle(self.titleWindow)
         self.setWindowIcon(QIcon(self.iconWindow))  # ícone da janela
-        self.setWindowModality(Qt.ApplicationModal)
+        self.setWindowModality(Qt.WindowModality.ApplicationModal)
         self.setStyle(QStyleFactory.create('Cleanlooks'))  # Estilo da Interface
         self.resize(400, 475)
 
@@ -35,7 +35,7 @@ class Subestacao(QDialog):
 
         ### Botões das Configurações
         self.Config_Btns_Layout = QHBoxLayout()
-        self.Config_Btns_Layout.setAlignment(Qt.AlignRight)
+        self.Config_Btns_Layout.setAlignment(Qt.AlignmentFlag.AlignRight)
         # Botao Restaurar Default
         self.Config_Btns_Default_Btn = QPushButton("Restaurar Default")  # Botão Default dentro do GroupBox
         self.Config_Btns_Default_Btn.setFixedHeight(30)
@@ -75,32 +75,32 @@ class Subestacao(QDialog):
         self.Subestacao_XHL.setDecimals(2)
         self.Subestacao_XHL.setRange(0.01, 1000)
         self.Subestacao_XHL.setToolTip("Aceita valores entre 0,00 e 1000")
-        self.Subestacao_XHL.setButtonSymbols(2)
+        self.Subestacao_XHL.setButtonSymbols(QAbstractSpinBox.ButtonSymbols.NoButtons)
         self.Subestacao_XHL.setValue(4.6)
         self.Subestacao_Bus1_LineEdit = QLineEdit()
         self.Subestacao_VPrimary = QDoubleSpinBox()
         self.Subestacao_VPrimary.setDecimals(2)
         self.Subestacao_VPrimary.setRange(0.01, 1000)
         self.Subestacao_VPrimary.setToolTip("Aceita valores entre 0,01 e 1000")
-        self.Subestacao_VPrimary.setButtonSymbols(2)
+        self.Subestacao_VPrimary.setButtonSymbols(QAbstractSpinBox.ButtonSymbols.NoButtons)
         self.Subestacao_VPrimary.setValue(4.6)
         self.Subestacao_KVAPrimary = QDoubleSpinBox()
         self.Subestacao_KVAPrimary.setDecimals(2)
         self.Subestacao_KVAPrimary.setRange(0.01, 1000)
         self.Subestacao_KVAPrimary.setToolTip("Aceita valores entre 0,01 e 1000")
-        self.Subestacao_KVAPrimary.setButtonSymbols(2)
+        self.Subestacao_KVAPrimary.setButtonSymbols(QAbstractSpinBox.ButtonSymbols.NoButtons)
         self.Subestacao_KVAPrimary.setValue(4.6)
         self.Subestacao_VSecond = QDoubleSpinBox()
         self.Subestacao_VSecond.setDecimals(2)
         self.Subestacao_VSecond.setRange(0.01, 1000)
         self.Subestacao_VSecond.setToolTip("Aceita valores entre 0,01 e 1000")
-        self.Subestacao_VSecond.setButtonSymbols(2)
+        self.Subestacao_VSecond.setButtonSymbols(QAbstractSpinBox.ButtonSymbols.NoButtons)
         self.Subestacao_VSecond.setValue(4.6)
         self.Subestacao_KVASecond = QDoubleSpinBox()
         self.Subestacao_KVASecond.setDecimals(2)
         self.Subestacao_KVASecond.setRange(0.01, 1000)
         self.Subestacao_KVASecond.setToolTip("Aceita valores entre 0,01 e 1000")
-        self.Subestacao_KVASecond.setButtonSymbols(2)
+        self.Subestacao_KVASecond.setButtonSymbols(QAbstractSpinBox.ButtonSymbols.NoButtons)
         self.Subestacao_KVASecond.setValue(4.6)
 
         # Comboboxs

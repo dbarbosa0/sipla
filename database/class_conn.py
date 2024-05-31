@@ -1,5 +1,6 @@
 import class_exception
 import sqlite3
+import platform
 
 
 class C_DBaseConn:  # Classe de banco de dados
@@ -15,13 +16,19 @@ class C_DBaseConn:  # Classe de banco de dados
     def DataBaseInfo(self, nDataBaseInfo):
         self._DataBaseInfo = nDataBaseInfo
 
-    def getSQLDB(self, nomeBancoDados, strSQL):
+    def getSQLDB(self, nomeBancoDados: str, strSQL: str):
 
         try:
             # Conectando em apenas leitura!
+            if platform.system() == 'Linux':
+                connDB = sqlite3.connect(
+                    'file:' + self.DataBaseInfo["Sqlite_DirDataBase"] + '/' + nomeBancoDados + '.sqlite?mode=ro',
+                    uri=True)
 
-            connDB = sqlite3.connect(
-                'file:' + self.DataBaseInfo["Sqlite_DirDataBase"] + '\\' + nomeBancoDados + '.sqlite?mode=ro', uri=True)
+            elif platform.system() == 'Windows':
+                connDB = sqlite3.connect(
+                    'file:' + self.DataBaseInfo["Sqlite_DirDataBase"] + '\\' + nomeBancoDados + '.sqlite?mode=ro',
+                    uri=True)
 
             cbanco = connDB.execute(strSQL)
 
@@ -35,8 +42,15 @@ class C_DBaseConn:  # Classe de banco de dados
         try:
             # Conectando em apenas leitura!
 
-            connDB = sqlite3.connect('file:' + self.DataBaseInfo["Sqlite_DirDataBase"] + '\\' +'CTAT.sqlite?mode=ro',
-                                     uri=True)
+            if platform.system() == 'Linux':
+                connDB = sqlite3.connect(
+                    'file:' + self.DataBaseInfo["Sqlite_DirDataBase"] + '/' + 'CTAT.sqlite?mode=ro',
+                    uri=True)
+
+            elif platform.system() == 'Windows':
+                connDB = sqlite3.connect(
+                    'file:' + self.DataBaseInfo["Sqlite_DirDataBase"] + '\\' + 'CTAT.sqlite?mode=ro',
+                    uri=True)
             cbanco = connDB.execute('select sqlite_version();')
 
             return True

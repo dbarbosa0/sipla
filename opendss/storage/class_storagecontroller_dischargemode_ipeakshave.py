@@ -1,7 +1,7 @@
-from PyQt5.QtGui import QIcon, QDoubleValidator
-from PyQt5.QtWidgets import QStyleFactory, QDialog, QGridLayout, \
-    QPushButton, QMessageBox, QLabel, QLineEdit, QComboBox, QHBoxLayout, QDoubleSpinBox
-from PyQt5.QtCore import Qt
+from PyQt6.QtGui import QIcon, QDoubleValidator
+from PyQt6.QtWidgets import QStyleFactory, QDialog, QGridLayout, \
+    QPushButton, QMessageBox, QLabel, QLineEdit, QComboBox, QHBoxLayout, QDoubleSpinBox, QAbstractSpinBox
+from PyQt6.QtCore import Qt
 
 import config as cfg
 
@@ -38,7 +38,7 @@ class C_ActPow_Discharge_IPeakShave_DispMode_Dialog(QDialog): ## Classe Dialog D
     def InitUI(self):
         self.setWindowTitle(self.titleWindow)  # titulo janela
         self.setWindowIcon(QIcon(self.iconWindow))  # ícone da janela
-        self.setWindowModality(Qt.ApplicationModal)
+        self.setWindowModality(Qt.WindowModality.ApplicationModal)
         self.setStyle(QStyleFactory.create('Cleanlooks'))  # Estilo da Interface
 
         self.Dialog_Layout = QGridLayout()
@@ -51,14 +51,14 @@ A frota de Storages é despachada a fim de manter a corrente no elemento monitor
 dentro da faixa aceitável.")
         self.Dialog_Layout.addWidget(self.kampsTarget_Label, 2, 1, 1, 1)
         self.kampsTarget_DoubleSpinBox = QDoubleSpinBox()
-        self.kampsTarget_DoubleSpinBox.setButtonSymbols(2)
+        self.kampsTarget_DoubleSpinBox.setButtonSymbols(QAbstractSpinBox.ButtonSymbols.NoButtons)
         self.kampsTarget_DoubleSpinBox.setDecimals(3)
         self.kampsTarget_DoubleSpinBox.setRange(0.001, 999999999)
         self.Dialog_Layout.addWidget(self.kampsTarget_DoubleSpinBox, 2, 2, 1, 2)
         self.Band_Label = QLabel("Largura da faixa:")
         self.Dialog_Layout.addWidget(self.Band_Label, 3, 1, 1, 1)
         self.Band_DoubleSpinBox = QDoubleSpinBox()
-        self.Band_DoubleSpinBox.setButtonSymbols(2)
+        self.Band_DoubleSpinBox.setButtonSymbols(QAbstractSpinBox.ButtonSymbols.NoButtons)
         self.Band_DoubleSpinBox.setDecimals(3)
         self.Band_DoubleSpinBox.setRange(0.001, 999999999)
         self.Dialog_Layout.addWidget(self.Band_DoubleSpinBox, 3, 2, 1, 1)

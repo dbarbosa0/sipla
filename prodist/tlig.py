@@ -7,11 +7,12 @@ TLIG["4"] = "[wye,wye]"
 TLIG["5"] = ""
 TLIG["6"] = ""
 TLIG["7"] = "[delta,delta]"
-TLIG["8"] = ""
+TLIG["8"] = "[delta,wye]" # fase neutro no secunário e fase fase no primário: transformador monofásico
 TLIG["9"] = ""
 TLIG["10"] = ""
 TLIG["11"] = "[wye,delta]"
 TLIG["12"] = "[delta]"
 TLIG_BIFASICO={}
 TLIG_BIFASICO["2"] = "[delta,wye,wye]"
-
+TLIG_BIFASICO["8"] = "[delta,wye,wye]" # fase neutro no secunário e fase fase no primário: transformador monofásico
+TLIG_BIFASICO["11"] = "[delta,wye,wye]"

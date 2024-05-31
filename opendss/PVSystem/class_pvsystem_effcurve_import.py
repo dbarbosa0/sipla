@@ -1,8 +1,8 @@
-from PyQt5.QtGui import QColor, QIcon
-from PyQt5.QtWidgets import QStyleFactory, QDialog, QGridLayout, QGroupBox, QVBoxLayout, QTreeWidgetItem, QRadioButton, \
+from PyQt6.QtGui import QColor, QIcon
+from PyQt6.QtWidgets import QStyleFactory, QDialog, QGridLayout, QGroupBox, QVBoxLayout, QTreeWidgetItem, QRadioButton, \
     QPushButton, QHBoxLayout, QFileDialog, QColorDialog, QMessageBox, QInputDialog, QSizePolicy, QLineEdit, QLabel, \
     QWidget
-from PyQt5.QtCore import Qt, QStringListModel
+from PyQt6.QtCore import Qt, QStringListModel
 
 import csv
 import random
@@ -30,7 +30,7 @@ class C_Eff_Curve_Import(QDialog):
     def InitUI(self):
         self.setWindowTitle(self.titleWindow)
         self.setWindowIcon(QIcon(self.iconWindow))  # ícone da janela
-        self.setWindowModality(Qt.ApplicationModal)
+        self.setWindowModality(Qt.WindowModality.ApplicationModal)
         self.setStyle(QStyleFactory.create('Cleanlooks'))  # Estilo da Interface
         self.adjustSize()
         self.Dialog_Layout = QVBoxLayout()  # Layout da Dialog
@@ -42,7 +42,7 @@ class C_Eff_Curve_Import(QDialog):
 
         # Confirm Buttons groupbox
         self.Eff_Curve_Confirm_Btns_Layout = QHBoxLayout()
-        self.Eff_Curve_Confirm_Btns_Layout.setAlignment(Qt.AlignRight)
+        self.Eff_Curve_Confirm_Btns_Layout.setAlignment(Qt.AlignmentFlag.AlignRight)
 
         # Manual mode groupbox
         self.Eff_Curve_Manual_Mode_GroupBox = QGroupBox("Modo Manual")

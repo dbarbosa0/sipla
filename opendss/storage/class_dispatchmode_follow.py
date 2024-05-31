@@ -1,6 +1,6 @@
-from PyQt5.QtGui import QIcon
-from PyQt5.QtWidgets import QStyleFactory, QDialog, QGridLayout, QPushButton, QCheckBox, QLabel, QDoubleSpinBox
-from PyQt5.QtCore import Qt
+from PyQt6.QtGui import QIcon
+from PyQt6.QtWidgets import QStyleFactory, QDialog, QGridLayout, QPushButton, QCheckBox, QLabel, QDoubleSpinBox, QAbstractSpinBox
+from PyQt6.QtCore import Qt
 
 import opendss.class_opendss
 import opendss.storage.class_select_dispatch_curve
@@ -25,7 +25,7 @@ class C_ActPow_Follow_DispMode_Dialog(QDialog): ## Classe Dialog Despacho Follow
     def InitUI(self):
         self.setWindowTitle(self.titleWindow)  # titulo janela
         self.setWindowIcon(QIcon(self.iconWindow))  # ícone da janela
-        self.setWindowModality(Qt.ApplicationModal)
+        self.setWindowModality(Qt.WindowModality.ApplicationModal)
         self.setStyle(QStyleFactory.create('Cleanlooks'))  # Estilo da Interface
 
         self.Dialog_Layout = QGridLayout()
@@ -38,7 +38,7 @@ class C_ActPow_Follow_DispMode_Dialog(QDialog): ## Classe Dialog Despacho Follow
         self.TimeTrigger_DoubleSpinBox.setRange(0.0, 1000.0)
         self.TimeTrigger_DoubleSpinBox.setDecimals(3)
         self.TimeTrigger_DoubleSpinBox.setValue(2.00)
-        self.TimeTrigger_DoubleSpinBox.setButtonSymbols(2)
+        self.TimeTrigger_DoubleSpinBox.setButtonSymbols(QAbstractSpinBox.ButtonSymbols.NoButtons)
         self.TimeTrigger_DoubleSpinBox.setEnabled(False)
         self.Dialog_Layout.addWidget(self.TimeTrigger_DoubleSpinBox, 2, 2, 1, 1)
         self.DispatchCurve_Btn = QPushButton("Selecionar curva de despacho")

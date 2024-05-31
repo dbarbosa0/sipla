@@ -1,6 +1,6 @@
-from PyQt5.QtGui import QIcon
-from PyQt5.QtWidgets import QStyleFactory, QDialog, QGridLayout, QPushButton, QCheckBox, QLabel, QDoubleSpinBox
-from PyQt5.QtCore import Qt
+from PyQt6.QtGui import QIcon
+from PyQt6.QtWidgets import QStyleFactory, QDialog, QGridLayout, QPushButton, QCheckBox, QLabel, QDoubleSpinBox, QAbstractSpinBox
+from PyQt6.QtCore import Qt
 
 import opendss.class_opendss
 import opendss.storage.class_select_dispatch_curve
@@ -26,7 +26,7 @@ class C_ActPow_Price_DispMode_Dialog(QDialog): ## Classe Dialog Despacho Price d
     def InitUI(self):
         self.setWindowTitle(self.titleWindow)  # titulo janela
         self.setWindowIcon(QIcon(self.iconWindow))  # ícone da janela
-        self.setWindowModality(Qt.ApplicationModal)
+        self.setWindowModality(Qt.WindowModality.ApplicationModal)
         self.setStyle(QStyleFactory.create('Cleanlooks'))  # Estilo da Interface
 
         self.Dialog_Layout = QGridLayout()
@@ -38,14 +38,14 @@ class C_ActPow_Price_DispMode_Dialog(QDialog): ## Classe Dialog Despacho Price d
         self.ChargeTrigger_DoubleSpinBox = QDoubleSpinBox()
         self.ChargeTrigger_DoubleSpinBox.setRange(0.0, 999999999)
         self.ChargeTrigger_DoubleSpinBox.setDecimals(3)
-        self.ChargeTrigger_DoubleSpinBox.setButtonSymbols(2)
+        self.ChargeTrigger_DoubleSpinBox.setButtonSymbols(QAbstractSpinBox.ButtonSymbols.NoButtons)
         self.Dialog_Layout.addWidget(self.ChargeTrigger_DoubleSpinBox, 2, 2, 1, 1)
         self.DischargeTrigger_Label = QLabel("Discharge Trigger")
         self.Dialog_Layout.addWidget(self.DischargeTrigger_Label, 3, 1, 1, 1)
         self.DischargeTrigger_DoubleSpinBox = QDoubleSpinBox()
         self.DischargeTrigger_DoubleSpinBox.setRange(0.0, 999999999)
         self.DischargeTrigger_DoubleSpinBox.setDecimals(3)
-        self.DischargeTrigger_DoubleSpinBox.setButtonSymbols(2)
+        self.DischargeTrigger_DoubleSpinBox.setButtonSymbols(QAbstractSpinBox.ButtonSymbols.NoButtons)
         self.Dialog_Layout.addWidget(self.DischargeTrigger_DoubleSpinBox, 3, 2, 1, 1)
         self.TimeTrigger_CheckBox = QCheckBox("Time Charge Trigger")
         self.TimeTrigger_CheckBox.clicked.connect(self.EnableDisableTimeTrigger)
@@ -54,7 +54,7 @@ class C_ActPow_Price_DispMode_Dialog(QDialog): ## Classe Dialog Despacho Price d
         self.TimeTrigger_DoubleSpinBox.setRange(0.0, 1000.0)
         self.TimeTrigger_DoubleSpinBox.setDecimals(3)
         self.TimeTrigger_DoubleSpinBox.setValue(2.00)
-        self.TimeTrigger_DoubleSpinBox.setButtonSymbols(2)
+        self.TimeTrigger_DoubleSpinBox.setButtonSymbols(QAbstractSpinBox.ButtonSymbols.NoButtons)
         self.TimeTrigger_DoubleSpinBox.setEnabled(False)
         self.Dialog_Layout.addWidget(self.TimeTrigger_DoubleSpinBox, 4, 2, 1, 1)
         self.DispatchCurve_Btn = QPushButton("Selecionar curva de preço")

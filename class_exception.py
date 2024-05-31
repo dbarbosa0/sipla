@@ -1,6 +1,6 @@
-from PyQt5 import QtGui
-from  PyQt5.QtWidgets import QMessageBox
-from PyQt5.QtGui import QIcon
+from PyQt6 import QtGui
+from  PyQt6.QtWidgets import QMessageBox
+from PyQt6.QtGui import QIcon
 
 
 # define Python user-defined exceptions
@@ -11,21 +11,21 @@ class ConnDataBaseError(C_Error):
     def __init__(self, msgText):
         super(ConnDataBaseError, self).__init__()
         # Display the errors
-        msg = QMessageBox(QMessageBox.Warning, "Data Base Connection Error",
+        msg = QMessageBox(QMessageBox.Icon.Warning, "Data Base Connection Error",
                           msgText,
-                          QMessageBox.Ok)
+                          QMessageBox.StandardButton.Ok)
         msg.setWindowIcon(QtGui.QIcon("Imagens/logo.png"))
-        msg.exec_()
+        msg.exec()
 
 class ExecDataBaseError(C_Error):
     def __init__(self, msgText):
         super(ExecDataBaseError, self).__init__()
         # Display the errors
-        msg = QMessageBox(QMessageBox.Warning, "Data Base Execution Error",
+        msg = QMessageBox(QMessageBox.Icon.Warning, "Data Base Execution Error",
                           msgText,
-                          QMessageBox.Ok)
+                          QMessageBox.StandardButton.Ok)
         msg.setWindowIcon(QtGui.QIcon("Imagens/logo.png"))
-        msg.exec_()
+        msg.exec()
 
 class FileDataBaseError(C_Error):
     def __init__(self, msgText, errorText = None):
@@ -33,11 +33,11 @@ class FileDataBaseError(C_Error):
         if errorText is None:
             errorText = ""
         # Display the errors
-        msg = QMessageBox(QMessageBox.Warning, "Data Base Error",
+        msg = QMessageBox(QMessageBox.Icon.Warning, "Data Base Error",
                           msgText + "\n" + errorText,
-                          QMessageBox.Ok)
+                          QMessageBox.StandardButton.Ok)
         msg.setWindowIcon(QtGui.QIcon("Imagens/logo.png"))
-        msg.exec_()
+        msg.exec()
 
 class ExecOpenDSS(C_Error):
     def __init__(self, msgText, errorText = None):
@@ -46,11 +46,11 @@ class ExecOpenDSS(C_Error):
 
         super(ExecOpenDSS, self).__init__(errorText)
         # Display the errors
-        msg = QMessageBox(QMessageBox.Warning, "OpenDSS Execution Error",
+        msg = QMessageBox(QMessageBox.Icon.Warning, "OpenDSS Execution Error",
                           msgText + "\n" + errorText,
-                          QMessageBox.Ok)
+                          QMessageBox.StandardButton.Ok)
         msg.setWindowIcon(QtGui.QIcon("Imagens/logo.png"))
-        msg.exec_()
+        msg.exec()
 
 class ExecSelectionFields(C_Error):
     def __init__(self, msgText, errorText = None):
@@ -59,11 +59,11 @@ class ExecSelectionFields(C_Error):
 
         super(ExecSelectionFields, self).__init__(errorText)
         # Display the errors
-        msg = QMessageBox(QMessageBox.Warning, "Selection Error",
+        msg = QMessageBox(QMessageBox.Icon.Warning, "Selection Error",
                           msgText + "\n" + errorText,
-                          QMessageBox.Ok)
+                          QMessageBox.StandardButton.Ok)
         msg.setWindowIcon(QtGui.QIcon("Imagens/logo.png"))
-        msg.exec_()
+        msg.exec()
 
 class ExecConfigOpenDSS(C_Error):
     def __init__(self, msgText, errorText = None):
@@ -72,19 +72,19 @@ class ExecConfigOpenDSS(C_Error):
 
         super(ExecConfigOpenDSS, self).__init__(errorText)
         # Display the errors
-        msg = QMessageBox(QMessageBox.Warning, "OpenDSS Configuration Error",
+        msg = QMessageBox(QMessageBox.Icon.Warning, "OpenDSS Configuration Error",
                           msgText + "\n" + errorText,
-                          QMessageBox.Ok)
+                          QMessageBox.StandardButton.Ok)
         msg.setWindowIcon(QtGui.QIcon("Imagens/logo.png"))
-        msg.exec_()
+        msg.exec()
 
 
 class ExecEnergyMeter(C_Error):
     def __init__(self, msgText):
         super(ExecEnergyMeter, self).__init__()
         # Display the errors
-        msg = QMessageBox(QMessageBox.Warning, "Insert Error",
+        msg = QMessageBox(QMessageBox.Icon.Warning, "Insert Error",
                           msgText,
-                          QMessageBox.Ok)
+                          QMessageBox.StandardButton.Ok)
         msg.setWindowIcon(QtGui.QIcon("Imagens/logo.png"))
-        msg.exec_()
+        msg.exec()

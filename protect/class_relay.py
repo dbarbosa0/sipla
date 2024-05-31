@@ -2,10 +2,10 @@ import csv
 import platform
 
 import pyqtgraph
-from PyQt5.QtGui import QIcon
-from PyQt5.QtWidgets import QStyleFactory, QDialog, QGroupBox, QGridLayout, QHBoxLayout, \
+from PyQt6.QtGui import QIcon
+from PyQt6.QtWidgets import QStyleFactory, QDialog, QGroupBox, QGridLayout, QHBoxLayout, \
     QPushButton, QVBoxLayout, QComboBox, QLineEdit, QWidget, QLabel, QMessageBox, QFileDialog
-from PyQt5.QtCore import Qt
+from PyQt6.QtCore import Qt
 import unidecode
 
 import class_exception
@@ -22,7 +22,7 @@ class Relay(QWidget):
         self.Edit_Relay = EditRelay(self)
         self.RelaySettings_GroupBox = QGroupBox('Selecionar Relé')
         self.RelaySettings_GroupBox_Layout = QVBoxLayout()
-        self.RelaySettings_GroupBox_Layout.setAlignment(Qt.AlignCenter)
+        self.RelaySettings_GroupBox_Layout.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
         self.RelaySelect_Combobox = QComboBox()
         self.RelaySelect_Combobox.setMaximumWidth(150)
@@ -36,7 +36,7 @@ class Relay(QWidget):
 
         #  Btns
         self.Tab_Btns_Layout = QHBoxLayout()
-        self.Tab_Btns_Layout.setAlignment(Qt.AlignCenter)
+        self.Tab_Btns_Layout.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
         self.Remover_Btn = QPushButton("Remover")
         self.Remover_Btn.setIcon(QIcon('img/icon_remove.png'))
@@ -205,7 +205,7 @@ class EditRelay(QDialog):
 
         self.setWindowTitle(self.titleWindow)
         self.setWindowIcon(QIcon(self.iconWindow))  # ícone da janela
-        self.setWindowModality(Qt.ApplicationModal)
+        self.setWindowModality(Qt.WindowModality.ApplicationModal)
         self.setStyle(QStyleFactory.create('Cleanlooks'))  # Estilo da Interface
         self.resize(200, 200)
         self.move(825, 0)  ##Resolução 1366x768
@@ -220,7 +220,7 @@ class EditRelay(QDialog):
         # Parâmetros Intrínsecos do Relay
         self.Edit_Relay_GroupBox = QGroupBox('Geral')
         self.Edit_Relay_GroupBox_Layout = QGridLayout()
-        self.Edit_Relay_GroupBox_Layout.setAlignment(Qt.AlignCenter)
+        self.Edit_Relay_GroupBox_Layout.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
         self.RelayName_LineEdit = QLineEdit()
         self.RelayName_LineEdit_Label = QLabel("Dispositivo")
@@ -331,7 +331,7 @@ class EditRelay(QDialog):
         # Parâmetros de conexões do Relay
         self.Conn_Relay_GroupBox = QGroupBox('Conexões ')
         self.Conn_Relay_GroupBox_Layout = QGridLayout()
-        self.Conn_Relay_GroupBox_Layout.setAlignment(Qt.AlignCenter)
+        self.Conn_Relay_GroupBox_Layout.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
         self.MonitObj_ComboBox = QComboBox()
         self.MonitObj_ComboBox.setMinimumWidth(150)
@@ -368,7 +368,7 @@ class EditRelay(QDialog):
         # Curvas TCC
         self.TCCCurves_Relay_GroupBox = QGroupBox('Curvas TCC')
         self.TCCCurves_Relay_GroupBox_Layout = QGridLayout()
-        self.TCCCurves_Relay_GroupBox_Layout.setAlignment(Qt.AlignCenter)
+        self.TCCCurves_Relay_GroupBox_Layout.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
         self.GroundCurveList = self.curvelist
         self.GroundCurve_ComboBox = QComboBox()
@@ -381,13 +381,13 @@ class EditRelay(QDialog):
         self.GroundTrip_LineEdit.setMaximumWidth(50)
         self.GroundTrip_LineEdit.setPlaceholderText("1.0")
         self.GroundTrip_LineEdit_Label = QLabel("Multiplier")
-        self.GroundTrip_LineEdit_Label.setAlignment(Qt.AlignRight)
+        self.GroundTrip_LineEdit_Label.setAlignment(Qt.AlignmentFlag.AlignRight)
 
         self.GroundTimeDial_LineEdit = QLineEdit()
         self.GroundTimeDial_LineEdit.setMaximumWidth(50)
         self.GroundTimeDial_LineEdit.setPlaceholderText("1.0")
         self.GroundTimeDial_LineEdit_Label = QLabel("Time dial")
-        self.GroundTimeDial_LineEdit_Label.setAlignment(Qt.AlignRight)
+        self.GroundTimeDial_LineEdit_Label.setAlignment(Qt.AlignmentFlag.AlignRight)
 
         self.PhaseCurveList = self.curvelist
         self.PhaseCurve_ComboBox = QComboBox()
@@ -400,13 +400,13 @@ class EditRelay(QDialog):
         self.PhaseTrip_LineEdit.setMaximumWidth(50)
         self.PhaseTrip_LineEdit.setPlaceholderText("1.0")
         self.PhaseTrip_LineEdit_Label = QLabel("Multiplier")
-        self.PhaseTrip_LineEdit_Label.setAlignment(Qt.AlignRight)
+        self.PhaseTrip_LineEdit_Label.setAlignment(Qt.AlignmentFlag.AlignRight)
 
         self.PhaseTimeDial_LineEdit = QLineEdit()
         self.PhaseTimeDial_LineEdit.setMaximumWidth(50)
         self.PhaseTimeDial_LineEdit.setPlaceholderText("1.0")
         self.PhaseTimeDial_LineEdit_Label = QLabel("Time dial")
-        self.PhaseTimeDial_LineEdit_Label.setAlignment(Qt.AlignRight)
+        self.PhaseTimeDial_LineEdit_Label.setAlignment(Qt.AlignmentFlag.AlignRight)
 
         self.OverVoltCurveList = self.curvelist
         self.OverVoltCurve_ComboBox = QComboBox()
@@ -419,7 +419,7 @@ class EditRelay(QDialog):
         self.OverVoltTrip_LineEdit.setMaximumWidth(50)
         self.OverVoltTrip_LineEdit.setPlaceholderText("1.0")
         self.OverVoltTrip_LineEdit_Label = QLabel("Multiplier")
-        self.OverVoltTrip_LineEdit_Label.setAlignment(Qt.AlignRight)
+        self.OverVoltTrip_LineEdit_Label.setAlignment(Qt.AlignmentFlag.AlignRight)
 
         self.UnderVoltCurveList = self.curvelist
         self.UnderVoltCurve_ComboBox = QComboBox()
@@ -432,7 +432,7 @@ class EditRelay(QDialog):
         self.UnderVoltTrip_LineEdit.setMaximumWidth(50)
         self.UnderVoltTrip_LineEdit.setPlaceholderText("1.0")
         self.UnderVoltTrip_LineEdit_Label = QLabel("Multiplier")
-        self.UnderVoltTrip_LineEdit_Label.setAlignment(Qt.AlignRight)
+        self.UnderVoltTrip_LineEdit_Label.setAlignment(Qt.AlignmentFlag.AlignRight)
 
         self.TCCCurves_Relay_GroupBox_Layout.addWidget(self.GroundCurve_ComboBox_Label, 0, 0, 1, 1)
         self.TCCCurves_Relay_GroupBox_Layout.addWidget(self.GroundCurve_ComboBox, 0, 1, 1, 1)
@@ -605,7 +605,7 @@ class EditRelay(QDialog):
                         bluergb = (0, 0, 255, 255)
                         self.graphWidget.plot(pointsXList, pointsYList, name=name, pen=pen, symbol='o', symbolSize=10, symbolBrush=bluergb)
                     except ValueError:
-                        QMessageBox(QMessageBox.Warning, "Curva TCC - Fusível", "Erro ao carregar curva" , QMessageBox.Ok).exec()
+                        QMessageBox(QMessageBox.Icon.Warning, "Curva TCC - Fusível", "Erro ao carregar curva" , QMessageBox.StandardButton.Ok).exec()
                         self.PlotState = not self.PlotState
                 # Phase Fast
                 if get_combobox(self.PhaseCurve_ComboBox):
@@ -634,7 +634,7 @@ class EditRelay(QDialog):
                         redrgb = (255, 0, 0, 255)
                         self.graphWidget.plot(pointsXList, pointsYList, name=name, pen=pen, symbol='o', symbolSize=10, symbolBrush=redrgb)
                     except ValueError:
-                        QMessageBox(QMessageBox.Warning, "Curva TCC - Fusível", "Erro ao carregar curva" , QMessageBox.Ok).exec()
+                        QMessageBox(QMessageBox.Icon.Warning, "Curva TCC - Fusível", "Erro ao carregar curva" , QMessageBox.StandardButton.Ok).exec()
                         self.PlotState = not self.PlotState
 
                 # Ground Delay
@@ -661,7 +661,7 @@ class EditRelay(QDialog):
                         greenrgb = (0, 255, 0, 255)
                         self.graphWidget.plot(pointsXList, pointsYList, name=name, pen=pen, symbol='o', symbolSize=10, symbolBrush=greenrgb)
                     except ValueError:
-                        QMessageBox(QMessageBox.Warning, "Curva TCC - Fusível", "Erro ao carregar curva" , QMessageBox.Ok).exec()
+                        QMessageBox(QMessageBox.Icon.Warning, "Curva TCC - Fusível", "Erro ao carregar curva" , QMessageBox.StandardButton.Ok).exec()
                         self.PlotState = not self.PlotState
 
                 # Ground Fast
@@ -689,7 +689,7 @@ class EditRelay(QDialog):
                         yellowrgb = (0, 255, 255, 255)
                         self.graphWidget.plot(pointsXList, pointsYList, name=name, pen=pen, symbol='o', symbolSize=10, symbolBrush=yellowrgb)
                     except ValueError:
-                        QMessageBox(QMessageBox.Warning, "Curva TCC - Fusível", "Erro ao carregar curva" , QMessageBox.Ok).exec()
+                        QMessageBox(QMessageBox.Icon.Warning, "Curva TCC - Fusível", "Erro ao carregar curva" , QMessageBox.StandardButton.Ok).exec()
                         self.PlotState = not self.PlotState
 
         if not self.PlotState:
@@ -793,9 +793,9 @@ class EditRelay(QDialog):
         for ctd in self.Relay_parent.RelayDataInfo:
             if ctd["Name"] == self.Relay_parent.RelaySelect_Combobox.currentText():
                 self.Relay_parent.RelayDataInfo.remove(ctd)
-                QMessageBox(QMessageBox.Warning, "Relay",
+                QMessageBox(QMessageBox.Icon.Warning, "Relay",
                             "Relay " + ctd["Name"] + " removido com sucesso!",
-                            QMessageBox.Ok).exec()
+                            QMessageBox.StandardButton.Ok).exec()
 
         self.Relay_parent.RelaySelect_Combobox.clear()
         for dicio in self.Relay_parent.RelayDataInfo:
@@ -875,13 +875,13 @@ class EditRelay(QDialog):
             if not ctdExist:
                 self.Relay_parent.RelayDataInfo.append(datainfo)
                 self.Relay_parent.AddRelayDataInfo.append(datainfo)
-                QMessageBox(QMessageBox.Information, "Relay",
+                QMessageBox(QMessageBox.Icon.Information, "Relay",
                             "Relay " + datainfo["Name"] + " inserido com sucesso!",
-                            QMessageBox.Ok).exec()
+                            QMessageBox.StandardButton.Ok).exec()
             else:
-                QMessageBox(QMessageBox.Warning, "Relay",
+                QMessageBox(QMessageBox.Icon.Warning, "Relay",
                             "Relay " + datainfo["Name"] + " já existe! \nFavor verificar!",
-                            QMessageBox.Ok).exec()
+                            QMessageBox.StandardButton.Ok).exec()
         else:
             for ctd in self.Relay_parent.RelayDataInfo:
                 if ctd["Name"] == datainfo["Name"]:
@@ -918,9 +918,9 @@ class EditRelay(QDialog):
                     ctd["Undervoltcurve"] = datainfo["Undervoltcurve"]
                     ctd["UnderTrip"] = datainfo["UnderTrip"]
 
-                    QMessageBox(QMessageBox.Information, "Relay",
+                    QMessageBox(QMessageBox.Icon.Information, "Relay",
                                 "Relay " + ctd["Name"] + " atualizado com sucesso!",
-                                QMessageBox.Ok).exec()
+                                QMessageBox.StandardButton.Ok).exec()
 
         self.Relay_parent.updateProtectDialog()
         self.adjustSize()

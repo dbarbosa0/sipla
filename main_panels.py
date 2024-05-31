@@ -1,10 +1,10 @@
-from PyQt5.QtWidgets import QWidget, QGridLayout, QGroupBox, QHBoxLayout
-from PyQt5.QtWebEngineWidgets import QWebEngineView
-from PyQt5.QtCore import Qt, QUrl
+from PyQt6.QtWidgets import QWidget, QGridLayout, QGroupBox, QHBoxLayout
+from PyQt6.QtWebEngineWidgets import QWebEngineView
+from PyQt6.QtCore import Qt, QUrl
 import folium
 import io, config
 
-from PyQt5.QtWebEngineCore import QWebEngineUrlRequestInterceptor
+from PyQt6.QtWebEngineCore import QWebEngineUrlRequestInterceptor
 
 
 class Interceptor(QWebEngineUrlRequestInterceptor):
@@ -27,7 +27,7 @@ class C_MainPanel(QWidget):
         interceptor = Interceptor()
         self.MapPainel_WebView.page().profile().setUrlRequestInterceptor(interceptor)
 
-        self.MapPainel_WebView.setContextMenuPolicy(Qt.NoContextMenu)
+        self.MapPainel_WebView.setContextMenuPolicy(Qt.ContextMenuPolicy.NoContextMenu)
 
         self.MapPainel_hLayout.addWidget(self.MapPainel_WebView)
         self.MapPainel_GroupBox.setLayout(self.MapPainel_hLayout)

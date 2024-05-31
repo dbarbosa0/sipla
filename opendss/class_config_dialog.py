@@ -1,7 +1,7 @@
-from PyQt5.QtGui import QIcon
-from PyQt5.QtWidgets import QStyleFactory, QDialog, QGridLayout, QGroupBox, QHBoxLayout, QCheckBox, \
+from PyQt6.QtGui import QIcon
+from PyQt6.QtWidgets import QStyleFactory, QDialog, QGridLayout, QGroupBox, QHBoxLayout, QCheckBox, \
     QPushButton, QVBoxLayout, QTabWidget, QLabel, QComboBox, QLineEdit, QRadioButton, QSpinBox, QWidget, QMessageBox
-from PyQt5.QtCore import Qt
+from PyQt6.QtCore import Qt
 
 import configparser
 import class_exception
@@ -29,7 +29,7 @@ class C_ConfigDialog(QDialog):
 
         self.setWindowTitle(self.titleWindow)
         self.setWindowIcon(QIcon(self.iconWindow))  # ícone da janela
-        self.setWindowModality(Qt.ApplicationModal)
+        self.setWindowModality(Qt.WindowModality.ApplicationModal)
         self.setStyle(QStyleFactory.create('Cleanlooks'))  # Estilo da Interface
         self.adjustSize()
 
@@ -68,7 +68,7 @@ class C_ConfigDialog(QDialog):
 
         ###### Botões
         self.Dilalog_Btns_Layout = QHBoxLayout()
-        self.Dilalog_Btns_Layout.setAlignment(Qt.AlignRight)
+        self.Dilalog_Btns_Layout.setAlignment(Qt.AlignmentFlag.AlignRight)
 
         self.Dilalog_Btns_Save_Btn = QPushButton("Salvar Parâmetros")
         self.Dilalog_Btns_Save_Btn.setIcon(QIcon('img/icon_save.png'))
@@ -128,12 +128,12 @@ class C_ConfigDialog(QDialog):
 
         if self.dataInfo["Mode"] == "Daily":
             if not self.dataInfo["LoadShapes"]:
-                QMessageBox(QMessageBox.Information, "OpenDSS Configuration", "Curvas de cargas não estão carregadas!",
-                            QMessageBox.Ok).exec()
+                QMessageBox(QMessageBox.Icon.Information, "OpenDSS Configuration", "Curvas de cargas não estão carregadas!",
+                            QMessageBox.StandardButton.Ok).exec()
 
             if (self.dataInfo["UNCMT"] == "0") or (self.dataInfo["UNCBTTD"] == "0"):
-                QMessageBox(QMessageBox.Information, "OpenDSS Configuration", "Algumas cargas não serão consideradas!",
-                            QMessageBox.Ok).exec()
+                QMessageBox(QMessageBox.Icon.Information, "OpenDSS Configuration", "Algumas cargas não serão consideradas!",
+                            QMessageBox.StandardButton.Ok).exec()
 
         self.close()
 
@@ -170,7 +170,7 @@ class C_ConfigDialog(QDialog):
             with open('siplaconfig.ini', 'w') as configfile:
                 config.write(configfile)
 
-            QMessageBox(QMessageBox.Information, "OpenDSS Configuration", "Configurações Salvas com Sucesso!", QMessageBox.Ok).exec()
+            QMessageBox(QMessageBox.Icon.Information, "OpenDSS Configuration", "Configurações Salvas com Sucesso!", QMessageBox.StandardButton.Ok).exec()
 
         except:
             raise class_exception.ExecConfigOpenDSS("Configuração da Simulação", "Erro ao salvar os parâmetros do Fluxo de Carga!")
@@ -388,7 +388,7 @@ class LoadFlow(QWidget):
         return self.LoadFlow_GroupBox_VoltageBase_LineEdit.text()
 
     def get_UNC(self, obj):
-        if obj.checkState() == Qt.Checked:
+        if obj.checkState() == Qt.CheckState.Checked:
             return "1"
         else:
             return "0"

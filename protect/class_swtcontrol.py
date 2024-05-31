@@ -1,7 +1,7 @@
-from PyQt5.QtGui import QIcon
-from PyQt5.QtWidgets import QStyleFactory, QDialog, QGroupBox, QGridLayout, QHBoxLayout, \
+from PyQt6.QtGui import QIcon
+from PyQt6.QtWidgets import QStyleFactory, QDialog, QGroupBox, QGridLayout, QHBoxLayout, \
     QPushButton, QVBoxLayout, QComboBox, QLineEdit, QWidget, QLabel, QMessageBox
-from PyQt5.QtCore import Qt
+from PyQt6.QtCore import Qt
 import unidecode
 
 import opendss.class_conn
@@ -18,7 +18,7 @@ class SwtControl(QWidget):
         self.Edit_SwtControl = EditSwtControl(self)
         self.SwtControlSettings_GroupBox = QGroupBox('Selecionar Switch')
         self.SwtControlSettings_GroupBox_Layout = QVBoxLayout()
-        self.SwtControlSettings_GroupBox_Layout.setAlignment(Qt.AlignCenter)
+        self.SwtControlSettings_GroupBox_Layout.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
         self.SwtControlSelect_Combobox = QComboBox()
         self.SwtControlSelect_Combobox.setMaximumWidth(150)
@@ -32,7 +32,7 @@ class SwtControl(QWidget):
 
         #  Btns
         self.Tab_Btns_Layout = QHBoxLayout()
-        self.Tab_Btns_Layout.setAlignment(Qt.AlignCenter)
+        self.Tab_Btns_Layout.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
         self.Remover_Btn = QPushButton("Remover")
         self.Remover_Btn.setIcon(QIcon('img/icon_remove.png'))
@@ -159,7 +159,7 @@ class EditSwtControl(QDialog):
 
         self.setWindowTitle(self.titleWindow)
         self.setWindowIcon(QIcon(self.iconWindow))  # ícone da janela
-        self.setWindowModality(Qt.ApplicationModal)
+        self.setWindowModality(Qt.WindowModality.ApplicationModal)
         self.setStyle(QStyleFactory.create('Cleanlooks'))  # Estilo da Interface
         self.resize(200, 200)
         self.move(825, 170)
@@ -172,7 +172,7 @@ class EditSwtControl(QDialog):
         # Parâmetros Intrínsecos do Switch
         self.Edit_SwtControl_GroupBox = QGroupBox('Geral')
         self.Edit_SwtControl_GroupBox_Layout = QGridLayout()
-        self.Edit_SwtControl_GroupBox_Layout.setAlignment(Qt.AlignCenter)
+        self.Edit_SwtControl_GroupBox_Layout.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
         self.SwtControlName_LineEdit = QLineEdit()
         self.SwtControlName_LineEdit_Label = QLabel("Dispositivo")
@@ -252,7 +252,7 @@ class EditSwtControl(QDialog):
         # Parâmetros de conexões do Switch
         self.Conn_SwtControl_GroupBox = QGroupBox('Conexões ')
         self.Conn_SwtControl_GroupBox_Layout = QGridLayout()
-        self.Conn_SwtControl_GroupBox_Layout.setAlignment(Qt.AlignCenter)
+        self.Conn_SwtControl_GroupBox_Layout.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
         self.SwitchedObj_ComboBox = QComboBox()
         self.SwitchedObj_ComboBox.setMinimumWidth(150)
@@ -315,9 +315,9 @@ class EditSwtControl(QDialog):
         for ctd in self.SwtControl_parent.SwtControlDataInfo:
             if ctd["Name"] == self.SwtControl_parent.SwtControlSelect_Combobox.currentText():
                 self.SwtControl_parent.SwtControlDataInfo.remove(ctd)
-                QMessageBox(QMessageBox.Warning, "Switch",
+                QMessageBox(QMessageBox.Icon.Warning, "Switch",
                             "Switch " + ctd["Name"] + " removido com sucesso!",
-                            QMessageBox.Ok).exec()
+                            QMessageBox.StandardButton.Ok).exec()
         self.clearSwtControlParameters()
 
         self.SwtControl_parent.SwtControlSelect_Combobox.clear()
@@ -360,13 +360,13 @@ class EditSwtControl(QDialog):
             if not ctdExist:
                 self.SwtControl_parent.SwtControlDataInfo.append(datainfo)
                 self.SwtControl_parent.AddSwtControlDataInfo.append(datainfo)
-                QMessageBox(QMessageBox.Information, "Switch",
+                QMessageBox(QMessageBox.Icon.Information, "Switch",
                             "Switch " + datainfo["Name"] + " inserido com sucesso!",
-                            QMessageBox.Ok).exec()
+                            QMessageBox.StandardButton.Ok).exec()
             else:
-                QMessageBox(QMessageBox.Warning, "Switch",
+                QMessageBox(QMessageBox.Icon.Warning, "Switch",
                             "Switch " + datainfo["Name"] + " já existe! \nFavor verificar!",
-                            QMessageBox.Ok).exec()
+                            QMessageBox.StandardButton.Ok).exec()
         else:
             for ctd in self.SwtControl_parent.SwtControlDataInfo:
                 if ctd["Name"] == datainfo["Name"]:
@@ -383,9 +383,9 @@ class EditSwtControl(QDialog):
                     ctd["SwitchedObj"] = datainfo["SwitchedObj"]
                     ctd["SwitchedTerm"] = datainfo["SwitchedTerm"]
 
-                    QMessageBox(QMessageBox.Information, "Switch",
+                    QMessageBox(QMessageBox.Icon.Information, "Switch",
                                 "Switch " + ctd["Name"] + " atualizado com sucesso!",
-                                QMessageBox.Ok).exec()
+                                QMessageBox.StandardButton.Ok).exec()
 
         self.SwtControl_parent.updateProtectDialog()
         self.adjustSize()

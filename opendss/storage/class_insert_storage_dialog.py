@@ -1,8 +1,8 @@
-from PyQt5.QtGui import QIcon, QDoubleValidator
-from PyQt5.QtWidgets import QStyleFactory, QDialog, QGridLayout, QGroupBox, QVBoxLayout, QTreeWidgetItem, \
+from PyQt6.QtGui import QIcon, QDoubleValidator, QGuiApplication
+from PyQt6.QtWidgets import QStyleFactory, QDialog, QGridLayout, QGroupBox, QVBoxLayout, QTreeWidgetItem, \
     QPushButton, QTreeWidget, QMessageBox, QLabel, QLineEdit, \
-    QComboBox, QTabWidget, QWidget, QHBoxLayout, QDesktopWidget, QDoubleSpinBox
-from PyQt5.QtCore import Qt
+    QComboBox, QTabWidget, QWidget, QHBoxLayout, QWidget, QDoubleSpinBox, QAbstractSpinBox
+from PyQt6.QtCore import Qt
 
 import random
 import class_exception
@@ -38,7 +38,7 @@ class C_Insert_Storage_Dialog(QDialog):  ## Classe Dialog principal
     def InitUI(self):
         self.setWindowTitle(self.titleWindow)  # titulo janela
         self.setWindowIcon(QIcon(self.iconWindow))  # ícone da janela
-        self.setWindowModality(Qt.ApplicationModal)
+        self.setWindowModality(Qt.WindowModality.ApplicationModal)
         self.setStyle(QStyleFactory.create('Cleanlooks'))  # Estilo da Interface
 
         self.Dialog_Layout = QHBoxLayout()  # Layout da Dialog
@@ -107,7 +107,7 @@ class C_Insert_Storage_Dialog(QDialog):  ## Classe Dialog principal
 
         ### Botões das Configurações
         self.Config_Btns_Layout = QHBoxLayout()
-        self.Config_Btns_Layout.setAlignment(Qt.AlignRight)
+        self.Config_Btns_Layout.setAlignment(Qt.AlignmentFlag.AlignRight)
         # Botao Restaurar Default
         self.Config_Btns_Default_Btn = QPushButton("Restaurar Default")  # Botão Default dentro do GroupBox
         self.Config_Btns_Default_Btn.setFixedHeight(30)
@@ -152,7 +152,7 @@ class C_Insert_Storage_Dialog(QDialog):  ## Classe Dialog principal
         for ctd in range(self.Storages_GroupBox_TreeWidget.topLevelItemCount() - 1, -1, -1):
             Item = self.Storages_GroupBox_TreeWidget.topLevelItem(ctd)
 
-            if Item.checkState(0) == Qt.Checked:
+            if Item.checkState(0) == Qt.CheckState.Checked:
                 self.Storages_GroupBox_TreeWidget.takeTopLevelItem(ctd)
                 for i in self.Storages:
                     if i["StorageName"] == Item.text(0):
@@ -178,7 +178,7 @@ class C_Insert_Storage_Dialog(QDialog):  ## Classe Dialog principal
         checkCont = 0
         try:
             for ctd in range(self.Storages_GroupBox_TreeWidget.topLevelItemCount() - 1, -1, -1):
-                if self.Storages_GroupBox_TreeWidget.topLevelItem(ctd).checkState(0) == Qt.Checked:
+                if self.Storages_GroupBox_TreeWidget.topLevelItem(ctd).checkState(0) == Qt.CheckState.Checked:
                     checkCont += 1
                     Item = self.Storages_GroupBox_TreeWidget.topLevelItem(ctd)
 
@@ -505,9 +505,9 @@ class C_Insert_Storage_Dialog(QDialog):  ## Classe Dialog principal
                 msg.information(self, "Insert Storage", "Selecione uma curva de eficiência do Inversor!")
 
             elif self.DispModeActPowDialog.None_Radio_Btn.isChecked():
-                QMessageBox(QMessageBox.Information, "Insert Storage",
+                QMessageBox(QMessageBox.Icon.Information, "Insert Storage",
                             "Configure algum Modo de Despacho!",
-                            QMessageBox.Ok).exec()
+                            QMessageBox.StandardButton.Ok).exec()
 
             else:
                 countName = 0
@@ -857,7 +857,7 @@ class C_Insert_Storage_Dialog(QDialog):  ## Classe Dialog principal
 
     def centralize(self):
         qr = self.frameGeometry()
-        centerpoint = QDesktopWidget().availableGeometry().center()
+        centerpoint = QGuiApplication.primaryScreen().availableGeometry().center()
         qr.moveCenter(centerpoint)
         self.move(qr.topLeft())
 
@@ -913,13 +913,13 @@ class StorageConfig(QWidget):
         self.StorageConfig_GroupBox_kW_DoubleSpinBox = QDoubleSpinBox()
         self.StorageConfig_GroupBox_kW_DoubleSpinBox.setRange(0.1, 999999999)
         self.StorageConfig_GroupBox_kW_DoubleSpinBox.setDecimals(3)
-        self.StorageConfig_GroupBox_kW_DoubleSpinBox.setButtonSymbols(2)
+        self.StorageConfig_GroupBox_kW_DoubleSpinBox.setButtonSymbols(QAbstractSpinBox.ButtonSymbols.NoButtons)
         self.StorageConfig_GroupBox_Layout.addWidget(self.StorageConfig_GroupBox_kW_Label, 2, 0, 1, 1)
         self.StorageConfig_GroupBox_Layout.addWidget(self.StorageConfig_GroupBox_kW_DoubleSpinBox, 2, 1, 1, 1)
         # Configurar propriedade "kv" (tensão de saída)
         self.StorageConfig_GroupBox_kv_Label = QLabel("Tensão de saída (kV)")
         self.StorageConfig_GroupBox_kv_DoubleSpinBox = QDoubleSpinBox()
-        self.StorageConfig_GroupBox_kv_DoubleSpinBox.setButtonSymbols(2)
+        self.StorageConfig_GroupBox_kv_DoubleSpinBox.setButtonSymbols(QAbstractSpinBox.ButtonSymbols.NoButtons)
         self.StorageConfig_GroupBox_kv_DoubleSpinBox.setDecimals(3)
         self.StorageConfig_GroupBox_kv_DoubleSpinBox.setRange(0.1, 999999999)
         self.StorageConfig_GroupBox_Layout.addWidget(self.StorageConfig_GroupBox_kv_Label, 1, 2, 1, 1)
@@ -927,7 +927,7 @@ class StorageConfig(QWidget):
         # Configurar propriedade "kWhrated" (capacidade nominal do Storage em kWh)
         self.StorageConfig_GroupBox_kWhrated_Label = QLabel("Capacidade Nominal (kWh)")
         self.StorageConfig_GroupBox_kWhrated_DoubleSpinBox = QDoubleSpinBox()
-        self.StorageConfig_GroupBox_kWhrated_DoubleSpinBox.setButtonSymbols(2)
+        self.StorageConfig_GroupBox_kWhrated_DoubleSpinBox.setButtonSymbols(QAbstractSpinBox.ButtonSymbols.NoButtons)
         self.StorageConfig_GroupBox_kWhrated_DoubleSpinBox.setDecimals(3)
         self.StorageConfig_GroupBox_kWhrated_DoubleSpinBox.setRange(0.1, 999999999)
         self.StorageConfig_GroupBox_Layout.addWidget(self.StorageConfig_GroupBox_kWhrated_Label, 2, 2, 1, 1)
@@ -936,7 +936,7 @@ class StorageConfig(QWidget):
         self.StorageConfig_GroupBox_kWhstored_Label = QLabel("Energia armazenada atual (%)")
         self.StorageConfig_GroupBox_kWhstored_Label.setToolTip("Energia Armazenada atual em % da capacidade nominal.")
         self.StorageConfig_GroupBox_kWhstored_DoubleSpinBox = QDoubleSpinBox()
-        self.StorageConfig_GroupBox_kWhstored_DoubleSpinBox.setButtonSymbols(2)
+        self.StorageConfig_GroupBox_kWhstored_DoubleSpinBox.setButtonSymbols(QAbstractSpinBox.ButtonSymbols.NoButtons)
         self.StorageConfig_GroupBox_kWhstored_DoubleSpinBox.setDecimals(3)
         self.StorageConfig_GroupBox_kWhstored_DoubleSpinBox.setRange(0.0, 100.0)
         self.StorageConfig_GroupBox_Layout.addWidget(self.StorageConfig_GroupBox_kWhstored_Label, 3, 2, 1, 1)
@@ -946,7 +946,7 @@ class StorageConfig(QWidget):
         self.StorageConfig_GroupBox_PercentageReserve_Label.setToolTip(
             "Percentual da capacidade de armazenamento nominal (kWh)\npara ser mantida em reserva. É tratado como nível mínimo de\ndescarregamento, em situações normais")
         self.StorageConfig_GroupBox_PercentageReserve_DoubleSpinBox = QDoubleSpinBox()
-        self.StorageConfig_GroupBox_PercentageReserve_DoubleSpinBox.setButtonSymbols(2)
+        self.StorageConfig_GroupBox_PercentageReserve_DoubleSpinBox.setButtonSymbols(QAbstractSpinBox.ButtonSymbols.NoButtons)
         self.StorageConfig_GroupBox_PercentageReserve_DoubleSpinBox.setDecimals(3)
         self.StorageConfig_GroupBox_PercentageReserve_DoubleSpinBox.setRange(0.0, 100.0)
         self.StorageConfig_GroupBox_Layout.addWidget(self.StorageConfig_GroupBox_PercentageReserve_Label, 3, 0, 1, 1)
@@ -956,7 +956,7 @@ class StorageConfig(QWidget):
         self.StorageConfig_GroupBox_IdlingkW_Label.setToolTip(
             "Percentual de potência ativa nominal (kW)\nconsumida por perdas por inatividade.")
         self.StorageConfig_GroupBox_IdlingkW_DoubleSpinBox = QDoubleSpinBox()
-        self.StorageConfig_GroupBox_IdlingkW_DoubleSpinBox.setButtonSymbols(2)
+        self.StorageConfig_GroupBox_IdlingkW_DoubleSpinBox.setButtonSymbols(QAbstractSpinBox.ButtonSymbols.NoButtons)
         self.StorageConfig_GroupBox_IdlingkW_DoubleSpinBox.setDecimals(3)
         self.StorageConfig_GroupBox_IdlingkW_DoubleSpinBox.setRange(0.0, 99.999)
         self.StorageConfig_GroupBox_Layout.addWidget(self.StorageConfig_GroupBox_IdlingkW_Label, 4, 2, 1, 1)
@@ -967,7 +967,7 @@ class StorageConfig(QWidget):
             "Taxa de carregamento em percentual da\npotência ativa nominal (kW).")
         self.StorageConfig_GroupBox_Per100Charge_DoubleSpinBox = QDoubleSpinBox()
         self.StorageConfig_GroupBox_Per100Charge_DoubleSpinBox.setDecimals(3)
-        self.StorageConfig_GroupBox_Per100Charge_DoubleSpinBox.setButtonSymbols(2)
+        self.StorageConfig_GroupBox_Per100Charge_DoubleSpinBox.setButtonSymbols(QAbstractSpinBox.ButtonSymbols.NoButtons)
         self.StorageConfig_GroupBox_Per100Charge_DoubleSpinBox.setRange(0.1, 100.0)
         self.StorageConfig_GroupBox_Layout.addWidget(self.StorageConfig_GroupBox_Per100Charge_Label, 4, 0, 1, 1)
         self.StorageConfig_GroupBox_Layout.addWidget(self.StorageConfig_GroupBox_Per100Charge_DoubleSpinBox, 4, 1, 1, 1)
@@ -978,14 +978,14 @@ class StorageConfig(QWidget):
         self.StorageConfig_GroupBox_Per100Discharge_DoubleSpinBox = QDoubleSpinBox()
         self.StorageConfig_GroupBox_Per100Discharge_DoubleSpinBox.setRange(0.1, 100.0)
         self.StorageConfig_GroupBox_Per100Discharge_DoubleSpinBox.setDecimals(3)
-        self.StorageConfig_GroupBox_Per100Discharge_DoubleSpinBox.setButtonSymbols(2)
+        self.StorageConfig_GroupBox_Per100Discharge_DoubleSpinBox.setButtonSymbols(QAbstractSpinBox.ButtonSymbols.NoButtons)
         self.StorageConfig_GroupBox_Layout.addWidget(self.StorageConfig_GroupBox_Per100Discharge_Label, 5, 2, 1, 1)
         self.StorageConfig_GroupBox_Layout.addWidget(self.StorageConfig_GroupBox_Per100Discharge_DoubleSpinBox, 5, 3, 1, 1)
         # Configurar propriedade "%EffCharge" (% de eficiencia ao carregar o Storage)
         self.StorageConfig_GroupBox_EffCharge_Label = QLabel("Eficiência do carregamento (%) ")
         self.StorageConfig_GroupBox_EffCharge_Label.setToolTip("Percentual de eficiência para o carregamento")
         self.StorageConfig_GroupBox_EffCharge_DoubleSpinBox = QDoubleSpinBox()
-        self.StorageConfig_GroupBox_EffCharge_DoubleSpinBox.setButtonSymbols(2)
+        self.StorageConfig_GroupBox_EffCharge_DoubleSpinBox.setButtonSymbols(QAbstractSpinBox.ButtonSymbols.NoButtons)
         self.StorageConfig_GroupBox_EffCharge_DoubleSpinBox.setDecimals(3)
         self.StorageConfig_GroupBox_EffCharge_DoubleSpinBox.setRange(0.1, 100.0)
         self.StorageConfig_GroupBox_Layout.addWidget(self.StorageConfig_GroupBox_EffCharge_Label, 5, 0, 1, 1)
@@ -994,7 +994,7 @@ class StorageConfig(QWidget):
         self.StorageConfig_GroupBox_EffDischarge_Label = QLabel("Eficiência do descarregamento (%)")
         self.StorageConfig_GroupBox_EffDischarge_Label.setToolTip("Percentual de eficiência para o carregamento")
         self.StorageConfig_GroupBox_EffDischarge_DoubleSpinBox = QDoubleSpinBox()
-        self.StorageConfig_GroupBox_EffDischarge_DoubleSpinBox.setButtonSymbols(2)
+        self.StorageConfig_GroupBox_EffDischarge_DoubleSpinBox.setButtonSymbols(QAbstractSpinBox.ButtonSymbols.NoButtons)
         self.StorageConfig_GroupBox_EffDischarge_DoubleSpinBox.setDecimals(3)
         self.StorageConfig_GroupBox_EffDischarge_DoubleSpinBox.setRange(0.1, 100.0)
         self.StorageConfig_GroupBox_Layout.addWidget(self.StorageConfig_GroupBox_EffDischarge_Label, 6, 2, 1, 1)
@@ -1010,7 +1010,7 @@ class StorageConfig(QWidget):
         self.StorageConfig_GroupBox_vMinPu_Label.setToolTip(
             "Tensão mínima em p.u. para a qual o modelo se aplica. Abaixo\ndesse valor,o modelo da carga se torna um modelo de impedância constante.")
         self.StorageConfig_GroupBox_vMinPu_DoubleSpinBox = QDoubleSpinBox()
-        self.StorageConfig_GroupBox_vMinPu_DoubleSpinBox.setButtonSymbols(2)
+        self.StorageConfig_GroupBox_vMinPu_DoubleSpinBox.setButtonSymbols(QAbstractSpinBox.ButtonSymbols.NoButtons)
         self.StorageConfig_GroupBox_vMinPu_DoubleSpinBox.setDecimals(3)
         self.StorageConfig_GroupBox_vMinPu_DoubleSpinBox.setRange(0.001, 100)
         self.StorageConfig_GroupBox_Layout.addWidget(self.StorageConfig_GroupBox_vMinPu_Label, 7, 0, 1, 1)
@@ -1021,7 +1021,7 @@ class StorageConfig(QWidget):
             "Tensão máxima em p.u. para a qual o modelo se aplica. Abaixo\ndesse valor,o modelo da carga se torna um modelo de impedância constante.")
         self.StorageConfig_GroupBox_vMaxPu_DoubleSpinBox = QDoubleSpinBox()
         self.StorageConfig_GroupBox_vMaxPu_DoubleSpinBox.setDecimals(3)
-        self.StorageConfig_GroupBox_vMaxPu_DoubleSpinBox.setButtonSymbols(2)
+        self.StorageConfig_GroupBox_vMaxPu_DoubleSpinBox.setButtonSymbols(QAbstractSpinBox.ButtonSymbols.NoButtons)
         self.StorageConfig_GroupBox_vMaxPu_DoubleSpinBox.setRange(0.001, 100)
         self.StorageConfig_GroupBox_Layout.addWidget(self.StorageConfig_GroupBox_vMaxPu_Label, 7, 2, 1, 1)
         self.StorageConfig_GroupBox_Layout.addWidget(self.StorageConfig_GroupBox_vMaxPu_DoubleSpinBox, 7, 3, 1, 1)
@@ -1031,7 +1031,7 @@ class StorageConfig(QWidget):
         self.StorageConfig_GroupBox_R_DoubleSpinBox = QDoubleSpinBox()
         self.StorageConfig_GroupBox_R_DoubleSpinBox.setRange(0.0, 999999999)
         self.StorageConfig_GroupBox_R_DoubleSpinBox.setDecimals(3)
-        self.StorageConfig_GroupBox_R_DoubleSpinBox.setButtonSymbols(2)
+        self.StorageConfig_GroupBox_R_DoubleSpinBox.setButtonSymbols(QAbstractSpinBox.ButtonSymbols.NoButtons)
         self.StorageConfig_GroupBox_Layout.addWidget(self.StorageConfig_GroupBox_R_Label, 8, 0, 1, 1)
         self.StorageConfig_GroupBox_Layout.addWidget(self.StorageConfig_GroupBox_R_DoubleSpinBox, 8, 1, 1, 1)
         # Configurar propriedade "%X" (reatância interna equivalente percentual)
@@ -1039,7 +1039,7 @@ class StorageConfig(QWidget):
         self.StorageConfig_GroupBox_X_Label.setToolTip("Percentual da reatância interna equivalente")
         self.StorageConfig_GroupBox_X_DoubleSpinBox = QDoubleSpinBox()
         self.StorageConfig_GroupBox_X_DoubleSpinBox.setDecimals(3)
-        self.StorageConfig_GroupBox_X_DoubleSpinBox.setButtonSymbols(2)
+        self.StorageConfig_GroupBox_X_DoubleSpinBox.setButtonSymbols(QAbstractSpinBox.ButtonSymbols.NoButtons)
         self.StorageConfig_GroupBox_X_DoubleSpinBox.setRange(0.0, 999999999)
         self.StorageConfig_GroupBox_Layout.addWidget(self.StorageConfig_GroupBox_X_Label, 8, 2, 1, 1)
         self.StorageConfig_GroupBox_Layout.addWidget(self.StorageConfig_GroupBox_X_DoubleSpinBox, 8, 3, 1, 1)
@@ -1090,7 +1090,7 @@ class InversorConfig(QWidget):
         self.InversorConfig_GroupBox_kVA_Label = QLabel("Pot. aparente máxima (kVA)")
         self.InversorConfig_GroupBox_kVA_DoubleSpinBox = QDoubleSpinBox()
         self.InversorConfig_GroupBox_kVA_DoubleSpinBox.setRange(0.1, 999999999)
-        self.InversorConfig_GroupBox_kVA_DoubleSpinBox.setButtonSymbols(2)
+        self.InversorConfig_GroupBox_kVA_DoubleSpinBox.setButtonSymbols(QAbstractSpinBox.ButtonSymbols.NoButtons)
         self.InversorConfig_GroupBox_kVA_DoubleSpinBox.setDecimals(3)
         self.InversorConfig_GroupBox_Layout.addWidget(self.InversorConfig_GroupBox_kVA_Label, 0, 0, 1, 1)
         self.InversorConfig_GroupBox_Layout.addWidget(self.InversorConfig_GroupBox_kVA_DoubleSpinBox, 0, 1, 1, 1)
@@ -1098,7 +1098,7 @@ class InversorConfig(QWidget):
         self.InversorConfig_GroupBox_kWrated_Label = QLabel("kWrated")
         self.InversorConfig_GroupBox_kWrated_DoubleSpinBox = QDoubleSpinBox()
         self.InversorConfig_GroupBox_kWrated_DoubleSpinBox.setDecimals(3)
-        self.InversorConfig_GroupBox_kWrated_DoubleSpinBox.setButtonSymbols(2)
+        self.InversorConfig_GroupBox_kWrated_DoubleSpinBox.setButtonSymbols(QAbstractSpinBox.ButtonSymbols.NoButtons)
         self.InversorConfig_GroupBox_kWrated_DoubleSpinBox.setRange(0.1, 999999999)
         self.InversorConfig_GroupBox_Layout.addWidget(self.InversorConfig_GroupBox_kWrated_Label, 0, 2, 1, 1)
         self.InversorConfig_GroupBox_Layout.addWidget(self.InversorConfig_GroupBox_kWrated_DoubleSpinBox, 0, 3, 1, 1)
@@ -1124,7 +1124,7 @@ começar novamente quando a potência\nDC estiver acima de CutIn")
  inversor.\nÉ a potência DC mínima para ligar o inversor quando ele está desligado.\nPrecisa ser igual ou maior que CutOut")
         self.InversorConfig_GroupBox_CutIn_DoubleSpinBox = QDoubleSpinBox()
         self.InversorConfig_GroupBox_CutIn_DoubleSpinBox.setRange(0.0, 100.0)
-        self.InversorConfig_GroupBox_CutIn_DoubleSpinBox.setButtonSymbols(2)
+        self.InversorConfig_GroupBox_CutIn_DoubleSpinBox.setButtonSymbols(QAbstractSpinBox.ButtonSymbols.NoButtons)
         self.InversorConfig_GroupBox_CutIn_DoubleSpinBox.setDecimals(3)
         self.InversorConfig_GroupBox_Layout.addWidget(self.InversorConfig_GroupBox_CutIn_Label, 2, 0, 1, 1)
         self.InversorConfig_GroupBox_Layout.addWidget(self.InversorConfig_GroupBox_CutIn_DoubleSpinBox, 2, 1, 1, 1)
@@ -1135,13 +1135,13 @@ inversor.\nÉ a potência DC mínima para manter o inversor ligado. Precisa ser\
         self.InversorConfig_GroupBox_CutOut_DoubleSpinBox = QDoubleSpinBox()
         self.InversorConfig_GroupBox_CutOut_DoubleSpinBox.setRange(0.0, 100.0)
         self.InversorConfig_GroupBox_CutOut_DoubleSpinBox.setDecimals(3)
-        self.InversorConfig_GroupBox_CutOut_DoubleSpinBox.setButtonSymbols(2)
+        self.InversorConfig_GroupBox_CutOut_DoubleSpinBox.setButtonSymbols(QAbstractSpinBox.ButtonSymbols.NoButtons)
         self.InversorConfig_GroupBox_Layout.addWidget(self.InversorConfig_GroupBox_CutOut_Label, 2, 2, 1, 1)
         self.InversorConfig_GroupBox_Layout.addWidget(self.InversorConfig_GroupBox_CutOut_DoubleSpinBox, 2, 3, 1, 1)
         # Configurar propriedade "kvarMax" (máximo geração de kvar aceita pelo inversor)
         self.InversorConfig_GroupBox_kvarMax_Label = QLabel("kvarMax")
         self.InversorConfig_GroupBox_kvarMax_DoubleSpinBox = QDoubleSpinBox()
-        self.InversorConfig_GroupBox_kvarMax_DoubleSpinBox.setButtonSymbols(2)
+        self.InversorConfig_GroupBox_kvarMax_DoubleSpinBox.setButtonSymbols(QAbstractSpinBox.ButtonSymbols.NoButtons)
         self.InversorConfig_GroupBox_kvarMax_DoubleSpinBox.setDecimals(3)
         self.InversorConfig_GroupBox_kvarMax_DoubleSpinBox.setRange(0.0, 999999999)
         self.InversorConfig_GroupBox_Layout.addWidget(self.InversorConfig_GroupBox_kvarMax_Label, 3, 0, 1, 1)
@@ -1149,7 +1149,7 @@ inversor.\nÉ a potência DC mínima para manter o inversor ligado. Precisa ser\
         # Configurar propriedade "kvarMaxAbs" (máximo absorção de kvar aceita pelo inversor)
         self.InversorConfig_GroupBox_kvarMaxAbs_Label = QLabel("kvarMaxAbs")
         self.InversorConfig_GroupBox_kvarMaxAbs_DoubleSpinBox = QDoubleSpinBox()
-        self.InversorConfig_GroupBox_kvarMaxAbs_DoubleSpinBox.setButtonSymbols(2)
+        self.InversorConfig_GroupBox_kvarMaxAbs_DoubleSpinBox.setButtonSymbols(QAbstractSpinBox.ButtonSymbols.NoButtons)
         self.InversorConfig_GroupBox_kvarMaxAbs_DoubleSpinBox.setDecimals(3)
         self.InversorConfig_GroupBox_kvarMaxAbs_DoubleSpinBox.setRange(0.0, 999999999)
         self.InversorConfig_GroupBox_Layout.addWidget(self.InversorConfig_GroupBox_kvarMaxAbs_Label, 3, 2, 1, 1)
@@ -1160,7 +1160,7 @@ inversor.\nÉ a potência DC mínima para manter o inversor ligado. Precisa ser\
 máxima (kW),\nna qual não há produção/absorção de reativo")
         self.InversorConfig_GroupBox_PminNoVars_DoubleSpinBox = QDoubleSpinBox()
         self.InversorConfig_GroupBox_PminNoVars_DoubleSpinBox.setRange(0.0, 100.0)
-        self.InversorConfig_GroupBox_PminNoVars_DoubleSpinBox.setButtonSymbols(2)
+        self.InversorConfig_GroupBox_PminNoVars_DoubleSpinBox.setButtonSymbols(QAbstractSpinBox.ButtonSymbols.NoButtons)
         self.InversorConfig_GroupBox_PminNoVars_DoubleSpinBox.setDecimals(3)
         self.InversorConfig_GroupBox_Layout.addWidget(self.InversorConfig_GroupBox_PminNoVars_Label, 4, 0, 1, 1)
         self.InversorConfig_GroupBox_Layout.addWidget(self.InversorConfig_GroupBox_PminNoVars_DoubleSpinBox, 4, 1, 1, 1)
@@ -1171,7 +1171,7 @@ máxima (kW), que permite\no inversor produzir/absorver potencia reativa até um
         self.InversorConfig_GroupBox_PminkvarMax_DoubleSpinBox = QDoubleSpinBox()
         self.InversorConfig_GroupBox_PminkvarMax_DoubleSpinBox.setRange(0.0, 100.0)
         self.InversorConfig_GroupBox_PminkvarMax_DoubleSpinBox.setDecimals(3)
-        self.InversorConfig_GroupBox_PminkvarMax_DoubleSpinBox.setButtonSymbols(2)
+        self.InversorConfig_GroupBox_PminkvarMax_DoubleSpinBox.setButtonSymbols(QAbstractSpinBox.ButtonSymbols.NoButtons)
         self.InversorConfig_GroupBox_Layout.addWidget(self.InversorConfig_GroupBox_PminkvarMax_Label, 4, 2, 1, 1)
         self.InversorConfig_GroupBox_Layout.addWidget(self.InversorConfig_GroupBox_PminkvarMax_DoubleSpinBox, 4, 3, 1, 1)
         # Configurar propriedade "PFPriority" (True: seta PF para seu valor quando kVA excedido)
@@ -1209,8 +1209,8 @@ class Storage_TreeWidget_Item(QTreeWidgetItem):
 
         ## Column 0 - Text:
         self.setText(0, name)
-        self.setFlags(self.flags() | Qt.ItemIsUserCheckable | Qt.ItemIsEditable)
-        self.setCheckState(0, Qt.Unchecked)
+        self.setFlags(self.flags() | Qt.ItemFlag.ItemIsUserCheckable | Qt.ItemFlag.ItemIsEditable)
+        self.setCheckState(0, Qt.CheckState.Unchecked)
         ## Column 1 - Bus:
         self.setText(1, bus)
         ## Column 2 - Modo Despacho:

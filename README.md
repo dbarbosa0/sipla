@@ -6,21 +6,17 @@ O SIPLA é uma interface gráfica para a integração entre o Banco de Dados Geo
 Para executar o software, os seguintes pacotes são necessários:
 
 ```
-pip install PyQt5
-pip install PyQtWebEngine
+pip install PyQt6
+pip install PyQt6-WebEngine
 pip install numpy
 pip install scipy
 pip install matplotlib
 pip install Unidecode
 pip install mysqlclient
 pip install fiona
-```
-
-
-```
-pip install git+https://github.com/pyqtgraph/pyqtgraph@develop
+pip install pyqtgraph
 pip install folium
-pip install 'OpenDSSDirect.py[extras]'
+pip install opendssdirect.py
 ```
 
 ### [Microsoft Windows](https://www.microsoft.com/windows/)
@@ -38,8 +34,8 @@ Para utilização no GNU Linux, verifique se os pacotes não podem ser instalado
 ###### Arch Linux
 ```
 python-pip
-python-pyqt5
-python-pyqt5-webengine
+python-PyQt6
+python-PyQt6-webengine
 python-numpy
 python-scipy
 python-matplotlib

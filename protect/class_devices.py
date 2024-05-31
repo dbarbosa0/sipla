@@ -1,7 +1,7 @@
 # Carvalho Tag
-from PyQt5.QtGui import QIcon
-from PyQt5.QtWidgets import QStyleFactory, QDialog,QHBoxLayout, QPushButton, QVBoxLayout, QTabWidget, QCheckBox
-from PyQt5.QtCore import Qt
+from PyQt6.QtGui import QIcon
+from PyQt6.QtWidgets import QStyleFactory, QDialog,QHBoxLayout, QPushButton, QVBoxLayout, QTabWidget, QCheckBox
+from PyQt6.QtCore import Qt
 
 import opendss.class_opendss
 import protect.class_recloser
@@ -30,7 +30,7 @@ class C_Devices_ConfigDialog(QDialog):
     def InitUI(self):
         self.setWindowTitle(self.titleWindow)
         self.setWindowIcon(QIcon(self.iconWindow))  # ícone da janela
-        self.setWindowModality(Qt.ApplicationModal)
+        self.setWindowModality(Qt.WindowModality.ApplicationModal)
         self.setStyle(QStyleFactory.create('Cleanlooks'))  # Estilo da Interface
         self.resize(300, 200)
 
@@ -54,7 +54,7 @@ class C_Devices_ConfigDialog(QDialog):
 
         #  Botões
         self.Dialog_Btns_Layout = QHBoxLayout()
-        self.Dialog_Btns_Layout.setAlignment(Qt.AlignRight)
+        self.Dialog_Btns_Layout.setAlignment(Qt.AlignmentFlag.AlignRight)
 
         self.Dialog_Btns_Ok_Btn = QPushButton("Ok")
         self.Dialog_Btns_Ok_Btn.setIcon(QIcon('img/icon_ok.png'))
