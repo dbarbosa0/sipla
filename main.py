@@ -1,7 +1,7 @@
 import sys, time
 
 from PyQt6.QtCore import Qt
-from PyQt6.QtGui import QIcon, QPixmap
+from PyQt6.QtGui import QIcon, QPixmap, QPalette
 from PyQt6.QtWidgets import QApplication, QMainWindow, QStyleFactory, QSplashScreen
 
 
@@ -79,11 +79,30 @@ class mainWindow(QMainWindow):
 
 
 if __name__ == '__main__':
+    siplaApp = QApplication(sys.argv)
+
     # Define the method to create all multiprocessed processes in Linux
     if platform.system() == 'Linux':
         multiprocessing.set_start_method('fork')
+    elif platform.system() == 'Windows':
+        # Devido a limitação da versão 6.5 do PyQt, em que não é a
+        siplaApp.setStyle('fusion')
 
-    siplaApp = QApplication(sys.argv)
+        paleta = siplaApp.palette()
+        paleta.setColor(QPalette.ColorRole.Window, paleta.color(QPalette.ColorRole.Base))
+        paleta.setColor(QPalette.ColorRole.WindowText, paleta.color(QPalette.ColorRole.ButtonText))
+        paleta.setColor(QPalette.ColorRole.Base, paleta.color(QPalette.ColorRole.Base))
+        paleta.setColor(QPalette.ColorRole.AlternateBase, paleta.color(QPalette.ColorRole.AlternateBase))
+        paleta.setColor(QPalette.ColorRole.ToolTipBase, paleta.color(QPalette.ColorRole.ToolTipBase))
+        paleta.setColor(QPalette.ColorRole.ToolTipText, paleta.color(QPalette.ColorRole.ToolTipText))
+        paleta.setColor(QPalette.ColorRole.Text, paleta.color(QPalette.ColorRole.ButtonText))
+        paleta.setColor(QPalette.ColorRole.Button, paleta.color(QPalette.ColorRole.Button))
+        paleta.setColor(QPalette.ColorRole.ButtonText, paleta.color(QPalette.ColorRole.ButtonText))
+        paleta.setColor(QPalette.ColorRole.BrightText, paleta.color(QPalette.ColorRole.BrightText))
+        paleta.setColor(QPalette.ColorRole.Highlight, paleta.color(QPalette.ColorRole.Highlight))
+        paleta.setColor(QPalette.ColorRole.HighlightedText, paleta.color(QPalette.ColorRole.HighlightedText))
+
+        siplaApp.setPalette(paleta)
 
     # Create and display the splash screen
     splash_pix = QPixmap('img/Logo_SIPLA.png')

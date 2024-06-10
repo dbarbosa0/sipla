@@ -13,7 +13,7 @@ import database.class_convert_BDGD as class_convert_BDGD
 import fiona
 
 
-class C_ConfigDialog(QDialog, class_data.dadosBDGD):
+class C_ConfigDialog(QDialog):
     def __init__(self):
         super().__init__()
 
@@ -25,10 +25,7 @@ class C_ConfigDialog(QDialog, class_data.dadosBDGD):
 
         self.databaseInfo = {}
 
-        self.DBPRODIST2017 = ["CTAT", "EQTRM", "SSDMT", "UNREMT", "UNTRS", "CTMT", "EQTRS", "UCBT", "UNSEAT",
-                              "EQSE", "RAMLIG", "UCMT", "UNSEMT", "EQTRD", "SEGCON", "UNCRMT", "UNCRBT", "UNTRD"]
-        self.DBPRODIST2021 = ["CTAT", "EQTRM", "SSDMT", "UNREMT", "UNTRAT", "CTMT", "EQTRAT", "UCBT", "UNSEAT",
-                              "EQSE", "RAMLIG", "UCMT", "UNSEMT", "EQTRMT", "SEGCON", "UNCRMT", "UNCRBT", "UNTRMT"]
+        self.dadosBDGD = class_data.dadosBDGD()
 
         self.InitUI()
 
@@ -93,13 +90,13 @@ class C_ConfigDialog(QDialog, class_data.dadosBDGD):
         self.loadDefaultParameters()
 
     def Accept(self):
-        Conversor: class_convert_BDGD.ConnectorWindowAndConverterBDGD
+        Conversor: class_convert_BDGD.ConnectorInterfaceConversor
         self.loadParameters()
         if self.databaseInfo["Sqlite_DirDataBase"]:
             self.close()
 
         else:
-            CONVERSOR = class_convert_BDGD.ConnectorWindowAndConverterBDGD(self)
+            CONVERSOR = class_convert_BDGD.ConnectorInterfaceConversor(self)
             CONVERSOR.DataBaseInfo = self.databaseInfo
             CONVERSOR.initUI()
 
@@ -224,7 +221,7 @@ class C_ConfigDialog(QDialog, class_data.dadosBDGD):
                         QMessageBox.StandardButton.Ok).exec()
             return False
 
-        layers_necessarias = self.get_layers_uteis_BDGD(modelo_database)
+        layers_necessarias = self.dadosBDGD.get_layers_uteis_BDGD(modelo_database)
         layers_ausentes = []
 
 
