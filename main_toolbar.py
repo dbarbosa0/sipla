@@ -8,7 +8,7 @@ class C_MenuToolBar(QDockWidget):
 
         self.MainMenu = QMenuBar()
 
-        if MainWin != None:
+        if MainWin is not None:
             self.MainWin = MainWin
             self.MainMenu = self.MainWin.menuBar()
 
@@ -319,7 +319,7 @@ class C_MenuToolBar(QDockWidget):
         # ******* Setup the Help Menu *******
         self.HelpMenu.addAction(self.Help_About_Act)
 
-        if MainWin != None:
+        if MainWin is not None:
             self.InitToolBar(MainWin)
 
     def InitToolBar(self, MainWin = None):

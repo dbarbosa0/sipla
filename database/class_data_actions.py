@@ -6,7 +6,7 @@ import class_exception
 from database.class_data import dadosCTATMT
 
 
-class C_DBaseData():
+class C_DBaseData:
 
     def __init__(self):
         super(C_DBaseData, self).__init__()

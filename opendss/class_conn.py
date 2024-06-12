@@ -6,7 +6,7 @@ import unidecode
 if platform.system() == "Windows":
     import win32com.client
 
-class C_Conn(): # classe OpenDSS com métodos virtuais
+class C_Conn: # classe OpenDSS com métodos virtuais
 
     def __init__(self):
         self.FileOpenDSS = ''

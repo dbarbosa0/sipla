@@ -6,7 +6,7 @@ import prodist.tpos
 import prodist.ttranf
 import prodist.tpostotran
 
-class C_DBaseCoord():
+class C_DBaseCoord:
     def __init__(self):
         self._DataBaseConn = database.class_conn.C_DBaseConn()
 
@@ -58,8 +58,7 @@ class C_DBaseCoord():
         :return lista_de_dados_linha: list[str], lista dos pac's dos alimentadores
         """
         try:
-            nomeAL_MTS = []
-            nomeAL_MTS.append(str(nomeAL_MT))
+            nomeAL_MTS = [str(nomeAL_MT)]
             codAlimentador = self.getCods_AL_SE_MT_DB(nomeAL_MTS)
 
             match self.DataBaseConn.DataBaseInfo["versao"]:

@@ -96,9 +96,9 @@ class C_ConfigDialog(QDialog):
             self.close()
 
         else:
-            CONVERSOR = class_convert_BDGD.ConnectorInterfaceConversor(self)
-            CONVERSOR.DataBaseInfo = self.databaseInfo
-            CONVERSOR.initUI()
+            self.CONVERSOR = class_convert_BDGD.ConnectorInterfaceConversor(self)
+            self.CONVERSOR.DataBaseInfo = self.databaseInfo
+            self.CONVERSOR.initUI()
 
     def loadParameters(self):
         directory_database: str = self.GroupBox_BDGD_Edit.text()

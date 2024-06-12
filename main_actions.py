@@ -27,7 +27,7 @@ import main_toolbar
 import class_about_dialog
 import datetime
 
-class C_MainActions():
+class C_MainActions:
     def __init__(self):
 
         ################ Pegando instancias definidas no Main
