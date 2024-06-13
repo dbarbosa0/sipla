@@ -108,7 +108,7 @@ class C_NetPanel(QDockWidget):
 
         #####################################
 
-        self.Deck_GroupBox_MapView_Btn = QPushButton("Visualizar")
+        self.Deck_GroupBox_MapView_Btn = QPushButton("Visualizar e carregar alimentador(es)")
         self.Deck_GroupBox_MapView_Btn.setIcon(QIcon('img/icon_map.png'))
         # self.Deck_GroupBox_MapView_Btn.setFixedWidth(300)
         self.Deck_GroupBox_MapView_Btn.clicked.connect(self.execView)

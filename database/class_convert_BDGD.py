@@ -62,11 +62,18 @@ class ConnectorInterfaceConversor:
             self.config_dialog.loadParameters()
             self.config_dialog.close()
             self.window.close()
+        else:
+            self.window.alterar_botao_conv()
+            self.window.habilitar_botao_conv()
 
 
     def iniciar_conversao(self):
         # Tempo inicial da conversão
         self.inicio_conv = timer()
+        
+        # Alterar disponibilidade dos botões
+        self.window.habilitar_botao_interromper()
+        self.window.desabilitar_botao_conv()
 
         self.conversor = Conversor_BDGD(self, self.path_BDGD_geodb)
         self.path_BDGD_sqlite, self.BDGD_sqlite_already_exists = self.conversor.criacao_novo_diretorio()
@@ -88,7 +95,7 @@ class ConnectorInterfaceConversor:
 
     def conversao_threading_Qt(self):
         self.threadpool = QThreadPool()
-        self.thread_conversao_single_core = ThreadConversaoSingleCore(self.layers_BDGD, self.conversor, self)
+        self.thread_conversao_single_core = WorkerConversaoSingleCore(self.layers_BDGD, self.conversor, self)
 
         # Sinais associados ao thread
         self.thread_conversao_single_core.signais.resultado_layer_iniciada.connect(self.coversao_layer_iniciada)
@@ -128,38 +135,60 @@ class ConnectorInterfaceConversor:
             print("Layer Finalizado: [", idxThr, "]")
 
     def conversao_multiprocessing_manual(self):
-        nCore = multiprocessing.cpu_count()
-        process = []
+        self.window.alterar_indicador_acao("Estado atual: layers sendo convertidas simultaneamente (multiprocessing)")
+        n_prcessos_finalizados = 0
+        processos = []
         for layer in self.layers_BDGD:
 
-            pro = multiprocessing.Process(target=self.conversor.convert_geodatabase_to_sqlite, args=(layer,))
+            processo = multiprocessing.Process(target=self.conversor.convert_geodatabase_to_sqlite, args=(layer,))
 
-            process.append(pro)
+            processos.append(processo)
 
-            pro.start()
+            processo.start()
 
             print("Iniciado conversao [", layer, "]: ")
 
-        for idxThr, pro in enumerate(process):
-            pro.join()
+        for idxThr, processo in enumerate(processos):
+            processo.join()
+            n_prcessos_finalizados += 1
+            self.conversao_layer_finalizada(n_prcessos_finalizados)
 
-            print("Layer Finalizado: [", idxThr, "]")
+            if self.exit_request_flag:
+                # Morte dos processos
+                for processo in processos:
+                    if processo.is_alive():
+                        processo.kill()
+
+                # Atualização da Flag
+                self.is_running_flag = False
+
+                self.window.alterar_indicador_acao('Estado atual: Conversão interrompida')
+
+        self.conversao_finalizada()
 
     def interromper_conversao(self):
         if self.is_running_flag:
+            self.window.desabilitar_botao_interromper()
+            
             self.exit_request_flag = True
-            self.window.alterar_indicador_acao('Estado atual: interrompendo a conversão\n'
-                '(Aguarde a conversão da layer atual para que seja possível retomar a conversão desse ponto).')
+
+            if platform.system() == 'Linux':
+                self.window.alterar_indicador_acao('Estado atual: interrompendo a conversão\n')
+            elif platform.system() == 'Windows':
+                self.window.alterar_indicador_acao('Estado atual: interrompendo a conversão\n'
+                                                   '(Aguarde a conversão da layer atual para que seja possível retomar'
+                                                   ' a conversão desse ponto).')
+            elif platform.system() == 'Darwin':
+                self.window.alterar_indicador_acao('Estado atual: interrompendo a conversão\n')
 
 
-
-class ThreadConversaoSingleCore(QRunnable):
+class WorkerConversaoSingleCore(QRunnable):
 
     def __init__(self, *args, **kwargs):
-        super(ThreadConversaoSingleCore, self).__init__()
+        super(WorkerConversaoSingleCore, self).__init__()
         self.args = args
         self.kwargs = kwargs
-        self.signais = SinaisConversao()
+        self.signais = SinaisConversaoSingleCore()
 
     @pyqtSlot()
     def run(self):
@@ -190,12 +219,8 @@ class ThreadConversaoSingleCore(QRunnable):
         finally:
             self.signais.finalizacao_completa.emit()
 
-    def conversao_padrao(self, argumentos):
-        layers_BDGD, conversor = argumentos
-        for index, nome_layer in enumerate(layers_BDGD, start=1):
-            conversor.convert_geodatabase_to_sqlite(nome_layer)
 
-class SinaisConversao(QObject):
+class SinaisConversaoSingleCore(QObject):
     
     finalizacao_layer = pyqtSignal(object)
     resultado_layer_iniciada = pyqtSignal(object)
@@ -251,11 +276,12 @@ class InterfaceJanelaConversao(QWidget):
         # Construção do botão de interrupção da conversão
         self.botao_cancelar = QPushButton("Interromper a conversão")
         self.botao_cancelar.setIcon(QIcon('img/icon_cancel.png'))
+        self.botao_cancelar.setDisabled(True)
         self.botao_cancelar.clicked.connect(self.clique_botao_interromper)
 
         # Contrução do aviso ao usuário
-        self.aviso = QLabel("Antes do primeiro uso de uma BDGD no ambiente do SIPLA, é necessário renomear, configurar "
-                            "e converter as layers do padrão\nem geodatabase adotado pelas distribuidoras, a fim de "
+        self.aviso = QLabel("Antes do primeiro uso de um BDGD no ambiente do SIPLA, é necessário renomear, configurar "
+                            "e converter as layers no padrão\n geodatabase, adotado pelas distribuidoras, a fim de "
                             "possibilitar a execução de queries em SQL pelo programa. Tal processo\npode levar alguns "
                             "minutos.")
 
@@ -295,6 +321,22 @@ class InterfaceJanelaConversao(QWidget):
 
     def atualizar_barra_progresso(self, index_layer: int):
         self.bar_progress.setValue(index_layer)
+
+    def desabilitar_botao_interromper(self):
+        self.botao_cancelar.setDisabled(True)
+
+    def habilitar_botao_interromper(self):
+        self.botao_cancelar.setDisabled(False)
+
+    def desabilitar_botao_conv(self):
+        self.botao_iniciar.setDisabled(True)
+
+    def habilitar_botao_conv(self):
+        self.botao_iniciar.setDisabled(False)
+
+    def alterar_botao_conv(self):
+        self.botao_iniciar.setText('Retomar Conversão')
+        self.botao_iniciar.setIcon(QIcon('img/icon_retomar_verde.png'))
 
 
 class Conversor_BDGD:
@@ -515,12 +557,13 @@ class Conversor_BDGD:
 
 if __name__ == '__main__':
 
-    # Setup de teste isolado do conversor
-    path_BDGD_geodb = r"C:\Users\ppgsa\Documents\SIPLA\Debug_final_geodb_conv\COELBA_47_2018-12-31_M10_20190610-1331.gdb"
+    # Setup para teste isolado do conversor
+    path_BDGD_geodb = r"C:\Users\ppgsa\Documents\SIPLA\Debug_final_geodb_conv\Sulgipe_46_2018-12-31_M10_20190619-1427.gdb"
     modelo_BDGD = "Modelo Novo"
 
     #
     app = QApplication(sys.argv)
+    app.setStyle('fusion')
     Connector = ConnectorInterfaceConversor(QWidget())
     Connector.DataBaseInfo = {'Geodb_DirDataBase': path_BDGD_geodb, 'Modelo': modelo_BDGD}
 

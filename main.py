@@ -81,11 +81,12 @@ class mainWindow(QMainWindow):
 if __name__ == '__main__':
     siplaApp = QApplication(sys.argv)
 
-    # Define the method to create all multiprocessed processes in Linux
     if platform.system() == 'Linux':
+        # Define the method to create all multiprocessed processes in Linux
         multiprocessing.set_start_method('fork')
     elif platform.system() == 'Windows':
-        # Devido a limitação da versão 6.5 do PyQt, em que não é a
+        # Devido a limitação da versão 6.5 do PyQt, em que não há controle sobre o tema da janela no windown, isto é o
+        # tema padrão no os é seguido, definimos uma paleta para os elementos que segue o tema do os.
         siplaApp.setStyle('fusion')
 
         paleta = siplaApp.palette()

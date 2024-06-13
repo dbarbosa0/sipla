@@ -226,7 +226,7 @@ class C_DBaseData:
 
     def getData_Condutores(self, tipoCondutor):
         """
-        Seleciona colunas do banco de SEGCOM de um determinado tipo (B, M ou R), e as armazena em uma lista
+        Seleciona todas as colunas do banco de SEGCOM de um determinado tipo (B, M ou R), e as armazena em uma lista
 
 
         :param tipoCondutor: str, tipo de condutores: B = baixa tensão, M = média tensão e R = ramal
@@ -238,11 +238,9 @@ class C_DBaseData:
         try:
             match self.DataBaseConn.DataBaseInfo["versao"]:
                 case "2017":
-                    sqlQuery = ("SELECT cod_id, r1, x1, cnom, cmax FROM segcon WHERE cod_id LIKE '%" + tipoCondutor +
-                                "%' ORDER BY cod_id")
+                    sqlQuery = ("SELECT cod_id, r1, x1, cnom, cmax FROM segcon")
                 case "2021":
-                    sqlQuery = ("SELECT cod_id, r1, x1, cnom, cmax FROM segcon WHERE cod_id LIKE '%" + tipoCondutor +
-                                "%' ORDER BY cod_id")
+                    sqlQuery = ("SELECT cod_id, r1, x1, cnom, cmax FROM segcon")
 
             SEGCONs = self.DataBaseConn.getSQLDB("SEGCON", sqlQuery)
 
