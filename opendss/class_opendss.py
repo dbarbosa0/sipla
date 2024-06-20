@@ -329,15 +329,11 @@ class C_OpenDSS:  # classe OpenDSSDirect
         for ctd in self.execOpenDSSFuncAll:
             msg = self.execOpenDSSFuncAll[ctd][-1]
             ### Roda com a flag em 1
+            if ctd == "UConMT":
 
-            if ctd == "UConMTTS":
-                if self.OpenDSSConfig["UNCMT"] == "1":  # Carga concentrada no trafo de subestação
+                if self.OpenDSSConfig["UNCMT"] == "1":
                     self.execOpenDSSFuncAll[ctd][-1]()
-                    print('teste unidades consumidoras média tensão', self.execOpenDSSFuncAll[ctd][-1])
-            elif ctd == "UConMT":
-                if self.OpenDSSConfig["UNCMT"] == "0":
-                    self.execOpenDSSFuncAll[ctd][-1]()
-                    print("EXCEÇÃO TESTE DE MÉDIA TENSÃO")
+                    #print(msg)
             elif ctd == "UConBTTD": #Carga concentrada na Baixa do trafo
                 if self.OpenDSSConfig["UNCBTTD"] == "1":
                     self.execOpenDSSFuncAll[ctd][-1]()
