@@ -7,7 +7,7 @@ import database.class_coord
 import database.class_conn
 import config
 
-class C_Viewer():
+class C_Viewer:
 
     def __init__(self):
 

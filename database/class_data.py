@@ -159,7 +159,7 @@ class dadosALIMENTADOR(NamedTuple):
     cod_id: str
 
 
-class dadosBDGD():
+class dadosBDGD:
     def __init__(self):
         self.BDGD_n_layers_Modelo_Versao_1_0 = 43
         self.BDGD_layers_Modelo_Versao_1_0 = {"ARAT": "ARAT",  # Área de atuação

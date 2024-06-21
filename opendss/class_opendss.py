@@ -16,7 +16,7 @@ import queue
 import threading
 
 
-class C_OpenDSS():  # classe OpenDSSDirect
+class C_OpenDSS:  # classe OpenDSSDirect
 
     def __init__(self):
 
@@ -329,14 +329,11 @@ class C_OpenDSS():  # classe OpenDSSDirect
         for ctd in self.execOpenDSSFuncAll:
             msg = self.execOpenDSSFuncAll[ctd][-1]
             ### Roda com a flag em 1
-            if ctd == "UConMTTS":
-                if self.OpenDSSConfig["UNCMT"] == "1":  # Carga concentrada no trafo de subestação
+            if ctd == "UConMT":
+
+                if self.OpenDSSConfig["UNCMT"] == "1":
                     self.execOpenDSSFuncAll[ctd][-1]()
-                    print('teste unidades consumidoras média tensão', self.execOpenDSSFuncAll[ctd][-1])
-            elif ctd == "UConMT":
-                if self.OpenDSSConfig["UNCMT"] == "0":
-                    self.execOpenDSSFuncAll[ctd][-1]()
-                    print("EXCEÇÃO TESTE DE MÉDIA TENSÃO")
+                    #print(msg)
             elif ctd == "UConBTTD": #Carga concentrada na Baixa do trafo
                 if self.OpenDSSConfig["UNCBTTD"] == "1":
                     self.execOpenDSSFuncAll[ctd][-1]()
@@ -481,20 +478,20 @@ class C_OpenDSS():  # classe OpenDSSDirect
                 for cont in data:
                     redirectFile += str(cont) + '\n'
 
-            if (ctd == "UConMT"):
-                if (self.OpenDSSConfig["UNCMT"] == "1"):
+            if ctd == "UConMT":
+                if self.OpenDSSConfig["UNCMT"] == "1":
                     self.saveFileDSS(diretorio, ctd, redirectFile)
-            elif (ctd == "UConBT"):
-                if (self.OpenDSSConfig["UNCBTTD"] == "0"):
+            elif ctd == "UConBT":
+                if self.OpenDSSConfig["UNCBTTD"] == "0":
                     self.saveFileDSS(diretorio, ctd, redirectFile)
-            elif (ctd == "UConBTTD"):
-                if (self.OpenDSSConfig["UNCBTTD"] == "1"):
+            elif ctd == "UConBTTD":
+                if self.OpenDSSConfig["UNCBTTD"] == "1":
                     self.saveFileDSS(diretorio, ctd, redirectFile)
             elif (ctd == "UConMTLoadShapes") or (ctd == "LoadShapes"):
                 if (self.OpenDSSConfig["Mode"] == "Daily") and (self.OpenDSSConfig["UNCMT"] == "1"):
                     self.saveFileDSS(diretorio, ctd, redirectFile)
-            elif (ctd == "UConBTLoadShapes"):
-                if (self.OpenDSSConfig["Mode"] == "Daily"):
+            elif ctd == "UConBTLoadShapes":
+                if self.OpenDSSConfig["Mode"] == "Daily":
                     self.saveFileDSS(diretorio, ctd, redirectFile)
             else:
                 self.saveFileDSS(diretorio, ctd, redirectFile)
@@ -518,24 +515,24 @@ class C_OpenDSS():  # classe OpenDSSDirect
                     mainFile += str(cont) + '\n'
             else:
 
-                if (ctd == "UConMT"):
-                    if (self.OpenDSSConfig["UNCMT"] == "1"):
+                if ctd == "UConMT":
+                    if self.OpenDSSConfig["UNCMT"] == "1":
                         # mainFile += "! " + self.execOpenDSSFunc[ctd][-2] + "\n"
                         mainFile += "Redirect " + ctd + ".dss " + '\n'
-                elif (ctd == "UConBT"):
-                    if (self.OpenDSSConfig["UNCBTTD"] == "0"):
+                elif ctd == "UConBT":
+                    if self.OpenDSSConfig["UNCBTTD"] == "0":
                         # mainFile += "! " + self.execOpenDSSFunc[ctd][-2] + "\n"
                         mainFile += "Redirect " + ctd + ".dss " + '\n'
-                elif (ctd == "UConBTTD"):
-                    if (self.OpenDSSConfig["UNCBTTD"] == "1"):
+                elif ctd == "UConBTTD":
+                    if self.OpenDSSConfig["UNCBTTD"] == "1":
                         # mainFile += "! " + self.execOpenDSSFunc[ctd][-2] + "\n"
                         mainFile += "Redirect " + ctd + ".dss " + '\n'
                 elif (ctd == "UConMTLoadShapes") or (ctd == "LoadShapes"):
                     if (self.OpenDSSConfig["Mode"] == "Daily") and (self.OpenDSSConfig["UNCMT"] == "1"):
                         # mainFile += "! " + self.execOpenDSSFunc[ctd][-2] + "\n"
                         mainFile += "Redirect " + ctd + ".dss " + '\n'
-                elif (ctd == "UConBTLoadShapes"):
-                    if (self.OpenDSSConfig["Mode"] == "Daily"):
+                elif ctd == "UConBTLoadShapes":
+                    if self.OpenDSSConfig["Mode"] == "Daily":
                         # mainFile += "! " + self.execOpenDSSFunc[ctd][-2] + "\n"
                         mainFile += "Redirect " + ctd + ".dss " + '\n'
                 else:

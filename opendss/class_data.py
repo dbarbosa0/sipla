@@ -11,7 +11,7 @@ import prodist.tcapelofu as tcapelofu  # Elos fusíveis
 from random import random
 
 
-class C_Data():  # classe OpenDSS
+class C_Data:  # classe OpenDSS
 
     def __init__(self):
         self.teste_Tratamento_trafo = opendss.class_trafo_data.trafo_data()
@@ -330,7 +330,7 @@ class C_Data():  # classe OpenDSS
 
             for ctd in range(0, len(dados_sec)):
 
-                if ((dados_sec[ctd].pac_1 in tmpPAC) or (dados_sec[ctd].pac_2 in tmpPAC)):
+                if (dados_sec[ctd].pac_1 in tmpPAC) or (dados_sec[ctd].pac_2 in tmpPAC):
                     # and ((dados_sec[ctd].pac_1.find(self.nCircuitoAT_MT[0:3]) != -1 ) or (dados_sec[ctd].pac_2.find(self.nCircuitoAT_MT[0:3])) != -1):
 
                     [num_de_fases, pac_1, pac_2] = self.getFasesConexao(dados_sec[ctd].fas_con, dados_sec[ctd].pac_1,
@@ -1130,8 +1130,8 @@ class C_Data():  # classe OpenDSS
                         max_carga = dados_db[ctd].ene_12
 
                     carga_otimizada = (max_carga * 2) / ((sum(curva_loadshape) / max(curva_loadshape)) * 15)
-                    if carga_otimizada > 0.6 * (dados_db[ctd].car_inst):
-                        carga_otimizada = 0.6 * (dados_db[ctd].car_inst)
+                    if carga_otimizada > 0.6 * dados_db[ctd].car_inst:
+                        carga_otimizada = 0.6 * dados_db[ctd].car_inst
 
                     vetor_carga_otimizada.append(carga_otimizada)
                     vetor_carga_NAO_otimizada.append(dados_db[ctd].car_inst)
@@ -1148,7 +1148,7 @@ class C_Data():  # classe OpenDSS
 
                         memoFileUC.append("! Tranformador de Distribuicao: " + dados_db[ctd].uni_tr)
 
-                        if (dados_db[ctd].uni_tr not in self.nFieldsTD):
+                        if dados_db[ctd].uni_tr not in self.nFieldsTD:
                             print(f'Bugde: {self.trafoDistUniCons}')
                             auxpac_1 = self.trafoDistUniCons[dados_db[ctd].uni_tr][-2]
                         else:
@@ -1202,7 +1202,7 @@ class C_Data():  # classe OpenDSS
             tmpUniTr = {}
 
             for ctd in range(0, len(dados_db)):
-                if (dados_db[ctd].ctmt in lista_de_identificadores_dos_alimentadores):
+                if dados_db[ctd].ctmt in lista_de_identificadores_dos_alimentadores:
 
                     if conBTTD == True:
                         if dados_db[ctd].uni_tr in tmpUniTr:
@@ -1413,7 +1413,7 @@ class C_Data():  # classe OpenDSS
 
             for ctd in range(0, len(dados_db)):
 
-                if (dados_db[ctd].ctmt in lista_de_identificadores_dos_alimentadores):
+                if dados_db[ctd].ctmt in lista_de_identificadores_dos_alimentadores:
 
                     checkOK = False
 
@@ -1485,7 +1485,7 @@ class C_Data():  # classe OpenDSS
 
             for ctd in range(0, len(dados_db)):
 
-                if (dados_db[ctd].ctmt in lista_de_identificadores_dos_alimentadores):
+                if dados_db[ctd].ctmt in lista_de_identificadores_dos_alimentadores:
                     [num_de_fases, pac_1, pac_2] = self.getFasesConexao(dados_db[ctd].fas_con, dados_db[ctd].pac_1,
                                                                         None)
 
@@ -1531,15 +1531,15 @@ class C_Data():  # classe OpenDSS
             num_de_fases = "3"
             pac_1 = pac_1.replace('-', "") + ".1.2.3"
             pac_2 = pac_2.replace('-', "") + ".1.2.3"
-        if fas_con == ("AB"):
+        if fas_con == "AB":
             num_de_fases = "2"
             pac_1 = pac_1.replace('-', "") + ".1.2"
             pac_2 = pac_2.replace('-', "") + ".1.2"
-        if fas_con == ("BC"):
+        if fas_con == "BC":
             num_de_fases = "2"
             pac_1 = pac_1.replace('-', "") + ".2.3"
             pac_2 = pac_2.replace('-', "") + ".2.3"
-        if fas_con == ("CA"):
+        if fas_con == "CA":
             num_de_fases = "2"
             pac_1 = pac_1.replace('-', "") + ".3.1"
             pac_2 = pac_2.replace('-', "") + ".3.1"
@@ -1547,39 +1547,39 @@ class C_Data():  # classe OpenDSS
             num_de_fases = "3"
             pac_1 = pac_1.replace('-', "") + ".1.2.3.0"
             pac_2 = pac_2.replace('-', "") + ".1.2.3.0"
-        if fas_con == ("ABN"):
+        if fas_con == "ABN":
             num_de_fases = "2"
             pac_1 = pac_1.replace('-', "") + ".1.2.0"
             pac_2 = pac_2.replace('-', "") + ".1.2.0"
-        if fas_con == ("BCN"):
+        if fas_con == "BCN":
             num_de_fases = "2"
             pac_1 = pac_1.replace('-', "") + ".2.3.0"
             pac_2 = pac_2.replace('-', "") + ".2.3.0"
-        if fas_con == ("CAN"):
+        if fas_con == "CAN":
             num_de_fases = "2"
             pac_1 = pac_1.replace('-', "") + ".3.1.0"
             pac_2 = pac_2.replace('-', "") + ".3.1.0"
-        if fas_con == ("AN"):
+        if fas_con == "AN":
             num_de_fases = "1"
             pac_1 = pac_1.replace('-', "") + ".1.0"
             pac_2 = pac_2.replace('-', "") + ".1.0"
-        if fas_con == ("BN"):
+        if fas_con == "BN":
             num_de_fases = "1"
             pac_1 = pac_1.replace('-', "") + ".2.0"
             pac_2 = pac_2.replace('-', "") + ".2.0"
-        if fas_con == ("CN"):
+        if fas_con == "CN":
             num_de_fases = "1"
             pac_1 = pac_1.replace('-', "") + ".3.0"
             pac_2 = pac_2.replace('-', "") + ".3.0"
-        if fas_con == ("A"):
+        if fas_con == "A":
             num_de_fases = "1"
             pac_1 = pac_1.replace("-", "") + ".1"
             pac_2 = pac_2.replace("-", "") + ".1"
-        if fas_con == ("B"):
+        if fas_con == "B":
             num_de_fases = "1"
             pac_1 = pac_1.replace("-", "") + ".2"
             pac_2 = pac_2.replace("-", "") + ".2"
-        if fas_con == ("C"):
+        if fas_con == "C":
             num_de_fases = "1"
             pac_1 = pac_1.replace("-", "") + ".3"
             pac_2 = pac_2.replace("-", "") + ".3"
@@ -1601,37 +1601,37 @@ class C_Data():  # classe OpenDSS
             pac_2_1 = pac_2.replace('-', "") + ".1.2.3.0"
             pac_2_2 = pac_2_1
             windings = 2
-        elif fas_con_s == ("ABN"):
+        elif fas_con_s == "ABN":
             num_de_fases = "1"
             pac_1 = pac_1.replace('-', "") + ".1.2"
             pac_2_1 = pac_2.replace('-', "") + ".1.0"
             pac_2_2 = pac_2.replace('-', "") + ".0.2"
             windings = 3
-        elif fas_con_s == ("BCN"):
+        elif fas_con_s == "BCN":
             num_de_fases = "1"
             pac_1 = pac_1.replace('-', "") + ".2.3"
             pac_2_1 = pac_2.replace('-', "") + ".2.0"
             pac_2_2 = pac_2.replace('-', "") + ".0.3"
             windings = 3
-        elif fas_con_s == ("CAN"):
+        elif fas_con_s == "CAN":
             num_de_fases = "1"
             pac_1 = pac_1.replace('-', "") + ".3.1"
             pac_2_1 = pac_2.replace('-', "") + ".3.0"
             pac_2_2 = pac_2.replace('-', "") + ".0.1"
             windings = 3
-        elif fas_con_s == ("AN"):
+        elif fas_con_s == "AN":
             num_de_fases = "1"
             pac_1 = pac_1.replace('-', "") + ".1.0"
             pac_2_1 = pac_2.replace('-', "") + ".1.0"
             pac_2_2 = pac_2_1
             windings = 2
-        elif fas_con_s == ("BN"):
+        elif fas_con_s == "BN":
             num_de_fases = "1"
             pac_1 = pac_1.replace('-', "") + ".2.0"
             pac_2_1 = pac_2.replace('-', "") + ".2.0"
             pac_2_2 = pac_2_1
             windings = 2
-        elif fas_con_s == ("CN"):
+        elif fas_con_s == "CN":
             num_de_fases = "1"
             pac_1 = pac_1.replace('-', "") + ".3.0"
             pac_2_1 = pac_2.replace('-', "") + ".3.0"

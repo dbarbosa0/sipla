@@ -2,6 +2,7 @@ from PyQt6.QtGui import QIcon, QGuiApplication
 from PyQt6.QtWidgets import QStyleFactory, QRadioButton, QDialog, QGridLayout, QGroupBox, QAbstractSpinBox, \
     QVBoxLayout, QCheckBox, QTabWidget, QDoubleSpinBox, QLabel, QComboBox, QWidget, QLineEdit, QPushButton, QHBoxLayout, QMessageBox, QTreeWidgetItem, QTreeWidget
 from PyQt6.QtCore import Qt
+from opendss.additional_widgets.combobox_pesquisavel import ExtendedComboBox
 
 import random
 import unidecode
@@ -489,7 +490,8 @@ class PVSystem(QDialog):
         self.Barra_GroupBox.setVisible(False)
 
         self.Barra_GroupBox_Label = QLabel("Barra de Conexão")
-        self.Barra_GroupBox_ComboBox = QComboBox()
+        self.Barra_GroupBox_ComboBox = ExtendedComboBox()
+        self.Barra_GroupBox_ComboBox.setMaxVisibleItems(10)
 
         self.Barra_GroupBox_Layout.addWidget(self.Barra_GroupBox_Label, 0, 0, 1, 1)
         self.Barra_GroupBox_Layout.addWidget(self.Barra_GroupBox_ComboBox, 0, 1, 1, 1)

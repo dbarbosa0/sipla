@@ -3,6 +3,7 @@ from PyQt6.QtWidgets import QStyleFactory, QDialog, QGridLayout, QGroupBox, QLin
     QPushButton, QMessageBox, QAbstractSpinBox
 
 from PyQt6.QtCore import Qt
+from opendss.additional_widgets.combobox_pesquisavel import ExtendedComboBox
 
 import unidecode
 import config as cfg
@@ -106,7 +107,8 @@ class Subestacao(QDialog):
         # Comboboxs
         self.Subestacao_ConnPrimary_ComboBox = QComboBox()
         self.Subestacao_ConnPrimary_ComboBox.addItems(["wye", "delta"])
-        self.Subestacao_Bus2_ComboBox = QComboBox()
+        self.Subestacao_Bus2_ComboBox = ExtendedComboBox()
+        self.Subestacao_Bus2_ComboBox.setMaxVisibleItems(10)
         self.Subestacao_ConnSecond_ComboBox = QComboBox()
         self.Subestacao_ConnSecond_ComboBox.addItems(["wye", "delta"])
 

@@ -3,6 +3,7 @@ from PyQt6.QtWidgets import QStyleFactory, QDialog, QGridLayout, QGroupBox, \
    QVBoxLayout, QTabWidget, QLabel, QComboBox, QWidget, QLineEdit, QPushButton, QHBoxLayout, QMessageBox
 
 from PyQt6.QtCore import Qt
+from opendss.additional_widgets.combobox_pesquisavel import ExtendedComboBox
 
 import opendss.class_opendss
 import config as cfg
@@ -86,16 +87,24 @@ class C_Insert_EnergyMeter_Dialog(QDialog): ## Classe Dialog principal
 
         ### LineEdits
         self.EnergyMeter_Name = QLineEdit()
+        self.EnergyMeter_Name.setPlaceholderText("Dê um nome ao medidor")
 
         # Comboboxs
-        self.EnergyMeter_Element_ComboBox = QComboBox()
+        self.EnergyMeter_Element_ComboBox = ExtendedComboBox()
         self.EnergyMeter_Element_ComboBox.clear()
+        self.EnergyMeter_Element_ComboBox.setPlaceholderText('Selecione um elemento para dispor o medidor')
+        self.EnergyMeter_Element_ComboBox.setMaxVisibleItems(10)
+
         self.EnergyMeter_Terminal_ComboBox = QComboBox()
         self.EnergyMeter_Terminal_ComboBox.addItems(["1", "2"])
+        self.EnergyMeter_Terminal_ComboBox.setPlaceholderText('Selecione o terminal para dispor o medidor')
+
         self.EnergyMeter_3phaseLosses_ComboBox = QComboBox()
         self.EnergyMeter_3phaseLosses_ComboBox.addItems(["Yes", "No"])
+
         self.EnergyMeter_LineLosses_ComboBox = QComboBox()
         self.EnergyMeter_LineLosses_ComboBox.addItems(["Yes", "No"])
+
         self.EnergyMeter_Losses_ComboBox = QComboBox()
         self.EnergyMeter_Losses_ComboBox.addItems(["Yes", "No"])
         self.EnergyMeter_SeqLosses_ComboBox = QComboBox()

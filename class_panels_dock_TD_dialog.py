@@ -44,19 +44,19 @@ class C_TDDialog(QDialog):
 
         self.scroll = QScrollArea()
         self.scroll.setWidget(self.groupBox)
-        self.groupBox.setStyleSheet("QGroupBox {background-color: white;"
-                                    "border : solid black;border-width : 1px 1px 1px 1px;}"
-                                    )
+        # self.groupBox.setStyleSheet("QGroupBox {background-color: white;"
+        #                             "border : solid black;border-width : 1px 1px 1px 1px;}"
+        #                             )
 
         self.scroll.setWidgetResizable(True)
         self.scroll.setFixedWidth(600)
-        self.scroll.setStyleSheet("QScrollBar:vertical{"
-                                  "width: 25px;"
-                                  "border-radius: 5px;"
-                                  "border : solid black; "
-                                  "border-width : 10px 10px 10px 10px;"
-                                  "}"
-                                  )
+        # self.scroll.setStyleSheet("QScrollBar:vertical{"
+        #                           "width: 25px;"
+        #                           "border-radius: 5px;"
+        #                           "border : solid black; "
+        #                           "border-width : 10px 10px 10px 10px;"
+        #                           "}"
+        #                           )
 
         ##Alimentador de Referência
         self.Field_GroupBox = QGroupBox("Dados do Alimentador")
@@ -74,13 +74,13 @@ class C_TDDialog(QDialog):
 
         # Search bar.
         self.groupBox_searchbar = QGroupBox()
-        self.groupBox_searchbar.setStyleSheet("QLineEdit"
-                                              "{"
-                                              "border : solid black;"
-                                              "border-width : 1.1px 1.1px 1.1px 1.1px;"
-                                              "}""QGroupBox{border : solid black;border-width : 1px 1px 1px 1px;}")
+        # self.groupBox_searchbar.setStyleSheet("QLineEdit"
+        #                                       "{"
+        #                                       "border : solid black;"
+        #                                       "border-width : 1.1px 1.1px 1.1px 1.1px;"
+        #                                       "}""QGroupBox{border : solid black;border-width : 1px 1px 1px 1px;}")
 
-        self.searchbar_Label = QLabel('SearchBar')
+        self.searchbar_Label = QLabel('Barra de pesquisa')
         self.searchbar_Label.setFont(QFont('Arial', 9))
         self.searchbar_Layout = QVBoxLayout()
         self.groupBox_searchbar.setLayout(self.searchbar_Layout)
@@ -96,8 +96,6 @@ class C_TDDialog(QDialog):
         self.completer.setCaseSensitivity(Qt.CaseSensitivity.CaseSensitive)
         self.searchbar.setCompleter(self.completer)
         self.searchbar_Layout.addWidget(self.searchbar)
-        spacer = QSpacerItem(1, 100)
-        self.searchbar_Layout.addItem(spacer)
         self.controlsLayout.addWidget(self.groupBox_searchbar)
 
         self.controlsLayout.addWidget(self.scroll)
@@ -133,11 +131,11 @@ class C_TDDialog(QDialog):
 
         # Otimização dos Trafos.
         self.groupBox_cargas = QGroupBox()
-        self.groupBox_cargas.setStyleSheet("QLineEdit"
-                                           "{"
-                                           "border : solid black;"
-                                           "border-width : 1.1px 1.1px 1.1px 1.1px;"
-                                           "}""QGroupBox{border : solid black;border-width : 1px 1px 1px 1px;}")
+        # self.groupBox_cargas.setStyleSheet("QLineEdit"
+        #                                    "{"
+        #                                    "border : solid black;"
+        #                                    "border-width : 1.1px 1.1px 1.1px 1.1px;"
+        #                                    "}""QGroupBox{border : solid black;border-width : 1px 1px 1px 1px;}")
 
         self.cargas_Label = QLabel('configuração das Cargas')
         self.cargas_Label.setFont(QFont('Arial', 9))

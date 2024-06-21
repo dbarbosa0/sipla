@@ -3,6 +3,7 @@ from PyQt6.QtWidgets import QStyleFactory, QDialog, QGridLayout, QGroupBox, \
    QVBoxLayout, QLabel, QComboBox, QLineEdit, QPushButton, QHBoxLayout, QMessageBox
 
 from PyQt6.QtCore import Qt
+from opendss.additional_widgets.combobox_pesquisavel import ExtendedComboBox
 
 import opendss.class_opendss
 import config as cfg
@@ -79,6 +80,7 @@ class C_Insert_Monitor_Dialog(QDialog): ## Classe Dialog principal
 
         ### LineEdits
         self.Monitor_Name = QLineEdit()
+        self.Monitor_Name.setPlaceholderText('Dê um nome ao monitor')
 
         # Comboboxs
         self.modelist_data = ["Voltages and currents", "Powers", "Tap Position", "State Variables",
@@ -87,8 +89,10 @@ class C_Insert_Monitor_Dialog(QDialog): ## Classe Dialog principal
                               "Losses, watts and var", "All Winding voltage"]
         self.modelist = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10"]
 
-        self.Monitor_Element_ComboBox = QComboBox()
+        self.Monitor_Element_ComboBox = ExtendedComboBox()
         self.Monitor_Element_ComboBox.clear()
+        self.Monitor_Element_ComboBox.setMaxVisibleItems(10)
+
         self.Monitor_Terminal_ComboBox = QComboBox()
         self.Monitor_Terminal_ComboBox.addItems(["1", "2"])
         self.Monitor_Mode_ComboBox = QComboBox()
