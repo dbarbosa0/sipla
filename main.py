@@ -11,6 +11,7 @@ import config
 import maps.class_view
 ###################################
 # Classes de Construção da Interface Inicial
+# Teste
 import main_statusbar
 import main_toolbar
 import main_actions
